@@ -62,7 +62,7 @@ GET http://localhost/api/v1/customers/?name=<=value
 ```
 GET http://localhost/api/v1/customers/?order=name
 GET http://localhost/api/v1/customers/?skip=10&limit=10
-``
+```
 
 ## Formalia
 
