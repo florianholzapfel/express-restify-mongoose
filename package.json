@@ -1,0 +1,19 @@
+{
+  "name": "express-restify-mongoose",
+  "description": "Easily restify mongoose database",
+  "version": "0.0.1",
+  "author": {
+    "name": "Florian Holzapfel",
+    "email": "flo.holzapfel@gmail.com"
+  },
+  "homepage": "https://github.com/florianholzapfel/express-restify-mongoose",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/florianholzapfel/express-restify-mongoose.git"
+  },
+  "main": "./lib/express-restify-mongoose",
+  "engines": {
+    "node": "*"
+  },
+  "readmeFilename": "README.md"
+}
