@@ -27,6 +27,12 @@ var Customer = new Schema({
 });
 var CustomerModel = mongoose.model('Customer', Customer);
 
+var Invoice = new Schema({
+    customer: { type: Schema.Types.ObjectId, ref: 'Customer' }
+	amount: { type: Number, required: true }
+});
+var InvoiceModel = mongoose.model('Invoice', Invoice);
+
 var app = express();
 app.configure(function(){
 	app.use(express.bodyParser());
@@ -62,6 +68,11 @@ GET http://localhost/api/v1/customers/?name=<=value
 ```
 GET http://localhost/api/v1/customers/?order=name
 GET http://localhost/api/v1/customers/?skip=10&limit=10
+```
+
+### Populate Fields
+```
+GET http://localhost/api/v1/invoices/?populate=customer
 ```
 
 ## Formalia
