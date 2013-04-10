@@ -7,6 +7,12 @@
     "email": "flo.holzapfel@gmail.com"
   },
   "homepage": "https://github.com/florianholzapfel/express-restify-mongoose",
+  "licenses": [
+    {
+      "type": "Apache License 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/florianholzapfel/express-restify-mongoose.git"
