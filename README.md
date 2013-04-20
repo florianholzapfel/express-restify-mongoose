@@ -48,10 +48,12 @@ http.createServer(app).listen(3000, function() {
 ```
 GET http://localhost/api/v1/customers
 PUT http://localhost/api/v1/customers
+POST http://localhost/api/v1/customers
 DELETE http://localhost/api/v1/customers
 
 GET http://localhost/api/v1/customers/:id
 PUT http://localhost/api/v1/customers/:id
+POST http://localhost/api/v1/customers/:id
 DELETE http://localhost/api/v1/customers/:id
 ```
 
