@@ -4,21 +4,18 @@
  * based on the angularjs todo sample
  *
  **/
+var app = angular.module('app', ['ngResource']);
 
-function TodoCtrl($scope, $http) {
+function TodoCtrl($scope, $resource) {
+	var Todo = $resource('/api/v1/todos/:id', { id: '@_id' });
+	$scope.todos = Todo.query();
+	
 	$scope.addTodo = function() {
-		var todo = {
-			text: $scope.todoText
-		};
-		$scope.todoText = '';
+		var todo = new Todo();
+		todo.text = $scope.todoText;
+		todo.$save();
 
-		$http.put('/api/v1/todos', todo, {
-			headers: {
-				'Content-Type': 'application/json'
-			}
-		}).success(function(data) {
-			$scope.todos.push(todo);
-		});
+		$scope.todoText = '';
 	};
 	$scope.remaining = function() {
 		var count = 0;
@@ -28,14 +25,7 @@ function TodoCtrl($scope, $http) {
 		return count;
 	};
 	$scope.save = function(item) {
-		$http.put('/api/v1/todos/' + item._id, {
-			done: item.done
-		}, {
-			headers: {
-				'Content-Type': 'application/json'
-			}
-		}).success(function(data) {
-		});
+		item.$save();
 	};
 	$scope.archive = function() {
 		var oldTodos = $scope.todos;
@@ -45,10 +35,7 @@ function TodoCtrl($scope, $http) {
 				$scope.todos.push(todo);
 			}
 		});
-		$http.delete('/api/v1/todos/?done=true');
+		
+		Todo.delete({ done: true });
 	};
-
-	$http.get('/api/v1/todos').success(function(data) {
-		$scope.todos = data;
-	});
 }
