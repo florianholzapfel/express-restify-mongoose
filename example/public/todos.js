@@ -13,7 +13,9 @@ function TodoCtrl($scope, $resource) {
 	$scope.addTodo = function() {
 		var todo = new Todo();
 		todo.text = $scope.todoText;
-		todo.$save();
+		todo.$save(function() {
+			$scope.todos.push(todo);
+		});
 
 		$scope.todoText = '';
 	};
