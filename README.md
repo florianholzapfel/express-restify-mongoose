@@ -1,6 +1,5 @@
 # express-restify-mongoose
-
-
+This library provides mongoose database models with a REST interface.
 
 ## Getting started
 
@@ -76,6 +75,20 @@ GET http://localhost/api/v1/customers/?skip=10&limit=10
 ```
 GET http://localhost/api/v1/invoices/?populate=customer
 ```
+
+## Reference
+### restify
+```
+restify(app, model, [options])
+```
+
+#### arguments
+* app - The express app
+* model - Your mongoose database model
+* options - Optional options object
+  * prefix - Some path that will be prefixed to the REST path. Defaults to ```/api```
+  * version - An API version that will be prefixed to the rest path. Defaults to ```v1```
+  * middleware - An express middleware or an array of express middlewares that will be used.
 
 ## Formalia
 
