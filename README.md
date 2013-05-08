@@ -77,9 +77,9 @@ GET http://localhost/api/v1/invoices/?populate=customer
 ```
 
 ## Reference
-### restify
+### serve
 ```
-restify(app, model, [options])
+serve(app, model, [options])
 ```
 
 #### arguments
