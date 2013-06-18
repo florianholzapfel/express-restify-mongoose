@@ -89,6 +89,9 @@ serve(app, model, [options])
   * prefix - Some path that will be prefixed to the REST path. Defaults to ```/api```
   * version - An API version that will be prefixed to the rest path. Defaults to ```v1```
   * middleware - An express middleware or an array of express middlewares that will be used.
+  
+## Contributors
+* Enric León (https://github.com/nothingbuttumbleweed)
 
 ## Formalia
 
