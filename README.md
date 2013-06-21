@@ -92,6 +92,7 @@ serve(app, model, [options])
   
 ## Contributors
 * Enric León (https://github.com/nothingbuttumbleweed)
+* David Higginbotham (https://github.com/dhigginbotham)
 
 ## Formalia
 
