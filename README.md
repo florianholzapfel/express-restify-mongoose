@@ -37,6 +37,7 @@ app.configure(function(){
 	app.use(express.bodyParser());
 	app.use(express.methodOverride());
 	restify.serve(app, CustomerModel);
+	restify.serve(app, InvoiceModel);
 });
 
 http.createServer(app).listen(3000, function() {
