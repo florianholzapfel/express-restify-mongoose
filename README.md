@@ -27,7 +27,7 @@ var Customer = new Schema({
 var CustomerModel = mongoose.model('Customer', Customer);
 
 var Invoice = new Schema({
-    customer: { type: Schema.Types.ObjectId, ref: 'Customer' }
+    customer: { type: Schema.Types.ObjectId, ref: 'Customer' },
 	amount: { type: Number, required: true }
 });
 var InvoiceModel = mongoose.model('Invoice', Invoice);
