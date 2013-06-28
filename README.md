@@ -59,6 +59,7 @@ DELETE http://localhost/api/v1/customers/:id
 
 ### Query
 ```
+GET http://localhost/api/v1/customers/?name=~regex
 GET http://localhost/api/v1/customers/?name=value
 GET http://localhost/api/v1/customers/?name=>value
 GET http://localhost/api/v1/customers/?name=>=value
@@ -95,6 +96,7 @@ serve(app, model, [options])
 ## Contributors
 * Enric León (https://github.com/nothingbuttumbleweed)
 * David Higginbotham (https://github.com/dhigginbotham)
+* Jonathan Greenemeier (https://github.com/6eDesign)
 
 ## Formalia
 
