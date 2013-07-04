@@ -92,6 +92,7 @@ serve(app, model, [options])
   * version - An API version that will be prefixed to the rest path. Defaults to ```v1```
   * middleware - An express middleware or an array of express middlewares that will be used.
   * plural - If ```true```, does not pluralize the database model name. Default is ```false```
+  * exclude - Object of fields to exclude, handled server side. Defaults to display all fields 
   
 ## Contributors
 * Enric León (https://github.com/nothingbuttumbleweed)
