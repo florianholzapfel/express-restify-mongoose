@@ -43,7 +43,11 @@ app.configure(function(){
 	app.use(express.errorHandler());
 	app.use(express.bodyParser());
 	app.use(express.methodOverride());
-	restify.serve(app, ToDoModel);
+	restify.serve(app, ToDoModel, { 
+		defaultSelect: { 
+			'text': 0
+		}
+	});
 	app.use(express.static(path.join(__dirname, 'public')));
 	app.use(function(req, res) {
 		res.sendfile(path.join(__dirname, 'public/index.html'));
