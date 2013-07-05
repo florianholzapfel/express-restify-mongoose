@@ -21,5 +21,9 @@
   "engines": {
     "node": "*"
   },
-  "readmeFilename": "README.md"
+  "readmeFilename": "README.md",
+  "dependencies": {
+    "express": "~3.3.3",
+    "mongoose": "~3.6.13"
+  }
 }
