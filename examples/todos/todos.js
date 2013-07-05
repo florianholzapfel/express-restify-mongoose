@@ -24,7 +24,7 @@
 var http = require('http');
 var express = require('express');
 var path = require('path');
-var restify = require('..');
+var restify = require('../..');
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/todos');
 var db = mongoose.connection;
