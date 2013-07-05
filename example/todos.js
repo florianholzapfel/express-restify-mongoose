@@ -30,8 +30,6 @@ mongoose.connect('mongodb://localhost/todos');
 var db = mongoose.connection;
 
 var ToDoSchema = new mongoose.Schema({
-	text: { type: String, required: true },
-	done: { type: Boolean, default: false }
 });
 var ToDoModel = mongoose.model('ToDo', ToDoSchema);
 
