@@ -46,6 +46,7 @@ http.createServer(app).listen(3000, function() {
 ```
 
 ```
+GET http://localhost/api/v1/customers/count
 GET http://localhost/api/v1/customers
 PUT http://localhost/api/v1/customers
 POST http://localhost/api/v1/customers
@@ -65,6 +66,7 @@ GET http://localhost/api/v1/customers/?name=>value
 GET http://localhost/api/v1/customers/?name=>=value
 GET http://localhost/api/v1/customers/?name=<value
 GET http://localhost/api/v1/customers/?name=<=value
+GET http://localhost/api/v1/customers/?select=name
 ```
 
 ### Ordering
@@ -92,6 +94,7 @@ serve(app, model, [options])
   * version - An API version that will be prefixed to the rest path. Defaults to ```v1```
   * middleware - An express middleware or an array of express middlewares that will be used.
   * plural - If ```true```, does not pluralize the database model name. Default is ```false```
+  * exclude - String of comma separated field names which are not to be returned by queries.
   
 ## Contributors
 * Enric León (https://github.com/nothingbuttumbleweed)
