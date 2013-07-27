@@ -33,6 +33,8 @@
   "devDependencies": {
     "jshint": "~2.1.4",
     "mocha": "~1.12.0",
-    "assertmessage": "0.0.2"
+    "assertmessage": "0.0.2",
+    "restify": "~2.6.0",
+    "request": "~2.25.0"
   }
 }
