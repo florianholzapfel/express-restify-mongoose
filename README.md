@@ -100,6 +100,7 @@ serve(app, model, [options])
 * Enric León (https://github.com/nothingbuttumbleweed)
 * David Higginbotham (https://github.com/dhigginbotham)
 * Jonathan Greenemeier (https://github.com/6eDesign)
+* Alan Levicki (https://github.com/alevicki)
 
 ## Formalia
 
