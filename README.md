@@ -1,6 +1,8 @@
 # express-restify-mongoose
 This library provides mongoose database models with a REST interface.
 
+[![Build Status](https://travis-ci.org/florianholzapfel/express-restify-mongoose.png?branch=master)](https://travis-ci.org/florianholzapfel/express-restify-mongoose)
+
 ## Getting started
 
 In your shell, install with npm:
