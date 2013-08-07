@@ -82,6 +82,19 @@ restifyApp.describe = 'Restify';
             });
         });
 
+        it('200 GET Customers?name=Test', function (done) {
+            request.get({
+                url: util.format('%s/api/v1/Customers?name=Test', testUrl),
+                json: true
+            }, function (err, res, body) {
+                assert.equal(res.statusCode, 200, 'Wrong status code');
+                assert.equal(body.length, 1,
+					'Wrong count of customers returned');
+                assert.deepEqual(savedCustomer, body[0]);
+                done();
+            });
+        });
+
         it('200 GET Customers/:id', function (done) {
             request.get({
                 url: util.format('%s/api/v1/Customers/%s', testUrl,
@@ -125,6 +138,81 @@ restifyApp.describe = 'Restify';
                 json: true
             }, function (err, res, body) {
                 assert.equal(res.statusCode, 404, 'Wrong status code');
+                done();
+            });
+        });
+    });
+});
+
+var expressApp = express();
+expressApp.use(express.bodyParser());
+expressApp.use(express.methodOverride());
+expressApp.describe = 'Express';
+
+var restifyApp = restify.createServer();
+restifyApp.use(restify.bodyParser());
+restifyApp.describe = 'Restify';
+
+[expressApp, restifyApp].each(function (app) {
+    describe(app.describe + ' with excluded comment field', function () {
+
+        var savedCustomer, server;
+        setup();
+
+        before(function (done) {
+            erm.serve(app, setup.customerModel, {
+				exclude: 'comment'
+			});
+            server = app.listen(testPort, function () {
+				request.post({
+					url: util.format('%s/api/v1/Customers', testUrl),
+					json: {
+						name: 'Test',
+						comment: 'Comment'
+					}
+				}, function (err, res, body) {
+					savedCustomer = body;
+
+					done();
+				});
+			});
+        });
+
+        after(function (done) {
+            mongoose.connection.close(done);
+        });
+        after(function (done) {
+            if (app.close) {
+                return app.close(done);
+            }
+            server.close(done);
+        });
+
+        it('200 get Customers', function (done) {
+            request.get({
+                url: util.format('%s/api/v1/Customers', testUrl),
+                json: true
+            }, function (err, res, body) {
+                assert.equal(res.statusCode, 200, 'Wrong status code');
+				assert.ok(body[0], 'no items found');
+				assert.ok(body[0].comment === undefined,
+					'comment is not undefined');
+
+                done();
+            });
+        });
+
+        it('200 GET Customers/:id', function (done) {
+            request.get({
+                url: util.format('%s/api/v1/Customers/%s', testUrl,
+                    savedCustomer._id),
+                json: true
+            }, function (err, res, body) {
+                assert.equal(res.statusCode, 200, 'Wrong status code');
+				assert.ok(body, 'no item found');
+                assert.deepEqual(savedCustomer, body);
+				assert.ok(body.comment === undefined,
+					'comment is not undefined');
                 done();
             });
         });
