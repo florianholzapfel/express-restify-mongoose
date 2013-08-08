@@ -62,24 +62,24 @@ DELETE http://localhost/api/v1/customers/:id
 
 ### Query
 ```
-GET http://localhost/api/v1/customers/?name=~regex
-GET http://localhost/api/v1/customers/?name=value
-GET http://localhost/api/v1/customers/?name=>value
-GET http://localhost/api/v1/customers/?name=>=value
-GET http://localhost/api/v1/customers/?name=<value
-GET http://localhost/api/v1/customers/?name=<=value
-GET http://localhost/api/v1/customers/?select=name
+GET http://localhost/api/v1/customers?name=~regex
+GET http://localhost/api/v1/customers?name=value
+GET http://localhost/api/v1/customers?name=>value
+GET http://localhost/api/v1/customers?name=>=value
+GET http://localhost/api/v1/customers?name=<value
+GET http://localhost/api/v1/customers?name=<=value
+GET http://localhost/api/v1/customers?select=name
 ```
 
 ### Ordering
 ```
-GET http://localhost/api/v1/customers/?order=name
-GET http://localhost/api/v1/customers/?skip=10&limit=10
+GET http://localhost/api/v1/customers?order=name
+GET http://localhost/api/v1/customers?skip=10&limit=10
 ```
 
 ### Populate Fields
 ```
-GET http://localhost/api/v1/invoices/?populate=customer
+GET http://localhost/api/v1/invoices?populate=customer
 ```
 
 ## Reference
