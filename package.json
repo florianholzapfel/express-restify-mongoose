@@ -7,6 +7,13 @@
     "email": "flo.holzapfel@gmail.com"
   },
   "homepage": "https://github.com/florianholzapfel/express-restify-mongoose",
+  "keywords": [
+      "ReST",
+      "express",
+      "restify",
+      "mongodb",
+      "mongoose"
+  ],
   "licenses": [
     {
       "type": "The MIT License (MIT)",
