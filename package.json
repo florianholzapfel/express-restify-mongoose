@@ -22,7 +22,7 @@
   ],
   "scripts": {
     "pretest": "./node_modules/.bin/jshint lib test",
-    "test": "./node_modules/.bin/mocha -R spec ./test --recursive --bail --timeout 2s"
+    "test": "./node_modules/.bin/mocha -R spec ./test --recursive --timeout 5s"
   },
   "repository": {
     "type": "git",
