@@ -49,17 +49,19 @@ function Restify() {
                 }
                 server.close(done);
             });
-
-            it('200 get Customers', function (done) {
+            
+            it('200 GET Customers should return no objects', function (done) {
                 request.get({
-                    url: util.format('%s/api/v1/Customers', testUrl)
+                    url: util.format('%s/api/v1/Customers', testUrl),
+                    json: true
                 }, function (err, res, body) {
                     assert.equal(res.statusCode, 200, 'Wrong status code');
+                    assert.equal(body.length, 0, 'Answer is not empty');
                     done();
                 });
             });
 
-            it('200 get Customers/count', function (done) {
+            it('200 GET Customers/count should return 0', function (done) {
                 request.get({
                     url: util.format('%s/api/v1/Customers/count', testUrl),
                     json: true
@@ -70,7 +72,7 @@ function Restify() {
                 });
             });
 
-            it('200 post Customers', function (done) {
+            it('200 POST Customers', function (done) {
                 request.post({
                     url: util.format('%s/api/v1/Customers', testUrl),
                     json: {
@@ -86,11 +88,86 @@ function Restify() {
                 });
             });
 
-            it('200 GET Customers?name=Test', function (done) {
+            it('200 POST 2 Customers', function (done) {
+                request.post({
+                    url: util.format('%s/api/v1/Customers', testUrl),
+                    json: [{
+                        name: 'First Customer',
+                        comment: 'Comment'
+                    }, {
+                        name: 'Second Customer',
+                        comment: 'Comment 2'
+                    }]
+                }, function (err, res, body) {
+                    assert.equal(res.statusCode, 200, 'Wrong status code');
+                    assert.ok(Array.isArray(body));
+                    assert.equal(body.length, 2);
+                    done();
+                });
+            });
+
+            it('200 GET Customers should return 3 objects',
+            function (done) {
                 request.get({
-                    url: util.format('%s/api/v1/Customers?name=Test', testUrl),
+                    url: util.format('%s/api/v1/Customers', testUrl),
                     json: true
                 }, function (err, res, body) {
+                    assert.equal(res.statusCode, 200, 'Wrong status code');
+                    assert.equal(body.length, 3, 'Wrong count');
+                    done();
+                });
+            });
+
+            it('200 GET Customers?limit=1 should return 1 object',
+            function (done) {
+                request.get({
+                    url: util.format('%s/api/v1/Customers', testUrl),
+                    qs: {
+                        limit: 1
+                    },
+                    json: true
+                }, function (err, res, body) {
+                    assert.equal(res.statusCode, 200, 'Wrong status code');
+                    assert.equal(body.length, 1, 'Wrong count');
+                    done();
+                });
+            });
+
+            it('200 GET Customers?skip=2 should return 1 object',
+            function (done) {
+                request.get({
+                    url: util.format('%s/api/v1/Customers', testUrl),
+                    qs: {
+                        skip: 2
+                    },
+                    json: true
+                }, function (err, res, body) {
+                    assert.equal(res.statusCode, 200, 'Wrong status code');
+                    assert.equal(body.length, 1, 'Wrong count');
+                    done();
+                });
+            });
+
+            it('200 GET Customers/count should return 3', function (done) {
+                request.get({
+                    url: util.format('%s/api/v1/Customers/count', testUrl),
+                    json: true
+                }, function (err, res, body) {
+                    assert.equal(res.statusCode, 200, 'Wrong status code');
+                    assert.equal(body.count, 3, 'Wrong count');
+                    done();
+                });
+            });
+            
+            it('200 GET Customers?name=Test', function (done) {
+                request.get({
+                    url: util.format('%s/api/v1/Customers', testUrl),
+                    qs: {
+                        name: 'Test'
+                    },
+                    json: true
+                }, function (err, res, body) {
+                    console.log(body);
                     assert.equal(res.statusCode, 200, 'Wrong status code');
                     assert.equal(body.length, 1,
                         'Wrong count of customers returned');
@@ -135,7 +212,7 @@ function Restify() {
                 });
             });
 
-            it('404s on deleted Customers/:id', function (done) {
+            it('404 on deleted Customers/:id', function (done) {
                 request.get({
                     url: util.format('%s/api/v1/Customers/%s', testUrl,
                     savedCustomer._id),
@@ -181,7 +258,7 @@ function Restify() {
                 server.close(done);
             });
 
-            it('200 get Customers', function (done) {
+            it('200 GET Customers', function (done) {
                 request.get({
                     url: util.format('%s/api/v1/Customers', testUrl),
                     json: true
@@ -206,6 +283,20 @@ function Restify() {
                     assert.deepEqual(savedCustomer, body);
                     assert.ok(body.comment === undefined,
                         'comment is not undefined');
+                    done();
+                });
+            });
+
+            it('400 GET Customers?comment=Comment should return HTTP 400',
+                function (done) {
+                request.get({
+                    url: util.format('%s/api/v1/Customers', testUrl),
+                    qs: {
+                        comment: 'Comment'
+                    },
+                    json: true
+                }, function (err, res, body) {
+                    assert.equal(res.statusCode, 400, 'Wrong status code');
                     done();
                 });
             });
