@@ -25,6 +25,7 @@ function Express() {
 function Restify() {
     var app = restify.createServer();
     app.use(restify.bodyParser());
+    app.isRestify = true;
     return app;
 }
 
@@ -36,7 +37,7 @@ function Restify() {
             setup();
 
             before(function (done) {
-                erm.serve(app, setup.customerModel);
+                erm.serve(app, setup.customerModel, { restify: app.isRestify });
                 server = app.listen(testPort, done);
             });
 
@@ -231,7 +232,8 @@ function Restify() {
 
             before(function (done) {
                 erm.serve(app, setup.customerModel, {
-                    exclude: 'comment'
+                    exclude: 'comment',
+                    restify: app.isRestify
                 });
                 server = app.listen(testPort, function () {
                     request.post({
