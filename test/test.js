@@ -24,6 +24,7 @@ function Express() {
 }
 function Restify() {
     var app = restify.createServer();
+    app.use(restify.queryParser());
     app.use(restify.bodyParser());
     app.isRestify = true;
     return app;
@@ -168,7 +169,6 @@ function Restify() {
                     },
                     json: true
                 }, function (err, res, body) {
-                    console.log(body);
                     assert.equal(res.statusCode, 200, 'Wrong status code');
                     assert.equal(body.length, 1,
                         'Wrong count of customers returned');

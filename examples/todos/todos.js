@@ -44,7 +44,7 @@ app.configure(function(){
 	app.use(express.bodyParser());
 	app.use(express.methodOverride());
 	restify.serve(app, ToDoModel, { 
-		exclude: 'text,done'
+		//exclude: 'text,done'
 	});
 	app.use(express.static(path.join(__dirname, 'public')));
 	app.use(function(req, res) {
