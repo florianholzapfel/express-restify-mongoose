@@ -97,6 +97,9 @@ serve(app, model, [options])
   * middleware - An express middleware or an array of express middlewares that will be used.
   * plural - If ```true```, does not pluralize the database model name. Default is ```false```
   * exclude - String of comma separated field names which are not to be returned by queries.
+  * postProcess - A middleware to be called after the response has been sent.
+    It is only executed on success.  If an error is sent to the client,
+    this is not executed.
   
 ## Contributors
 * Enric León (https://github.com/nothingbuttumbleweed)
