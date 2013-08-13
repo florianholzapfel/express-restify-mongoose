@@ -33,8 +33,9 @@ function Restify() {
 [Express, Restify].each(function (createFn) {
     describe(createFn.name, function () {
         describe('General', function () {
-            var app = createFn();
-            var savedCustomer, server;
+            var savedCustomer, server,
+                app = createFn();
+
             setup();
 
             before(function (done) {
@@ -42,9 +43,6 @@ function Restify() {
                 server = app.listen(testPort, done);
             });
 
-            after(function (done) {
-                mongoose.connection.close(done);
-            });
             after(function (done) {
                 if (app.close) {
                     return app.close(done);
@@ -231,8 +229,9 @@ function Restify() {
         });
 
         describe('Excluded comment field', function () {
-            var app = createFn();
-            var savedCustomer, server;
+            var savedCustomer, server,
+                app = createFn();
+
             setup();
 
             before(function (done) {
@@ -255,9 +254,6 @@ function Restify() {
                 });
             });
 
-            after(function (done) {
-                mongoose.connection.close(done);
-            });
             after(function (done) {
                 if (app.close) {
                     return app.close(done);
@@ -310,6 +306,66 @@ function Restify() {
                     });
                 });
             }
+        });
+
+        describe('postProcess', function () {
+            var savedCustomer, server, postProcess,
+                app = createFn();
+
+            setup();
+
+            before(function (done) {
+                erm.serve(app, setup.customerModel, {
+                    restify: app.isRestify,
+                    postProcess: function (req, res) {
+                        postProcess(null, req, res);
+                    }
+                });
+                server = app.listen(testPort, done);
+            });
+
+            after(function (done) {
+                if (app.close) {
+                    return app.close(done);
+                }
+                server.close(done);
+            });
+
+            it('GET', function (done) {
+                postProcess = done;
+                request.get(util.format('%s/api/v1/Customers', testUrl));
+            });
+
+            it('POST', function (done) {
+                postProcess = done;
+                request.post({
+                    url: util.format('%s/api/v1/Customers', testUrl),
+                    json: {
+                        name: 'Test',
+                        comment: 'Comment'
+                    }
+                }, function (err, res, body) {
+                    savedCustomer = body;
+                });
+            });
+
+            it('GET count', function (done) {
+                postProcess = done;
+                request.get({
+                    url: util.format('%s/api/v1/Customers/count', testUrl),
+                    json: true
+                });
+            });
+
+            it('DELETE', function (done) {
+                postProcess = done;
+                request.del({
+                    url: util.format('%s/api/v1/Customers/%s', testUrl,
+                        savedCustomer._id),
+                    json: true
+                });
+            });
+
         });
     });
 });

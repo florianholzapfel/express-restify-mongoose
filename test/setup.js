@@ -21,6 +21,10 @@ var setup = module.exports = function () {
             setup.customerModel.remove(done);
         });
     });
+
+    after(function (done) {
+        mongoose.connection.close(done);
+    });
 };
 
 setup.customerModel = {};
