@@ -48,38 +48,38 @@ http.createServer(app).listen(3000, function() {
 ```
 
 ```
-GET http://localhost/api/v1/customers/count
-GET http://localhost/api/v1/customers
-PUT http://localhost/api/v1/customers
-POST http://localhost/api/v1/customers
-DELETE http://localhost/api/v1/customers
+GET http://localhost/api/v1/Customers/count
+GET http://localhost/api/v1/Customers
+PUT http://localhost/api/v1/Customers
+POST http://localhost/api/v1/Customers
+DELETE http://localhost/api/v1/Customers
 
-GET http://localhost/api/v1/customers/:id
-PUT http://localhost/api/v1/customers/:id
-POST http://localhost/api/v1/customers/:id
-DELETE http://localhost/api/v1/customers/:id
+GET http://localhost/api/v1/Customers/:id
+PUT http://localhost/api/v1/Customers/:id
+POST http://localhost/api/v1/Customers/:id
+DELETE http://localhost/api/v1/Customers/:id
 ```
 
 ### Query
 ```
-GET http://localhost/api/v1/customers?name=~regex
-GET http://localhost/api/v1/customers?name=value
-GET http://localhost/api/v1/customers?name=>value
-GET http://localhost/api/v1/customers?name=>=value
-GET http://localhost/api/v1/customers?name=<value
-GET http://localhost/api/v1/customers?name=<=value
-GET http://localhost/api/v1/customers?select=name
+GET http://localhost/api/v1/Customers?name=~regex
+GET http://localhost/api/v1/Customers?name=value
+GET http://localhost/api/v1/Customers?name=>value
+GET http://localhost/api/v1/Customers?name=>=value
+GET http://localhost/api/v1/Customers?name=<value
+GET http://localhost/api/v1/Customers?name=<=value
+GET http://localhost/api/v1/Customers?select=name
 ```
 
 ### Ordering
 ```
-GET http://localhost/api/v1/customers?order=name
-GET http://localhost/api/v1/customers?skip=10&limit=10
+GET http://localhost/api/v1/Customers?order=name
+GET http://localhost/api/v1/Customers?skip=10&limit=10
 ```
 
 ### Populate Fields
 ```
-GET http://localhost/api/v1/invoices?populate=customer
+GET http://localhost/api/v1/Invoices?populate=customer
 ```
 
 ## Reference
