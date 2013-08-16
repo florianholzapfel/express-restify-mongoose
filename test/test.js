@@ -308,6 +308,51 @@ function Restify() {
             }
         });
 
+        describe('Lower case model name', function () {
+            var savedCustomer, server,
+                app = createFn();
+
+            // only restify's routes are case sensitive
+            if (app.isRestify) {
+                setup();
+
+                before(function (done) {
+                    erm.serve(app, setup.customerModel, {
+                        lowercase: true,
+                        restify: app.isRestify
+                    });
+                    server = app.listen(testPort, done);
+                });
+
+                after(function (done) {
+                    if (app.close) {
+                        return app.close(done);
+                    }
+                    server.close(done);
+                });
+
+                it('200 GET customers', function (done) {
+                    request.get({
+                        url: util.format('%s/api/v1/customers', testUrl),
+                        json: true
+                    }, function (err, res, body) {
+                        assert.equal(res.statusCode, 200, 'Wrong status code');
+                        done();
+                    });
+                });
+
+                it('404 GET Customers', function (done) {
+                    request.get({
+                        url: util.format('%s/api/v1/Customers', testUrl),
+                        json: true
+                    }, function (err, res, body) {
+                        assert.equal(res.statusCode, 404, 'Wrong status code');
+                        done();
+                    });
+                });
+            }
+        });
+
         describe('postProcess', function () {
             var savedCustomer, server, postProcess,
                 app = createFn();

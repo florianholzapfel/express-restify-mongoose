@@ -96,6 +96,7 @@ serve(app, model, [options])
   * version - An API version that will be prefixed to the rest path. Defaults to ```v1```
   * middleware - An express middleware or an array of express middlewares that will be used.
   * plural - If ```true```, does not pluralize the database model name. Default is ```false```
+  * lowercase - If ```true```, turn model name to lower case before generating the routes.
   * exclude - String of comma separated field names which are not to be returned by queries.
   * postProcess - A middleware to be called after the response has been sent.
     It is only executed on success.  If an error is sent to the client,
