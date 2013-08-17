@@ -77,10 +77,12 @@ function Restify() {
                     url: util.format('%s/api/v1/Customers', testUrl),
                     json: {
                         name: 'Test',
-                        comment: 'Comment'
+                        comment: 'Comment',
+                        _id: null
                     }
                 }, function (err, res, body) {
                     assert.equal(res.statusCode, 200, 'Wrong status code');
+                    assert.ok(body._id, '_id is not set');
                     assert.equal(body.name, 'Test');
                     assert.equal(body.comment, 'Comment');
                     savedCustomer = body;
