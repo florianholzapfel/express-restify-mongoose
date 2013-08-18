@@ -207,6 +207,18 @@ function Restify() {
                 });
             });
 
+            it('200 POST Customers/:id', function (done) {
+                request.post({
+                    url: util.format('%s/api/v1/Customers/%s', testUrl,
+                    savedCustomer._id),
+                    json: savedCustomer
+                }, function (err, res, body) {
+                    assert.equal(res.statusCode, 200, 'Wrong status code');
+                    assert.deepEqual(savedCustomer, body);
+                    done();
+                });
+            });
+
             it('200 DEL Customers/:id', function (done) {
                 request.del({
                     url: util.format('%s/api/v1/Customers/%s', testUrl,
