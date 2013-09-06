@@ -33,13 +33,14 @@ function Restify() {
 [Express, Restify].each(function (createFn) {
     describe(createFn.name, function () {
         describe('General', function () {
-            var savedCustomer, server,
+            var savedCustomer, savedInvoice, server,
                 app = createFn();
 
             setup();
 
             before(function (done) {
                 erm.serve(app, setup.customerModel, { restify: app.isRestify });
+                erm.serve(app, setup.invoiceModel, { restify: app.isRestify });
                 server = app.listen(testPort, done);
             });
 
@@ -131,6 +132,24 @@ function Restify() {
                 });
             });
             
+            it('200 POST Invoice using pre-defined version', function (done) {
+                request.post({
+                    url: util.format('%s/api/v1/Invoices', testUrl),
+                    json: {
+                        customer: savedCustomer._id,
+                        amount: 8.5,
+                        __version: 1
+                    }
+                }, function (err, res, body) {
+                    assert.equal(res.statusCode, 200, 'Wrong status code');
+                    assert.ok(body._id, '_id is not set');
+                    assert.equal(body.customer, savedCustomer._id);
+                    assert.equal(body.amount, 8.5);
+                    savedInvoice = body;
+                    done();
+                });
+            });
+
             // disable those tests for express, because restify modifies
             // the prototype of the global Request object. Such an object
             // is also defined by express. This breaks express' request.query
@@ -177,6 +196,51 @@ function Restify() {
                         assert.equal(body.length, 1,
                             'Wrong count of customers returned');
                         assert.deepEqual(savedCustomer, body[0]);
+                        done();
+                    });
+                });
+
+                it('200 GET Customers?name=Test', function (done) {
+                    request.get({
+                        url: util.format('%s/api/v1/Customers', testUrl),
+                        qs: {
+                            name: 'Test'
+                        },
+                        json: true
+                    }, function (err, res, body) {
+                        assert.equal(res.statusCode, 200, 'Wrong status code');
+                        assert.equal(body.length, 1,
+                            'Wrong count of customers returned');
+                        assert.deepEqual(savedCustomer, body[0]);
+                        done();
+                    });
+                });
+
+                it('200 GET Invoices?populate=customer should populate ' +
+                    'customer', function (done) {
+                    request.get({
+                        url: util.format('%s/api/v1/Invoices', testUrl),
+                        qs: {
+                            populate: 'customer'
+                        },
+                        json: true
+                    }, function (err, res, body) {
+                        assert.equal(res.statusCode, 200, 'Wrong status code');
+                        assert.deepEqual(body[0].customer, savedCustomer);
+                        savedInvoice = body[0];
+                        savedInvoice.amount = 9.5;
+                        done();
+                    });
+                });
+
+                it('200 POST Updated and populated Invoice', function (done) {
+                    request.post({
+                        url: util.format('%s/api/v1/Invoices/%s', testUrl,
+                        savedInvoice._id),
+                        json: savedInvoice
+                    }, function (err, res, body) {
+                        assert.equal(res.statusCode, 200, 'Wrong status code');
+                        assert.equal(body.amount, 9.5);
                         done();
                     });
                 });

@@ -7,6 +7,12 @@ var Customer = new Schema({
     name: { type: String, required: true },
     comment: { type: String }
 });
+var Invoice = new Schema({
+	customer: { type: Schema.Types.ObjectId, ref: 'Customer' },
+	amount: { type: Number }
+}, {
+    versionKey: '__version'
+});
 
 var setup = module.exports = function () {
     var self = this;
@@ -14,11 +20,17 @@ var setup = module.exports = function () {
     if (setup.customerModel) {
         setup.customerModel = mongoose.model('Customer', Customer);
     }
+    if (setup.invoiceModel) {
+        setup.invoiceModel = mongoose.model('Invoice', Invoice);
+    }
 
     before(function (done) {
         mongoose.connect('mongodb://localhost/database', function (err) {
             assert(!err, err);
-            setup.customerModel.remove(done);
+            setup.customerModel.remove(function (err) {
+                assert(!err, err);
+                setup.invoiceModel.remove(done);
+            });
         });
     });
 
@@ -28,3 +40,4 @@ var setup = module.exports = function () {
 };
 
 setup.customerModel = {};
+setup.invoiceModel = {};
