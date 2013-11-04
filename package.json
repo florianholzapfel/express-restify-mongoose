@@ -35,7 +35,7 @@
   "readmeFilename": "README.md",
   "dependencies": {
     "express": "~3.3.5",
-    "mongoose": "~3.6.13"
+    "mongoose": "~3.8.0"
   },
   "devDependencies": {
     "jshint": "~2.1.4",

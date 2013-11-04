@@ -32,15 +32,21 @@ function Restify() {
 
 [Express, Restify].each(function (createFn) {
     describe(createFn.name, function () {
-        describe('General', function () {
+        describe.only('General', function () {
             var savedCustomer, savedInvoice, server,
                 app = createFn();
 
             setup();
 
             before(function (done) {
-                erm.serve(app, setup.customerModel, { restify: app.isRestify });
-                erm.serve(app, setup.invoiceModel, { restify: app.isRestify });
+                erm.serve(app, setup.customerModel, {
+                    restify: app.isRestify,
+                    lean: false
+                });
+                erm.serve(app, setup.invoiceModel, {
+                    restify: app.isRestify,
+                    lean: false
+                });
                 server = app.listen(testPort, done);
             });
 
@@ -50,7 +56,7 @@ function Restify() {
                 }
                 server.close(done);
             });
-            
+
             it('200 GET Customers should return no objects', function (done) {
                 request.get({
                     url: util.format('%s/api/v1/Customers', testUrl),
@@ -120,7 +126,7 @@ function Restify() {
                     done();
                 });
             });
-            
+
             it('200 GET Customers/count should return 3', function (done) {
                 request.get({
                     url: util.format('%s/api/v1/Customers/count', testUrl),
@@ -131,7 +137,7 @@ function Restify() {
                     done();
                 });
             });
-            
+
             it('200 POST Invoice using pre-defined version', function (done) {
                 request.post({
                     url: util.format('%s/api/v1/Invoices', testUrl),
@@ -260,6 +266,7 @@ function Restify() {
 
             it('200 PUT Customers/:id', function (done) {
                 savedCustomer.name = 'Test 2';
+                savedCustomer.info = savedCustomer.name  + ' is awesome';
                 request.put({
                     url: util.format('%s/api/v1/Customers/%s', testUrl,
                     savedCustomer._id),
@@ -301,6 +308,50 @@ function Restify() {
                     json: true
                 }, function (err, res, body) {
                     assert.equal(res.statusCode, 404, 'Wrong status code');
+                    done();
+                });
+            });
+        });
+
+        describe('Return virtuals', function () {
+            var savedCustomer, server,
+                app = createFn();
+
+            setup();
+
+            before(function (done) {
+                erm.serve(app, setup.customerModel, {
+                    lean: false,
+                    restify: app.isRestify
+                });
+                server = app.listen(testPort,  function () {
+                    request.post({
+                        url: util.format('%s/api/v1/Customers', testUrl),
+                        json: {
+                            name: 'Bob'
+                        }
+                    }, function (err, res, body) {
+                        savedCustomer = body;
+                        done();
+                    });
+                });
+            });
+
+            after(function (done) {
+                if (app.close) {
+                    return app.close(done);
+                }
+                server.close(done);
+            });
+
+            it('200 GET Customers', function (done) {
+                var info = savedCustomer.name + ' is awesome';
+                request.get({
+                    url: util.format('%s/api/v1/Customers', testUrl),
+                    json: true
+                }, function (err, res, body) {
+                    assert.equal(res.statusCode, 200, 'Wrong status code');
+                    assert.equal(body[0].info, info, 'info is not defined');
                     done();
                 });
             });
