@@ -2,16 +2,24 @@ var mongoose = require('mongoose'),
     Schema   = mongoose.Schema;
 
 var assert = require('assertmessage');
+var opts = {
+    toObject: { virtuals: true },
+    toJSON: { virtuals: true }
+};
 
 var Customer = new Schema({
     name: { type: String, required: true },
     comment: { type: String }
-});
+}, opts);
 var Invoice = new Schema({
-	customer: { type: Schema.Types.ObjectId, ref: 'Customer' },
-	amount: { type: Number }
+    customer: { type: Schema.Types.ObjectId, ref: 'Customer' },
+    amount: { type: Number }
 }, {
     versionKey: '__version'
+}, opts);
+
+Customer.virtual('info').get(function () {
+    return this.name + ' is awesome';
 });
 
 var setup = module.exports = function () {
