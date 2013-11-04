@@ -110,6 +110,7 @@ serve(app, model, [options])
 * Jonathan Greenemeier (https://github.com/6eDesign)
 * Alan Levicki (https://github.com/alevicki)
 * Michael (https://github.com/micheee)
+* Matt Roman (https://github.com/romanmt)
 
 ## Formalia
 
