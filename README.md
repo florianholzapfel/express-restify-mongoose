@@ -101,7 +101,9 @@ serve(app, model, [options])
   * postProcess - A middleware to be called after the response has been sent.
     It is only executed on success.  If an error is sent to the client,
     this is not executed.
-  
+  * lean - If ```false```, will not convert to returned values to plain old javascript
+    objects. This is bad for performance, but it allows for returning virtuals, getters    and setters.
+
 ## Contributors
 * Enric León (https://github.com/nothingbuttumbleweed)
 * David Higginbotham (https://github.com/dhigginbotham)
