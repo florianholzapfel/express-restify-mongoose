@@ -104,6 +104,15 @@ serve(app, model, [options])
   * lean - If ```false```, will not convert to returned values to plain old javascript
     objects. This is bad for performance, but it allows for returning virtuals, getters    and setters.
 
+### defaults
+```
+defaults(options)
+```
+
+#### arguments
+* options - Same options as above. This function will set this object as the defaults for anything you declare afterwards.
+
+
 ## Contributors
 * Enric León (https://github.com/nothingbuttumbleweed)
 * David Higginbotham (https://github.com/dhigginbotham)
