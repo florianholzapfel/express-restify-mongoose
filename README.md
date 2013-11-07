@@ -111,6 +111,7 @@ serve(app, model, [options])
 * Alan Levicki (https://github.com/alevicki)
 * Michael (https://github.com/micheee)
 * Matt Roman (https://github.com/romanmt)
+* fetrarij (https://github.com/fetrarij)
 
 ## Formalia
 
