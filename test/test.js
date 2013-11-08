@@ -32,7 +32,7 @@ function Restify() {
 
 [Express, Restify].each(function (createFn) {
     describe(createFn.name, function () {
-        describe.only('General', function () {
+        describe('General', function () {
             var savedCustomer, savedInvoice, server,
                 app = createFn();
 
@@ -539,7 +539,44 @@ function Restify() {
                     json: true
                 });
             });
+        });
 
+        describe('Use default options', function () {
+            var server, postProcess,
+              app = createFn();
+
+            setup();
+
+            before(function (done) {
+                erm.defaults({version: '/custom'});
+
+                erm.serve(app, setup.customerModel, {
+                    lowercase: true,
+                    restify: app.isRestify
+                });
+
+                server = app.listen(testPort, done);
+            });
+
+            after(function (done) {
+                erm.defaults(null);
+
+                if (app.close) {
+                    return app.close(done);
+                }
+
+                server.close(done);
+            });
+
+            it('200 GET custom/customers', function (done) {
+                request.get({
+                    url: util.format('%s/api/custom/customers', testUrl),
+                    json: true
+                }, function (err, res, body) {
+                    assert.equal(res.statusCode, 200, 'Wrong status code');
+                    done();
+                });
+            });
         });
     });
 });
