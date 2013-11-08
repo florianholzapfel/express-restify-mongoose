@@ -121,6 +121,7 @@ defaults(options)
 * Michael (https://github.com/micheee)
 * Matt Roman (https://github.com/romanmt)
 * fetrarij (https://github.com/fetrarij)
+* Jan Paul Erkelens (https://github.com/jperkelens)
 
 ## Formalia
 
