@@ -2,18 +2,35 @@ var mongoose = require('mongoose'),
     Schema   = mongoose.Schema;
 
 var assert = require('assertmessage');
+
 var opts = {
     toObject: { virtuals: true },
     toJSON: { virtuals: true }
 };
 
+var Product = new Schema({
+    name: { type: String, required: true },
+    department: {
+        name: String,
+        code: Number
+    },
+    price: Number
+});
+
 var Customer = new Schema({
     name: { type: String, required: true },
-    comment: { type: String }
+    comment: String,
+    address: String,
+    purchases: [{
+        item: { type: Schema.Types.ObjectId, ref: 'Product' },
+        number: Number
+    }]
 }, opts);
+
 var Invoice = new Schema({
     customer: { type: Schema.Types.ObjectId, ref: 'Customer' },
-    amount: { type: Number }
+    amount: Number,
+    products: [{ type: Schema.Types.ObjectId, ref: 'Product' }]
 }, {
     versionKey: '__version'
 }, opts);
@@ -30,6 +47,9 @@ var setup = module.exports = function () {
     }
     if (setup.invoiceModel) {
         setup.invoiceModel = mongoose.model('Invoice', Invoice);
+    }
+    if (setup.productModel) {
+        setup.productModel = mongoose.model('Product', Product);
     }
 
     before(function (done) {
@@ -49,3 +69,4 @@ var setup = module.exports = function () {
 
 setup.customerModel = {};
 setup.invoiceModel = {};
+setup.productModel = {};

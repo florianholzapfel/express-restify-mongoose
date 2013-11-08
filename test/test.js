@@ -3,6 +3,7 @@ var erm = require('../lib/express-restify-mongoose');
 var setup = require('./setup');
 
 var assert = require('assertmessage'),
+    async = require('async'),
     express = require('express'),
     mongoose = require('mongoose'),
     restify = require('restify'),
@@ -358,26 +359,42 @@ function Restify() {
         });
 
         describe('Excluded comment field', function () {
-            var savedCustomer, server,
+            var savedCustomer, savedInvoice, server,
                 app = createFn();
 
             setup();
 
             before(function (done) {
-                erm.serve(app, setup.customerModel, {
-                    exclude: 'comment',
-                    restify: app.isRestify
-                });
-                server = app.listen(testPort, function () {
-                    request.post({
-                        url: util.format('%s/api/v1/Customers', testUrl),
-                        json: {
-                            name: 'Test',
-                            comment: 'Comment'
-                        }
-                    }, function (err, res, body) {
-                        savedCustomer = body;
+                erm.defaults({ restify: app.isRestify });
 
+                erm.serve(app, setup.customerModel, { exclude: 'comment' });
+                erm.serve(app, setup.invoiceModel);
+
+                server = app.listen(testPort, function () {
+                    async.waterfall([function (next) {
+                        request.post({
+                            url: util.format('%s/api/v1/Customers', testUrl),
+                            json: {
+                                name: 'Test',
+                                comment: 'Comment'
+                            }
+                        }, function (err, res, body) {
+                            next(null, body);
+                        });
+                    }, function (customer, next) {
+                        request.post({
+                            url: util.format('%s/api/v1/Invoices', testUrl),
+                            json: {
+                                customer: customer._id,
+                                amount: 42,
+                                __version: 1
+                            }
+                        }, function (err, res, body) {
+                            next(null, customer, body);
+                        });
+                    }], function (err, customer, invoice) {
+                        savedCustomer = customer;
+                        savedInvoice = invoice;
                         done();
                     });
                 });
@@ -431,6 +448,19 @@ function Restify() {
                         json: true
                     }, function (err, res, body) {
                         assert.equal(res.statusCode, 400, 'Wrong status code');
+                        done();
+                    });
+                });
+                it('excludes populated fields', function (done) {
+                    request.get({
+                        url: util.format('%s/api/v1/Invoices/%s', testUrl,
+                                         savedInvoice._id),
+                        qs: { populate: 'customer' },
+                        json: true
+                    }, function (err, res, body) {
+                        assert.ok(body.customer._id, 'customer not populated');
+                        assert.ok(body.customer.comment === undefined,
+                            'comment is not undefined');
                         done();
                     });
                 });

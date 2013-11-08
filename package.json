@@ -8,11 +8,11 @@
   },
   "homepage": "https://github.com/florianholzapfel/express-restify-mongoose",
   "keywords": [
-      "ReST",
-      "express",
-      "restify",
-      "mongodb",
-      "mongoose"
+    "ReST",
+    "express",
+    "restify",
+    "mongodb",
+    "mongoose"
   ],
   "licenses": [
     {
@@ -43,6 +43,7 @@
     "assertmessage": "0.0.2",
     "restify": "~2.6.0",
     "request": "~2.25.0",
-    "sugar": "~1.3.9"
+    "sugar": "~1.3.9",
+    "async": "~0.2.9"
   }
 }
