@@ -9,15 +9,15 @@ require('sugar');
 
 describe('Filter', function () {
     setup();
+    var customerFilter = new Filter(setup.customerModel,
+                                    ['comment',
+                                     'address',
+                                     'purchases.number']),
+        invoiceFilter = new Filter(setup.invoiceModel, ['amount']),
+        productFilter = new Filter(setup.productModel,
+                                   ['price', 'department.code']);
 
     describe('lean', function () {
-        var customerFilter = new Filter(setup.customerModel,
-                                        'comment,address,purchases.number',
-                                        true),
-            invoiceFilter = new Filter(setup.invoiceModel, 'amount', true),
-            productFilter = new Filter(setup.productModel,
-                                       'price,department.code', true);
-
         it('excludes items in the excluded string', function () {
             var customer = {
                 name: 'John',
@@ -168,13 +168,6 @@ describe('Filter', function () {
     });
 
     describe('not lean', function () {
-        var customerFilter = new Filter(setup.customerModel,
-                                        'comment,address,purchases.number',
-                                        false),
-            invoiceFilter = new Filter(setup.invoiceModel, 'amount', false),
-            productFilter = new Filter(setup.productModel,
-                                       'price,department.code', false);
-
         it('excludes items in the excluded string', function () {
             var customer = new setup.customerModel({
                 name: 'John',
