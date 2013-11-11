@@ -281,6 +281,7 @@ describe('Filter', function () {
                               'Invoice amount should be excluded');
                     assert.ok(invoice.customer.name !== undefined,
                               'Customer name should be included');
+
                     assert.ok(invoice.customer.address === undefined,
                               'Customer address should be excluded');
                     done();
