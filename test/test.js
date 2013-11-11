@@ -232,10 +232,10 @@ function Restify() {
                         },
                         json: true
                     }, function (err, res, body) {
-                        assert.equal(res.statusCode, 200, 'Wrong status code');
-                        assert.deepEqual(body[0].customer, savedCustomer);
                         savedInvoice = body[0];
                         savedInvoice.amount = 9.5;
+                        assert.equal(res.statusCode, 200, 'Wrong status code');
+                        assert.deepEqual(body[0].customer, savedCustomer);
                         done();
                     });
                 });
@@ -367,7 +367,10 @@ function Restify() {
             before(function (done) {
                 erm.defaults({ restify: app.isRestify });
 
-                erm.serve(app, setup.customerModel, { exclude: 'comment' });
+                erm.serve(app, setup.customerModel, {
+                    exclude: 'comment',
+                    lean: false
+                });
                 erm.serve(app, setup.invoiceModel);
 
                 server = app.listen(testPort, function () {
@@ -377,7 +380,7 @@ function Restify() {
                             json: {
                                 name: 'Test',
                                 comment: 'Comment'
-                            }
+                            },
                         }, function (err, res, body) {
                             next(null, body);
                         });

@@ -224,7 +224,7 @@ describe('Filter', function () {
         describe('with populated docs', function () {
             before(function (done) {
                 var self = this,
-                    products = [
+                    products = this.products = [
                         { name: 'Squirt Gun', price: 42 },
                         { name: 'Water Balloons', price: 1 },
                         { name: 'Garden Hose', price: 10 }
@@ -319,14 +319,15 @@ describe('Filter', function () {
             });
 
             it('filters embedded array of populated docs', function (done) {
+                var self = this;
                 setup.customerModel.findById(this.customerId)
                 .populate('purchases.item').exec(function (err, customer) {
                     customer = customerFilter.getFilter(customer,
                                                         'purchases.item');
-                    customer.purchases.each(function (p) {
+                    customer.purchases.each(function (p, i) {
                         assert.ok(p.number === undefined,
                                  'Purchase number should be excluded');
-                        assert.ok(p.item.name !== undefined,
+                        assert.equal(p.item.name, self.products[i].name,
                                  'Item name should be populated');
                         assert.ok(p.item.price === undefined,
                                  'Item price should be excluded');
