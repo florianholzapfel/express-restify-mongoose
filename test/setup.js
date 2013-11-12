@@ -27,12 +27,11 @@ var Customer = new Schema({
     }]
 }, opts);
 
+opts.versionKey = '__version';
 var Invoice = new Schema({
     customer: { type: Schema.Types.ObjectId, ref: 'Customer' },
     amount: Number,
     products: [{ type: Schema.Types.ObjectId, ref: 'Product' }]
-}, {
-    versionKey: '__version'
 }, opts);
 
 Customer.virtual('info').get(function () {

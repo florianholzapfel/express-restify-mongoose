@@ -95,9 +95,12 @@ serve(app, model, [options])
   * prefix - Some path that will be prefixed to the REST path. Defaults to ```/api```
   * version - An API version that will be prefixed to the rest path. Defaults to ```v1```
   * middleware - An express middleware or an array of express middlewares that will be used.
+  * prereq - A function that takes the req object and returns or yields true or false. This function will be called for every POST PUT and DELETE request and send 403 on false.
+  * access - A function that takes the req object and returns or yields 'public', 'private', or 'protected'. This function will be called for every GET POST and PUT request and filter out the appropriate fields
   * plural - If ```true```, does not pluralize the database model name. Default is ```false```
   * lowercase - If ```true```, turn model name to lower case before generating the routes.
-  * exclude - String of comma separated field names which are not to be returned by queries.
+  * private - String of comma separated field names which are not to be returned by queries that do not have private access.
+  * protected - String of comma separated field names which are not to be returned by queries that have public access.
   * postProcess - A middleware to be called after the response has been sent.
     It is only executed on success.  If an error is sent to the client,
     this is not executed.

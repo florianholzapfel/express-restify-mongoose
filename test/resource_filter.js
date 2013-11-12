@@ -10,14 +10,15 @@ require('sugar');
 describe('Filter', function () {
     setup();
 
-    describe('lean', function () {
-        var customerFilter = new Filter(setup.customerModel,
-                                        'comment,address,purchases.number',
-                                        true),
-            invoiceFilter = new Filter(setup.invoiceModel, 'amount', true),
-            productFilter = new Filter(setup.productModel,
-                                       'price,department.code', true);
+    var customerFilter = new Filter(setup.customerModel,
+                                    ['comment',
+                                     'address',
+                                     'purchases.number']),
+        invoiceFilter = new Filter(setup.invoiceModel, ['amount']),
+        productFilter = new Filter(setup.productModel,
+                                   ['price', 'department.code']);
 
+    describe('lean', function () {
         it('excludes items in the excluded string', function () {
             var customer = {
                 name: 'John',
@@ -25,7 +26,7 @@ describe('Filter', function () {
                 comment: 'Has a big nose'
             };
 
-            customer = customerFilter.getFilter(customer);
+            customer = customerFilter.filterObject(customer);
             assert.equal(customer.name, 'John', 'Customer name should be John');
             assert.ok(customer.address === undefined,
                       'Customer address should be excluded');
@@ -42,7 +43,7 @@ describe('Filter', function () {
                 }
             };
 
-            product = productFilter.getFilter(product);
+            product = productFilter.filterObject(product);
             assert.equal(product.name, 'Garden Hose',
                          'Product name should be included');
             assert.equal(product.department.name, 'Gardening',
@@ -61,7 +62,7 @@ describe('Filter', function () {
                 ]
             };
 
-            customer = customerFilter.getFilter(customer);
+            customer = customerFilter.filterObject(customer);
             customer.purchases.each(function (purchase) {
                 assert.equal(purchase.item, 'oid', 'item should be included');
                 assert.ok(purchase.number === undefined,
@@ -79,7 +80,8 @@ describe('Filter', function () {
                     amount: 42
                 };
 
-                invoice = invoiceFilter.getFilter(invoice, 'customer');
+                invoice = invoiceFilter
+                    .filterObject(invoice, { populate: 'customer' });
                 assert.ok(invoice.amount === undefined,
                           'Invoice amount should be excluded');
                 assert.ok(invoice.customer.address === undefined,
@@ -97,7 +99,8 @@ describe('Filter', function () {
                     ]
                 };
 
-                invoice = invoiceFilter.getFilter(invoice, 'products');
+                invoice = invoiceFilter.filterObject(invoice,
+                                                  {populate: 'products'});
                 invoice.products.each(function (product) {
                     assert.ok(product.name !== undefined,
                               'product name should be populated');
@@ -122,7 +125,8 @@ describe('Filter', function () {
                     ]
                 };
 
-                invoice = invoiceFilter.getFilter(invoice, 'products,customer');
+                invoice = invoiceFilter
+                    .filterObject(invoice, {populate: 'products,customer'});
                 assert.equal(invoice.customer.name, 'John',
                               'customer name should be populated');
                 assert.ok(invoice.customer.address === undefined,
@@ -154,7 +158,8 @@ describe('Filter', function () {
                     ]
                 };
 
-                customer = customerFilter.getFilter(customer, 'purchases.item');
+                customer = customerFilter
+                    .filterObject(customer, {populate: 'purchases.item'});
                 customer.purchases.each(function (p) {
                     assert.ok(p.number === undefined,
                              'Purchase number should be excluded');
@@ -168,13 +173,6 @@ describe('Filter', function () {
     });
 
     describe('not lean', function () {
-        var customerFilter = new Filter(setup.customerModel,
-                                        'comment,address,purchases.number',
-                                        false),
-            invoiceFilter = new Filter(setup.invoiceModel, 'amount', false),
-            productFilter = new Filter(setup.productModel,
-                                       'price,department.code', false);
-
         it('excludes items in the excluded string', function () {
             var customer = new setup.customerModel({
                 name: 'John',
@@ -182,7 +180,7 @@ describe('Filter', function () {
                 comment: 'Has a big nose'
             });
 
-            customer = customerFilter.getFilter(customer);
+            customer = customerFilter.filterObject(customer);
             assert.equal(customer.name, 'John', 'Customer name should be John');
             assert.ok(customer.address === undefined,
                       'Customer address should be excluded');
@@ -199,7 +197,7 @@ describe('Filter', function () {
                 }
             });
 
-            product = productFilter.getFilter(product);
+            product = productFilter.filterObject(product);
             assert.equal(product.name, 'Garden Hose',
                          'Product name should be included');
             assert.equal(product.department.name, 'Gardening',
@@ -219,7 +217,7 @@ describe('Filter', function () {
                 ]
             });
 
-            customer = customerFilter.getFilter(customer);
+            customer = customerFilter.filterObject(customer);
             customer.purchases.each(function (purchase) {
                 assert.ok(purchase.item !== undefined,
                           'item should be included');
@@ -231,7 +229,7 @@ describe('Filter', function () {
         describe('with populated docs', function () {
             before(function (done) {
                 var self = this,
-                    products = [
+                    products = this.products = [
                         { name: 'Squirt Gun', price: 42 },
                         { name: 'Water Balloons', price: 1 },
                         { name: 'Garden Hose', price: 10 }
@@ -276,11 +274,13 @@ describe('Filter', function () {
             it('excludes fields from populated items', function (done) {
                 setup.invoiceModel.findById(this.invoiceId).populate('customer')
                 .exec(function (err, invoice) {
-                    invoice = invoiceFilter.getFilter(invoice, 'customer');
+                    invoice = invoiceFilter
+                        .filterObject(invoice, {populate: 'customer'});
                     assert.ok(invoice.amount === undefined,
                               'Invoice amount should be excluded');
                     assert.ok(invoice.customer.name !== undefined,
                               'Customer name should be included');
+
                     assert.ok(invoice.customer.address === undefined,
                               'Customer address should be excluded');
                     done();
@@ -290,7 +290,8 @@ describe('Filter', function () {
             it('iterates through array of populated objects', function (done) {
                 setup.invoiceModel.findById(this.invoiceId).populate('products')
                 .exec(function (err, invoice) {
-                    invoice = invoiceFilter.getFilter(invoice, 'products');
+                    invoice = invoiceFilter
+                        .filterObject(invoice, {populate: 'products'});
                     invoice.products.each(function (product) {
                         assert.ok(product.name !== undefined,
                                   'product name should be populated');
@@ -306,8 +307,8 @@ describe('Filter', function () {
             it('filters multiple populated models', function (done) {
                 setup.invoiceModel.findById(this.invoiceId)
                 .populate('products customer').exec(function (err, invoice) {
-                    invoice = invoiceFilter.getFilter(invoice,
-                                                      'products,customer');
+                    invoice = invoiceFilter
+                       .filterObject(invoice, {populate: 'products,customer'});
                     assert.equal(invoice.customer.name, 'John',
                                   'customer name should be populated');
                     assert.ok(invoice.customer.address === undefined,
@@ -325,14 +326,15 @@ describe('Filter', function () {
             });
 
             it('filters embedded array of populated docs', function (done) {
+                var self = this;
                 setup.customerModel.findById(this.customerId)
                 .populate('purchases.item').exec(function (err, customer) {
-                    customer = customerFilter.getFilter(customer,
-                                                        'purchases.item');
-                    customer.purchases.each(function (p) {
+                    customer = customerFilter
+                      .filterObject(customer, {populate: 'purchases.item'});
+                    customer.purchases.each(function (p, i) {
                         assert.ok(p.number === undefined,
                                  'Purchase number should be excluded');
-                        assert.ok(p.item.name !== undefined,
+                        assert.equal(p.item.name, self.products[i].name,
                                  'Item name should be populated');
                         assert.ok(p.item.price === undefined,
                                  'Item price should be excluded');
@@ -340,6 +342,47 @@ describe('Filter', function () {
                     done();
                 });
             });
+        });
+    });
+
+    describe('protected fields', function () {
+        it('defaults to not including any', function () {
+            invoiceFilter = new Filter(setup.invoiceModel,
+                                       ['amount'],
+                                       ['products']);
+
+            var invoice = {
+                customer: 'objectid',
+                amount: 240,
+                products: [ 'objectid' ]
+            };
+
+            invoice = invoiceFilter.filterObject(invoice);
+            assert.equal(invoice.customer, 'objectid');
+            assert.ok(invoice.amount === undefined,
+                         'Invoice should only have customer');
+            assert.ok(invoice.products === undefined,
+                         'Invoice should only have customer');
+        });
+
+        it('returns protected fields', function () {
+            invoiceFilter = new Filter(setup.invoiceModel,
+                                       ['amount'],
+                                       ['products']);
+
+            var invoice = {
+                customer: 'objectid',
+                amount: 240,
+                products: [ 'objectid' ]
+            };
+
+            invoice = invoiceFilter.filterObject(invoice,
+                                                 { access: 'protected' });
+            assert.equal(invoice.customer, 'objectid');
+            assert.ok(invoice.amount === undefined,
+                         'Amount should be excluded');
+            assert.equal(invoice.products[0], 'objectid',
+                         'Products should be included');
         });
     });
 });
