@@ -368,7 +368,7 @@ function Restify() {
                 erm.defaults({ restify: app.isRestify });
 
                 erm.serve(app, setup.customerModel, {
-                    exclude: 'comment',
+                    'private': 'comment',
                     lean: false
                 });
                 erm.serve(app, setup.invoiceModel);
@@ -608,6 +608,352 @@ function Restify() {
                 }, function (err, res, body) {
                     assert.equal(res.statusCode, 200, 'Wrong status code');
                     done();
+                });
+            });
+        });
+
+        describe('Prereqs', function () {
+            describe('allowed', function (done) {
+                var savedCustomer, server,
+                    app = createFn();
+
+                setup();
+
+                before(function (done) {
+                    erm.serve(app, setup.customerModel, {
+                        prereq: function () { return true; },
+                        restify: app.isRestify
+                    });
+
+                    server = app.listen(testPort, done);
+                });
+
+                after(function (done) {
+                    if (app.close) {
+                        return app.close(done);
+                    }
+
+                    server.close(done);
+                });
+
+                it('allows all GET requests', function (done) {
+                    request.get({
+                        url: util.format('%s/api/v1/Customers', testUrl),
+                        json: true
+                    }, function (err, res, body) {
+                        assert.equal(res.statusCode, 200, 'Wrong status code');
+                        done();
+                    });
+                });
+
+                it('allows all POST requests', function (done) {
+                    request.post({
+                        url: util.format('%s/api/v1/Customers', testUrl),
+                        json: {
+                            name: 'Test',
+                            comment: 'Comment',
+                            _id: null
+                        }
+                    }, function (err, res, body) {
+                        assert.equal(res.statusCode, 200, 'Wrong status code');
+                        savedCustomer = body;
+                        done();
+                    });
+                });
+
+                it('allows all PUT requests', function (done) {
+                    savedCustomer.name = 'Test 2';
+                    savedCustomer.info = savedCustomer.name  + ' is awesome';
+                    request.put({
+                        url: util.format('%s/api/v1/Customers/%s', testUrl,
+                        savedCustomer._id),
+                        json: savedCustomer
+                    }, function (err, res, body) {
+                        assert.equal(res.statusCode, 200, 'Wrong status code');
+                        done();
+                    });
+                });
+
+                it('allows all DELETE requests', function (done) {
+                    request.del({
+                        url: util.format('%s/api/v1/Customers/%s', testUrl,
+                        savedCustomer._id),
+                        json: true
+                    }, function (err, res) {
+                        assert.equal(res.statusCode, 200, 'Wrong status code');
+                        done();
+                    });
+                });
+            });
+
+            describe('not allowed', function (done) {
+                var server,
+                    app = createFn();
+
+                setup();
+
+                before(function (done) {
+                    erm.serve(app, setup.customerModel, {
+                        prereq: function () { return false; },
+                        restify: app.isRestify
+                    });
+
+                    server = app.listen(testPort, done);
+                });
+
+                after(function (done) {
+                    if (app.close) {
+                        return app.close(done);
+                    }
+
+                    server.close(done);
+                });
+
+                it('allows all GET requests', function (done) {
+                    request.get({
+                        url: util.format('%s/api/v1/Customers', testUrl),
+                        json: true
+                    }, function (err, res) {
+                        assert.equal(res.statusCode, 200, 'Wrong status code');
+                        done();
+                    });
+                });
+
+                it('blocks POST requests', function (done) {
+                    request.post({
+                        url: util.format('%s/api/v1/Customers', testUrl),
+                        json: {
+                            name: 'Test',
+                            comment: 'Comment',
+                            _id: null
+                        }
+                    }, function (err, res, body) {
+                        assert.equal(res.statusCode, 403, 'Wrong status code');
+                        done();
+                    });
+                });
+
+                it('blocks PUT requests', function (done) {
+                    request.put({
+                        url: util.format('%s/api/v1/Customers/%s', testUrl,
+                        43),
+                        json: {
+                            name: 'HI'
+                        }
+                    }, function (err, res, body) {
+                        assert.equal(res.statusCode, 403, 'Wrong status code');
+                        done();
+                    });
+                });
+
+                it('blocks DELETE requests', function (done) {
+                    request.del({
+                        url: util.format('%s/api/v1/Customers/%s', testUrl,
+                        43),
+                        json: true
+                    }, function (err, res) {
+                        assert.equal(res.statusCode, 403, 'Wrong status code');
+                        done();
+                    });
+                });
+            });
+        });
+
+        describe('Access', function () {
+            var savedCustomer, server, app, access;
+
+            setup();
+
+            before(function (done) {
+                erm.defaults({
+                    'private': 'address',
+                    'protected': 'comment',
+                });
+
+                app = createFn();
+                var accessFn = function () { return access; };
+
+                erm.serve(app, setup.customerModel, {
+                    restify: app.isRestify,
+                    access: accessFn,
+                });
+
+                access = 'private';
+                server = app.listen(testPort, function () {
+                    request.post({
+                        url: util.format('%s/api/v1/Customers', testUrl),
+                        json: {
+                            name: 'Test',
+                            comment: 'Comment',
+                            address: '123 Drury Lane'
+                        },
+                    }, function (err, res, body) {
+                        savedCustomer = body;
+                        done();
+                    });
+                });
+            });
+
+            after(function (done) {
+                if (app.close) {
+                    return app.close(done);
+                }
+                server.close(done);
+
+                erm.defaults(null);
+            });
+
+            describe('public access', function () {
+                before(function () {
+                    access = 'public';
+                });
+
+                it('returns only public fields', function (done) {
+                    request.get({
+                        url: util.format('%s/api/v1/Customers/%s', testUrl,
+                        savedCustomer._id),
+                        json: true
+                    }, function (err, res, body) {
+                        assert.equal(body.name, 'Test');
+                        assert.ok(body.address === undefined,
+                            'address is not undefined');
+                        assert.ok(body.comment === undefined,
+                            'comment is not undefined');
+                        done();
+                    });
+                });
+
+                it('saves only public fields', function (done) {
+                    request.post({
+                        url: util.format('%s/api/v1/Customers', testUrl),
+                        json: {
+                            name: 'Test 2',
+                            comment: 'Comment',
+                            address: '123 Drury Lane'
+                        },
+                    }, function (err, res, body) {
+                        var customer = body;
+
+                        assert.equal(body.name, 'Test 2');
+                        assert.ok(body.address === undefined,
+                            'address is not undefined');
+                        assert.ok(body.comment === undefined,
+                            'comment is not undefined');
+
+                        access = 'private';
+                        request.get({
+                            url: util.format('%s/api/v1/Customers/%s', testUrl,
+                            customer._id),
+                            json: true
+                        }, function (err, res, body) {
+                            assert.equal(body.name, 'Test 2');
+                            assert.ok(body.address === undefined,
+                                'address is not undefined');
+                            assert.ok(body.comment === undefined,
+                                'comment is not undefined');
+                            done();
+                        });
+                    });
+                });
+            });
+
+            describe('proteced access', function () {
+                before(function () {
+                    access = 'protected';
+                });
+
+
+                it('excludes private fields', function (done) {
+                    request.get({
+                        url: util.format('%s/api/v1/Customers/%s', testUrl,
+                        savedCustomer._id),
+                        json: true
+                    }, function (err, res, body) {
+                        assert.equal(body.name, 'Test');
+                        assert.ok(body.address === undefined,
+                            'address is not undefined');
+                        assert.equal(body.comment, 'Comment');
+                        done();
+                    });
+                });
+
+                it('does not save private fields', function (done) {
+                    request.post({
+                        url: util.format('%s/api/v1/Customers', testUrl),
+                        json: {
+                            name: 'Test 3',
+                            comment: 'Comment',
+                            address: '123 Drury Lane'
+                        },
+                    }, function (err, res, body) {
+                        var customer = body;
+
+                        assert.equal(body.name, 'Test 3');
+                        assert.ok(body.address === undefined,
+                            'address is not undefined');
+                        assert.equal(body.comment, 'Comment');
+
+                        access = 'private';
+                        request.get({
+                            url: util.format('%s/api/v1/Customers/%s', testUrl,
+                            customer._id),
+                            json: true
+                        }, function (err, res, body) {
+                            assert.equal(body.name, 'Test 3');
+                            assert.equal(body.comment, 'Comment');
+                            assert.ok(body.address === undefined,
+                                'address is not undefined');
+                            done();
+                        });
+                    });
+                });
+            });
+
+            describe('private access', function () {
+                before(function () {
+                    access = 'private';
+                });
+
+                it('returns all fields', function (done) {
+                    request.get({
+                        url: util.format('%s/api/v1/Customers/%s', testUrl,
+                        savedCustomer._id),
+                        json: true
+                    }, function (err, res, body) {
+                        assert.equal(body.name, 'Test');
+                        assert.equal(body.address, '123 Drury Lane');
+                        assert.equal(body.comment, 'Comment');
+                        done();
+                    });
+                });
+
+                it('saves all fields', function (done) {
+                    request.post({
+                        url: util.format('%s/api/v1/Customers', testUrl),
+                        json: {
+                            name: 'Test 4',
+                            comment: 'Comment',
+                            address: '123 Drury Lane'
+                        },
+                    }, function (err, res, body) {
+                        var customer = body;
+
+                        assert.equal(body.name, 'Test 4');
+                        assert.equal(body.address, '123 Drury Lane');
+                        assert.equal(body.comment, 'Comment');
+
+                        request.get({
+                            url: util.format('%s/api/v1/Customers/%s', testUrl,
+                            customer._id),
+                            json: true
+                        }, function (err, res, body) {
+                            assert.equal(body.name, 'Test 4');
+                            assert.equal(body.address, '123 Drury Lane');
+                            assert.equal(body.comment, 'Comment');
+
+                            done();
+                        });
+                    });
                 });
             });
         });
