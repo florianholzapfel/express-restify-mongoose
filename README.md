@@ -71,9 +71,10 @@ GET http://localhost/api/v1/Customers?name=<=value
 GET http://localhost/api/v1/Customers?select=name
 ```
 
-### Ordering
+### Ordering & Sorting
 ```
 GET http://localhost/api/v1/Customers?order=name
+GET http://localhost/api/v1/Customers?order=-name
 GET http://localhost/api/v1/Customers?skip=10&limit=10
 ```
 
@@ -123,9 +124,8 @@ defaults(options)
 * Alan Levicki (https://github.com/alevicki)
 * Michael (https://github.com/micheee)
 * Matt Roman (https://github.com/romanmt)
-* fetrarij (https://github.com/fetrarij)
-* Jan Paul Erkelens (https://github.com/jperkelens)
 * Fetrarijaona R. (https://github.com/fetrarij)
+* Jan Paul Erkelens (https://github.com/jperkelens)
 
 ## Formalia
 
