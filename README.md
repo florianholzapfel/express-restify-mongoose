@@ -126,6 +126,7 @@ defaults(options)
 * Matt Roman (https://github.com/romanmt)
 * Fetrarijaona R. (https://github.com/fetrarij)
 * Jan Paul Erkelens (https://github.com/jperkelens)
+* cherbst (https://github.com/cherbst)
 
 ## Formalia
 
