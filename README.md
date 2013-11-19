@@ -108,6 +108,10 @@ serve(app, model, [options])
     this is not executed.
   * lean - If ```false```, will not convert to returned values to plain old javascript
     objects. This is bad for performance, but it allows for returning virtuals, getters    and setters.
+  * findOneAndUpdate - If ```false```, will first find documents by id and then call save. This
+    allows mongoose validators to be called. Default is ```true```.
+    (For more information, read the Mongoose docs:
+    http://mongoosejs.com/docs/api.html#model_Model.findByIdAndUpdate)
 
 ### defaults
 ```
@@ -127,6 +131,7 @@ defaults(options)
 * Matt Roman (https://github.com/romanmt)
 * Fetrarijaona R. (https://github.com/fetrarij)
 * Jan Paul Erkelens (https://github.com/jperkelens)
+* Christoph Herbst (https://github.com/cherbst)
 
 ## Formalia
 
