@@ -206,7 +206,6 @@ describe('Filter', function () {
                          'Deparment code should be excluded');
         });
 
-
         it('excludes fields from embedded arrays', function () {
             var customer = new setup.customerModel({
                 name: 'John',
@@ -383,6 +382,58 @@ describe('Filter', function () {
                          'Amount should be excluded');
             assert.equal(invoice.products[0], 'objectid',
                          'Products should be included');
+        });
+    });
+
+    describe('descriminated schemas', function () {
+        var accountFilter = new Filter(setup.accountModel, ['accountNumber']);
+        var repeatCustFilter = new Filter(setup.repeatCustomerModel, []);
+
+        before(function (done) {
+            setup.accountModel.create({
+                accountNumber: '123XYZ',
+                points: 244
+            }, function (err, account) {
+                setup.repeatCustomerModel.create({
+                    name: 'John Smith',
+                    loyaltyProgram: account._id
+                }, done);
+            });
+        });
+
+        after(function (done) {
+            setup.accountModel.remove(function () {
+                setup.customerModel.remove(done);
+            });
+        });
+
+        it('should filter populated from subschema', function (done) {
+            setup.repeatCustomerModel.findOne().populate('loyaltyProgram')
+            .exec(function (err, doc) {
+                var customer = repeatCustFilter
+                  .filterObject(doc, {populate: 'loyaltyProgram'});
+                assert.equal(customer.name, 'John Smith');
+                assert.equal(customer.loyaltyProgram.points, 244);
+                assert.ok(customer.loyaltyProgram.accountNumber === undefined,
+                             'account number should be excluded');
+                done();
+            });
+        });
+
+        it('should filter populated from base schema', function (done) {
+            setup.customerModel.findOne()
+            .exec(function (err, doc) {
+                doc.populate('loyaltyProgram', function (err, doc) {
+                    var customer = customerFilter
+                      .filterObject(doc, {populate: 'loyaltyProgram'});
+                    assert.equal(customer.name, 'John Smith');
+                    assert.equal(customer.loyaltyProgram.points, 244);
+                    assert.ok(customer.loyaltyProgram.accountNumber ===
+                              undefined,
+                             'account number should be excluded');
+                    done();
+                });
+            });
         });
     });
 });

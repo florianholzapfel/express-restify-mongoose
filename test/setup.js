@@ -1,5 +1,6 @@
 var mongoose = require('mongoose'),
-    Schema   = mongoose.Schema;
+    Schema   = mongoose.Schema,
+    util = require('util');
 
 var assert = require('assertmessage');
 
@@ -17,38 +18,62 @@ var Product = new Schema({
     price: Number
 });
 
-var Customer = new Schema({
-    name: { type: String, required: true },
-    comment: String,
-    address: String,
-    purchases: [{
-        item: { type: Schema.Types.ObjectId, ref: 'Product' },
-        number: Number
-    }]
-}, opts);
+var CustomerSchema = function () {
+    Schema.apply(this, arguments);
+    this.add({
+        name: { type: String, required: true },
+        comment: String,
+        address: String,
+        purchases: [{
+            item: { type: Schema.Types.ObjectId, ref: 'Product' },
+            number: Number
+        }]
+    });
+};
+util.inherits(CustomerSchema, Schema);
 
-opts.versionKey = '__version';
-var Invoice = new Schema({
-    customer: { type: Schema.Types.ObjectId, ref: 'Customer' },
-    amount: Number,
-    products: [{ type: Schema.Types.ObjectId, ref: 'Product' }]
-}, opts);
+var Customer = new CustomerSchema({}, opts);
 
 Customer.virtual('info').get(function () {
     return this.name + ' is awesome';
 });
 
-var setup = module.exports = function () {
-    var self = this;
+var RepeatCustomer = new CustomerSchema({
+    loyaltyProgram: { type: Schema.Types.ObjectId, ref: 'Account' }
+});
 
-    if (setup.customerModel) {
-        setup.customerModel = mongoose.model('Customer', Customer);
+var invoiceOpts = JSON.parse(JSON.stringify(opts));
+invoiceOpts.versionKey = '__version';
+var Invoice = new Schema({
+    customer: { type: Schema.Types.ObjectId, ref: 'Customer' },
+    amount: Number,
+    products: [{ type: Schema.Types.ObjectId, ref: 'Product' }]
+}, invoiceOpts);
+
+var Account = new Schema({
+    accountNumber: String,
+    points: Number
+});
+
+var setup = module.exports = function () {
+    var self = this,
+        model = null;
+
+    if (!setup.customerModel) {
+        model = setup.customerModel = mongoose.model('Customer', Customer);
     }
-    if (setup.invoiceModel) {
+    if (!setup.invoiceModel) {
         setup.invoiceModel = mongoose.model('Invoice', Invoice);
     }
-    if (setup.productModel) {
+    if (!setup.productModel) {
         setup.productModel = mongoose.model('Product', Product);
+    }
+    if (!setup.repeatCustomerModel) {
+        setup.repeatCustomerModel =
+          model.discriminator('RepeatCustomer', RepeatCustomer);
+    }
+    if (!setup.accountModel) {
+        setup.accountModel = mongoose.model('Account', Account);
     }
 
     before(function (done) {
@@ -65,7 +90,3 @@ var setup = module.exports = function () {
         mongoose.connection.close(done);
     });
 };
-
-setup.customerModel = {};
-setup.invoiceModel = {};
-setup.productModel = {};
