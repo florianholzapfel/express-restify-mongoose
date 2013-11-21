@@ -132,6 +132,7 @@ defaults(options)
 * Fetrarijaona R. (https://github.com/fetrarij)
 * Jan Paul Erkelens (https://github.com/jperkelens)
 * Christoph Herbst (https://github.com/cherbst)
+* doobinay (https://github.com/doobinay)
 
 ## Formalia
 
