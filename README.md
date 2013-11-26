@@ -93,6 +93,7 @@ serve(app, model, [options])
 * app - The express app
 * model - Your mongoose database model
 * options - Optional options object
+  * strict - When set to true, disallows DELETE all, POST with id param, and PUT without id param
   * prefix - Some path that will be prefixed to the REST path. Defaults to ```/api```
   * version - An API version that will be prefixed to the rest path. Defaults to ```v1```
   * middleware - An express middleware or an array of express middlewares that will be used.
@@ -107,6 +108,10 @@ serve(app, model, [options])
     this is not executed.
   * lean - If ```false```, will not convert to returned values to plain old javascript
     objects. This is bad for performance, but it allows for returning virtuals, getters    and setters.
+  * findOneAndUpdate - If ```false```, will first find documents by id and then call save. This
+    allows mongoose validators to be called. Default is ```true```.
+    (For more information, read the Mongoose docs:
+    http://mongoosejs.com/docs/api.html#model_Model.findByIdAndUpdate)
 
 ### defaults
 ```
@@ -126,6 +131,7 @@ defaults(options)
 * Matt Roman (https://github.com/romanmt)
 * Fetrarijaona R. (https://github.com/fetrarij)
 * Jan Paul Erkelens (https://github.com/jperkelens)
+* Christoph Herbst (https://github.com/cherbst)
 
 ## Formalia
 
