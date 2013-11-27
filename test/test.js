@@ -251,6 +251,44 @@ function Restify() {
                         done();
                     });
                 });
+
+                //here
+                it('200 GET Customers/:id?select=name should not fetch ' +
+                   'comment or address fields', function (done) {
+                    request.get({
+                        url: util.format('%s/api/v1/Customers/%s?select=name',
+                                     testUrl,
+                                     savedCustomer._id),
+                        json: true
+                    }, function (err, res, body) {
+                        assert.equal(res.statusCode, 200, 'Wrong status code');
+                        assert.equal('Test', body.name);
+                        assert.equal(undefined, body.comment,
+                                 'Comment field should not be included');
+                        assert.equal(undefined, body.address,
+                                 'Address field should not be included');
+                        done();
+                    });
+                });
+
+                it('200 GET Invoices/:id?populate=customer&select=' +
+                   'customer.name,amount should not fetch ' +
+                   'customer.comment field', function (done) {
+                    request.get({
+                        url: util.format('%s/api/v1/Invoices/%s?populate' +
+                            '=customer&select=amount,customer.name',
+                                         testUrl,
+                                         savedInvoice._id),
+                        json: true
+                    }, function (err, res, body) {
+                        assert.equal(res.statusCode, 200, 'Wrong status code');
+                        assert.equal(9.5, body.amount);
+                        assert.equal(undefined, body.products);
+                        assert.equal(undefined, body.customer.comment);
+                        assert.equal('Test', body.customer.name);
+                        done();
+                    });
+                });
             }
 
             it('200 GET Customers/:id', function (done) {
