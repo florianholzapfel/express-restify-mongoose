@@ -81,7 +81,7 @@ GET http://localhost/api/v1/Customers?skip=10&limit=10
 ### Populate Fields
 ```
 GET http://localhost/api/v1/Invoices?populate=customer
-GET http://localhost/api/v1/Invoices?populate=customer%select=customer.name
+GET http://localhost/api/v1/Invoices?populate=customer&select=customer.name
 ```
 
 ## Reference
