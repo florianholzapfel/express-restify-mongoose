@@ -1,7 +1,7 @@
 {
   "name": "express-restify-mongoose",
   "description": "Easily restify mongoose database",
-  "version": "0.5.7",
+  "version": "0.5.8",
   "author": {
     "name": "Florian Holzapfel",
     "email": "flo.holzapfel@gmail.com"
@@ -34,17 +34,17 @@
   },
   "readmeFilename": "README.md",
   "dependencies": {
-    "express": "~3.3.5",
+    "express": "~3.4.0",
     "mongoose": "~3.8.0",
     "underscore": "~1.5.2"
   },
   "devDependencies": {
-    "jshint": "~2.1.4",
-    "mocha": "~1.12.0",
+    "jshint": "~2.3.0",
+    "mocha": "~1.15.0",
     "assertmessage": "0.0.2",
     "restify": "~2.6.0",
-    "request": "~2.25.0",
-    "sugar": "~1.3.9",
+    "request": "~2.29.0",
+    "sugar": "~1.4",
     "async": "~0.2.9",
     "sinon": "~1.7.3"
   }
