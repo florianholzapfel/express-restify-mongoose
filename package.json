@@ -6,7 +6,7 @@
     "name": "Florian Holzapfel",
     "email": "flo.holzapfel@gmail.com"
   },
-  "homepage": "https://github.com/florianholzapfel/express-restify-mongoose",
+  "homepage": "http://florianholzapfel.github.io/express-restify-mongoose/",
   "keywords": [
     "ReST",
     "express",
@@ -40,10 +40,10 @@
   },
   "devDependencies": {
     "jshint": "~2.3.0",
-    "mocha": "~1.15.0",
+    "mocha": "~1.16.0",
     "assertmessage": "0.0.2",
     "restify": "~2.6.0",
-    "request": "~2.29.0",
+    "request": "~2.30.0",
     "sugar": "~1.4",
     "async": "~0.2.9",
     "sinon": "~1.7.3"
