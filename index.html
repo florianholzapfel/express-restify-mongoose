@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="express-restify-mongoose : Easily restify mongoose databases" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>express-restify-mongoose</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/florianholzapfel/express-restify-mongoose">View on GitHub</a>
+
+          <h1 id="project_title">express-restify-mongoose</h1>
+          <h2 id="project_tagline">Easily restify mongoose databases</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/florianholzapfel/express-restify-mongoose/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/florianholzapfel/express-restify-mongoose/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="express-restify-mongoose" class="anchor" href="#express-restify-mongoose"><span class="octicon octicon-link"></span></a>express-restify-mongoose</h1>
+
+<p>This library provides mongoose database models with a REST interface.</p>
+
+<p><a href="https://travis-ci.org/florianholzapfel/express-restify-mongoose"><img src="https://travis-ci.org/florianholzapfel/express-restify-mongoose.png?branch=master" alt="Build Status"></a>
+<a href="http://badge.fury.io/js/express-restify-mongoose"><img src="https://badge.fury.io/js/express-restify-mongoose.png" alt="NPM version"></a>
+<a href="https://david-dm.org/florianholzapfel/express-restify-mongoose"><img src="https://david-dm.org/florianholzapfel/express-restify-mongoose.png" alt="Dependencies"></a></p>
+
+<h2>
+<a name="getting-started" class="anchor" href="#getting-started"><span class="octicon octicon-link"></span></a>Getting started</h2>
+
+<p>In your shell, install with npm:</p>
+
+<div class="highlight highlight-sh"><pre>npm install express-restify-mongoose
+</pre></div>
+
+<p>In your code:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">http</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'http'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">express</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'express'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">mongoose</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'mongoose'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">Schema</span> <span class="o">=</span> <span class="nx">mongoose</span><span class="p">.</span><span class="nx">Schema</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">restify</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'express-restify-mongoose'</span><span class="p">)</span>
+
+<span class="nx">mongoose</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'mongodb://localhost/database'</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">Customer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Schema</span><span class="p">({</span>
+    <span class="nx">name</span><span class="o">:</span> <span class="p">{</span> <span class="nx">type</span><span class="o">:</span> <span class="nb">String</span><span class="p">,</span> <span class="nx">required</span><span class="o">:</span> <span class="kc">true</span> <span class="p">},</span>
+    <span class="nx">comment</span><span class="o">:</span> <span class="p">{</span> <span class="nx">type</span><span class="o">:</span> <span class="nb">String</span> <span class="p">}</span>
+<span class="p">});</span>
+<span class="kd">var</span> <span class="nx">CustomerModel</span> <span class="o">=</span> <span class="nx">mongoose</span><span class="p">.</span><span class="nx">model</span><span class="p">(</span><span class="s1">'Customer'</span><span class="p">,</span> <span class="nx">Customer</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">Invoice</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Schema</span><span class="p">({</span>
+    <span class="nx">customer</span><span class="o">:</span> <span class="p">{</span> <span class="nx">type</span><span class="o">:</span> <span class="nx">Schema</span><span class="p">.</span><span class="nx">Types</span><span class="p">.</span><span class="nx">ObjectId</span><span class="p">,</span> <span class="nx">ref</span><span class="o">:</span> <span class="s1">'Customer'</span> <span class="p">},</span>
+    <span class="nx">amount</span><span class="o">:</span> <span class="p">{</span> <span class="nx">type</span><span class="o">:</span> <span class="nb">Number</span><span class="p">,</span> <span class="nx">required</span><span class="o">:</span> <span class="kc">true</span> <span class="p">}</span>
+<span class="p">});</span>
+<span class="kd">var</span> <span class="nx">InvoiceModel</span> <span class="o">=</span> <span class="nx">mongoose</span><span class="p">.</span><span class="nx">model</span><span class="p">(</span><span class="s1">'Invoice'</span><span class="p">,</span> <span class="nx">Invoice</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">express</span><span class="p">();</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">configure</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+    <span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">express</span><span class="p">.</span><span class="nx">bodyParser</span><span class="p">());</span>
+    <span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">express</span><span class="p">.</span><span class="nx">methodOverride</span><span class="p">());</span>
+    <span class="nx">restify</span><span class="p">.</span><span class="nx">serve</span><span class="p">(</span><span class="nx">app</span><span class="p">,</span> <span class="nx">CustomerModel</span><span class="p">);</span>
+    <span class="nx">restify</span><span class="p">.</span><span class="nx">serve</span><span class="p">(</span><span class="nx">app</span><span class="p">,</span> <span class="nx">InvoiceModel</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">http</span><span class="p">.</span><span class="nx">createServer</span><span class="p">(</span><span class="nx">app</span><span class="p">).</span><span class="nx">listen</span><span class="p">(</span><span class="mi">3000</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"Express server listening on port 3000"</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div>
+
+<pre><code>GET http://localhost/api/v1/Customers/count
+GET http://localhost/api/v1/Customers
+PUT http://localhost/api/v1/Customers
+POST http://localhost/api/v1/Customers
+DELETE http://localhost/api/v1/Customers
+
+GET http://localhost/api/v1/Customers/:id
+PUT http://localhost/api/v1/Customers/:id
+POST http://localhost/api/v1/Customers/:id
+DELETE http://localhost/api/v1/Customers/:id
+</code></pre>
+
+<h3>
+<a name="query" class="anchor" href="#query"><span class="octicon octicon-link"></span></a>Query</h3>
+
+<pre><code>GET http://localhost/api/v1/Customers?name=~regex
+GET http://localhost/api/v1/Customers?name=value
+GET http://localhost/api/v1/Customers?name=&gt;value
+GET http://localhost/api/v1/Customers?name=&gt;=value
+GET http://localhost/api/v1/Customers?name=&lt;value
+GET http://localhost/api/v1/Customers?name=&lt;=value
+GET http://localhost/api/v1/Customers?select=name
+</code></pre>
+
+<h3>
+<a name="ordering--sorting" class="anchor" href="#ordering--sorting"><span class="octicon octicon-link"></span></a>Ordering &amp; Sorting</h3>
+
+<pre><code>GET http://localhost/api/v1/Customers?order=name
+GET http://localhost/api/v1/Customers?order=-name
+GET http://localhost/api/v1/Customers?skip=10&amp;limit=10
+</code></pre>
+
+<h3>
+<a name="populate-fields" class="anchor" href="#populate-fields"><span class="octicon octicon-link"></span></a>Populate Fields</h3>
+
+<pre><code>GET http://localhost/api/v1/Invoices?populate=customer
+GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name
+</code></pre>
+
+<h2>
+<a name="reference" class="anchor" href="#reference"><span class="octicon octicon-link"></span></a>Reference</h2>
+
+<h3>
+<a name="serve" class="anchor" href="#serve"><span class="octicon octicon-link"></span></a>serve</h3>
+
+<pre><code>serve(app, model, [options])
+</code></pre>
+
+<h4>
+<a name="arguments" class="anchor" href="#arguments"><span class="octicon octicon-link"></span></a>arguments</h4>
+
+<ul>
+<li>app - The express app</li>
+<li>model - Your mongoose database model</li>
+<li>options - Optional options object
+
+<ul>
+<li>strict - When set to true, disallows DELETE all, POST with id param, and PUT without id param</li>
+<li>prefix - Some path that will be prefixed to the REST path. Defaults to <code>/api</code>
+</li>
+<li>version - An API version that will be prefixed to the rest path. Defaults to <code>v1</code>
+</li>
+<li>middleware - An express middleware or an array of express middlewares that will be used.</li>
+<li>prereq - A function that takes the req object and returns or yields true or false. This function will be called for every POST PUT and DELETE request and send 403 on false.</li>
+<li>access - A function that takes the req object and returns or yields 'public', 'private', or 'protected'. This function will be called for every GET POST and PUT request and filter out the appropriate fields</li>
+<li>plural - If <code>true</code>, does not pluralize the database model name. Default is <code>false</code>
+</li>
+<li>lowercase - If <code>true</code>, turn model name to lower case before generating the routes.</li>
+<li>private - String of comma separated field names which are not to be returned by queries that do not have private access.</li>
+<li>protected - String of comma separated field names which are not to be returned by queries that have public access.</li>
+<li>postProcess - A middleware to be called after the response has been sent.
+It is only executed on success.  If an error is sent to the client,
+this is not executed.</li>
+<li>lean - If <code>false</code>, will not convert to returned values to plain old javascript
+objects. This is bad for performance, but it allows for returning virtuals, getters    and setters.</li>
+<li>findOneAndUpdate - If <code>false</code>, will first find documents by id and then call save. This
+allows mongoose validators to be called. Default is <code>true</code>.
+(For more information, read the Mongoose docs:
+<a href="http://mongoosejs.com/docs/api.html#model_Model.findByIdAndUpdate">http://mongoosejs.com/docs/api.html#model_Model.findByIdAndUpdate</a>)</li>
+</ul>
+</li>
+</ul><h3>
+<a name="defaults" class="anchor" href="#defaults"><span class="octicon octicon-link"></span></a>defaults</h3>
+
+<pre><code>defaults(options)
+</code></pre>
+
+<h4>
+<a name="arguments-1" class="anchor" href="#arguments-1"><span class="octicon octicon-link"></span></a>arguments</h4>
+
+<ul>
+<li>options - Same options as above. This function will set this object as the defaults for anything you declare afterwards.</li>
+</ul><h2>
+<a name="contributors" class="anchor" href="#contributors"><span class="octicon octicon-link"></span></a>Contributors</h2>
+
+<ul>
+<li>Enric León (<a href="https://github.com/nothingbuttumbleweed">https://github.com/nothingbuttumbleweed</a>)</li>
+<li>David Higginbotham (<a href="https://github.com/dhigginbotham">https://github.com/dhigginbotham</a>)</li>
+<li>Jonathan Greenemeier (<a href="https://github.com/6eDesign">https://github.com/6eDesign</a>)</li>
+<li>Alan Levicki (<a href="https://github.com/alevicki">https://github.com/alevicki</a>)</li>
+<li>Michael (<a href="https://github.com/micheee">https://github.com/micheee</a>)</li>
+<li>Matt Roman (<a href="https://github.com/romanmt">https://github.com/romanmt</a>)</li>
+<li>Fetrarijaona R. (<a href="https://github.com/fetrarij">https://github.com/fetrarij</a>)</li>
+<li>Jan Paul Erkelens (<a href="https://github.com/jperkelens">https://github.com/jperkelens</a>)</li>
+<li>Christoph Herbst (<a href="https://github.com/cherbst">https://github.com/cherbst</a>)</li>
+<li>doobinay (<a href="https://github.com/doobinay">https://github.com/doobinay</a>)</li>
+</ul><h2>
+<a name="formalia" class="anchor" href="#formalia"><span class="octicon octicon-link"></span></a>Formalia</h2>
+
+<pre><code>Copyright (C) 2013 by Florian Holzapfel
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+</code></pre>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">express-restify-mongoose maintained by <a href="https://github.com/florianholzapfel">florianholzapfel</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
