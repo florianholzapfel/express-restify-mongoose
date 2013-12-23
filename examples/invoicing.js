@@ -42,13 +42,13 @@ var Invoice = new Schema({
 var InvoiceModel = mongoose.model('Invoice', Invoice);
 
 var app = express();
-app.configure(function(){
+app.configure(function () {
 	app.use(express.bodyParser());
 	app.use(express.methodOverride());
 	restify.serve(app, CustomerModel);
 	restify.serve(app, InvoiceModel);
 });
 
-http.createServer(app).listen(3000, function() {
-	console.log("Express server listening on port 3000");
+http.createServer(app).listen(3000, function () {
+	console.log('Express server listening on port 3000');
 });
