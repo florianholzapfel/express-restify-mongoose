@@ -4,6 +4,7 @@ This library provides mongoose database models with a REST interface.
 [![Build Status](https://travis-ci.org/florianholzapfel/express-restify-mongoose.png?branch=master)](https://travis-ci.org/florianholzapfel/express-restify-mongoose)
 [![NPM version](https://badge.fury.io/js/express-restify-mongoose.png)](http://badge.fury.io/js/express-restify-mongoose)
 [![Dependencies](https://david-dm.org/florianholzapfel/express-restify-mongoose.png)](https://david-dm.org/florianholzapfel/express-restify-mongoose)
+[![Code Climate](https://codeclimate.com/github/florianholzapfel/express-restify-mongoose.png)](https://codeclimate.com/github/florianholzapfel/express-restify-mongoose)
 
 ## Getting started
 
