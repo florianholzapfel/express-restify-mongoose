@@ -35,13 +35,17 @@ function Restify() {
 [Express, Restify].each(function (createFn) {
     describe(createFn.name, function () {
         describe('General', function () {
-            var savedCustomer, savedInvoice, server,
+            var savedProduct, savedCustomer, savedInvoice, server,
                 app = createFn();
 
             setup();
 
             before(function (done) {
                 erm.serve(app, setup.customerModel, {
+                    restify: app.isRestify,
+                    lean: false
+                });
+                erm.serve(app, setup.productModel, {
                     restify: app.isRestify,
                     lean: false
                 });
@@ -57,6 +61,49 @@ function Restify() {
                     return app.close(done);
                 }
                 server.close(done);
+            });
+
+            it('200 POST Products', function (done) {
+                request.post({
+                    url: util.format('%s/api/v1/Products', testUrl),
+                    json: {
+                        name: 'ACME Product',
+                        department: {
+							name: 'Sales',
+							code: 1
+                        },
+                        price: 10
+                    }
+                }, function (err, res, body) {
+                    assert.equal(res.statusCode, 200, 'Wrong status code');
+                    assert.ok(body._id, '_id is not set');
+                    assert.equal(body.name, 'ACME Product');
+                    assert.equal(body.price, 10);
+					savedProduct = body;
+                    done();
+                });
+            });
+			
+            it('200 POST Products/:id', function (done) {
+                request.post({
+                    url: util.format('%s/api/v1/Products/%s', testUrl,
+										savedProduct._id),
+                    json: {
+                        name: 'Product',
+                        department: {
+							name: 'Sales',
+							code: 1
+                        },
+                        price: 11
+                    }
+                }, function (err, res, body) {
+                    assert.equal(res.statusCode, 200, 'Wrong status code');
+                    assert.ok(body._id, '_id is not set');
+                    assert.equal(body.name, 'Product');
+                    assert.equal(body.price, 11);
+					savedProduct = body;
+                    done();
+                });
             });
 
             it('200 GET Customers should return no objects', function (done) {
