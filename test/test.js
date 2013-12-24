@@ -19,7 +19,8 @@ var testPort = 30023,
 
 function Express() {
     var app = express();
-    app.use(express.bodyParser());
+	app.use(express.json());
+	app.use(express.urlencoded());
     app.use(express.methodOverride());
     return app;
 }
