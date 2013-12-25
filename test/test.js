@@ -247,7 +247,29 @@ function Restify() {
                 });
             });
 
-            it('200 POST Invoice with 2 products', function (done) {
+            it('200 POST Invoice referencing objects', function (done) {
+                request.post({
+                    url: util.format('%s/api/v1/Invoices', testUrl),
+                    json: {
+                        customer: savedCustomer,
+						products: savedProduct,
+                        amount: 8.5,
+                        __version: 1
+                    }
+                }, function (err, res, body) {
+                    assert.equal(res.statusCode, 200, 'Wrong status code');
+                    assert.ok(body._id, '_id is not set');
+                    assert.equal(body.customer, savedCustomer._id);
+                    assert.ok(Array.isArray(body.products));
+                    assert.equal(body.products.length, 1);
+                    assert.equal(body.products[0], savedProduct._id);
+                    assert.equal(body.amount, 8.5);
+                    done();
+                });
+            });
+
+            it('200 POST Invoice with 2 products referencing _id',
+				function (done) {
                 request.post({
                     url: util.format('%s/api/v1/Invoices', testUrl),
                     json: {
@@ -255,6 +277,31 @@ function Restify() {
 						products: [
 							savedProduct._id,
 							savedProduct._id
+						],
+                        amount: 8.5
+                    }
+                }, function (err, res, body) {
+                    assert.equal(res.statusCode, 200, 'Wrong status code');
+                    assert.ok(body._id, '_id is not set');
+                    assert.equal(body.customer, savedCustomer._id);
+                    assert.ok(Array.isArray(body.products));
+                    assert.equal(body.products.length, 2);
+                    assert.equal(body.products[0], savedProduct._id);
+                    assert.equal(body.products[1], savedProduct._id);
+                    assert.equal(body.amount, 8.5);
+                    done();
+                });
+            });
+
+            it('200 POST Invoice with 2 products referencing objects',
+				function (done) {
+                request.post({
+                    url: util.format('%s/api/v1/Invoices', testUrl),
+                    json: {
+                        customer: savedCustomer._id,
+						products: [
+							savedProduct,
+							savedProduct
 						],
                         amount: 8.5
                     }
