@@ -106,6 +106,18 @@ function Restify() {
                 });
             });
 
+            it('200 GET Products/:id', function (done) {
+                request.get({
+                    url: util.format('%s/api/v1/Products/%s', testUrl,
+										savedProduct._id),
+					json: true
+                }, function (err, res, body) {
+                    assert.equal(res.statusCode, 200, 'Wrong status code');
+                    assert.deepEqual(body, savedProduct);
+                    done();
+                });
+            });
+
             it('200 GET Customers should return no objects', function (done) {
                 request.get({
                     url: util.format('%s/api/v1/Customers', testUrl),
