@@ -247,6 +247,30 @@ function Restify() {
                 });
             });
 
+            it('200 POST Invoice with 2 products', function (done) {
+                request.post({
+                    url: util.format('%s/api/v1/Invoices', testUrl),
+                    json: {
+                        customer: savedCustomer._id,
+						products: [
+							savedProduct._id,
+							savedProduct._id
+						],
+                        amount: 8.5
+                    }
+                }, function (err, res, body) {
+                    assert.equal(res.statusCode, 200, 'Wrong status code');
+                    assert.ok(body._id, '_id is not set');
+                    assert.equal(body.customer, savedCustomer._id);
+                    assert.ok(Array.isArray(body.products));
+                    assert.equal(body.products.length, 2);
+                    assert.equal(body.products[0], savedProduct._id);
+                    assert.equal(body.products[1], savedProduct._id);
+                    assert.equal(body.amount, 8.5);
+                    done();
+                });
+            });
+
             // disable those tests for express, because restify modifies
             // the prototype of the global Request object. Such an object
             // is also defined by express. This breaks express' request.query
