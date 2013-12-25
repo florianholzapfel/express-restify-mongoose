@@ -230,6 +230,7 @@ function Restify() {
                     url: util.format('%s/api/v1/Invoices', testUrl),
                     json: {
                         customer: savedCustomer._id,
+						products: savedProduct._id,
                         amount: 8.5,
                         __version: 1
                     }
@@ -237,6 +238,9 @@ function Restify() {
                     assert.equal(res.statusCode, 200, 'Wrong status code');
                     assert.ok(body._id, '_id is not set');
                     assert.equal(body.customer, savedCustomer._id);
+                    assert.ok(Array.isArray(body.products));
+                    assert.equal(body.products.length, 1);
+                    assert.equal(body.products[0], savedProduct._id);
                     assert.equal(body.amount, 8.5);
                     savedInvoice = body;
                     done();
