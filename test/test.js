@@ -84,6 +84,32 @@ function Restify() {
                 });
             });
 			
+            it('200 POST 2 Products', function (done) {
+                request.post({
+                    url: util.format('%s/api/v1/Products', testUrl),
+                    json: [{
+                        name: 'ACME Product',
+                        department: {
+							name: 'Sales',
+							code: 1
+                        },
+                        price: 10
+                    }, {
+                        name: 'Another ACME Product',
+                        department: {
+							name: 'Sales',
+							code: 1
+                        },
+                        price: 20
+                    }]
+                }, function (err, res, body) {
+                    assert.equal(res.statusCode, 200, 'Wrong status code');
+                    assert.ok(Array.isArray(body));
+                    assert.ok(body.length, 2);
+                    done();
+                });
+            });
+
             it('200 POST Products/:id', function (done) {
                 request.post({
                     url: util.format('%s/api/v1/Products/%s', testUrl,
