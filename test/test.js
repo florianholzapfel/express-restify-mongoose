@@ -83,7 +83,7 @@ function Restify() {
                     done();
                 });
             });
-			
+
             it('200 POST 2 Products', function (done) {
                 request.post({
                     url: util.format('%s/api/v1/Products', testUrl),
@@ -440,6 +440,42 @@ function Restify() {
                             '=customer&select=amount,customer.name',
                                          testUrl,
                                          savedInvoice._id),
+                        json: true
+                    }, function (err, res, body) {
+                        assert.equal(res.statusCode, 200, 'Wrong status code');
+                        assert.equal(9.5, body.amount);
+                        assert.equal(undefined, body.products);
+                        assert.equal(undefined, body.customer.comment);
+                        assert.equal('Test', body.customer.name);
+                        done();
+                    });
+                });
+                //populate fields should not interfere with select as supported by Mongoose
+                it('200 GET Invoices/:id?populate=customer&select=' +
+                    'customer.name should not suppress ' +
+                    'invoice fields', function (done) {
+                    request.get({
+                        url: util.format('%s/api/v1/Invoices/%s?populate' +
+                            '=customer&select=customer.name',
+                            testUrl,
+                            savedInvoice._id),
+                        json: true
+                    }, function (err, res, body) {
+                        assert.equal(res.statusCode, 200, 'Wrong status code');
+                        assert.equal(9.5, body.amount);
+                        assert.equal(undefined, body.customer.comment);
+                        assert.equal('Test', body.customer.name);
+                        done();
+                    });
+                });
+                it('200 GET Invoices/:id?populate=customer&select=' +
+                    'customer.name,amount should not fetch ' +
+                    'invoice.products fields', function (done) {
+                    request.get({
+                        url: util.format('%s/api/v1/Invoices/%s?populate' +
+                            '=customer&select=customer.name,amount',
+                            testUrl,
+                            savedInvoice._id),
                         json: true
                     }, function (err, res, body) {
                         assert.equal(res.statusCode, 200, 'Wrong status code');
