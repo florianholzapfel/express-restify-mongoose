@@ -450,7 +450,6 @@ function Restify() {
                         done();
                     });
                 });
-                //populate fields should not interfere with select as supported by Mongoose
                 it('200 GET Invoices/:id?populate=customer&select=' +
                     'customer.name should not suppress ' +
                     'invoice fields', function (done) {
