@@ -38,7 +38,8 @@
 
 <p><a href="https://travis-ci.org/florianholzapfel/express-restify-mongoose"><img src="https://travis-ci.org/florianholzapfel/express-restify-mongoose.png?branch=master" alt="Build Status"></a>
 <a href="http://badge.fury.io/js/express-restify-mongoose"><img src="https://badge.fury.io/js/express-restify-mongoose.png" alt="NPM version"></a>
-<a href="https://david-dm.org/florianholzapfel/express-restify-mongoose"><img src="https://david-dm.org/florianholzapfel/express-restify-mongoose.png" alt="Dependencies"></a></p>
+<a href="https://david-dm.org/florianholzapfel/express-restify-mongoose"><img src="https://david-dm.org/florianholzapfel/express-restify-mongoose.png" alt="Dependencies"></a>
+<a href="https://codeclimate.com/github/florianholzapfel/express-restify-mongoose"><img src="https://codeclimate.com/github/florianholzapfel/express-restify-mongoose.png" alt="Code Climate"></a></p>
 
 <h2>
 <a name="getting-started" class="anchor" href="#getting-started"><span class="octicon octicon-link"></span></a>Getting started</h2>
@@ -120,6 +121,14 @@ GET http://localhost/api/v1/Customers?skip=10&amp;limit=10
 
 <pre><code>GET http://localhost/api/v1/Invoices?populate=customer
 GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name
+
+## populate fields will not have effect on select fields as supported by Mongoose
+# populate fields will be fetched along with select fields
+GET http://localhost/api/v1/Invoices?populate=customer
+GET http://localhost/api/v1/Invoices?populate=customer&amp;select=amount
+GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer,amount
+GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name,amount
+
 </code></pre>
 
 <h2>
@@ -189,6 +198,7 @@ allows mongoose validators to be called. Default is <code>true</code>.
 <li>Jan Paul Erkelens (<a href="https://github.com/jperkelens">https://github.com/jperkelens</a>)</li>
 <li>Christoph Herbst (<a href="https://github.com/cherbst">https://github.com/cherbst</a>)</li>
 <li>doobinay (<a href="https://github.com/doobinay">https://github.com/doobinay</a>)</li>
+<li>Hareesh (<a href="https://github.com/hareeshbabu82ns">https://github.com/hareeshbabu82ns</a>)</li>
 </ul><h2>
 <a name="formalia" class="anchor" href="#formalia"><span class="octicon octicon-link"></span></a>Formalia</h2>
 
