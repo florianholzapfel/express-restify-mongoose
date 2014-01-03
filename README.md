@@ -145,6 +145,7 @@ defaults(options)
 * Jan Paul Erkelens (https://github.com/jperkelens)
 * Christoph Herbst (https://github.com/cherbst)
 * doobinay (https://github.com/doobinay)
+* Hareesh (https://github.com/hareeshbabu82ns)
 
 ## Formalia
 
