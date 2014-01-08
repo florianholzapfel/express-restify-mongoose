@@ -71,7 +71,14 @@ GET http://localhost/api/v1/Customers?name=>value
 GET http://localhost/api/v1/Customers?name=>=value
 GET http://localhost/api/v1/Customers?name=<value
 GET http://localhost/api/v1/Customers?name=<=value
+GET http://localhost/api/v1/Customers?name=!=value
 GET http://localhost/api/v1/Customers?select=name
+```
+
+## Logical Queries (and,or)
+```
+GET http://localhost/api/v1/Customers?$and[{"field":">=value"},{"field":[value1,value2]}]
+GET http://localhost/api/v1/Customers?$or[{"field":"value"},{"$and",[{"field":"~value"},{"field":"!=value"}]}]
 ```
 
 ### Ordering & Sorting
