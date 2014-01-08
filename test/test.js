@@ -368,18 +368,49 @@ function Restify() {
                     });
                 });
 
-                it('200 GET Customers?name=Test', function (done) {
+                it('200 GET Customers?name!=Test', function (done) {
                     request.get({
                         url: util.format('%s/api/v1/Customers', testUrl),
                         qs: {
-                            name: 'Test'
+                            name: '!=Test'
                         },
                         json: true
                     }, function (err, res, body) {
                         assert.equal(res.statusCode, 200, 'Wrong status code');
-                        assert.equal(body.length, 1,
+                        assert.equal(body.length, 2,
                             'Wrong count of customers returned');
-                        assert.deepEqual(savedCustomer, body[0]);
+                        done();
+                    });
+                });
+
+                it('200 GET Products?$and[?]', function (done) {
+                    request.get({
+                        url: util.format('%s/api/v1/Products?$and=%s',
+                            testUrl,
+                            '[{"name":"~ACME"},{"price":"!=20"}]'),
+                        json: true
+                    }, function (err, res, body) {
+                        assert.equal(res.statusCode, 200, 'Wrong status code');
+                        assert.equal(body.length, 2,
+                            'Wrong count of customers returned');
+                        console.log(JSON.stringify(body));
+                        done();
+                    });
+                });
+
+                it('200 GET Products?$or[$and[?]]', function (done) {
+                    request.get({
+                        url: util.format('%s/api/v1/Products?$or=%s',
+                            testUrl,
+                            '[{"name":"~Another"},' +
+                                '{"$and":[{"name":"~Product"},' +
+                                        '{"price":"<=10"}]}]'),
+                        json: true
+                    }, function (err, res, body) {
+                        assert.equal(res.statusCode, 200, 'Wrong status code');
+                        assert.equal(body.length, 4,
+                            'Wrong count of customers returned');
+                        console.log(JSON.stringify(body));
                         done();
                     });
                 });
