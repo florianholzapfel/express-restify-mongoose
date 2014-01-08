@@ -393,7 +393,6 @@ function Restify() {
                         assert.equal(res.statusCode, 200, 'Wrong status code');
                         assert.equal(body.length, 2,
                             'Wrong count of customers returned');
-                        console.log(JSON.stringify(body));
                         done();
                     });
                 });
@@ -410,7 +409,6 @@ function Restify() {
                         assert.equal(res.statusCode, 200, 'Wrong status code');
                         assert.equal(body.length, 4,
                             'Wrong count of customers returned');
-                        console.log(JSON.stringify(body));
                         done();
                     });
                 });
