@@ -105,7 +105,15 @@ GET http://localhost/api/v1/Customers?name=&gt;value
 GET http://localhost/api/v1/Customers?name=&gt;=value
 GET http://localhost/api/v1/Customers?name=&lt;value
 GET http://localhost/api/v1/Customers?name=&lt;=value
+GET http://localhost/api/v1/Customers?name=!=value
 GET http://localhost/api/v1/Customers?select=name
+</code></pre>
+
+<h2>
+<a name="logical-queries-andor" class="anchor" href="#logical-queries-andor"><span class="octicon octicon-link"></span></a>Logical Queries (and,or)</h2>
+
+<pre><code>GET http://localhost/api/v1/Customers?$and[{"field":"&gt;=value"},{"field":[value1,value2]}]
+GET http://localhost/api/v1/Customers?$or[{"field":"value"},{"$and",[{"field":"~value"},{"field":"!=value"}]}]
 </code></pre>
 
 <h3>
