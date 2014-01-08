@@ -1,7 +1,7 @@
 {
   "name": "express-restify-mongoose",
   "description": "Easily restify mongoose database",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "author": {
     "name": "Florian Holzapfel",
     "email": "flo.holzapfel@gmail.com"
