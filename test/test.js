@@ -383,6 +383,31 @@ function Restify() {
                     });
                 });
 
+                it('200 GET Products?query', function (done) {
+                        var query = { $or: [
+                            {name: '~Another'},
+                            {$and: [
+                                {name: '~Product'},
+                                {price: '<=10'}
+                            ]}
+                        ],
+                            price: 20
+                        };
+                        request.get({
+                            url: util.format('%s/api/v1/Products?query=%s',
+                                testUrl,
+                                encodeURIComponent(JSON.stringify(query))),
+                            json: true
+                        }, function (err, res, body) {
+                            assert.equal(res.statusCode, 200,
+                                'Wrong status code');
+                            assert.equal(body.length, 2,
+                                'Wrong count of customers returned');
+                            done();
+                        });
+                    }
+                );
+
                 it('200 GET Products?$and[?]', function (done) {
                     request.get({
                         url: util.format('%s/api/v1/Products?$and=%s',
@@ -393,7 +418,6 @@ function Restify() {
                         assert.equal(res.statusCode, 200, 'Wrong status code');
                         assert.equal(body.length, 2,
                             'Wrong count of customers returned');
-                        console.log(JSON.stringify(body));
                         done();
                     });
                 });
@@ -410,7 +434,6 @@ function Restify() {
                         assert.equal(res.statusCode, 200, 'Wrong status code');
                         assert.equal(body.length, 4,
                             'Wrong count of customers returned');
-                        console.log(JSON.stringify(body));
                         done();
                     });
                 });
