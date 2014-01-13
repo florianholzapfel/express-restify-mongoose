@@ -74,11 +74,28 @@ GET http://localhost/api/v1/Customers?name=<=value
 GET http://localhost/api/v1/Customers?name=!=value
 GET http://localhost/api/v1/Customers?select=name
 ```
-
+## Mongoose Query
+```
+var query = { $or: [
+                {name: '~Another'},
+                {$and: [
+                    {name: '~Product'},
+                    {price: '<=10'}
+                ]}
+            ],
+                price: 20
+            };
+request({
+    url: 'api/v1/Model',
+    qs: { query: encodeURIComponent(JSON.stringify(query) }
+})
+GET http://localhost/api/v1/Customers?query={"field":">=value", "field":[value1,value2]
+                                                 "$and":[{"field":"~value"},{"field":"!=value"}]}
+```
 ## Logical Queries (and,or)
 ```
-GET http://localhost/api/v1/Customers?$and[{"field":">=value"},{"field":[value1,value2]}]
-GET http://localhost/api/v1/Customers?$or[{"field":"value"},{"$and",[{"field":"~value"},{"field":"!=value"}]}]
+GET http://localhost/api/v1/Customers?$and=[{"field":">=value"},{"field":[value1,value2]}]
+GET http://localhost/api/v1/Customers?$or=[{"field":"value"},{"$and",[{"field":"~value"},{"field":"!=value"}]}]
 ```
 
 ### Ordering & Sorting
