@@ -1,10 +1,9 @@
 # express-restify-mongoose
 This library provides mongoose database models with a REST interface.
 
-[![Build Status](https://travis-ci.org/florianholzapfel/express-restify-mongoose.png?branch=master)](https://travis-ci.org/florianholzapfel/express-restify-mongoose)
+[![Build Status](https://travis-ci.org/florianholzapfel/express-restify-mongoose.png)](https://travis-ci.org/florianholzapfel/express-restify-mongoose)
 [![NPM version](https://badge.fury.io/js/express-restify-mongoose.png)](http://badge.fury.io/js/express-restify-mongoose)
 [![Dependencies](https://david-dm.org/florianholzapfel/express-restify-mongoose.png)](https://david-dm.org/florianholzapfel/express-restify-mongoose)
-[![Code Climate](https://codeclimate.com/github/florianholzapfel/express-restify-mongoose.png)](https://codeclimate.com/github/florianholzapfel/express-restify-mongoose)
 
 ## Getting started
 
@@ -100,8 +99,8 @@ GET http://localhost/api/v1/Customers?$or=[{"field":"value"},{"$and",[{"field":"
 
 ### Ordering & Sorting
 ```
-GET http://localhost/api/v1/Customers?order=name
-GET http://localhost/api/v1/Customers?order=-name
+GET http://localhost/api/v1/Customers?sort=name
+GET http://localhost/api/v1/Customers?sort=-name
 GET http://localhost/api/v1/Customers?skip=10&limit=10
 ```
 
@@ -137,6 +136,7 @@ serve(app, model, [options])
   * access - A function that takes the req object and returns or yields 'public', 'private', or 'protected'. This function will be called for every GET POST and PUT request and filter out the appropriate fields
   * plural - If ```true```, does not pluralize the database model name. Default is ```false```
   * lowercase - If ```true```, turn model name to lower case before generating the routes.
+  * outputFn - A function with the signature ```function(res, result)``` that is used to output the result. ```res``` is a restify or express result object, ```result``` is the result that is returned from the mongo db.
   * private - String of comma separated field names which are not to be returned by queries that do not have private access.
   * protected - String of comma separated field names which are not to be returned by queries that have public access.
   * postProcess - A middleware to be called after the response has been sent.
