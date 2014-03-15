@@ -5,8 +5,6 @@ var setup = require('./setup');
 var assert = require('assertmessage'),
     OID = require('mongoose').Types.ObjectId;
 
-require('sugar');
-
 describe('Filter', function () {
     setup();
 
@@ -63,7 +61,7 @@ describe('Filter', function () {
             };
 
             customer = customerFilter.filterObject(customer);
-            customer.purchases.each(function (purchase) {
+            customer.purchases.forEach(function (purchase) {
                 assert.equal(purchase.item, 'oid', 'item should be included');
                 assert.ok(purchase.number === undefined,
                           'number should be excluded');
@@ -101,7 +99,7 @@ describe('Filter', function () {
 
                 invoice = invoiceFilter.filterObject(invoice,
                                                   {populate: 'products'});
-                invoice.products.each(function (product) {
+                invoice.products.forEach(function (product) {
                     assert.ok(product.name !== undefined,
                               'product name should be populated');
 
@@ -131,7 +129,7 @@ describe('Filter', function () {
                               'customer name should be populated');
                 assert.ok(invoice.customer.address === undefined,
                               'customer address should be excluded');
-                invoice.products.each(function (product) {
+                invoice.products.forEach(function (product) {
                     assert.ok(product.name !== undefined,
                               'product name should be populated');
 
@@ -160,7 +158,7 @@ describe('Filter', function () {
 
                 customer = customerFilter
                     .filterObject(customer, {populate: 'purchases.item'});
-                customer.purchases.each(function (p) {
+                customer.purchases.forEach(function (p) {
                     assert.ok(p.number === undefined,
                              'Purchase number should be excluded');
                     assert.ok(p.item.name !== undefined,
@@ -217,7 +215,7 @@ describe('Filter', function () {
             });
 
             customer = customerFilter.filterObject(customer);
-            customer.purchases.each(function (purchase) {
+            customer.purchases.forEach(function (purchase) {
                 assert.ok(purchase.item !== undefined,
                           'item should be included');
                 assert.ok(purchase.number === undefined,
@@ -291,7 +289,7 @@ describe('Filter', function () {
                 .exec(function (err, invoice) {
                     invoice = invoiceFilter
                         .filterObject(invoice, {populate: 'products'});
-                    invoice.products.each(function (product) {
+                    invoice.products.forEach(function (product) {
                         assert.ok(product.name !== undefined,
                                   'product name should be populated');
 
@@ -312,7 +310,7 @@ describe('Filter', function () {
                                   'customer name should be populated');
                     assert.ok(invoice.customer.address === undefined,
                                   'customer address should be excluded');
-                    invoice.products.each(function (product) {
+                    invoice.products.forEach(function (product) {
                         assert.ok(product.name !== undefined,
                                   'product name should be populated');
 
@@ -330,7 +328,7 @@ describe('Filter', function () {
                 .populate('purchases.item').exec(function (err, customer) {
                     customer = customerFilter
                       .filterObject(customer, {populate: 'purchases.item'});
-                    customer.purchases.each(function (p, i) {
+                    customer.purchases.forEach(function (p, i) {
                         assert.ok(p.number === undefined,
                                  'Purchase number should be excluded');
                         assert.equal(p.item.name, self.products[i].name,

@@ -45,7 +45,6 @@
     "assertmessage": "0.0.2",
     "restify": "~2.6.0",
     "request": "~2.34.0",
-    "sugar": "~1.4",
     "async": "~0.2.9",
     "sinon": "~1.9.0"
   }

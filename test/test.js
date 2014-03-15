@@ -12,8 +12,6 @@ var assert = require('assertmessage'),
 
 var util = require('util');
 
-require('sugar');
-
 var testPort = 30023,
     testUrl = 'http://localhost:' + testPort;
 
@@ -32,7 +30,7 @@ function Restify() {
     return app;
 }
 
-[Express, Restify].each(function (createFn) {
+[Express, Restify].forEach(function (createFn) {
     describe(createFn.name, function () {
         describe('General', function () {
             var savedProduct, savedCustomer, savedInvoice, server,
