@@ -1,51 +1,86 @@
 {
-  "name": "express-restify-mongoose",
-  "description": "Easily restify mongoose database",
-  "version": "0.6.5",
-  "author": {
-    "name": "Florian Holzapfel",
-    "email": "flo.holzapfel@gmail.com"
-  },
-  "homepage": "http://florianholzapfel.github.io/express-restify-mongoose/",
-  "keywords": [
-    "ReST",
-    "express",
-    "restify",
-    "mongodb",
-    "mongoose"
-  ],
-  "licenses": [
-    {
-      "type": "The MIT License (MIT)",
-      "url": "http://opensource.org/licenses/MIT"
-    }
-  ],
-  "scripts": {
-    "pretest": "./node_modules/.bin/jshint lib test",
-    "test": "./node_modules/.bin/mocha -R spec ./test --recursive --timeout 5s"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/florianholzapfel/express-restify-mongoose.git"
-  },
-  "main": "./lib/express-restify-mongoose",
-  "engines": {
-    "node": "*"
-  },
-  "readmeFilename": "README.md",
-  "dependencies": {
-    "express": "~3.4.0",
-    "mongoose": "~3.8.0",
-    "underscore": "~1.6",
-    "inflection": "~1.3.2"
-  },
-  "devDependencies": {
-    "jshint": "~2.4.0",
-    "mocha": "~1.17.0",
-    "assertmessage": "0.0.2",
-    "restify": "~2.6.0",
-    "request": "~2.34.0",
-    "async": "~0.2.9",
-    "sinon": "~1.9.0"
-  }
+    "author": {
+        "email": "flo.holzapfel@gmail.com",
+        "name": "Florian Holzapfel"
+    },
+    "contributors": [
+        {
+            "name": "Enric Le\u00f3n"
+        },
+        {
+            "name": "David Higginbotham"
+        },
+        {
+            "name": "Jonathan Greenemeier"
+        },
+        {
+            "name": "Alan Levicki"
+        },
+        {
+            "name": "Michael"
+        },
+        {
+            "name": "Matt Roman"
+        },
+        {
+            "name": "Fetrarijaona R."
+        },
+        {
+            "name": "Jan Paul Erkelens"
+        },
+        {
+            "name": "Christoph Herbst"
+        },
+        {
+            "name": "doobinay"
+        },
+        {
+            "name": "Hareesh"
+        }
+    ],
+    "dependencies": {
+        "express": "~3.4.0",
+        "inflection": "~1.3.2",
+        "lodash": "~2.4",
+        "mongoose": "~3.8.0"
+    },
+    "description": "Easily restify mongoose database",
+    "devDependencies": {
+        "assertmessage": "0.0.2",
+        "async": "~0.2.9",
+        "jshint": "~2.4.0",
+        "mocha": "~1.17.0",
+        "request": "~2.34.0",
+        "restify": "~2.6.0",
+        "sinon": "~1.9.0"
+    },
+    "engines": {
+        "node": "*"
+    },
+    "homepage": "http://florianholzapfel.github.io/express-restify-mongoose/",
+    "keywords": [
+        "ReST",
+        "express",
+        "restify",
+        "mongodb",
+        "mongoose"
+    ],
+    "licenses": [
+        {
+            "type": "The MIT License (MIT)",
+            "url": "http://opensource.org/licenses/MIT"
+        }
+    ],
+    "main": "./lib/express-restify-mongoose",
+    "name": "express-restify-mongoose",
+    "readmeFilename": "README.md",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/florianholzapfel/express-restify-mongoose.git"
+    },
+    "scripts": {
+        "pretest": "./node_modules/.bin/jshint lib test",
+        "test": "./node_modules/.bin/mocha -R spec ./test --recursive --timeout 5s"
+    },
+    "version": "0.6.5"
 }
