@@ -56,11 +56,8 @@ var Account = new Schema({
 });
 
 var setup = module.exports = function () {
-    var self = this,
-        model = null;
-
     if (!setup.customerModel) {
-        model = setup.customerModel = mongoose.model('Customer', Customer);
+        setup.customerModel = mongoose.model('Customer', Customer);
     }
     if (!setup.invoiceModel) {
         setup.invoiceModel = mongoose.model('Invoice', Invoice);
@@ -70,7 +67,7 @@ var setup = module.exports = function () {
     }
     if (!setup.repeatCustomerModel) {
         setup.repeatCustomerModel =
-          model.discriminator('RepeatCustomer', RepeatCustomer);
+          setup.customerModel.discriminator('RepeatCustomer', RepeatCustomer);
     }
     if (!setup.accountModel) {
         setup.accountModel = mongoose.model('Account', Account);
@@ -81,7 +78,16 @@ var setup = module.exports = function () {
             assert(!err, err);
             setup.customerModel.remove(function (err) {
                 assert(!err, err);
-                setup.invoiceModel.remove(done);
+                setup.invoiceModel.remove(function (err) {
+                    assert(!err, err);
+                    setup.productModel.remove(function (err) {
+                        assert(!err, err);
+                        setup.repeatCustomerModel.remove(function (err) {
+                            assert(!err, err);
+                            setup.accountModel.remove(done);
+                        });
+                    });
+                });
             });
         });
     });
