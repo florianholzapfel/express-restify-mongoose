@@ -22,6 +22,17 @@ function Express() {
     app.use(express.methodOverride());
     return app;
 }
+function ExpressCustomOutputFunction() {
+    var app = express();
+	app.use(express.json());
+	app.use(express.urlencoded());
+    app.use(express.methodOverride());
+	app.outputFn = function (res, result) {
+		res.type('json');
+		res.send(JSON.stringify(result));
+	};
+    return app;
+}
 function Restify() {
     var app = restify.createServer();
     app.use(restify.queryParser());
@@ -30,7 +41,7 @@ function Restify() {
     return app;
 }
 
-[Express, Restify].forEach(function (createFn) {
+[Express, ExpressCustomOutputFunction, Restify].forEach(function (createFn) {
     describe(createFn.name, function () {
         describe('General', function () {
             var savedProduct, savedCustomer, savedInvoice, server,
@@ -39,18 +50,15 @@ function Restify() {
             setup();
 
             before(function (done) {
-                erm.serve(app, setup.customerModel, {
+				erm.defaults({
                     restify: app.isRestify,
+					outputFn: app.outputFn,
                     lean: false
-                });
-                erm.serve(app, setup.productModel, {
-                    restify: app.isRestify,
-                    lean: false
-                });
-                erm.serve(app, setup.invoiceModel, {
-                    restify: app.isRestify,
-                    lean: false
-                });
+				});
+                erm.serve(app, setup.customerModel);
+                erm.serve(app, setup.productModel);
+                erm.serve(app, setup.invoiceModel);
+
                 server = app.listen(testPort, done);
             });
 
@@ -399,7 +407,7 @@ function Restify() {
                         }, function (err, res, body) {
                             assert.equal(res.statusCode, 200,
                                 'Wrong status code');
-                            assert.equal(body.length, 2,
+                            assert.equal(body.length, 1,
                                 'Wrong count of customers returned');
                             done();
                         });
@@ -414,7 +422,7 @@ function Restify() {
                         json: true
                     }, function (err, res, body) {
                         assert.equal(res.statusCode, 200, 'Wrong status code');
-                        assert.equal(body.length, 2,
+                        assert.equal(body.length, 1,
                             'Wrong count of customers returned');
                         done();
                     });
@@ -430,7 +438,7 @@ function Restify() {
                         json: true
                     }, function (err, res, body) {
                         assert.equal(res.statusCode, 200, 'Wrong status code');
-                        assert.equal(body.length, 4,
+                        assert.equal(body.length, 2,
                             'Wrong count of customers returned');
                         done();
                     });
@@ -609,6 +617,7 @@ function Restify() {
             before(function (done) {
                 erm.serve(app, setup.customerModel, {
                     lean: false,
+					outputFn: app.outputFn,
                     restify: app.isRestify
                 });
                 server = app.listen(testPort,  function () {
@@ -651,7 +660,10 @@ function Restify() {
             setup();
 
             before(function (done) {
-                erm.defaults({ restify: app.isRestify });
+                erm.defaults({
+					restify: app.isRestify,
+					outputFn: app.outputFn
+				});
 
                 erm.serve(app, setup.customerModel, {
                     'private': 'comment',
@@ -767,7 +779,8 @@ function Restify() {
                 before(function (done) {
                     erm.serve(app, setup.customerModel, {
                         lowercase: true,
-                        restify: app.isRestify
+                        restify: app.isRestify,
+						outputFn: app.outputFn
                     });
                     server = app.listen(testPort, done);
                 });
@@ -810,6 +823,7 @@ function Restify() {
             before(function (done) {
                 erm.serve(app, setup.customerModel, {
                     restify: app.isRestify,
+					outputFn: app.outputFn,
                     postProcess: function (req, res) {
                         postProcess(null, req, res);
                     }
@@ -871,7 +885,8 @@ function Restify() {
 
                 erm.serve(app, setup.customerModel, {
                     lowercase: true,
-                    restify: app.isRestify
+                    restify: app.isRestify,
+					outputFn: app.outputFn
                 });
 
                 server = app.listen(testPort, done);
@@ -908,7 +923,8 @@ function Restify() {
                 before(function (done) {
                     erm.serve(app, setup.customerModel, {
                         prereq: function () { return true; },
-                        restify: app.isRestify
+                        restify: app.isRestify,
+						outputFn: app.outputFn
                     });
 
                     server = app.listen(testPort, done);
@@ -981,7 +997,8 @@ function Restify() {
                 before(function (done) {
                     erm.serve(app, setup.customerModel, {
                         prereq: function () { return false; },
-                        restify: app.isRestify
+                        restify: app.isRestify,
+						outputFn: app.outputFn
                     });
 
                     server = app.listen(testPort, done);
@@ -1053,7 +1070,7 @@ function Restify() {
             before(function (done) {
                 erm.defaults({
                     'private': 'address',
-                    'protected': 'comment',
+                    'protected': 'comment'
                 });
 
                 app = createFn();
@@ -1062,6 +1079,7 @@ function Restify() {
                 erm.serve(app, setup.customerModel, {
                     restify: app.isRestify,
                     access: accessFn,
+					outputFn: app.outputFn
                 });
 
                 access = 'private';
