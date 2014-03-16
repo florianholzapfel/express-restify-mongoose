@@ -40,8 +40,19 @@ function Restify() {
     app.isRestify = true;
     return app;
 }
+function RestifyCustomOutputFunction() {
+    var app = restify.createServer();
+    app.use(restify.queryParser());
+    app.use(restify.bodyParser());
+    app.isRestify = true;
+	app.outputFn = function (res, result) {
+		res.send(result);
+	};
+    return app;
+}
 
-[Express, ExpressCustomOutputFunction, Restify].forEach(function (createFn) {
+[Express, ExpressCustomOutputFunction,
+	Restify, RestifyCustomOutputFunction].forEach(function (createFn) {
     describe(createFn.name, function () {
         describe('General', function () {
             var savedProduct, savedCustomer, savedInvoice, server,
