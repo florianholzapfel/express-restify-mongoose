@@ -130,7 +130,7 @@ serve(app, model, [options])
 * options - Optional options object
   * strict - When set to true, disallows DELETE all, POST with id param, and PUT without id param
   * prefix - Some path that will be prefixed to the REST path. Defaults to ```/api```
-  * version - An API version that will be prefixed to the rest path. Defaults to ```v1```
+  * version - An API version that will be prefixed to the rest path. Defaults to ```/v1```
   * middleware - An express middleware or an array of express middlewares that will be used.
   * prereq - A function that takes the req object and returns or yields true or false. This function will be called for every POST PUT and DELETE request and send 403 on false.
   * access - A function that takes the req object and returns or yields 'public', 'private', or 'protected'. This function will be called for every GET POST and PUT request and filter out the appropriate fields
