@@ -36,10 +36,9 @@
 
 <p>This library provides mongoose database models with a REST interface.</p>
 
-<p><a href="https://travis-ci.org/florianholzapfel/express-restify-mongoose"><img src="https://travis-ci.org/florianholzapfel/express-restify-mongoose.png?branch=master" alt="Build Status"></a>
+<p><a href="https://travis-ci.org/florianholzapfel/express-restify-mongoose"><img src="https://travis-ci.org/florianholzapfel/express-restify-mongoose.png" alt="Build Status"></a>
 <a href="http://badge.fury.io/js/express-restify-mongoose"><img src="https://badge.fury.io/js/express-restify-mongoose.png" alt="NPM version"></a>
-<a href="https://david-dm.org/florianholzapfel/express-restify-mongoose"><img src="https://david-dm.org/florianholzapfel/express-restify-mongoose.png" alt="Dependencies"></a>
-<a href="https://codeclimate.com/github/florianholzapfel/express-restify-mongoose"><img src="https://codeclimate.com/github/florianholzapfel/express-restify-mongoose.png" alt="Code Climate"></a></p>
+<a href="https://david-dm.org/florianholzapfel/express-restify-mongoose"><img src="https://david-dm.org/florianholzapfel/express-restify-mongoose.png" alt="Dependencies"></a></p>
 
 <h2>
 <a name="getting-started" class="anchor" href="#getting-started"><span class="octicon octicon-link"></span></a>Getting started</h2>
@@ -139,8 +138,8 @@ GET http://localhost/api/v1/Customers?$or=[{"field":"value"},{"$and",[{"field":"
 <h3>
 <a name="ordering--sorting" class="anchor" href="#ordering--sorting"><span class="octicon octicon-link"></span></a>Ordering &amp; Sorting</h3>
 
-<pre><code>GET http://localhost/api/v1/Customers?order=name
-GET http://localhost/api/v1/Customers?order=-name
+<pre><code>GET http://localhost/api/v1/Customers?sort=name
+GET http://localhost/api/v1/Customers?sort=-name
 GET http://localhost/api/v1/Customers?skip=10&amp;limit=10
 </code></pre>
 
@@ -180,7 +179,7 @@ GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name,
 <li>strict - When set to true, disallows DELETE all, POST with id param, and PUT without id param</li>
 <li>prefix - Some path that will be prefixed to the REST path. Defaults to <code>/api</code>
 </li>
-<li>version - An API version that will be prefixed to the rest path. Defaults to <code>v1</code>
+<li>version - An API version that will be prefixed to the rest path. Defaults to <code>/v1</code>
 </li>
 <li>middleware - An express middleware or an array of express middlewares that will be used.</li>
 <li>prereq - A function that takes the req object and returns or yields true or false. This function will be called for every POST PUT and DELETE request and send 403 on false.</li>
@@ -188,6 +187,7 @@ GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name,
 <li>plural - If <code>true</code>, does not pluralize the database model name. Default is <code>false</code>
 </li>
 <li>lowercase - If <code>true</code>, turn model name to lower case before generating the routes.</li>
+<li>outputFn - A function with the signature <code>function(res, result)</code> that is used to output the result. <code>res</code> is a restify or express result object, <code>result</code> is the result that is returned from the mongo db.</li>
 <li>private - String of comma separated field names which are not to be returned by queries that do not have private access.</li>
 <li>protected - String of comma separated field names which are not to be returned by queries that have public access.</li>
 <li>postProcess - A middleware to be called after the response has been sent.
