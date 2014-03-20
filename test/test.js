@@ -1275,24 +1275,23 @@ function RestifyCustomOutputFunction() {
 
 
 
-		describe('Custom Filter', function() {
-			describe('Limits actions to items in returned set', function() {
+		describe('Custom Filter', function () {
+			describe('Limits actions to items in returned set', function () {
 				var badCustomerId, savedCustomer, savedInvoice, server,
 					app = createFn();
-				var filter = function(model, req) {
+				var filter = function (model, req) {
 					return model.find({address: {$ne: null}});
 				};
 
 				setup();
 
 
-				before(function(done) {
+				before(function (done) {
 					erm.defaults({
 						restify: app.isRestify,
 						outputFn: app.outputFn,
 						lean: false,
 						contextFilter: filter,
-						outputFn: app.outputFn
 					});
 					erm.serve(app, setup.customerModel);
 
@@ -1302,67 +1301,71 @@ function RestifyCustomOutputFunction() {
 						{name: 'C', address: null},
 						{name: 'D', address: 'addy3'}
 					],
-						function(err, good1, good2, bad, good3) {
-							badCustomerId = bad.id;
-							server = app.listen(testPort, done);
-						});
+					function (err, good1, good2, bad, good3) {
+						badCustomerId = bad.id;
+						server = app.listen(testPort, done);
+					});
 				});
 
-				after(function(done) {
+				after(function (done) {
 					if (app.close) {
 						return app.close(done);
 					}
 					server.close(done);
 				});
 
-				it('gets customers with an address', function(done) {
+				it('gets customers with an address', function (done) {
 					request.get({
 						url: util.format('%s/api/v1/Customers', testUrl),
 						json: true
-					}, function(err, res, body) {
+					}, function (err, res, body) {
 						assert.equal(res.statusCode, 200, 'Wrong status code');
 						assert.equal(body.length, 3, 'Wrong number of users');
 						done();
 					});
 				});
-				it('cannot get customer without an address', function(done) {
+				it('cannot get customer without an address', function (done) {
 					request.get({
-						url: util.format('%s/api/v1/Customers/%s', testUrl, badCustomerId),
+						url: util.format('%s/api/v1/Customers/%s', testUrl,
+											badCustomerId),
 						json: true
-					}, function(err, res, body) {
+					}, function (err, res, body) {
 						assert.equal(res.statusCode, 404, 'Wrong status code');
 						done();
 					});
 				});
-				it('gets count of customers with an address', function(done) {
+				it('gets count of customers with an address', function (done) {
 					request.get({
 						url: util.format('%s/api/v1/Customers/count', testUrl),
 						json: true
-					}, function(err, res, body) {
+					}, function (err, res, body) {
 						assert.equal(res.statusCode, 200, 'Wrong status code');
 						assert.equal(body.count, 3, 'Wrong count of users');
 						done();
 					});
 				});
-				it('cannot remove customer without an address by id', function(done) {
+				it('cannot remove customer without an address by id',
+					function (done) {
 					request.del({
-						url: util.format('%s/api/v1/Customers/%s', testUrl, badCustomerId),
+						url: util.format('%s/api/v1/Customers/%s', testUrl,
+										badCustomerId),
 						json: true
-					}, function(err, res, body) {
+					}, function (err, res, body) {
 						assert.equal(res.statusCode, 200, 'Wrong status code');
-						setup.customerModel.count(function(err, count) {
+						setup.customerModel.count(function (err, count) {
 							assert.equal(count, 4, 'Customer Deleted');
 							done();
 						});
 					});
 				});
-				it('cannot remove customers without an address', function(done) {
+				it('cannot remove customers without an address',
+					function (done) {
 					request.del({
 						url: util.format('%s/api/v1/Customers', testUrl),
 						json: true
-					}, function(err, res, body) {
+					}, function (err, res, body) {
 						assert.equal(res.statusCode, 200, 'Wrong status code');
-						setup.customerModel.count(function(err, count) {
+						setup.customerModel.count(function (err, count) {
 							assert.equal(count, 1, 'Customer Deleted');
 							done();
 						});
