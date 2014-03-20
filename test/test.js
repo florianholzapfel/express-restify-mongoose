@@ -1275,12 +1275,12 @@ function RestifyCustomOutputFunction() {
 
 
 
-		describe.only('Custom Filter', function() {
+		describe('Custom Filter', function() {
 			describe('Limits actions to items in returned set', function() {
 				var badCustomerId, goodCustomerId, savedCustomer, savedInvoice, server,
 					app = createFn();
-				var filter = function(model, req) {
-					return model.find({address: {$ne: null}});
+				var filter = function(model, req, done) {
+					done(model.find({address: {$ne: null}}));
 				};
 
 				setup();
@@ -1345,12 +1345,36 @@ function RestifyCustomOutputFunction() {
 						done();
 					});
 				});
+				it('updates customer with an address', function(done) {
+					request.put({
+						url: util.format('%s/api/v1/Customers/%s', testUrl, goodCustomerId),
+						json: {name:'newName'}
+					}, function(err, res, body) {
+						assert.equal(res.statusCode, 200, 'Wrong status code');
+						setup.customerModel.findById(goodCustomerId, function(err, customer) {
+							assert.equal(customer.name, 'newName', 'Customer Deleted');
+							done();
+						});
+					});
+				});
+				it('cannot update a customer without an address', function(done) {
+					request.put({
+						url: util.format('%s/api/v1/Customers/%s', testUrl, badCustomerId),
+						json: {name:'newName'}
+					}, function(err, res, body) {
+						assert.equal(res.statusCode, 404, 'Wrong status code');
+						setup.customerModel.findById(badCustomerId, function(err, customer) {
+							assert.notEqual(customer.name, 'newName', 'Customer Deleted');
+							done();
+						});
+					});
+				});
 				it('cannot remove customer without an address by id', function(done) {
 					request.del({
 						url: util.format('%s/api/v1/Customers/%s', testUrl, badCustomerId),
 						json: true
 					}, function(err, res, body) {
-						assert.equal(res.statusCode, 200, 'Wrong status code');
+						assert.equal(res.statusCode, 404, 'Wrong status code');
 						setup.customerModel.count(function(err, count) {
 							assert.equal(count, 4, 'Customer Deleted');
 							done();
