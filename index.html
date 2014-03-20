@@ -199,6 +199,8 @@ objects. This is bad for performance, but it allows for returning virtuals, gett
 allows mongoose validators to be called. Default is <code>true</code>.
 (For more information, read the Mongoose docs:
 <a href="http://mongoosejs.com/docs/api.html#model_Model.findByIdAndUpdate">http://mongoosejs.com/docs/api.html#model_Model.findByIdAndUpdate</a>)</li>
+<li>contextFilter - <code>function(model, req)</code>. Allows authorization per request, for example filtering
+items based on req.user. Defaults to <code>return model</code>.</li>
 </ul>
 </li>
 </ul><h3>
@@ -227,6 +229,7 @@ allows mongoose validators to be called. Default is <code>true</code>.
 <li>Christoph Herbst (<a href="https://github.com/cherbst">https://github.com/cherbst</a>)</li>
 <li>doobinay (<a href="https://github.com/doobinay">https://github.com/doobinay</a>)</li>
 <li>Hareesh (<a href="https://github.com/hareeshbabu82ns">https://github.com/hareeshbabu82ns</a>)</li>
+<li>09setht (<a href="https://github.com/09setht">https://github.com/09setht</a>)</li>
 </ul><h2>
 <a name="formalia" class="anchor" href="#formalia"><span class="octicon octicon-link"></span></a>Formalia</h2>
 
