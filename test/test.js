@@ -1275,9 +1275,9 @@ function RestifyCustomOutputFunction() {
 
 
 
-		describe('Custom Filter', function() {
+		describe.only('Custom Filter', function() {
 			describe('Limits actions to items in returned set', function() {
-				var badCustomerId, savedCustomer, savedInvoice, server,
+				var badCustomerId, goodCustomerId, savedCustomer, savedInvoice, server,
 					app = createFn();
 				var filter = function(model, req) {
 					return model.find({address: {$ne: null}});
@@ -1304,6 +1304,7 @@ function RestifyCustomOutputFunction() {
 					],
 						function(err, good1, good2, bad, good3) {
 							badCustomerId = bad.id;
+							goodCustomerId = good1.id;
 							server = app.listen(testPort, done);
 						});
 				});
@@ -1352,6 +1353,18 @@ function RestifyCustomOutputFunction() {
 						assert.equal(res.statusCode, 200, 'Wrong status code');
 						setup.customerModel.count(function(err, count) {
 							assert.equal(count, 4, 'Customer Deleted');
+							done();
+						});
+					});
+				});
+				it('can remove customer with an address by id', function(done) {
+					request.del({
+						url: util.format('%s/api/v1/Customers/%s', testUrl, goodCustomerId),
+						json: true
+					}, function(err, res, body) {
+						assert.equal(res.statusCode, 200, 'Wrong status code');
+						setup.customerModel.count(function(err, count) {
+							assert.equal(count, 3, 'Customer Not Deleted');
 							done();
 						});
 					});
