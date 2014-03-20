@@ -148,6 +148,8 @@ serve(app, model, [options])
     allows mongoose validators to be called. Default is ```true```.
     (For more information, read the Mongoose docs:
     http://mongoosejs.com/docs/api.html#model_Model.findByIdAndUpdate)
+  * contextFilter - `function(model, req)`. Allows authorization per request, for example filtering
+items based on req.user. Defaults to `return model`.
 
 ### defaults
 ```
@@ -170,6 +172,7 @@ defaults(options)
 * Christoph Herbst (https://github.com/cherbst)
 * doobinay (https://github.com/doobinay)
 * Hareesh (https://github.com/hareeshbabu82ns)
+* 09setht (https://github.com/09setht)
 
 ## Formalia
 
