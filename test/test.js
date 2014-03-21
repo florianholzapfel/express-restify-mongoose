@@ -8,6 +8,7 @@ var assert = require('assertmessage'),
     mongoose = require('mongoose'),
     restify = require('restify'),
     request = require('request'),
+	sinon = require('sinon'),
     Schema = mongoose.Schema;
 
 var util = require('util');
@@ -1274,10 +1275,9 @@ function RestifyCustomOutputFunction() {
         });
 
 
-
 		describe('Custom Filter', function() {
 			describe('Limits actions to items in returned set', function() {
-				var badCustomerId, goodCustomerId, savedCustomer, savedInvoice, server,
+				var badCustomerId, goodCustomerId, server,
 					app = createFn();
 				var filter = function(model, req, done) {
 					done(model.find({address: {$ne: null}}));
@@ -1406,6 +1406,51 @@ function RestifyCustomOutputFunction() {
 					});
 				});
 			});
+		});
+
+		describe('postCreate', function(){
+			var server,
+				error,
+				options = {
+					postCreate: sinon.spy(function(res,result, done){
+						done(error);
+					})
+				},
+				app = createFn();
+			setup();
+
+			before(function(done) {
+				erm.defaults({
+					restify: app.isRestify,
+					outputFn: app.outputFn,
+					lean: false,
+					outputFn: app.outputFn
+				});
+				erm.serve(app, setup.customerModel);
+				server = app.listen(testPort, done);
+			});
+			afterEach(function(){
+				options.postCreate.reset();
+			});
+
+			it('is called with the response, result, and a callback', function(){
+				request.post({
+					url: util.format('%s/api/v1/Customers', testUrl),
+					json: {
+						name: 'A'
+					}
+				}, function (err, res, body) {
+					sinon.assert.calledOnce(options.postCreate);
+					done();
+				});
+			});
+			it('calls next() on success');
+			it('sends 500 on failure');
+		});
+		describe('postDelete', function(){
+			it('is called with the response, result, and a callback');
+			it('calls next() on success');
+			it('sends 500 on failure');
 		});
     });
 });
