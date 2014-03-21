@@ -8,6 +8,7 @@ var assert = require('assertmessage'),
     mongoose = require('mongoose'),
     restify = require('restify'),
     request = require('request'),
+	sinon = require('sinon'),
     Schema = mongoose.Schema;
 
 var util = require('util');
@@ -1274,13 +1275,12 @@ function RestifyCustomOutputFunction() {
         });
 
 
-
 		describe('Custom Filter', function () {
 			describe('Limits actions to items in returned set', function () {
-				var badCustomerId, savedCustomer, savedInvoice, server,
+				var badCustomerId, goodCustomerId, server,
 					app = createFn();
-				var filter = function (model, req) {
-					return model.find({address: {$ne: null}});
+				var filter = function (model, req, done) {
+					done(model.find({address: {$ne: null}}));
 				};
 
 				setup();
@@ -1301,10 +1301,11 @@ function RestifyCustomOutputFunction() {
 						{name: 'C', address: null},
 						{name: 'D', address: 'addy3'}
 					],
-					function (err, good1, good2, bad, good3) {
-						badCustomerId = bad.id;
-						server = app.listen(testPort, done);
-					});
+						function (err, good1, good2, bad, good3) {
+							badCustomerId = bad.id;
+							goodCustomerId = good1.id;
+							server = app.listen(testPort, done);
+						});
 				});
 
 				after(function (done) {
@@ -1344,6 +1345,37 @@ function RestifyCustomOutputFunction() {
 						done();
 					});
 				});
+				it('updates customer with an address', function (done) {
+					request.put({
+						url: util.format('%s/api/v1/Customers/%s', testUrl,
+								goodCustomerId),
+						json: {name: 'newName'}
+					}, function (err, res, body) {
+						assert.equal(res.statusCode, 200, 'Wrong status code');
+						setup.customerModel.findById(goodCustomerId,
+							function (err, customer) {
+							assert.equal(customer.name, 'newName',
+								'Customer Deleted');
+							done();
+						});
+					});
+				});
+				it('cannot update a customer without an address',
+					function (done) {
+					request.put({
+						url: util.format('%s/api/v1/Customers/%s', testUrl,
+							badCustomerId),
+						json: {name: 'newName'}
+					}, function (err, res, body) {
+						assert.equal(res.statusCode, 404, 'Wrong status code');
+						setup.customerModel.findById(badCustomerId,
+							function (err, customer) {
+							assert.notEqual(customer.name, 'newName',
+							'Customer Deleted');
+							done();
+						});
+					});
+				});
 				it('cannot remove customer without an address by id',
 					function (done) {
 					request.del({
@@ -1351,9 +1383,23 @@ function RestifyCustomOutputFunction() {
 										badCustomerId),
 						json: true
 					}, function (err, res, body) {
-						assert.equal(res.statusCode, 200, 'Wrong status code');
+						assert.equal(res.statusCode, 404, 'Wrong status code');
 						setup.customerModel.count(function (err, count) {
 							assert.equal(count, 4, 'Customer Deleted');
+							done();
+						});
+					});
+				});
+				it('can remove customer with an address by id',
+					function (done) {
+					request.del({
+						url: util.format('%s/api/v1/Customers/%s', testUrl,
+						goodCustomerId),
+						json: true
+					}, function (err, res, body) {
+						assert.equal(res.statusCode, 200, 'Wrong status code');
+						setup.customerModel.count(function (err, count) {
+							assert.equal(count, 3, 'Customer Not Deleted');
 							done();
 						});
 					});
@@ -1373,5 +1419,188 @@ function RestifyCustomOutputFunction() {
 				});
 			});
 		});
+
+		describe('postCreate', function () {
+            var server,
+                error,
+                options = {
+                    postCreate: sinon.spy(function (res, result, done) {
+                        done(error);
+                    })
+                },
+                app = createFn();
+            setup();
+
+            before(function (done) {
+                erm.defaults({
+                    restify: app.isRestify,
+                    outputFn: app.outputFn,
+                    lean: false
+                });
+                erm.serve(app, setup.customerModel, options);
+                server = app.listen(testPort, done);
+            });
+            afterEach(function () {
+                options.postCreate.reset();
+            });
+            after(function (done) {
+                if (app.close) {
+                    return app.close(done);
+                }
+                server.close(done);
+            });
+
+            it('is called with the response, result, and a callback',
+				function (done) {
+                request.post({
+                    url: util.format('%s/api/v1/Customers', testUrl),
+                    json: {
+                        name: 'A'
+                    }
+                }, function (err, res, body) {
+                    sinon.assert.calledOnce(options.postCreate);
+                    var args = options.postCreate.args[0];
+                    assert.equal(args.length, 3);
+                    assert.equal(typeof args[2], 'function');
+                    done();
+                });
+            });
+            it('calls next() on success', function (done) {
+                error = false;
+                request.post({
+                    url: util.format('%s/api/v1/Customers', testUrl),
+                    json: {
+                        name: 'A'
+                    }
+                }, function (err, res, body) {
+                    assert.equal(res.statusCode, 200);
+                    done();
+                });
+            });
+            it('sends 500 on failure', function (done) {
+                error = true;
+                request.post({
+                    url: util.format('%s/api/v1/Customers', testUrl),
+                    json: {
+                        name: 'A'
+                    }
+                }, function (err, res, body) {
+                    assert.equal(res.statusCode, 400);
+                    done();
+                });
+            });
+		});
+
+		describe('postDelete', function () {
+            var server,
+                error,
+                customerId,
+                options = {
+                    postDelete: sinon.spy(function (res, result, done) {
+                        done(error);
+                    })
+                },
+                app = createFn();
+            setup();
+
+            before(function (done) {
+                erm.defaults({
+                    restify: app.isRestify,
+                    outputFn: app.outputFn,
+                    lean: false
+                });
+                erm.serve(app, setup.customerModel, options);
+                server = app.listen(testPort, done);
+            });
+            beforeEach(function (done) {
+                setup.customerModel.create({
+                    name: 'a'
+                }, function (err, customer) {
+                    customerId = customer.id;
+                    done();
+                });
+            });
+            afterEach(function (done) {
+                options.postDelete.reset();
+                setup.customerModel.remove(done);
+            });
+            after(function (done) {
+                if (app.close) {
+                    return app.close(done);
+                }
+                server.close(done);
+            });
+
+            it('is called with the response, result, and a callback (byId)',
+				function (done) {
+                request.del({
+                    url: util.format('%s/api/v1/Customers/%s', testUrl,
+						customerId),
+                    json: true
+                }, function (err, res, body) {
+                    sinon.assert.calledOnce(options.postDelete);
+                    var args = options.postDelete.args[0];
+                    assert.equal(args.length, 3);
+                    assert.equal(typeof args[2], 'function');
+                    done();
+                });
+            });
+            it('calls next() on success (byId)', function (done) {
+                error = false;
+                request.del({
+                    url: util.format('%s/api/v1/Customers/%s', testUrl,
+						customerId),
+                    json: true
+                }, function (err, res, body) {
+                    assert.equal(res.statusCode, 200);
+                    done();
+                });
+            });
+            it('sends 500 on failure (byId)', function (done) {
+                error = true;
+                request.del({
+                    url: util.format('%s/api/v1/Customers/%s', testUrl,
+						customerId),
+                    json: true
+                }, function (err, res, body) {
+                    assert.equal(res.statusCode, 400);
+                    done();
+                });
+            });
+
+            it('is called with the response, result, and a callback',
+				function (done) {
+                request.del({
+                    url: util.format('%s/api/v1/Customers', testUrl),
+                    json: true
+                }, function (err, res, body) {
+                    sinon.assert.calledOnce(options.postDelete);
+                    var args = options.postDelete.args[0];
+                    assert.equal(args.length, 3);
+                    assert.equal(typeof args[2], 'function');
+                    done();
+                });
+            });
+            it('calls next() on success', function (done) {
+                error = false;
+                request.del({
+                    url: util.format('%s/api/v1/Customers', testUrl),
+                    json: true
+                }, function (err, res, body) {
+                    assert.equal(res.statusCode, 200);
+                    done();
+                });
+            });
+            it('sends 500 on failure', function (done) {
+                error = true;
+                request.del({
+                    url: util.format('%s/api/v1/Customers', testUrl),
+                    json: true
+                }, function (err, res, body) {
+                    assert.equal(res.statusCode, 400);
+                    done();
+                });
+            });
+        });
     });
 });

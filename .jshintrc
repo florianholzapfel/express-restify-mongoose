@@ -39,5 +39,5 @@
     "undef"         : true,   // Require all non-global variables be declared
                               // before they are used.
     "trailing"      : true,   // Prohibit trailing whitespaces.
-    "globals"       : { "it": false, "describe": false, "before": true, "after": true, "beforeEach": true }
+    "globals"       : { "it": false, "describe": false, "before": true, "after": true, "beforeEach": true, "afterEach": true }
 }
