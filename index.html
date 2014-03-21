@@ -201,6 +201,8 @@ allows mongoose validators to be called. Default is <code>true</code>.
 <a href="http://mongoosejs.com/docs/api.html#model_Model.findByIdAndUpdate">http://mongoosejs.com/docs/api.html#model_Model.findByIdAndUpdate</a>)</li>
 <li>contextFilter - <code>function(model, req)</code>. Allows authorization per request, for example filtering
 items based on req.user. Defaults to <code>return model</code>.</li>
+<li>postCreate - A function with the signature <code>function (res, result, done)</code> which is run after document creation.</li>
+<li>postDelete - A function with the signature <code>function (res, result, done)</code> which is run after document deletion.</li>
 </ul>
 </li>
 </ul><h3>
