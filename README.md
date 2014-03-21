@@ -150,6 +150,8 @@ serve(app, model, [options])
     http://mongoosejs.com/docs/api.html#model_Model.findByIdAndUpdate)
   * contextFilter - `function(model, req)`. Allows authorization per request, for example filtering
 items based on req.user. Defaults to `return model`.
+ * postCreate - A function with the signature `function (res, result, done)` which is run after document creation.
+ * postDelete - A function with the signature `function (res, result, done)` which is run after document deletion.
 
 ### defaults
 ```
