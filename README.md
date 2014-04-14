@@ -148,8 +148,8 @@ serve(app, model, [options])
     allows mongoose validators to be called. Default is ```true```.
     (For more information, read the Mongoose docs:
     http://mongoosejs.com/docs/api.html#model_Model.findByIdAndUpdate)
-  * contextFilter - `function(model, req)`. Allows authorization per request, for example filtering
-items based on req.user. Defaults to `return model`.
+  * contextFilter - `function(model, req, cb)`. Allows authorization per request, for example filtering
+items based on req.user. Defaults to `cb(model)`.
  * postCreate - A function with the signature `function (res, result, done)` which is run after document creation.
  * postDelete - A function with the signature `function (res, result, done)` which is run after document deletion.
 
