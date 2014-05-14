@@ -1684,7 +1684,7 @@ function RestifyCustomOutputFunction() {
 			});
 		});
 
-		describe.only('Id name',function(){
+		describe('Id name',function(){
 			var server,
 				error,
 				goodCustomerId,
