@@ -52,7 +52,6 @@ function RestifyCustomOutputFunction() {
     return app;
 }
 
-//TODO
 [Express, ExpressCustomOutputFunction,
 	Restify, RestifyCustomOutputFunction].forEach(function (createFn) {
     describe(createFn.name, function () {
