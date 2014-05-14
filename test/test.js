@@ -52,8 +52,9 @@ function RestifyCustomOutputFunction() {
     return app;
 }
 
-[Express/*, ExpressCustomOutputFunction,
-	Restify, RestifyCustomOutputFunction*/].forEach(function (createFn) {
+//TODO
+[Express, ExpressCustomOutputFunction,
+	Restify, RestifyCustomOutputFunction].forEach(function (createFn) {
     describe(createFn.name, function () {
         describe('General', function () {
             var savedProduct, savedCustomer, savedInvoice, server,
@@ -1560,16 +1561,18 @@ function RestifyCustomOutputFunction() {
                     url: util.format('%s/api/v1/Customers/%s', testUrl, customerId),
                     json: true
                 }, function (err, res, body) {
+					sinon.assert.calledOnce(options.postDelete);
                     assert.equal(res.statusCode, 200);
                     done();
                 });
             });
-            it('sends 500 on failure (byId)', function(done){
+            it('sends 400 on failure (byId)', function(done){
                 error = true;
                 request.del({
                     url: util.format('%s/api/v1/Customers/%s', testUrl, customerId),
                     json: true
                 }, function (err, res, body) {
+					sinon.assert.calledOnce(options.postDelete);
                     assert.equal(res.statusCode, 400);
                     done();
                 });
@@ -1577,7 +1580,7 @@ function RestifyCustomOutputFunction() {
 
             it('is called with the response, result, and a callback', function(done){
                 request.del({
-                    url: util.format('%s/api/v1/Customers', testUrl),
+					url: util.format('%s/api/v1/Customers/%s', testUrl, customerId),
                     json: true
                 }, function (err, res, body) {
                     sinon.assert.calledOnce(options.postDelete);
@@ -1590,19 +1593,21 @@ function RestifyCustomOutputFunction() {
             it('calls next() on success', function(done){
                 error = false;
                 request.del({
-                    url: util.format('%s/api/v1/Customers', testUrl),
+					url: util.format('%s/api/v1/Customers/%s', testUrl, customerId),
                     json: true
                 }, function (err, res, body) {
+					sinon.assert.calledOnce(options.postDelete);
                     assert.equal(res.statusCode, 200);
                     done();
                 });
             });
-            it('sends 500 on failure', function(done){
+            it('sends 400 on failure', function(done){
                 error = true;
                 request.del({
-                    url: util.format('%s/api/v1/Customers', testUrl),
+					url: util.format('%s/api/v1/Customers/%s', testUrl, customerId),
                     json: true
                 }, function (err, res, body) {
+					sinon.assert.calledOnce(options.postDelete);
                     assert.equal(res.statusCode, 400);
                     done();
                 });
