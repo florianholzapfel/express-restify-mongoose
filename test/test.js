@@ -1292,8 +1292,7 @@ function RestifyCustomOutputFunction() {
 						restify: app.isRestify,
 						outputFn: app.outputFn,
 						lean: false,
-						contextFilter: filter,
-						outputFn: app.outputFn
+						contextFilter: filter
 					});
 					erm.serve(app, setup.customerModel);
 
@@ -1613,5 +1612,141 @@ function RestifyCustomOutputFunction() {
                 });
             });
         });
+
+		describe('Id location',function(){
+			/*
+			 Use for an endpoint like:
+			 /api/v1/Users/Address
+			 or
+			 /api/v1/Users/:id/Address
+			 */
+			var server,
+				error,
+				goodCustomerId,
+				options = {
+					version: '/v1/Entities/:id'
+				},
+				app = createFn();
+			setup();
+
+			before(function(done) {
+				erm.defaults({
+					restify: app.isRestify,
+					outputFn: app.outputFn,
+					lean: false
+				});
+				erm.serve(app, setup.customerModel,options);
+
+				setup.customerModel.create([
+						{name: 'A', address: 'addy1'}
+					],
+					function(err, good1) {
+						goodCustomerId = good1.id;
+						server = app.listen(testPort, done);
+					});
+			});
+
+			after(function(done) {
+				if (app.close) {
+					return app.close(done);
+				}
+				server.close(done);
+			});
+			describe('can be located in the middle of the url',function(){
+				it('works with GET all',function(done) {
+					request.get({
+						url: util.format('%s/api/v1/Entities/Customers', testUrl),
+						json: true
+					}, function(err, res, body) {
+						assert.equal(res.statusCode, 200, 'Wrong status code');
+						assert.equal(body.length, 1, 'Wrong number of users');
+						done();
+					});
+				});
+				it('works with GET/:id',function(done) {
+					request.get({
+						url: util.format('%s/api/v1/Entities/%s/Customers', testUrl,goodCustomerId),
+						json: true
+					}, function(err, res, body) {
+						assert.equal(res.statusCode, 200, 'Wrong status code');
+						done();
+					});
+				});
+				it('works with GET count',function(done) {
+					request.get({
+						url: util.format('%s/api/v1/Entities/Customers/count', testUrl),
+						json: true
+					}, function(err, res, body) {
+						assert.equal(res.statusCode, 200, 'Wrong status code');
+						assert.equal(body.count, 1, 'Wrong number of users');
+						done();
+					});
+				});
+			});
+		});
+
+		describe.only('Id name',function(){
+			var server,
+				error,
+				goodCustomerId,
+				options = {
+					idProperty: 'name'
+				},
+				app = createFn();
+			setup();
+
+			before(function(done) {
+				erm.defaults({
+					restify: app.isRestify,
+					outputFn: app.outputFn,
+					lean: false
+				});
+				erm.serve(app, setup.customerModel,options);
+
+				setup.customerModel.create([
+						{name: 'A', address: 'addy1'}
+					],
+					function(err, good1) {
+						goodCustomerId = good1.name;
+						server = app.listen(testPort, done);
+					});
+			});
+
+			after(function(done) {
+				if (app.close) {
+					return app.close(done);
+				}
+				server.close(done);
+			});
+			describe('can be located in the middle of the url',function(){
+				it('works with GET/:id',function(done) {
+					request.get({
+						url: util.format('%s/api/v1/Customers/%s', testUrl,goodCustomerId),
+						json: true
+					}, function(err, res, body) {
+						assert.equal(res.statusCode, 200, 'Wrong status code');
+						done();
+					});
+				});
+				it('works with PUT/:id',function(done) {
+					request.put({
+						url: util.format('%s/api/v1/Customers/%s', testUrl, goodCustomerId),
+						json: {address:'newName'}
+					}, function(err, res, body) {
+						assert.equal(res.statusCode, 200, 'Wrong status code');
+						done();
+					});
+				});
+				it('works with DELETE/:id',function(done) {
+					request.del({
+						url: util.format('%s/api/v1/Customers/%s', testUrl, goodCustomerId),
+						json: true
+					}, function(err, res, body) {
+						assert.equal(res.statusCode, 200, 'Wrong status code');
+						done();
+					});
+				});
+			});
+		});
     });
 });
