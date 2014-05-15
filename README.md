@@ -131,6 +131,8 @@ serve(app, model, [options])
   * strict - When set to true, disallows DELETE all, POST with id param, and PUT without id param
   * prefix - Some path that will be prefixed to the REST path. Defaults to ```/api```
   * version - An API version that will be prefixed to the rest path. Defaults to ```/v1```
+    * if either api or version contain ```/:id``` then that will be used as the location to search for the id. ```version: 'v1/Entities/:id'``` will generate ```/api/v1/Entities/:id/<modelName>``` and ```/api/v1/Entities/<modelName>``` for all pertinent methods
+  * idProperty - If specified, the 'by id' methods will query on the given property instead of _id
   * middleware - An express middleware or an array of express middlewares that will be used.
   * prereq - A function that takes the req object and returns or yields true or false. This function will be called for every POST PUT and DELETE request and send 403 on false.
   * access - A function that takes the req object and returns or yields 'public', 'private', or 'protected'. This function will be called for every GET POST and PUT request and filter out the appropriate fields
