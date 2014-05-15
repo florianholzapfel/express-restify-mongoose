@@ -1431,9 +1431,9 @@ function RestifyCustomOutputFunction() {
                             url: util.format('%s/api/v1/Customers', testUrl),
                             json: true
                         }, function(err, res, body) {
-                            assert.equal(res.statusCode, 200, 'Wrong status code');
+                            assert.equal(res.statusCode, 400, 'Wrong status code');
                             setup.customerModel.count(function(err, count) {
-                                assert.equal(count, 2, 'Customer Deleted');
+                                assert.equal(count, 3, 'Customer Deleted');
                                 done();
                             });
                         });
@@ -1456,8 +1456,7 @@ function RestifyCustomOutputFunction() {
                     erm.defaults({
                         restify: app.isRestify,
                         outputFn: app.outputFn,
-                        lean: false,
-                        outputFn: app.outputFn
+                        lean: false
                     });
                     erm.serve(app, setup.customerModel, options);
                     server = app.listen(testPort, done);
@@ -1528,8 +1527,7 @@ function RestifyCustomOutputFunction() {
                     erm.defaults({
                         restify: app.isRestify,
                         outputFn: app.outputFn,
-                        lean: false,
-                        outputFn: app.outputFn
+                        lean: false
                     });
                     erm.serve(app, setup.customerModel, options);
                     server = app.listen(testPort, done);
@@ -1676,7 +1674,8 @@ function RestifyCustomOutputFunction() {
                     });
                     it('works with GET/:id', function(done) {
                         request.get({
-                            url: util.format('%s/api/v1/Entities/%s/Customers', testUrl, goodCustomerId),
+                            url: util.format('%s/api/v1/Entities/%s/Customers', testUrl,
+									goodCustomerId),
                             json: true
                         }, function(err, res, body) {
                             assert.equal(res.statusCode, 200, 'Wrong status code');

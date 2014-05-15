@@ -4,8 +4,7 @@
 
     // style
 
-    "white"         : true,   // as per crockford
-    "maxlen"        : 80,     // as per crockford
+    "maxlen"        : 100,     // as per crockford
     "indent"        : 4,
     "quotmark"      : "single",
 
