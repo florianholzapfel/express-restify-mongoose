@@ -832,6 +832,40 @@ function RestifyCustomOutputFunction() {
                 }
             });
 
+			describe('Option \'name\'',function(){
+				var server,
+					app = createFn();
+
+				setup();
+
+				before(function(done) {
+					erm.serve(app, setup.customerModel, {
+						outputFn: app.outputFn,
+						restify: app.isRestify,
+						name: 'Customer',
+						plural: false
+					});
+					server = app.listen(testPort, done);
+				});
+
+				after(function(done) {
+					if (app.close) {
+						return app.close(done);
+					}
+					server.close(done);
+				});
+
+				it('is used to specify the endpoint', function(done) {
+					this.timeout(100);
+					request.get({
+						url: util.format('%s/api/v1/Customer', testUrl)
+					}, function(err, res) {
+						assert.equal(res.statusCode, 200, 'Wrong status code');
+						done();
+					});
+				});
+			});
+
             describe('postProcess', function() {
                 var savedCustomer, server, postProcess,
                     app = createFn();
