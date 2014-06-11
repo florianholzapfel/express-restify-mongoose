@@ -138,6 +138,7 @@ serve(app, model, [options])
   * access - A function that takes the req object and returns or yields 'public', 'private', or 'protected'. This function will be called for every GET POST and PUT request and filter out the appropriate fields
   * plural - If ```true```, does not pluralize the database model name. Default is ```false```
   * lowercase - If ```true```, turn model name to lower case before generating the routes.
+  * name - If specified, this is used as the name of the endpoint
   * outputFn - A function with the signature ```function(res, result)``` that is used to output the result. ```res``` is a restify or express result object, ```result``` is the result that is returned from the mongo db.
   * private - String of comma separated field names which are not to be returned by queries that do not have private access.
   * protected - String of comma separated field names which are not to be returned by queries that have public access.
