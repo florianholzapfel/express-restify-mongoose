@@ -1147,7 +1147,9 @@ function RestifyCustomOutputFunction() {
                             json: {
                                 name: 'Test',
                                 comment: 'Comment',
-                                address: '123 Drury Lane'
+                                address: '123 Drury Lane',
+                                creditCard: '123412345612345',
+                                ssn: '123-45-6789'
                             },
                         }, function(err, res, body) {
                             savedCustomer = body;
@@ -1219,7 +1221,7 @@ function RestifyCustomOutputFunction() {
                     });
                 });
 
-                describe('proteced access', function() {
+                describe('protected access', function() {
                     before(function() {
                         access = 'protected';
                     });
@@ -1235,6 +1237,21 @@ function RestifyCustomOutputFunction() {
                             assert.ok(body.address === undefined,
                                 'address is not undefined');
                             assert.equal(body.comment, 'Comment');
+                            done();
+                        });
+                    });
+
+                    it('excludes private fields defined in the schema', function(done) {
+                        request.get({
+                            url: util.format('%s/api/v1/Customers/%s', testUrl,
+                                savedCustomer._id),
+                            json: true
+                        }, function(err, res, body) {
+                            assert.equal(body.name, 'Test');
+                            assert.ok(body.ssn === undefined,
+                                'ssn not undefined');
+                            assert.equal(body.comment, 'Comment');
+                            assert.equal(body.creditCard, '123412345612345');
                             done();
                         });
                     });
