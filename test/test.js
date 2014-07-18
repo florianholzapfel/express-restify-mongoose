@@ -55,7 +55,7 @@ function RestifyCustomOutputFunction() {
 [Express, ExpressCustomOutputFunction,
     Restify, RestifyCustomOutputFunction].forEach(function(createFn) {
         describe(createFn.name, function() {
-            describe('General', function() {
+            describe.only('General', function() {
                 var savedProduct, savedCustomer, savedInvoice, server,
                     app = createFn();
 
@@ -603,16 +603,37 @@ function RestifyCustomOutputFunction() {
                     });
                 });
 
-                it('200 DEL Customers/:id', function(done) {
-                    request.del({
-                        url: util.format('%s/api/v1/Customers/%s', testUrl,
+                it('400 GET Customers/:id?populate=fakeField', function(done) {
+                    request.get({
+                        url: util.format('%s/api/v1/Customers/%s?populate=fakeField', testUrl,
                             savedCustomer._id),
                         json: true
-                    }, function(err, res) {
-                        assert.equal(res.statusCode, 200, 'Wrong status code');
+                    }, function(err, res, body) {
+                        assert.equal(res.statusCode, 400, 'Wrong status code');
                         done();
                     });
                 });
+
+                it('400 GET Customers/:id?populate=fakeField', function(done) {
+                    request.get({
+                        url: util.format('%s/api/v1/Customers?populate=fakeField', testUrl),
+                        json: true
+                    }, function(err, res, body) {
+                        assert.equal(res.statusCode, 400, 'Wrong status code');
+                        done();
+                    });
+                });
+
+				it('200 DEL Customers/:id', function(done) {
+					request.del({
+						url: util.format('%s/api/v1/Customers/%s', testUrl,
+							savedCustomer._id),
+						json: true
+					}, function(err, res) {
+						assert.equal(res.statusCode, 200, 'Wrong status code');
+						done();
+					});
+				});
 
                 it('404 on deleted Customers/:id', function(done) {
                     request.get({
