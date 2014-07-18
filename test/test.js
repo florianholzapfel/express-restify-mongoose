@@ -1533,7 +1533,7 @@ function RestifyCustomOutputFunction() {
                     });
                 });
                 it('sends 500 on failure', function(done) {
-                    error = true;
+                    error = new Error();
                     request.post({
                         url: util.format('%s/api/v1/Customers', testUrl),
                         json: {
@@ -1611,7 +1611,7 @@ function RestifyCustomOutputFunction() {
                     });
                 });
                 it('sends 400 on failure (byId)', function(done) {
-                    error = true;
+                    error = new Error();
                     request.del({
                         url: util.format('%s/api/v1/Customers/%s', testUrl, customerId),
                         json: true
@@ -1646,7 +1646,7 @@ function RestifyCustomOutputFunction() {
                     });
                 });
                 it('sends 400 on failure', function(done) {
-                    error = true;
+                    error = new Error();
                     request.del({
                         url: util.format('%s/api/v1/Customers/%s', testUrl, customerId),
                         json: true
