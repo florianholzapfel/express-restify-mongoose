@@ -27,7 +27,15 @@ var CustomerSchema = function () {
         purchases: [{
             item: { type: Schema.Types.ObjectId, ref: 'Product' },
             number: Number
-        }]
+        }],
+        creditCard: {
+            type: String,
+            access: 'protected'
+        },
+        ssn: {
+            type: String,
+            access: 'private'
+        }
     });
 };
 util.inherits(CustomerSchema, Schema);
