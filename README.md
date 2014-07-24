@@ -151,8 +151,7 @@ serve(app, model, [options])
     allows mongoose validators to be called. Default is ```true```.
     (For more information, read the Mongoose docs:
     http://mongoosejs.com/docs/api.html#model_Model.findByIdAndUpdate)
-  * contextFilter - `function(model, req, cb)`. Allows authorization per request, for example filtering
-items based on req.user. Defaults to `cb(model)`.
+  * contextFilter - `function(model, req, cb)`. Allows authorization per request, for example filtering items based on req.user. Defaults to `cb(model)`.
  * postCreate - A function with the signature `function (res, result, done)` which is run after document creation.
  * postDelete - A function with the signature `function (res, result, done)` which is run after document deletion.
 
@@ -164,6 +163,31 @@ defaults(options)
 #### arguments
 * options - Same options as above. This function will set this object as the defaults for anything you declare afterwards.
 
+## Examples
+### Basic access control
+
+```
+restify.serve(app, MyModel, {
+  prereq: function(req) {
+    if (req.method === 'DELETE') {
+      return false;
+    } else if (req.user) {
+      return true;
+    } else {
+      return false;
+    }
+  },
+  contextFilter: function(model, req, cb) {
+    if (req.user) {
+      cb(model);
+    } else {
+      cb(model.find({
+        isPublic: true
+      }));
+    }
+  }
+});
+```
 
 ## Contributors
 * Enric León (https://github.com/nothingbuttumbleweed)
