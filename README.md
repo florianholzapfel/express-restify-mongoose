@@ -202,6 +202,7 @@ restify.serve(app, MyModel, {
 * doobinay (https://github.com/doobinay)
 * Hareesh (https://github.com/hareeshbabu82ns)
 * 09setht (https://github.com/09setht)
+* Zertz (https://github.com/Zertz)
 
 ## Formalia
 
