@@ -5,6 +5,8 @@ var setup = require('./setup');
 var assert = require('assertmessage'),
     async = require('async'),
     express = require('express'),
+	bodyParser = require('body-parser'),
+	methodOverride = require('method-override'),
     mongoose = require('mongoose'),
     restify = require('restify'),
     request = require('request'),
@@ -18,16 +20,16 @@ var testPort = 30023,
 
 function Express() {
     var app = express();
-    app.use(express.json());
-    app.use(express.urlencoded());
-    app.use(express.methodOverride());
+    app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({ extended: true }));
+    app.use(methodOverride());
     return app;
 }
 function ExpressCustomOutputFunction() {
     var app = express();
-    app.use(express.json());
-    app.use(express.urlencoded());
-    app.use(express.methodOverride());
+    app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({ extended: true }));
+    app.use(methodOverride());
     app.outputFn = function(res, result) {
         res.type('json');
         res.send(JSON.stringify(result));
