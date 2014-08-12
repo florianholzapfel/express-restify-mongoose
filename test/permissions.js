@@ -3,6 +3,7 @@ var sinon = require('sinon'),
     middleware = require('../lib/permissions');
 
 var assert = require('assertmessage');
+var http = require('http');
 
 var sandbox;
 beforeEach(function (done) {
@@ -21,7 +22,7 @@ describe('permissions', function () {
     beforeEach(function () {
         this.mock = sandbox.mock(res);
         this.mock.expects('send').once()
-          .withArgs(403, { msg: 'Unauthorized' });
+          .withArgs(403, { msg: http.STATUS_CODES[403] });
     });
 
     describe('with prereq that returns', function () {
