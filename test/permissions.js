@@ -30,7 +30,7 @@ describe('permissions', function () {
                 return true;
             };
 
-            middleware.allow(prereq)({}, res, function () {
+            middleware.allow(false, prereq)({}, res, function () {
                 assert(true);
                 done();
             });
@@ -41,7 +41,7 @@ describe('permissions', function () {
                 return false;
             };
 
-            middleware.allow(prereq)({}, res);
+            middleware.allow(false, prereq)({}, res);
             this.mock.verify();
         });
     });
@@ -50,7 +50,7 @@ describe('permissions', function () {
         it('passes', function (done) {
             var prereq = function (req, cb) { cb(true); };
 
-            middleware.allow(prereq)({}, res, function () {
+            middleware.allow(false, prereq)({}, res, function () {
                 assert(true);
                 done();
             });
@@ -59,7 +59,7 @@ describe('permissions', function () {
         it('fails', function () {
             var prereq = function (req, cb) { cb(false); };
 
-            middleware.allow(prereq)({}, res);
+            middleware.allow(false, prereq)({}, res);
             this.mock.verify();
         });
     });
