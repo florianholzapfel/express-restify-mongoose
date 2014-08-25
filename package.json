@@ -87,5 +87,5 @@
         "pretest": "./node_modules/.bin/jshint lib test",
         "test": "./node_modules/.bin/mocha -R spec ./test --recursive --timeout 5s"
     },
-    "version": "0.6.8"
+    "version": "0.6.9"
 }
