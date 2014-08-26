@@ -252,12 +252,18 @@ function RestifyCustomOutputFunction() {
                     });
                 });
 
-                it('400 GET Customers/invalid field query', function(done) {
+                it.skip('200 GET Customers/virtual query should return one object', function(done) {
                     request.get({
-                        url: util.format('%s/api/v1/Customers/?foo=bar', testUrl),
+                        url: util.format('%s/api/v1/Customers', testUrl),
+						qs: {
+							info: 'Test is awesome'
+						},
                         json: true
                     }, function(err, res, body) {
-                        assert.equal(res.statusCode, 400, 'Wrong status code');
+                        assert.equal(res.statusCode, 200, 'Wrong status code');
+                        assert.ok(Array.isArray(body));
+                        assert.equal(body.length, 1);
+                        assert.equal(savedCustomer._id, body[0]._id, 'Wrong object returned');
                         done();
                     });
                 });
@@ -359,6 +365,16 @@ function RestifyCustomOutputFunction() {
                 // the prototype of the global Request object. Such an object
                 // is also defined by express. This breaks express' request.query
                 if (app.isRestify) {
+	                it('400 GET Customers/invalid field query', function(done) {
+	                    request.get({
+	                        url: util.format('%s/api/v1/Customers/?foo=bar', testUrl),
+	                        json: true
+	                    }, function(err, res, body) {
+	                        assert.equal(res.statusCode, 400, 'Wrong status code');
+	                        done();
+	                    });
+	                });
+
                     it('200 GET Customers?limit=1 should return 1 object',
                         function(done) {
                             request.get({
