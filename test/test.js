@@ -202,6 +202,7 @@ function RestifyCustomOutputFunction() {
                         assert.ok(body._id, '_id is not set');
                         assert.equal(body.name, 'Test');
                         assert.equal(body.comment, 'Comment');
+                        assert.equal(body.info, 'Test is awesome');
                         savedCustomer = body;
                         done();
                     });
@@ -247,6 +248,16 @@ function RestifyCustomOutputFunction() {
                     }, function(err, res, body) {
                         assert.equal(res.statusCode, 200, 'Wrong status code');
                         assert.equal(body.count, 3, 'Wrong count');
+                        done();
+                    });
+                });
+
+                it('400 GET Customers/invalid field query', function(done) {
+                    request.get({
+                        url: util.format('%s/api/v1/Customers/?foo=bar', testUrl),
+                        json: true
+                    }, function(err, res, body) {
+                        assert.equal(res.statusCode, 400, 'Wrong status code');
                         done();
                     });
                 });
