@@ -244,6 +244,7 @@ restify.serve(app, MyModel, {
 * Hareesh (https://github.com/hareeshbabu82ns)
 * 09setht (https://github.com/09setht)
 * Zertz (https://github.com/Zertz)
+* Ph3n1x (https://github.com/Ph3n1x)
 
 ## Formalia
 

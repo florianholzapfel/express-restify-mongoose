@@ -39,7 +39,10 @@
         },
         {
             "name": "09setht"
-        }
+        },
+		{
+			"name": "Ph3n1x"
+		}
     ],
     "dependencies": {
         "inflection": "~1.4",
