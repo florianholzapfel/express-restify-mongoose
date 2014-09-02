@@ -11,8 +11,12 @@ describe('Filter', function () {
     var customerFilter = new Filter(setup.customerModel,
                                     ['comment',
                                      'address',
-                                     'purchases.number']),
-        invoiceFilter = new Filter(setup.invoiceModel, ['amount']),
+                                     'purchases.number',
+									 'purchases.item.price']),
+        invoiceFilter = new Filter(setup.invoiceModel,
+									['amount',
+									'customer.address',
+									'products.price']),
         productFilter = new Filter(setup.productModel,
                                    ['price', 'department.code']);
 
