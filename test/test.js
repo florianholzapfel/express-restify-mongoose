@@ -4,11 +4,8 @@ var setup = require('./setup');
 
 var assert = require('assertmessage'),
     async = require('async'),
-    express = require('express'),
-	bodyParser = require('body-parser'),
 	methodOverride = require('method-override'),
     mongoose = require('mongoose'),
-    restify = require('restify'),
     request = require('request'),
     sinon = require('sinon'),
     Schema = mongoose.Schema;
@@ -18,44 +15,7 @@ var util = require('util');
 var testPort = 30023,
     testUrl = 'http://localhost:' + testPort;
 
-function Express() {
-    var app = express();
-    app.use(bodyParser.json());
-    app.use(bodyParser.urlencoded({ extended: true }));
-    app.use(methodOverride());
-    return app;
-}
-function ExpressCustomOutputFunction() {
-    var app = express();
-    app.use(bodyParser.json());
-    app.use(bodyParser.urlencoded({ extended: true }));
-    app.use(methodOverride());
-    app.outputFn = function(res, result) {
-        res.type('json');
-        res.send(JSON.stringify(result));
-    };
-    return app;
-}
-function Restify() {
-    var app = restify.createServer();
-    app.use(restify.queryParser());
-    app.use(restify.bodyParser());
-    app.isRestify = true;
-    return app;
-}
-function RestifyCustomOutputFunction() {
-    var app = restify.createServer();
-    app.use(restify.queryParser());
-    app.use(restify.bodyParser());
-    app.isRestify = true;
-    app.outputFn = function(res, result) {
-        res.send(result);
-    };
-    return app;
-}
-
-[Express, ExpressCustomOutputFunction,
-    Restify, RestifyCustomOutputFunction].forEach(function(createFn) {
+module.exports = function(createFn) {
         describe(createFn.name, function() {
             describe('General', function() {
                 var savedProduct, savedCustomer, savedInvoice, server,
@@ -361,10 +321,6 @@ function RestifyCustomOutputFunction() {
                         });
                     });
 
-                // disable those tests for express, because restify modifies
-                // the prototype of the global Request object. Such an object
-                // is also defined by express. This breaks express' request.query
-                if (app.isRestify) {
 	                it('400 GET Customers/invalid field query', function(done) {
 	                    request.get({
 	                        url: util.format('%s/api/v1/Customers/?foo=bar', testUrl),
@@ -592,7 +548,6 @@ function RestifyCustomOutputFunction() {
                             done();
                         });
                     });
-                }
 
                 it('200 GET Customers/:id', function(done) {
                     request.get({
@@ -784,35 +739,32 @@ function RestifyCustomOutputFunction() {
                     });
                 });
 
-                // see comment above
-                if (app.isRestify) {
-                    it('400 GET Customers?comment=Comment should return HTTP 400',
-                        function(done) {
-                            request.get({
-                                url: util.format('%s/api/v1/Customers', testUrl),
-                                qs: {
-                                    comment: 'Comment'
-                                },
-                                json: true
-                            }, function(err, res, body) {
-                                assert.equal(res.statusCode, 400, 'Wrong status code');
-                                done();
-                            });
-                        });
-                    it('excludes populated fields', function(done) {
+                it('400 GET Customers?comment=Comment should return HTTP 400',
+                    function(done) {
                         request.get({
-                            url: util.format('%s/api/v1/Invoices/%s', testUrl,
-                                savedInvoice._id),
-                            qs: { populate: 'customer' },
+                            url: util.format('%s/api/v1/Customers', testUrl),
+                            qs: {
+                                comment: 'Comment'
+                            },
                             json: true
                         }, function(err, res, body) {
-                            assert.ok(body.customer._id, 'customer not populated');
-                            assert.ok(body.customer.comment === undefined,
-                                'comment is not undefined');
+                            assert.equal(res.statusCode, 400, 'Wrong status code');
                             done();
                         });
                     });
-                }
+                it('excludes populated fields', function(done) {
+                    request.get({
+                        url: util.format('%s/api/v1/Invoices/%s', testUrl,
+                            savedInvoice._id),
+                        qs: { populate: 'customer' },
+                        json: true
+                    }, function(err, res, body) {
+                        assert.ok(body.customer._id, 'customer not populated');
+                        assert.ok(body.customer.comment === undefined,
+                            'comment is not undefined');
+                        done();
+                    });
+                });
             });
 
             describe('Lower case model name', function() {
@@ -1839,4 +1791,4 @@ function RestifyCustomOutputFunction() {
                 });
             });
         });
-    });
+    };
