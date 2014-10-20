@@ -211,7 +211,7 @@ defaults(options)
 ## Examples
 ### Basic access control
 
-```
+```javascript
 restify.serve(app, MyModel, {
   prereq: function(req) {
     if (req.method === 'DELETE') {
