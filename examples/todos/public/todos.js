@@ -5,8 +5,7 @@
  *
  **/
 var app = angular.module('app', ['ngResource']);
-
-function TodoCtrl($scope, $resource) {
+app.controller('TodoCtrl', function ($scope, $resource) {
 	var Todo = $resource('/api/v1/todos/:id', { id: '@_id' });
 	$scope.todos = Todo.query();
 	
@@ -40,4 +39,4 @@ function TodoCtrl($scope, $resource) {
 		
 		Todo.delete({ done: true });
 	};
-}
+});
