@@ -23,6 +23,8 @@
 **/
 var http = require('http');
 var express = require('express');
+var bodyParser = require('body-parser'),
+	methodOverride = require('method-override');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var restify = require('..');
@@ -42,12 +44,11 @@ var Invoice = new Schema({
 var InvoiceModel = mongoose.model('Invoice', Invoice);
 
 var app = express();
-app.configure(function () {
-	app.use(express.bodyParser());
-	app.use(express.methodOverride());
-	restify.serve(app, CustomerModel);
-	restify.serve(app, InvoiceModel);
-});
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(methodOverride('X-HTTP-Method-Override'));
+restify.serve(app, CustomerModel);
+restify.serve(app, InvoiceModel);
 
 http.createServer(app).listen(3000, function () {
 	console.log('Express server listening on port 3000');
