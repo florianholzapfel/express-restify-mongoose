@@ -813,7 +813,87 @@ module.exports = function(createFn) {
                 }
             });
 
-			describe('Option \'name\'',function(){
+            describe('Return Validation Errors', function() {
+                var savedCustomer, server,
+                    app = createFn();
+
+                setup();
+
+                before(function(done) {
+                    erm.serve(app, setup.customerModel, {
+                        lean: false,
+                        outputFn: app.outputFn,
+                        restify: app.isRestify,
+                        fullErrors: true,
+                        findOneAndUpdate: false
+                    });
+                    server = app.listen(testPort, function() {
+                        request.post({
+                            url: util.format('%s/api/v1/Customers', testUrl),
+                            json: {
+                                name: 'Bob'
+                            }
+                        }, function(err, res, body) {
+                            savedCustomer = body;
+                            done();
+                        });
+                    });
+                });
+
+                after(function(done) {
+                    if (app.close) {
+                        return app.close(done);
+                    }
+                    server.close(done);
+                });
+
+                it('Create Bad Customer', function (done) {
+                    request.post({
+                        url: util.format('%s/api/v1/Customers', testUrl),
+                        json: {
+                            name: 'Bob'
+                        }
+                    }, function (err, res, body) {
+                        if(typeof body === 'string'){
+                            body = JSON.parse(body);
+                        }
+                        assert.equal(res.statusCode, 400, 'Wrong status code');
+                        assert.strictEqual(body.err.indexOf('duplicate key') >= 0,
+                            true, 'Duplicate key error not found');
+                        done();
+                    });
+                });
+
+                it('Update Bad Customer', function (done) {
+                    request.post({
+                        url: util.format('%s/api/v1/Customers', testUrl),
+                        json: {
+                            name: 'Doug'
+                        }
+                    }, function (err, res, body) {
+                        request.put({
+                            url: util.format('%s/api/v1/Customers/%s', testUrl, body._id),
+                            json: {
+                                name:'Bob'
+                            }
+                        }, function (err, res, body) {
+                            if(typeof body === 'string'){
+                                body = JSON.parse(body);
+                            }
+
+                            assert.equal(res.statusCode, 400, 'Wrong status code');
+                            assert.strictEqual(body.err.indexOf('duplicate key') >= 0,
+                                true, 'Duplicate key error not found');
+                            done();
+
+                        });
+
+                    });
+                });
+            });
+
+
+            describe('Option \'name\'',function(){
 				var server,
 					app = createFn();
 
@@ -1522,14 +1602,14 @@ module.exports = function(createFn) {
                     request.post({
                         url: util.format('%s/api/v1/Customers', testUrl),
                         json: {
-                            name: 'A'
+                            name: 'B'
                         }
                     }, function(err, res, body) {
                         assert.equal(res.statusCode, 200);
                         done();
                     });
                 });
-                it('sends 500 on failure', function(done) {
+                it('sends 400 on failure', function(done) {
                     error = new Error();
                     request.post({
                         url: util.format('%s/api/v1/Customers', testUrl),

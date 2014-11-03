@@ -21,7 +21,8 @@ var Product = new Schema({
 var CustomerSchema = function () {
     Schema.apply(this, arguments);
     this.add({
-        name: { type: String, required: true },
+        name: { type: String, required: true, unique: true },
+        //friendlyId: { type: String, unique: true },
         comment: String,
         address: String,
         purchases: [{
