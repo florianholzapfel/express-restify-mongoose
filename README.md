@@ -54,7 +54,6 @@ http.createServer(app).listen(3000, function() {
 **Express 4**
 
 ```javascript
-var http = require('http');
 var express = require('express');
 var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
@@ -83,7 +82,7 @@ app.use(methodOverride());
 restify.serve(app, CustomerModel);
 restify.serve(app, InvoiceModel);
 
-http.createServer(app).listen(3000, function() {
+app.listen(3000, function() {
 	console.log("Express server listening on port 3000");
 });
 ```
