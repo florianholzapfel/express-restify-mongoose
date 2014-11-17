@@ -251,6 +251,7 @@ restify.serve(app, MyModel, {
 * Ph3n1x (https://github.com/Ph3n1x)
 * Emre Efendioğlu (https://github.com/emreefendioglu)
 * Tim Mckenzie (https://github.com/timmckenzie)
+* Emil Janitzek (https://github.com/wiggin)
 
 ## Formalia
 
