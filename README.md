@@ -97,6 +97,7 @@ POST http://localhost/api/v1/Customers
 DELETE http://localhost/api/v1/Customers
 
 GET http://localhost/api/v1/Customers/:id
+GET http://localhost/api/v1/Customers/:id/shallow
 PUT http://localhost/api/v1/Customers/:id
 POST http://localhost/api/v1/Customers/:id
 DELETE http://localhost/api/v1/Customers/:id
