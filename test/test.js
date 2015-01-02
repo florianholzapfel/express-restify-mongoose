@@ -126,6 +126,22 @@ module.exports = function(createFn) {
                         done();
                     });
                 });
+                
+                it('200 GET Products/:id/shallow', function(done) {
+                    request.get({
+                        url: util.format('%s/api/v1/Customers/%s/shallow', 
+                                         testUrl, savedProduct._id),
+                        json: true
+                    }, function(err, res, body) {
+                        assert.equal(res.statusCode, 200, 'Wrong status code');
+                        for(var prop in savedProduct) {
+                            savedProduct[prop] = typeof savedProduct[prop] === 'object' ? 
+                                true : savedProduct[prop];
+                        }
+                        assert.deepEqual(body, savedProduct);
+                        done();
+                    });
+                });
 
                 it('200 GET Customers should return no objects', function(done) {
                     request.get({
