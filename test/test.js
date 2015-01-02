@@ -129,16 +129,17 @@ module.exports = function(createFn) {
                 
                 it('200 GET Products/:id/shallow', function(done) {
                     request.get({
-                        url: util.format('%s/api/v1/Customers/%s/shallow', 
+                        url: util.format('%s/api/v1/Products/%s/shallow', 
                                          testUrl, savedProduct._id),
                         json: true
                     }, function(err, res, body) {
                         assert.equal(res.statusCode, 200, 'Wrong status code');
+                        var obj = {};
                         for(var prop in savedProduct) {
-                            savedProduct[prop] = typeof savedProduct[prop] === 'object' ? 
+                            obj[prop] = typeof savedProduct[prop] === 'object' && prop !== '_id' ? 
                                 true : savedProduct[prop];
                         }
-                        assert.deepEqual(body, savedProduct);
+                        assert.deepEqual(body, obj);
                         done();
                     });
                 });
