@@ -17,7 +17,6 @@ var testPort = 30023,
 
 module.exports = function(createFn) {
         describe(createFn.name, function() {
-            describe.only('General', function() {
                 var savedProduct, savedCustomer, savedInvoice, server,
                     app = createFn();
 
