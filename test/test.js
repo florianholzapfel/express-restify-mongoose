@@ -17,7 +17,7 @@ var testPort = 30023,
 
 module.exports = function(createFn) {
         describe(createFn.name, function() {
-            describe('General', function() {
+            describe.only('General', function() {
                 var savedProduct, savedCustomer, savedInvoice, server,
                     app = createFn();
 
@@ -27,7 +27,8 @@ module.exports = function(createFn) {
                     erm.defaults({
                         restify: app.isRestify,
                         outputFn: app.outputFn,
-                        lean: false
+                        lean: false,
+						middleware: []
                     });
                     erm.serve(app, setup.customerModel);
                     erm.serve(app, setup.productModel);
