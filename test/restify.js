@@ -13,8 +13,8 @@ function RestifyCustomOutputFunction() {
     app.use(restify.queryParser());
     app.use(restify.bodyParser());
     app.isRestify = true;
-    app.outputFn = function(res, result) {
-        res.send(result);
+    app.outputFn = function(res, result, statusCode) {
+        res.send(statusCode || 200, result);
     };
     return app;
 }

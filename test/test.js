@@ -55,7 +55,7 @@ module.exports = function(createFn) {
                             price: 10
                         }
                     }, function(err, res, body) {
-                        assert.equal(res.statusCode, 200, 'Wrong status code');
+                        assert.equal(res.statusCode, 201, 'Wrong status code');
                         assert.ok(body._id, '_id is not set');
                         assert.equal(body.name, 'ACME Product');
                         assert.equal(body.price, 10);
@@ -86,7 +86,7 @@ module.exports = function(createFn) {
                             }
                         ]
                     }, function(err, res, body) {
-                        assert.equal(res.statusCode, 200, 'Wrong status code');
+                        assert.equal(res.statusCode, 201, 'Wrong status code');
                         assert.ok(Array.isArray(body));
                         assert.ok(body.length, 2);
                         done();
@@ -149,7 +149,7 @@ module.exports = function(createFn) {
                         url: util.format('%s/api/v1/Customers', testUrl),
                         json: true
                     }, function(err, res, body) {
-                        assert.equal(res.statusCode, 200, 'Wrong status code');
+                        assert.equal(res.statusCode, 404, 'Wrong status code');
                         assert.equal(body.length, 0, 'Answer is not empty');
                         done();
                     });
@@ -175,7 +175,7 @@ module.exports = function(createFn) {
                             _id: null
                         }
                     }, function(err, res, body) {
-                        assert.equal(res.statusCode, 200, 'Wrong status code');
+                        assert.equal(res.statusCode, 201, 'Wrong status code');
                         assert.ok(body._id, '_id is not set');
                         assert.equal(body.name, 'Test');
                         assert.equal(body.comment, 'Comment');
@@ -199,7 +199,7 @@ module.exports = function(createFn) {
                             }
                         ]
                     }, function(err, res, body) {
-                        assert.equal(res.statusCode, 200, 'Wrong status code');
+                        assert.equal(res.statusCode, 201, 'Wrong status code');
                         assert.ok(Array.isArray(body));
                         assert.equal(body.length, 2);
                         done();
@@ -255,7 +255,7 @@ module.exports = function(createFn) {
                             __version: 1
                         }
                     }, function(err, res, body) {
-                        assert.equal(res.statusCode, 200, 'Wrong status code');
+                        assert.equal(res.statusCode, 201, 'Wrong status code');
                         assert.ok(body._id, '_id is not set');
                         assert.equal(body.customer, savedCustomer._id);
                         assert.ok(Array.isArray(body.products));
@@ -277,7 +277,7 @@ module.exports = function(createFn) {
                             __version: 1
                         }
                     }, function(err, res, body) {
-                        assert.equal(res.statusCode, 200, 'Wrong status code');
+                        assert.equal(res.statusCode, 201, 'Wrong status code');
                         assert.ok(body._id, '_id is not set');
                         assert.equal(body.customer, savedCustomer._id);
                         assert.ok(Array.isArray(body.products));
@@ -301,7 +301,7 @@ module.exports = function(createFn) {
                                 amount: 8.5
                             }
                         }, function(err, res, body) {
-                            assert.equal(res.statusCode, 200, 'Wrong status code');
+                            assert.equal(res.statusCode, 201, 'Wrong status code');
                             assert.ok(body._id, '_id is not set');
                             assert.equal(body.customer, savedCustomer._id);
                             assert.ok(Array.isArray(body.products));
@@ -326,7 +326,7 @@ module.exports = function(createFn) {
                                 amount: 8.5
                             }
                         }, function(err, res, body) {
-                            assert.equal(res.statusCode, 200, 'Wrong status code');
+                            assert.equal(res.statusCode, 201, 'Wrong status code');
                             assert.ok(body._id, '_id is not set');
                             assert.equal(body.customer, savedCustomer._id);
                             assert.ok(Array.isArray(body.products));
@@ -610,7 +610,7 @@ module.exports = function(createFn) {
                             savedCustomer._id),
                         json: true
                     }, function(err, res) {
-                        assert.equal(res.statusCode, 200, 'Wrong status code');
+                        assert.equal(res.statusCode, 204, 'Wrong status code');
                         done();
                     });
                 });
@@ -813,7 +813,7 @@ module.exports = function(createFn) {
                             url: util.format('%s/api/v1/customers', testUrl),
                             json: true
                         }, function(err, res, body) {
-                            assert.equal(res.statusCode, 200, 'Wrong status code');
+                            assert.equal(res.statusCode, 404, 'Wrong status code');
                             done();
                         });
                     });
@@ -938,7 +938,7 @@ module.exports = function(createFn) {
 					request.get({
 						url: util.format('%s/api/v1/Customer', testUrl)
 					}, function(err, res) {
-						assert.equal(res.statusCode, 200, 'Wrong status code');
+						assert.equal(res.statusCode, 404, 'Wrong status code');
 						done();
 					});
 				});
@@ -1037,7 +1037,7 @@ module.exports = function(createFn) {
                         url: util.format('%s/api/custom/customers', testUrl),
                         json: true
                     }, function(err, res, body) {
-                        assert.equal(res.statusCode, 200, 'Wrong status code');
+                        assert.equal(res.statusCode, 404, 'Wrong status code');
                         done();
                     });
                 });
@@ -1075,7 +1075,7 @@ module.exports = function(createFn) {
                             url: util.format('%s/api/v1/Customers', testUrl),
                             json: true
                         }, function(err, res, body) {
-                            assert.equal(res.statusCode, 200, 'Wrong status code');
+                            assert.equal(res.statusCode, 404, 'Wrong status code');
                             done();
                         });
                     });
@@ -1089,7 +1089,7 @@ module.exports = function(createFn) {
                                 _id: null
                             }
                         }, function(err, res, body) {
-                            assert.equal(res.statusCode, 200, 'Wrong status code');
+                            assert.equal(res.statusCode, 201, 'Wrong status code');
                             savedCustomer = body;
                             done();
                         });
@@ -1114,7 +1114,7 @@ module.exports = function(createFn) {
                                 savedCustomer._id),
                             json: true
                         }, function(err, res) {
-                            assert.equal(res.statusCode, 200, 'Wrong status code');
+                            assert.equal(res.statusCode, 204, 'Wrong status code');
                             done();
                         });
                     });
@@ -1151,7 +1151,7 @@ module.exports = function(createFn) {
                             url: util.format('%s/api/v1/Customers', testUrl),
                             json: true
                         }, function(err, res) {
-                            assert.equal(res.statusCode, 200, 'Wrong status code');
+                            assert.equal(res.statusCode, 404, 'Wrong status code');
                             done();
                         });
                     });
@@ -1548,7 +1548,7 @@ module.exports = function(createFn) {
                             url: util.format('%s/api/v1/Customers/%s', testUrl, goodCustomerId),
                             json: true
                         }, function(err, res, body) {
-                            assert.equal(res.statusCode, 200, 'Wrong status code');
+                            assert.equal(res.statusCode, 204, 'Wrong status code');
                             setup.customerModel.count(function(err, count) {
                                 assert.equal(count, 3, 'Customer Not Deleted');
                                 done();
@@ -1622,7 +1622,7 @@ module.exports = function(createFn) {
                             name: 'B'
                         }
                     }, function(err, res, body) {
-                        assert.equal(res.statusCode, 200);
+                        assert.equal(res.statusCode, 201);
                         done();
                     });
                 });
@@ -1699,7 +1699,7 @@ module.exports = function(createFn) {
                         json: true
                     }, function(err, res, body) {
                         sinon.assert.calledOnce(options.postDelete);
-                        assert.equal(res.statusCode, 200);
+                        assert.equal(res.statusCode, 204);
                         done();
                     });
                 });
@@ -1734,7 +1734,7 @@ module.exports = function(createFn) {
                         json: true
                     }, function(err, res, body) {
                         sinon.assert.calledOnce(options.postDelete);
-                        assert.equal(res.statusCode, 200);
+                        assert.equal(res.statusCode, 204);
                         done();
                     });
                 });
@@ -1881,7 +1881,7 @@ module.exports = function(createFn) {
                             url: util.format('%s/api/v1/Customers/%s', testUrl, goodCustomerId),
                             json: true
                         }, function(err, res, body) {
-                            assert.equal(res.statusCode, 200, 'Wrong status code');
+                            assert.equal(res.statusCode, 204, 'Wrong status code');
                             done();
                         });
                     });
