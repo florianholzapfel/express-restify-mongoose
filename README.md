@@ -79,11 +79,14 @@ var app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(methodOverride());
-restify.serve(app, CustomerModel);
-restify.serve(app, InvoiceModel);
+
+var router = express.Router();
+restify.serve(router, CustomerModel);
+restify.serve(router, InvoiceModel);
+app.use(router);
 
 app.listen(3000, function() {
-	console.log("Express server listening on port 3000");
+    console.log("Express server listening on port 3000");
 });
 ```
 
@@ -97,6 +100,7 @@ POST http://localhost/api/v1/Customers
 DELETE http://localhost/api/v1/Customers
 
 GET http://localhost/api/v1/Customers/:id
+GET http://localhost/api/v1/Customers/:id/shallow
 PUT http://localhost/api/v1/Customers/:id
 POST http://localhost/api/v1/Customers/:id
 DELETE http://localhost/api/v1/Customers/:id
