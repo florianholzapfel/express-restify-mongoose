@@ -1,3 +1,5 @@
+'use strict';
+
 var restify = require('restify'),
 	test = require('./test');
 

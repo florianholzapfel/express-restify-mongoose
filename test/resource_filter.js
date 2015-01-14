@@ -1,3 +1,5 @@
+'use strict';
+
 var Filter = require('../lib/resource_filter');
 
 var setup = require('./setup');

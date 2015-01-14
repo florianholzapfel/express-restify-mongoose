@@ -1,6 +1,6 @@
 {
     "node"          : true,
-    "strict"        : false,
+    "strict"        : true,
 
     // style
 

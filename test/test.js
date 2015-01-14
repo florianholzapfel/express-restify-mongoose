@@ -1,3 +1,5 @@
+'use strict';
+
 var erm = require('../lib/express-restify-mongoose');
 
 var setup = require('./setup');

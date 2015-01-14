@@ -1,3 +1,5 @@
+'use strict';
+
 var sinon = require('sinon'),
     setup = require('./setup'),
     middleware = require('../lib/permissions');
