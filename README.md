@@ -169,40 +169,37 @@ serve(app, model, [options])
 ```
 
 #### arguments
-* app - The express app
-* model - Your mongoose database model
-* options - Optional options object
-  * strict - When set to true, disallows DELETE all, POST with id param, and PUT without id param
-  * prefix - Some path that will be prefixed to the REST path. Defaults to ```/api```
-  * version - An API version that will be prefixed to the rest path. Defaults to ```/v1```
-    * if either api or version contain ```/:id``` then that will be used as the location to search for the id. ```version: 'v1/Entities/:id'``` will generate ```/api/v1/Entities/:id/<modelName>``` and ```/api/v1/Entities/<modelName>``` for all pertinent methods
-  * idProperty - If specified, the 'by id' methods will query on the given property instead of _id
-  * middleware - An express middleware or an array of express middlewares that will be used.
-  * prereq - A function that takes the req object and returns or yields true or false. This function will be called for every POST PUT and DELETE request and send 403 on false.
-  * access - A function that takes the req object and returns or yields 'public', 'private', or 'protected'. This function will be called for every GET POST and PUT request and filter out the appropriate fields
-  * plural - If ```true```, does not pluralize the database model name. Default is ```false```
-  * lowercase - If ```true```, turn model name to lower case before generating the routes.
-  * name - If specified, this is used as the name of the endpoint
-  * outputFn - A function with the signature ```function(res, result)``` that is used to output the result. ```res``` is a restify or express result object, ```result``` is the result that is returned from the mongo db.
-  * private - String of comma separated field names which are not to be returned by queries that do not have private access.
-  * protected - String of comma separated field names which are not to be returned by queries that have public access.
-  * postProcess - A middleware to be called after the response has been sent.
-    It is only executed on success.  If an error is sent to the client,
-    this is not executed.
-  * lean - If ```false```, will not convert to returned values to plain old javascript
-    objects. This is bad for performance, but it allows for returning virtuals, getters    and setters.
-  * findOneAndUpdate - If ```false```, will first find documents by id and then call save. This
-    allows mongoose validators to be called. Default is ```true```.
+* **app** - The express app
+* **model** - Your mongoose database model
+* **options** - Optional options object
+  * **strict** - When set to true, disallows DELETE all, POST with id param, and PUT without id param
+  * **prefix** - Some path that will be prefixed to the REST path. Defaults to `/api`
+  * **version** - An API version that will be prefixed to the rest path. Defaults to `/v1`
+    * if either api or version contain `/:id` then that will be used as the location to search for the id. `version: 'v1/Entities/:id'` will generate `/api/v1/Entities/:id/<modelName>` and `/api/v1/Entities/<modelName>` for all pertinent methods
+  * **idProperty** - If specified, the 'by id' methods will query on the given property instead of _id
+  * **middleware** - An express middleware or an array of express middlewares that will be used.
+  * **prereq** - A function that takes the req object and returns or yields true or false. This function will be called for every POST PUT and DELETE request and send 403 on false.
+  * **access** - A function that takes the req object and returns or yields 'public', 'private', or 'protected'. This function will be called for every GET POST and PUT request and filter out the appropriate fields
+  * **plural** - If `true`, does not pluralize the database model name. Default is `false`
+  * **lowercase** - If `true`, turn model name to lower case before generating the routes.
+  * **name** - If specified, this is used as the name of the endpoint
+  * **outputFn** - A function with the signature `function(res, result)` that is used to output the result. `res` is a restify or express result object, `result` is the result that is returned from the mongo db.
+  * **private** - String of comma separated field names which are not to be returned by queries that do not have private access.
+  * **protected** - String of comma separated field names which are not to be returned by queries that have public access.
+  * **postProcess** - A middleware to be called after the response has been sent. It is only executed on success.  If an error is sent to the client, this is not executed.
+  * **lean** - If `false`, will not convert to returned values to plain old javascript objects. This is bad for performance, but it allows for returning virtuals, getters    and setters.
+  * **findOneAndUpdate** - If `false`, will first find documents by id and then call save. This
+    allows mongoose validators to be called. Default is `true`.
     (For more information, read the Mongoose docs:
     http://mongoosejs.com/docs/api.html#model_Model.findByIdAndUpdate)
-  * findOneAndRemove - If ```false```, will first find documents by id and then call remove. This
-    allows mongoose post and pre hooks to be called. Default is ```true```.
+  * **findOneAndRemove** - If `false`, will first find documents by id and then call remove. This
+    allows mongoose post and pre hooks to be called. Default is `true`.
     (For more information, read the Mongoose docs:
     http://mongoosejs.com/docs/api.html#model_Model.findOneAndRemove) 
-  * contextFilter - `function(model, req, cb)`. Allows authorization per request, for example filtering items based on req.user. Defaults to `cb(model)`.
- * postCreate - A function with the signature `function (res, result, done)` which is run after document creation.
- * postDelete - A function with the signature `function (res, result, done)` which is run after document deletion.
- * fullErrors - When an occurs in mongoose, the full error object, if available, will be returned instead of just the HTTP status message.  Default false
+  * **contextFilter - `function(model, req, cb)`. Allows authorization per request, for example filtering items based on req.user. Defaults to `cb(model)`.
+ * **postCreate** - A function with the signature `function (res, result, done)` which is run after document creation.
+ * **postDelete** - A function with the signature `function (res, result, done)` which is run after document deletion.
+ * **fullErrors** - When an occurs in mongoose, the full error object, if available, will be returned instead of just the HTTP status message.  Default false
 
 ### defaults
 ```
