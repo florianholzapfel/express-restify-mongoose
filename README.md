@@ -183,6 +183,7 @@ serve(app, model, [options])
   * **plural** - If `true`, does not pluralize the database model name. Default is `false`
   * **lowercase** - If `true`, turn model name to lower case before generating the routes.
   * **name** - If specified, this is used as the name of the endpoint
+  * **onError** - A function with the signature `function(err, req, res, next)` that is used to output an error. `err` is the error object that is returned by mongoose. Works best with `fullErrors = true`
   * **outputFn** - A function with the signature `function(res, result)` that is used to output the result. `res` is a restify or express result object, `result` is the result that is returned from the mongo db.
   * **private** - String of comma separated field names which are not to be returned by queries that do not have private access.
   * **protected** - String of comma separated field names which are not to be returned by queries that have public access.
