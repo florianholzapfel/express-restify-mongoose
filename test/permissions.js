@@ -33,19 +33,21 @@ describe('permissions', function () {
                 return true;
             };
 
-            middleware.allow(false, prereq)({}, res, function () {
+            middleware.allow(prereq)({}, res, function () {
                 assert(true);
                 done();
             });
         });
 
-        it('fails', function () {
+        it('fails', function (done) {
             var prereq = function () {
                 return false;
             };
 
-            middleware.allow(false, prereq)({}, res);
-            this.mock.verify();
+            middleware.allow(prereq, function () {
+                assert(true);
+                done();
+            })({}, res);
         });
     });
 
@@ -53,17 +55,19 @@ describe('permissions', function () {
         it('passes', function (done) {
             var prereq = function (req, cb) { cb(true); };
 
-            middleware.allow(false, prereq)({}, res, function () {
+            middleware.allow(prereq)({}, res, function () {
                 assert(true);
                 done();
             });
         });
 
-        it('fails', function () {
+        it('fails', function (done) {
             var prereq = function (req, cb) { cb(false); };
 
-            middleware.allow(false, prereq)({}, res);
-            this.mock.verify();
+            middleware.allow(prereq, function () {
+                assert(true);
+                done();
+            })({}, res);
         });
     });
 
