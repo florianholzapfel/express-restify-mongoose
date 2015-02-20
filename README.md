@@ -255,6 +255,8 @@ restify.serve(app, MyModel, {
 * Tim Mckenzie (https://github.com/timmckenzie)
 * Emil Janitzek (https://github.com/wiggin)
 * Daniel Henrique Joppi (https://github.com/danieljoppi)
+* Caleb Meredith (https://github.com/CalebMer)
+* David Souther (https://github.com/DavidSouther)
 
 ## Formalia
 
