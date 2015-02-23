@@ -152,7 +152,7 @@ module.exports = function(createFn) {
                         url: util.format('%s/api/v1/Customers', testUrl),
                         json: true
                     }, function(err, res, body) {
-                        assert.equal(res.statusCode, 404, 'Wrong status code');
+                        assert.equal(res.statusCode, 200, 'Wrong status code');
                         assert.equal(body.length, 0, 'Answer is not empty');
                         done();
                     });
@@ -816,7 +816,7 @@ module.exports = function(createFn) {
                             url: util.format('%s/api/v1/customers', testUrl),
                             json: true
                         }, function(err, res, body) {
-                            assert.equal(res.statusCode, 404, 'Wrong status code');
+                            assert.equal(res.statusCode, 200, 'Wrong status code');
                             done();
                         });
                     });
@@ -941,7 +941,7 @@ module.exports = function(createFn) {
 					request.get({
 						url: util.format('%s/api/v1/Customer', testUrl)
 					}, function(err, res) {
-						assert.equal(res.statusCode, 404, 'Wrong status code');
+						assert.equal(res.statusCode, 200, 'Wrong status code');
 						done();
 					});
 				});
@@ -1040,7 +1040,7 @@ module.exports = function(createFn) {
                         url: util.format('%s/api/custom/customers', testUrl),
                         json: true
                     }, function(err, res, body) {
-                        assert.equal(res.statusCode, 404, 'Wrong status code');
+                        assert.equal(res.statusCode, 200, 'Wrong status code');
                         done();
                     });
                 });
@@ -1078,7 +1078,7 @@ module.exports = function(createFn) {
                             url: util.format('%s/api/v1/Customers', testUrl),
                             json: true
                         }, function(err, res, body) {
-                            assert.equal(res.statusCode, 404, 'Wrong status code');
+                            assert.equal(res.statusCode, 200, 'Wrong status code');
                             done();
                         });
                     });
@@ -1154,7 +1154,7 @@ module.exports = function(createFn) {
                             url: util.format('%s/api/v1/Customers', testUrl),
                             json: true
                         }, function(err, res) {
-                            assert.equal(res.statusCode, 404, 'Wrong status code');
+                            assert.equal(res.statusCode, 200, 'Wrong status code');
                             done();
                         });
                     });
