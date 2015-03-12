@@ -257,6 +257,8 @@ restify.serve(app, MyModel, {
 * Daniel Henrique Joppi (https://github.com/danieljoppi)
 * Caleb Meredith (https://github.com/CalebMer)
 * David Souther (https://github.com/DavidSouther)
+* Marco Cameriero (https://github.com/95ulisse)
+* Jan Melcher (https://github.com/Yogu)
 
 ## Formalia
 
