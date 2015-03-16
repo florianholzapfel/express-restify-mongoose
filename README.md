@@ -197,7 +197,7 @@ serve(app, model, [options])
     allows mongoose post and pre hooks to be called. Default is `true`.
     (For more information, read the Mongoose docs:
     http://mongoosejs.com/docs/api.html#model_Model.findOneAndRemove) 
-  * **contextFilter - `function(model, req, cb)`. Allows authorization per request, for example filtering items based on req.user. Defaults to `cb(model)`.
+  * **contextFilter** - `function(model, req, cb)`. Allows authorization per request, for example filtering items based on req.user. Defaults to `cb(model)`.
  * **postCreate** - A function with the signature `function (res, result, done)` which is run after document creation.
  * **postDelete** - A function with the signature `function (res, result, done)` which is run after document deletion.
  * **fullErrors** - When an occurs in mongoose, the full error object, if available, will be returned instead of just the HTTP status message.  Default false
