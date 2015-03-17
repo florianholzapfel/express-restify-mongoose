@@ -73,7 +73,7 @@
     ],
     "dependencies": {
         "inflection": "~1.6",
-        "lodash": "~3.2",
+        "lodash": "~3.5",
         "mongoose": "~3.8.0"
     },
     "description": "Easily restify mongoose database",
