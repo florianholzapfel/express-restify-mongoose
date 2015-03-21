@@ -116,6 +116,7 @@ GET http://localhost/api/v1/Customers?name=<value
 GET http://localhost/api/v1/Customers?name=<=value
 GET http://localhost/api/v1/Customers?name=!=value
 GET http://localhost/api/v1/Customers?select=name
+GET http://localhost/api/v1/Customers?select=-name
 ```
 ## Mongoose Query
 ```
