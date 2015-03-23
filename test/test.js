@@ -514,6 +514,22 @@ module.exports = function(createFn) {
                             done();
                         });
                     });
+                    it('200 GET Customers/:id?select=-name should not fetch name ' +
+                        '(but e.g. comment should be available)', function(done) {
+                        request.get({
+                            url: util.format('%s/api/v1/Customers/%s?select=-name',
+                                testUrl,
+                                savedCustomer._id),
+                            json: true
+                        }, function(err, res, body) {
+                            assert.equal(res.statusCode, 200, 'Wrong status code');
+                            assert.equal(undefined, body.name,
+                                'Name field should not be included');
+                            assert.equal('Comment', body.comment,
+                                'Comment field should be included');
+                            done();
+                        });
+                    });
 
                     it('200 GET Invoices/:id?populate=customer&select=' +
                         'customer.name,amount should not fetch ' +
