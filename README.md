@@ -197,7 +197,7 @@ serve(app, model, [options])
   * **findOneAndRemove** - If `false`, will first find documents by id and then call remove. This
     allows mongoose post and pre hooks to be called. Default is `true`.
     (For more information, read the Mongoose docs:
-    http://mongoosejs.com/docs/api.html#model_Model.findOneAndRemove) 
+    http://mongoosejs.com/docs/api.html#model_Model.findOneAndRemove)
   * **contextFilter** - `function(model, req, cb)`. Allows authorization per request, for example filtering items based on req.user. Defaults to `cb(model)`.
  * **postCreate** - A function with the signature `function (res, result, done)` which is run after document creation.
  * **postDelete** - A function with the signature `function (res, result, done)` which is run after document deletion.
@@ -260,6 +260,8 @@ restify.serve(app, MyModel, {
 * David Souther (https://github.com/DavidSouther)
 * Marco Cameriero (https://github.com/95ulisse)
 * Jan Melcher (https://github.com/Yogu)
+* Urs Wolfer (https://github.com/uwolfer)
+* Thomas Forrer (https://github.com/forrert)
 
 ## Formalia
 
