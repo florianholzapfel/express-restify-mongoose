@@ -2,9 +2,9 @@
 <html>
 
   <head>
-    <meta charset='utf-8' />
-    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="express-restify-mongoose : Easily restify mongoose databases" />
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="express-restify-mongoose : Easily restify mongoose databases">
 
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
@@ -32,7 +32,7 @@
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
         <h1>
-<a name="express-restify-mongoose" class="anchor" href="#express-restify-mongoose"><span class="octicon octicon-link"></span></a>express-restify-mongoose</h1>
+<a id="express-restify-mongoose" class="anchor" href="#express-restify-mongoose" aria-hidden="true"><span class="octicon octicon-link"></span></a>express-restify-mongoose</h1>
 
 <p>This library provides mongoose database models with a REST interface.</p>
 
@@ -41,47 +41,86 @@
 <a href="https://david-dm.org/florianholzapfel/express-restify-mongoose"><img src="https://david-dm.org/florianholzapfel/express-restify-mongoose.png" alt="Dependencies"></a></p>
 
 <h2>
-<a name="getting-started" class="anchor" href="#getting-started"><span class="octicon octicon-link"></span></a>Getting started</h2>
+<a id="getting-started" class="anchor" href="#getting-started" aria-hidden="true"><span class="octicon octicon-link"></span></a>Getting started</h2>
 
 <p>In your shell, install with npm:</p>
 
-<div class="highlight highlight-sh"><pre>npm install express-restify-mongoose
-</pre></div>
+<div class="highlight highlight-sh"><pre>npm install express-restify-mongoose</pre></div>
 
 <p>In your code:</p>
 
-<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">http</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'http'</span><span class="p">);</span>
-<span class="kd">var</span> <span class="nx">express</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'express'</span><span class="p">);</span>
-<span class="kd">var</span> <span class="nx">mongoose</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'mongoose'</span><span class="p">);</span>
-<span class="kd">var</span> <span class="nx">Schema</span> <span class="o">=</span> <span class="nx">mongoose</span><span class="p">.</span><span class="nx">Schema</span><span class="p">;</span>
-<span class="kd">var</span> <span class="nx">restify</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'express-restify-mongoose'</span><span class="p">)</span>
+<p><strong>Express 3</strong></p>
 
-<span class="nx">mongoose</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'mongodb://localhost/database'</span><span class="p">);</span>
+<div class="highlight highlight-javascript"><pre><span class="pl-k">var</span> http <span class="pl-k">=</span> <span class="pl-c1">require</span>(<span class="pl-s"><span class="pl-pds">'</span>http<span class="pl-pds">'</span></span>);
+<span class="pl-k">var</span> express <span class="pl-k">=</span> <span class="pl-c1">require</span>(<span class="pl-s"><span class="pl-pds">'</span>express<span class="pl-pds">'</span></span>);
+<span class="pl-k">var</span> mongoose <span class="pl-k">=</span> <span class="pl-c1">require</span>(<span class="pl-s"><span class="pl-pds">'</span>mongoose<span class="pl-pds">'</span></span>);
+<span class="pl-k">var</span> Schema <span class="pl-k">=</span> mongoose.Schema;
+<span class="pl-k">var</span> restify <span class="pl-k">=</span> <span class="pl-c1">require</span>(<span class="pl-s"><span class="pl-pds">'</span>express-restify-mongoose<span class="pl-pds">'</span></span>)
 
-<span class="kd">var</span> <span class="nx">Customer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Schema</span><span class="p">({</span>
-    <span class="nx">name</span><span class="o">:</span> <span class="p">{</span> <span class="nx">type</span><span class="o">:</span> <span class="nb">String</span><span class="p">,</span> <span class="nx">required</span><span class="o">:</span> <span class="kc">true</span> <span class="p">},</span>
-    <span class="nx">comment</span><span class="o">:</span> <span class="p">{</span> <span class="nx">type</span><span class="o">:</span> <span class="nb">String</span> <span class="p">}</span>
-<span class="p">});</span>
-<span class="kd">var</span> <span class="nx">CustomerModel</span> <span class="o">=</span> <span class="nx">mongoose</span><span class="p">.</span><span class="nx">model</span><span class="p">(</span><span class="s1">'Customer'</span><span class="p">,</span> <span class="nx">Customer</span><span class="p">);</span>
+mongoose.connect(<span class="pl-s"><span class="pl-pds">'</span>mongodb://localhost/database<span class="pl-pds">'</span></span>);
 
-<span class="kd">var</span> <span class="nx">Invoice</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Schema</span><span class="p">({</span>
-    <span class="nx">customer</span><span class="o">:</span> <span class="p">{</span> <span class="nx">type</span><span class="o">:</span> <span class="nx">Schema</span><span class="p">.</span><span class="nx">Types</span><span class="p">.</span><span class="nx">ObjectId</span><span class="p">,</span> <span class="nx">ref</span><span class="o">:</span> <span class="s1">'Customer'</span> <span class="p">},</span>
-    <span class="nx">amount</span><span class="o">:</span> <span class="p">{</span> <span class="nx">type</span><span class="o">:</span> <span class="nb">Number</span><span class="p">,</span> <span class="nx">required</span><span class="o">:</span> <span class="kc">true</span> <span class="p">}</span>
-<span class="p">});</span>
-<span class="kd">var</span> <span class="nx">InvoiceModel</span> <span class="o">=</span> <span class="nx">mongoose</span><span class="p">.</span><span class="nx">model</span><span class="p">(</span><span class="s1">'Invoice'</span><span class="p">,</span> <span class="nx">Invoice</span><span class="p">);</span>
+<span class="pl-k">var</span> Customer <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Schema</span>({
+    name<span class="pl-k">:</span> { type<span class="pl-k">:</span> <span class="pl-c1">String</span>, required<span class="pl-k">:</span> <span class="pl-c1">true</span> },
+    comment<span class="pl-k">:</span> { type<span class="pl-k">:</span> <span class="pl-c1">String</span> }
+});
+<span class="pl-k">var</span> CustomerModel <span class="pl-k">=</span> mongoose.model(<span class="pl-s"><span class="pl-pds">'</span>Customer<span class="pl-pds">'</span></span>, Customer);
 
-<span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">express</span><span class="p">();</span>
-<span class="nx">app</span><span class="p">.</span><span class="nx">configure</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
-    <span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">express</span><span class="p">.</span><span class="nx">bodyParser</span><span class="p">());</span>
-    <span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">express</span><span class="p">.</span><span class="nx">methodOverride</span><span class="p">());</span>
-    <span class="nx">restify</span><span class="p">.</span><span class="nx">serve</span><span class="p">(</span><span class="nx">app</span><span class="p">,</span> <span class="nx">CustomerModel</span><span class="p">);</span>
-    <span class="nx">restify</span><span class="p">.</span><span class="nx">serve</span><span class="p">(</span><span class="nx">app</span><span class="p">,</span> <span class="nx">InvoiceModel</span><span class="p">);</span>
-<span class="p">});</span>
+<span class="pl-k">var</span> Invoice <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Schema</span>({
+    customer<span class="pl-k">:</span> { type<span class="pl-k">:</span> Schema.Types.ObjectId, ref<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>Customer<span class="pl-pds">'</span></span> },
+    amount<span class="pl-k">:</span> { type<span class="pl-k">:</span> <span class="pl-c1">Number</span>, required<span class="pl-k">:</span> <span class="pl-c1">true</span> }
+});
+<span class="pl-k">var</span> InvoiceModel <span class="pl-k">=</span> mongoose.model(<span class="pl-s"><span class="pl-pds">'</span>Invoice<span class="pl-pds">'</span></span>, Invoice);
 
-<span class="nx">http</span><span class="p">.</span><span class="nx">createServer</span><span class="p">(</span><span class="nx">app</span><span class="p">).</span><span class="nx">listen</span><span class="p">(</span><span class="mi">3000</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"Express server listening on port 3000"</span><span class="p">);</span>
-<span class="p">});</span>
-</pre></div>
+<span class="pl-k">var</span> app <span class="pl-k">=</span> express();
+app.configure(<span class="pl-k">function</span>(){
+    app.use(express.bodyParser());
+    app.use(express.methodOverride());
+    restify.serve(app, CustomerModel);
+    restify.serve(app, InvoiceModel);
+});
+
+http.createServer(app).listen(<span class="pl-c1">3000</span>, <span class="pl-k">function</span>() {
+    <span class="pl-en">console</span><span class="pl-c1">.log</span>(<span class="pl-s"><span class="pl-pds">"</span>Express server listening on port 3000<span class="pl-pds">"</span></span>);
+});</pre></div>
+
+<p><strong>Express 4</strong></p>
+
+<div class="highlight highlight-javascript"><pre><span class="pl-k">var</span> express <span class="pl-k">=</span> <span class="pl-c1">require</span>(<span class="pl-s"><span class="pl-pds">'</span>express<span class="pl-pds">'</span></span>);
+<span class="pl-k">var</span> bodyParser <span class="pl-k">=</span> <span class="pl-c1">require</span>(<span class="pl-s"><span class="pl-pds">'</span>body-parser<span class="pl-pds">'</span></span>);
+<span class="pl-k">var</span> methodOverride <span class="pl-k">=</span> <span class="pl-c1">require</span>(<span class="pl-s"><span class="pl-pds">'</span>method-override<span class="pl-pds">'</span></span>);
+<span class="pl-k">var</span> mongoose <span class="pl-k">=</span> <span class="pl-c1">require</span>(<span class="pl-s"><span class="pl-pds">'</span>mongoose<span class="pl-pds">'</span></span>);
+<span class="pl-k">var</span> Schema <span class="pl-k">=</span> mongoose.Schema;
+<span class="pl-k">var</span> restify <span class="pl-k">=</span> <span class="pl-c1">require</span>(<span class="pl-s"><span class="pl-pds">'</span>express-restify-mongoose<span class="pl-pds">'</span></span>)
+
+mongoose.connect(<span class="pl-s"><span class="pl-pds">'</span>mongodb://localhost/database<span class="pl-pds">'</span></span>);
+
+<span class="pl-k">var</span> Customer <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Schema</span>({
+    name<span class="pl-k">:</span> { type<span class="pl-k">:</span> <span class="pl-c1">String</span>, required<span class="pl-k">:</span> <span class="pl-c1">true</span> },
+    comment<span class="pl-k">:</span> { type<span class="pl-k">:</span> <span class="pl-c1">String</span> }
+});
+<span class="pl-k">var</span> CustomerModel <span class="pl-k">=</span> mongoose.model(<span class="pl-s"><span class="pl-pds">'</span>Customer<span class="pl-pds">'</span></span>, Customer);
+
+<span class="pl-k">var</span> Invoice <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Schema</span>({
+    customer<span class="pl-k">:</span> { type<span class="pl-k">:</span> Schema.Types.ObjectId, ref<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>Customer<span class="pl-pds">'</span></span> },
+    amount<span class="pl-k">:</span> { type<span class="pl-k">:</span> <span class="pl-c1">Number</span>, required<span class="pl-k">:</span> <span class="pl-c1">true</span> }
+});
+<span class="pl-k">var</span> InvoiceModel <span class="pl-k">=</span> mongoose.model(<span class="pl-s"><span class="pl-pds">'</span>Invoice<span class="pl-pds">'</span></span>, Invoice);
+
+<span class="pl-k">var</span> app <span class="pl-k">=</span> express();
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended<span class="pl-k">:</span> <span class="pl-c1">true</span> }));
+app.use(methodOverride());
+
+<span class="pl-k">var</span> router <span class="pl-k">=</span> express.Router();
+restify.serve(router, CustomerModel);
+restify.serve(router, InvoiceModel);
+app.use(router);
+
+app.listen(<span class="pl-c1">3000</span>, <span class="pl-k">function</span>() {
+    <span class="pl-en">console</span><span class="pl-c1">.log</span>(<span class="pl-s"><span class="pl-pds">"</span>Express server listening on port 3000<span class="pl-pds">"</span></span>);
+});</pre></div>
+
+<p>Then you can excute the following queries:</p>
 
 <pre><code>GET http://localhost/api/v1/Customers/count
 GET http://localhost/api/v1/Customers
@@ -90,13 +129,14 @@ POST http://localhost/api/v1/Customers
 DELETE http://localhost/api/v1/Customers
 
 GET http://localhost/api/v1/Customers/:id
+GET http://localhost/api/v1/Customers/:id/shallow
 PUT http://localhost/api/v1/Customers/:id
 POST http://localhost/api/v1/Customers/:id
 DELETE http://localhost/api/v1/Customers/:id
 </code></pre>
 
 <h3>
-<a name="query" class="anchor" href="#query"><span class="octicon octicon-link"></span></a>Query</h3>
+<a id="query" class="anchor" href="#query" aria-hidden="true"><span class="octicon octicon-link"></span></a>Query</h3>
 
 <pre><code>GET http://localhost/api/v1/Customers?name=~regex
 GET http://localhost/api/v1/Customers?name=value
@@ -106,10 +146,11 @@ GET http://localhost/api/v1/Customers?name=&lt;value
 GET http://localhost/api/v1/Customers?name=&lt;=value
 GET http://localhost/api/v1/Customers?name=!=value
 GET http://localhost/api/v1/Customers?select=name
+GET http://localhost/api/v1/Customers?select=-name
 </code></pre>
 
 <h2>
-<a name="mongoose-query" class="anchor" href="#mongoose-query"><span class="octicon octicon-link"></span></a>Mongoose Query</h2>
+<a id="mongoose-query" class="anchor" href="#mongoose-query" aria-hidden="true"><span class="octicon octicon-link"></span></a>Mongoose Query</h2>
 
 <pre><code>var query = { $or: [
                 {name: '~Another'},
@@ -129,14 +170,14 @@ GET http://localhost/api/v1/Customers?query={"field":"&gt;=value", "field":[valu
 </code></pre>
 
 <h2>
-<a name="logical-queries-andor" class="anchor" href="#logical-queries-andor"><span class="octicon octicon-link"></span></a>Logical Queries (and,or)</h2>
+<a id="logical-queries-andor" class="anchor" href="#logical-queries-andor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Logical Queries (and,or)</h2>
 
 <pre><code>GET http://localhost/api/v1/Customers?$and=[{"field":"&gt;=value"},{"field":[value1,value2]}]
 GET http://localhost/api/v1/Customers?$or=[{"field":"value"},{"$and",[{"field":"~value"},{"field":"!=value"}]}]
 </code></pre>
 
 <h3>
-<a name="ordering--sorting" class="anchor" href="#ordering--sorting"><span class="octicon octicon-link"></span></a>Ordering &amp; Sorting</h3>
+<a id="ordering--sorting" class="anchor" href="#ordering--sorting" aria-hidden="true"><span class="octicon octicon-link"></span></a>Ordering &amp; Sorting</h3>
 
 <pre><code>GET http://localhost/api/v1/Customers?sort=name
 GET http://localhost/api/v1/Customers?sort=-name
@@ -144,7 +185,7 @@ GET http://localhost/api/v1/Customers?skip=10&amp;limit=10
 </code></pre>
 
 <h3>
-<a name="populate-fields" class="anchor" href="#populate-fields"><span class="octicon octicon-link"></span></a>Populate Fields</h3>
+<a id="populate-fields" class="anchor" href="#populate-fields" aria-hidden="true"><span class="octicon octicon-link"></span></a>Populate Fields</h3>
 
 <pre><code>GET http://localhost/api/v1/Invoices?populate=customer
 GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name
@@ -159,65 +200,130 @@ GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name,
 </code></pre>
 
 <h2>
-<a name="reference" class="anchor" href="#reference"><span class="octicon octicon-link"></span></a>Reference</h2>
+<a id="reference" class="anchor" href="#reference" aria-hidden="true"><span class="octicon octicon-link"></span></a>Reference</h2>
 
 <h3>
-<a name="serve" class="anchor" href="#serve"><span class="octicon octicon-link"></span></a>serve</h3>
+<a id="serve" class="anchor" href="#serve" aria-hidden="true"><span class="octicon octicon-link"></span></a>serve</h3>
 
 <pre><code>serve(app, model, [options])
 </code></pre>
 
 <h4>
-<a name="arguments" class="anchor" href="#arguments"><span class="octicon octicon-link"></span></a>arguments</h4>
+<a id="arguments" class="anchor" href="#arguments" aria-hidden="true"><span class="octicon octicon-link"></span></a>arguments</h4>
 
 <ul>
-<li>app - The express app</li>
-<li>model - Your mongoose database model</li>
-<li>options - Optional options object
+<li>
+<strong>app</strong> - The express app</li>
+<li>
+<strong>model</strong> - Your mongoose database model</li>
+<li>
+<strong>options</strong> - Optional options object
 
 <ul>
-<li>strict - When set to true, disallows DELETE all, POST with id param, and PUT without id param</li>
-<li>prefix - Some path that will be prefixed to the REST path. Defaults to <code>/api</code>
+<li>
+<strong>strict</strong> - When set to true, disallows DELETE all, POST with id param, and PUT without id param</li>
+<li>
+<strong>prefix</strong> - Some path that will be prefixed to the REST path. Defaults to <code>/api</code>
 </li>
-<li>version - An API version that will be prefixed to the rest path. Defaults to <code>/v1</code>
+<li>
+<strong>version</strong> - An API version that will be prefixed to the rest path. Defaults to <code>/v1</code>
+
+<ul>
+<li>if either api or version contain <code>/:id</code> then that will be used as the location to search for the id. <code>version: 'v1/Entities/:id'</code> will generate <code>/api/v1/Entities/:id/&lt;modelName&gt;</code> and <code>/api/v1/Entities/&lt;modelName&gt;</code> for all pertinent methods</li>
+</ul>
 </li>
-<li>middleware - An express middleware or an array of express middlewares that will be used.</li>
-<li>prereq - A function that takes the req object and returns or yields true or false. This function will be called for every POST PUT and DELETE request and send 403 on false.</li>
-<li>access - A function that takes the req object and returns or yields 'public', 'private', or 'protected'. This function will be called for every GET POST and PUT request and filter out the appropriate fields</li>
-<li>plural - If <code>true</code>, does not pluralize the database model name. Default is <code>false</code>
+<li>
+<strong>idProperty</strong> - If specified, the 'by id' methods will query on the given property instead of _id</li>
+<li>
+<strong>middleware</strong> - An express middleware or an array of express middlewares that will be used.</li>
+<li>
+<strong>prereq</strong> - A function that takes the req object and returns or yields true or false. This function will be called for every POST PUT and DELETE request and send 403 on false.</li>
+<li>
+<strong>access</strong> - A function that takes the req object and returns or yields 'public', 'private', or 'protected'. This function will be called for every GET POST and PUT request and filter out the appropriate fields</li>
+<li>
+<strong>plural</strong> - If <code>true</code>, does not pluralize the database model name. Default is <code>false</code>
 </li>
-<li>lowercase - If <code>true</code>, turn model name to lower case before generating the routes.</li>
-<li>outputFn - A function with the signature <code>function(res, result)</code> that is used to output the result. <code>res</code> is a restify or express result object, <code>result</code> is the result that is returned from the mongo db.</li>
-<li>private - String of comma separated field names which are not to be returned by queries that do not have private access.</li>
-<li>protected - String of comma separated field names which are not to be returned by queries that have public access.</li>
-<li>postProcess - A middleware to be called after the response has been sent.
-It is only executed on success.  If an error is sent to the client,
-this is not executed.</li>
-<li>lean - If <code>false</code>, will not convert to returned values to plain old javascript
-objects. This is bad for performance, but it allows for returning virtuals, getters    and setters.</li>
-<li>findOneAndUpdate - If <code>false</code>, will first find documents by id and then call save. This
+<li>
+<strong>lowercase</strong> - If <code>true</code>, turn model name to lower case before generating the routes.</li>
+<li>
+<strong>name</strong> - If specified, this is used as the name of the endpoint</li>
+<li>
+<strong>onError</strong> - A function with the signature <code>function(err, req, res, next)</code> that is used to output an error. <code>err</code> is the error object that is returned by mongoose. Works best with <code>fullErrors = true</code>
+</li>
+<li>
+<strong>outputFn</strong> - A function with the signature <code>function(res, result)</code> that is used to output the result. <code>res</code> is a restify or express result object, <code>result</code> is the result that is returned from the mongo db.</li>
+<li>
+<strong>private</strong> - String of comma separated field names which are not to be returned by queries that do not have private access.</li>
+<li>
+<strong>protected</strong> - String of comma separated field names which are not to be returned by queries that have public access.</li>
+<li>
+<strong>postProcess</strong> - A middleware to be called after the response has been sent. It is only executed on success.  If an error is sent to the client, this is not executed.</li>
+<li>
+<strong>lean</strong> - If <code>false</code>, will not convert to returned values to plain old javascript objects. This is bad for performance, but it allows for returning virtuals, getters    and setters.</li>
+<li>
+<strong>findOneAndUpdate</strong> - If <code>false</code>, will first find documents by id and then call save. This
 allows mongoose validators to be called. Default is <code>true</code>.
 (For more information, read the Mongoose docs:
 <a href="http://mongoosejs.com/docs/api.html#model_Model.findByIdAndUpdate">http://mongoosejs.com/docs/api.html#model_Model.findByIdAndUpdate</a>)</li>
-<li>contextFilter - <code>function(model, req)</code>. Allows authorization per request, for example filtering
-items based on req.user. Defaults to <code>return model</code>.</li>
-<li>postCreate - A function with the signature <code>function (res, result, done)</code> which is run after document creation.</li>
-<li>postDelete - A function with the signature <code>function (res, result, done)</code> which is run after document deletion.</li>
+<li>
+<strong>findOneAndRemove</strong> - If <code>false</code>, will first find documents by id and then call remove. This
+allows mongoose post and pre hooks to be called. Default is <code>true</code>.
+(For more information, read the Mongoose docs:
+<a href="http://mongoosejs.com/docs/api.html#model_Model.findOneAndRemove">http://mongoosejs.com/docs/api.html#model_Model.findOneAndRemove</a>)</li>
+<li>
+<strong>contextFilter</strong> - <code>function(model, req, cb)</code>. Allows authorization per request, for example filtering items based on req.user. Defaults to <code>cb(model)</code>.</li>
+<li>
+<strong>postCreate</strong> - A function with the signature <code>function (res, result, done)</code> which is run after document creation.</li>
+<li>
+<strong>postDelete</strong> - A function with the signature <code>function (res, result, done)</code> which is run after document deletion.</li>
+<li>
+<strong>fullErrors</strong> - When an occurs in mongoose, the full error object, if available, will be returned instead of just the HTTP status message.  Default false</li>
 </ul>
 </li>
-</ul><h3>
-<a name="defaults" class="anchor" href="#defaults"><span class="octicon octicon-link"></span></a>defaults</h3>
+</ul>
+
+<h3>
+<a id="defaults" class="anchor" href="#defaults" aria-hidden="true"><span class="octicon octicon-link"></span></a>defaults</h3>
 
 <pre><code>defaults(options)
 </code></pre>
 
 <h4>
-<a name="arguments-1" class="anchor" href="#arguments-1"><span class="octicon octicon-link"></span></a>arguments</h4>
+<a id="arguments-1" class="anchor" href="#arguments-1" aria-hidden="true"><span class="octicon octicon-link"></span></a>arguments</h4>
 
 <ul>
 <li>options - Same options as above. This function will set this object as the defaults for anything you declare afterwards.</li>
-</ul><h2>
-<a name="contributors" class="anchor" href="#contributors"><span class="octicon octicon-link"></span></a>Contributors</h2>
+</ul>
+
+<h2>
+<a id="examples" class="anchor" href="#examples" aria-hidden="true"><span class="octicon octicon-link"></span></a>Examples</h2>
+
+<h3>
+<a id="basic-access-control" class="anchor" href="#basic-access-control" aria-hidden="true"><span class="octicon octicon-link"></span></a>Basic access control</h3>
+
+<div class="highlight highlight-javascript"><pre>restify.serve(app, MyModel, {
+  <span class="pl-en">prereq</span>: <span class="pl-k">function</span>(<span class="pl-smi">req</span>) {
+    <span class="pl-k">if</span> (req.<span class="pl-c1">method</span> <span class="pl-k">===</span> <span class="pl-s"><span class="pl-pds">'</span>DELETE<span class="pl-pds">'</span></span>) {
+      <span class="pl-k">return</span> <span class="pl-c1">false</span>;
+    } <span class="pl-k">else</span> <span class="pl-k">if</span> (req.user) {
+      <span class="pl-k">return</span> <span class="pl-c1">true</span>;
+    } <span class="pl-k">else</span> {
+      <span class="pl-k">return</span> <span class="pl-c1">false</span>;
+    }
+  },
+  <span class="pl-en">contextFilter</span>: <span class="pl-k">function</span>(<span class="pl-smi">model</span>, <span class="pl-smi">req</span>, <span class="pl-smi">cb</span>) {
+    <span class="pl-k">if</span> (req.user) {
+      cb(model);
+    } <span class="pl-k">else</span> {
+      cb(model.<span class="pl-c1">find</span>({
+        isPublic<span class="pl-k">:</span> <span class="pl-c1">true</span>
+      }));
+    }
+  }
+});</pre></div>
+
+<h2>
+<a id="contributors" class="anchor" href="#contributors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Contributors</h2>
 
 <ul>
 <li>Enric León (<a href="https://github.com/nothingbuttumbleweed">https://github.com/nothingbuttumbleweed</a>)</li>
@@ -232,8 +338,22 @@ items based on req.user. Defaults to <code>return model</code>.</li>
 <li>doobinay (<a href="https://github.com/doobinay">https://github.com/doobinay</a>)</li>
 <li>Hareesh (<a href="https://github.com/hareeshbabu82ns">https://github.com/hareeshbabu82ns</a>)</li>
 <li>09setht (<a href="https://github.com/09setht">https://github.com/09setht</a>)</li>
-</ul><h2>
-<a name="formalia" class="anchor" href="#formalia"><span class="octicon octicon-link"></span></a>Formalia</h2>
+<li>Zertz (<a href="https://github.com/Zertz">https://github.com/Zertz</a>)</li>
+<li>Ph3n1x (<a href="https://github.com/Ph3n1x">https://github.com/Ph3n1x</a>)</li>
+<li>Emre Efendioğlu (<a href="https://github.com/emreefendioglu">https://github.com/emreefendioglu</a>)</li>
+<li>Tim Mckenzie (<a href="https://github.com/timmckenzie">https://github.com/timmckenzie</a>)</li>
+<li>Emil Janitzek (<a href="https://github.com/wiggin">https://github.com/wiggin</a>)</li>
+<li>Daniel Henrique Joppi (<a href="https://github.com/danieljoppi">https://github.com/danieljoppi</a>)</li>
+<li>Caleb Meredith (<a href="https://github.com/CalebMer">https://github.com/CalebMer</a>)</li>
+<li>David Souther (<a href="https://github.com/DavidSouther">https://github.com/DavidSouther</a>)</li>
+<li>Marco Cameriero (<a href="https://github.com/95ulisse">https://github.com/95ulisse</a>)</li>
+<li>Jan Melcher (<a href="https://github.com/Yogu">https://github.com/Yogu</a>)</li>
+<li>Urs Wolfer (<a href="https://github.com/uwolfer">https://github.com/uwolfer</a>)</li>
+<li>Thomas Forrer (<a href="https://github.com/forrert">https://github.com/forrert</a>)</li>
+</ul>
+
+<h2>
+<a id="formalia" class="anchor" href="#formalia" aria-hidden="true"><span class="octicon octicon-link"></span></a>Formalia</h2>
 
 <pre><code>Copyright (C) 2013 by Florian Holzapfel
 
@@ -262,7 +382,7 @@ THE SOFTWARE.
     <div id="footer_wrap" class="outer">
       <footer class="inner">
         <p class="copyright">express-restify-mongoose maintained by <a href="https://github.com/florianholzapfel">florianholzapfel</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
       </footer>
     </div>
 
