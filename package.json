@@ -86,7 +86,7 @@
     "devDependencies": {
         "assertmessage": "0.0.2",
         "async": "~0.9.0",
-        "jshint": "~2.6",
+        "jshint": "~2.7",
         "mocha": "~2.2",
         "request": "~2",
         "express": "~4",
