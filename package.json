@@ -80,7 +80,7 @@
     "dependencies": {
         "inflection": "~1.7",
         "lodash": "~3.6",
-        "mongoose": "~3.8.0"
+        "mongoose": "~4.0.0"
     },
     "description": "Easily restify mongoose database",
     "devDependencies": {
