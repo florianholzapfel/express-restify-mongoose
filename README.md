@@ -181,10 +181,10 @@ serve(app, model, [options])
   * **middleware** - An express middleware or an array of express middlewares that will be used.
   * **prereq** - A function that takes the req object and returns or yields true or false. This function will be called for every POST PUT and DELETE request and send 403 on false.
   * **access** - A function that takes the req object and returns or yields 'public', 'private', or 'protected'. This function will be called for every GET POST and PUT request and filter out the appropriate fields
-  * **plural** - If `true`, does not pluralize the database model name. Default is `false`
-  * **lowercase** - If `true`, turn model name to lower case before generating the routes.
+  * **plural** - If `true`, pluralize the database model name. Default is `true`
+  * **lowercase** - If `true`, turn model name to lower case before generating the routes. Default is `false`
   * **name** - If specified, this is used as the name of the endpoint
-  * **onError** - A function with the signature `function(err, req, res, next)` that is used to output an error. `err` is the error object that is returned by mongoose. Works best with `fullErrors = true`
+  * **onError** - A function with the signature `function(err, req, res, next)` that is used to output an error. `err` is the error object that is returned by mongoose.
   * **outputFn** - A function with the signature `function(res, result)` that is used to output the result. `res` is a restify or express result object, `result` is the result that is returned from the mongo db.
   * **private** - String of comma separated field names which are not to be returned by queries that do not have private access.
   * **protected** - String of comma separated field names which are not to be returned by queries that have public access.
@@ -201,7 +201,6 @@ serve(app, model, [options])
   * **contextFilter** - `function(model, req, cb)`. Allows authorization per request, for example filtering items based on req.user. Defaults to `cb(model)`.
  * **postCreate** - A function with the signature `function (res, result, done)` which is run after document creation.
  * **postDelete** - A function with the signature `function (res, result, done)` which is run after document deletion.
- * **fullErrors** - When an occurs in mongoose, the full error object, if available, will be returned instead of just the HTTP status message.  Default false
 
 ### defaults
 ```
@@ -250,7 +249,7 @@ restify.serve(app, MyModel, {
 * doobinay (https://github.com/doobinay)
 * Hareesh (https://github.com/hareeshbabu82ns)
 * 09setht (https://github.com/09setht)
-* Zertz (https://github.com/Zertz)
+* Pier-Luc Gendreau (https://github.com/Zertz)
 * Ph3n1x (https://github.com/Ph3n1x)
 * Emre Efendioğlu (https://github.com/emreefendioglu)
 * Tim Mckenzie (https://github.com/timmckenzie)
