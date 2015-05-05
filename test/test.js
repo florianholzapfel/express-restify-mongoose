@@ -1455,18 +1455,20 @@ module.exports = function(createFn) {
                         });
                         erm.serve(app, setup.customerModel);
 
-                        setup.customerModel.create([
-                                {name: 'A', address: 'addy1'},
-                                {name: 'B', address: 'addy2'},
-                                {name: 'C', address: null},
-                                {name: 'D', address: 'addy3'}
-                            ],
-                            function(err, good1, disallowed, bad, good3) {
-                                badCustomerId = bad.id;
-                                goodCustomerId = good1.id;
-                                disallowedId = disallowed.id;
-                                server = app.listen(testPort, done);
-                            });
+                        setup.customerModel.create({
+                            name: 'A', address: 'addy1'
+                        }, {
+                            name: 'B', address: 'addy2'
+                        }, {
+                            name: 'C', address: null
+                        }, {
+                            name: 'D', address: 'addy3'
+                        }, function(err, good1, disallowed, bad, good3) {
+                            badCustomerId = bad.id;
+                            goodCustomerId = good1.id;
+                            disallowedId = disallowed.id;
+                            server = app.listen(testPort, done);
+                        });
                     });
 
                     after(function(done) {
