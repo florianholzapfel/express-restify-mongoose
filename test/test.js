@@ -1796,13 +1796,12 @@ module.exports = function(createFn) {
                     });
                     erm.serve(app, setup.customerModel, options);
 
-                    setup.customerModel.create([
-                            {name: 'A', address: 'addy1'}
-                        ],
-                        function(err, good1) {
-                            goodCustomerId = good1.id;
-                            server = app.listen(testPort, done);
-                        });
+                    setup.customerModel.create({
+                    	name: 'A', address: 'addy1'
+                    }, function(err, good1) {
+                        goodCustomerId = good1.id;
+                        server = app.listen(testPort, done);
+                    });
                 });
 
                 after(function(done) {
@@ -1863,13 +1862,12 @@ module.exports = function(createFn) {
                     });
                     erm.serve(app, setup.customerModel, options);
 
-                    setup.customerModel.create([
-                            {name: 'A', address: 'addy1'}
-                        ],
-                        function(err, good1) {
-                            goodCustomerId = good1.name;
-                            server = app.listen(testPort, done);
-                        });
+                    setup.customerModel.create({
+                    	name: 'A', address: 'addy1'
+                    }, function(err, good1) {
+                        goodCustomerId = good1.name;
+                        server = app.listen(testPort, done);
+                    });
                 });
 
                 after(function(done) {
