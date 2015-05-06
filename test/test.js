@@ -894,7 +894,7 @@ module.exports = function(createFn) {
                             body = JSON.parse(body);
                         }
                         assert.equal(res.statusCode, 400, 'Wrong status code');
-                        assert.strictEqual(body.err.indexOf('duplicate key') >= 0,
+                        assert.strictEqual(body.errmsg.indexOf('duplicate key') >= 0,
                             true, 'Duplicate key error not found');
                         done();
                     });
@@ -918,7 +918,7 @@ module.exports = function(createFn) {
                             }
 
                             assert.equal(res.statusCode, 400, 'Wrong status code');
-                            assert.strictEqual(body.err.indexOf('duplicate key') >= 0,
+                            assert.strictEqual(body.errmsg.indexOf('duplicate key') >= 0,
                                 true, 'Duplicate key error not found');
                             done();
 
@@ -1455,18 +1455,20 @@ module.exports = function(createFn) {
                         });
                         erm.serve(app, setup.customerModel);
 
-                        setup.customerModel.create([
-                                {name: 'A', address: 'addy1'},
-                                {name: 'B', address: 'addy2'},
-                                {name: 'C', address: null},
-                                {name: 'D', address: 'addy3'}
-                            ],
-                            function(err, good1, disallowed, bad, good3) {
-                                badCustomerId = bad.id;
-                                goodCustomerId = good1.id;
-                                disallowedId = disallowed.id;
-                                server = app.listen(testPort, done);
-                            });
+                        setup.customerModel.create({
+                            name: 'A', address: 'addy1'
+                        }, {
+                            name: 'B', address: 'addy2'
+                        }, {
+                            name: 'C', address: null
+                        }, {
+                            name: 'D', address: 'addy3'
+                        }, function(err, good1, disallowed, bad, good3) {
+                            badCustomerId = bad.id;
+                            goodCustomerId = good1.id;
+                            disallowedId = disallowed.id;
+                            server = app.listen(testPort, done);
+                        });
                     });
 
                     after(function(done) {
@@ -1794,13 +1796,12 @@ module.exports = function(createFn) {
                     });
                     erm.serve(app, setup.customerModel, options);
 
-                    setup.customerModel.create([
-                            {name: 'A', address: 'addy1'}
-                        ],
-                        function(err, good1) {
-                            goodCustomerId = good1.id;
-                            server = app.listen(testPort, done);
-                        });
+                    setup.customerModel.create({
+                    	name: 'A', address: 'addy1'
+                    }, function(err, good1) {
+                        goodCustomerId = good1.id;
+                        server = app.listen(testPort, done);
+                    });
                 });
 
                 after(function(done) {
@@ -1861,13 +1862,12 @@ module.exports = function(createFn) {
                     });
                     erm.serve(app, setup.customerModel, options);
 
-                    setup.customerModel.create([
-                            {name: 'A', address: 'addy1'}
-                        ],
-                        function(err, good1) {
-                            goodCustomerId = good1.name;
-                            server = app.listen(testPort, done);
-                        });
+                    setup.customerModel.create({
+                    	name: 'A', address: 'addy1'
+                    }, function(err, good1) {
+                        goodCustomerId = good1.name;
+                        server = app.listen(testPort, done);
+                    });
                 });
 
                 after(function(done) {

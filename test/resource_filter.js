@@ -240,14 +240,14 @@ describe('Filter', function () {
                 this.invoiceId = null;
                 this.customerId = null;
 
-                setup.productModel.create(products, function (err, p1, p2, p3) {
+                setup.productModel.create(products, function (err, createdProducts) {
                     new setup.customerModel({
                         name: 'John',
                         address: '123 Drury Lane',
                         purchases: [
-                            { item: p1._id, number: 2 },
-                            { item: p2._id, number: 100 },
-                            { item: p3._id, number: 1 },
+                            { item: createdProducts[0]._id, number: 2 },
+                            { item: createdProducts[1]._id, number: 100 },
+                            { item: createdProducts[2]._id, number: 1 }
                         ]
                     }).save(function (err, res) {
                         self.customerId = res._id;
@@ -255,7 +255,11 @@ describe('Filter', function () {
                         new setup.invoiceModel({
                             customer: res._id,
                             amount: 42,
-                            products: [p1._id, p2._id, p3._id]
+                            products: [
+                                createdProducts[0]._id,
+                                createdProducts[1]._id,
+                                createdProducts[2]._id
+                            ]
                         }).save(function (err, res) {
                             self.invoiceId = res._id;
                             done();
