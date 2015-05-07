@@ -10,10 +10,5 @@ Changelog
 * removed `strict` option, allows DELETE without id and POST with id, disallows PUT without id
 * async `prereq` and `access` now use the standard `(err, data)` callback signature
 * `access` will throw an exception when an unsupported value is passed
-* changed `outputFn`'s signature to:
-  ```javascript
-  outputFn(req, res, next, {
-    result: result,
-    statusCode: statusCode
-  })
-  ```
+* changed `outputFn`'s signature to: `(req, res, next, { result: result, statusCode: statusCode })`
+
