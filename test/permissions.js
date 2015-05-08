@@ -53,7 +53,7 @@ describe('permissions', function () {
 
     describe('with prereq that yields', function (done) {
         it('passes', function (done) {
-            var prereq = function (req, cb) { cb(true); };
+            var prereq = function (req, cb) { cb(null, true); };
 
             middleware.allow(prereq)({}, res, function () {
                 assert(true);
@@ -62,7 +62,7 @@ describe('permissions', function () {
         });
 
         it('fails', function (done) {
-            var prereq = function (req, cb) { cb(false); };
+            var prereq = function (req, cb) { cb(null, false); };
 
             middleware.allow(prereq, function () {
                 assert(true);
@@ -83,19 +83,47 @@ describe('permissions', function () {
                 done();
             });
         });
+        
+        it('throws an exception with unsupported parameter', function () {
+            var req = {},
+                next = sinon.spy(),
+                accessFn = function () {
+                    return 'foo';
+                };
+            
+            assert.throws(function() {
+                middleware.access(accessFn)(req, {}, next);
+            }, 'Unsupported access, must be "public", "private" or "protected"');
+            
+            sinon.assert.notCalled(next);
+        });
     });
 
     describe('with access that yields', function () {
         it('adds access field to req', function (done) {
             var req = {},
                 accessFn = function (req, cb) {
-                    return cb('private');
+                    return cb(null, 'private');
                 };
 
             middleware.access(accessFn)(req, {}, function () {
                 assert.equal(req.access, 'private');
                 done();
             });
+        });
+        
+        it('throws an exception with unsupported parameter', function () {
+            var req = {},
+                next = sinon.spy(),
+                accessFn = function (req, cb) {
+                    return cb(null, 'foo');
+                };
+            
+            assert.throws(function() {
+                middleware.access(accessFn)(req, {}, next);
+            }, 'Unsupported access, must be "public", "private" or "protected"');
+            
+            sinon.assert.notCalled(next);
         });
     });
 });
