@@ -7,6 +7,8 @@ This library provides mongoose database models with a REST interface.
 
 ## Getting started
 
+> **From 1.0.0 onwards, the library is only compatible with mongoose >= 4. For mongoose 3.x compatibility, use the 0.7.x branch.**
+
 In your shell, install with npm:
 
 ```sh
