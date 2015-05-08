@@ -173,7 +173,6 @@ serve(app, model, [options])
 * **app** - The express app
 * **model** - Your mongoose database model
 * **options** - Optional options object
-  * **strict** - When set to true, disallows DELETE all, POST with id param, and PUT without id param
   * **prefix** - Some path that will be prefixed to the REST path. Defaults to `/api`
   * **version** - An API version that will be prefixed to the rest path. Defaults to `/v1`
     * if either api or version contain `/:id` then that will be used as the location to search for the id. `version: 'v1/Entities/:id'` will generate `/api/v1/Entities/:id/<modelName>` and `/api/v1/Entities/<modelName>` for all pertinent methods
@@ -185,7 +184,7 @@ serve(app, model, [options])
   * **lowercase** - If `true`, turn model name to lower case before generating the routes. Default is `false`
   * **name** - If specified, this is used as the name of the endpoint
   * **onError** - A function with the signature `function(err, req, res, next)` that is used to output an error. `err` is the error object that is returned by mongoose.
-  * **outputFn** - A function with the signature `function(res, result)` that is used to output the result. `res` is a restify or express result object, `result` is the result that is returned from the mongo db.
+  * **outputFn** - A function with the signature `function(req, res, { result: result, statusCode: statusCode })` that is used to output the result. `res` is a restify or express result object, `result` is the result that is returned from the mongo db.
   * **private** - String of comma separated field names which are not to be returned by queries that do not have private access.
   * **protected** - String of comma separated field names which are not to be returned by queries that have public access.
   * **postProcess** - A middleware to be called after the response has been sent. It is only executed on success.  If an error is sent to the client, this is not executed.
