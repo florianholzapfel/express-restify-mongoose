@@ -123,5 +123,5 @@
         "pretest": "./node_modules/.bin/jshint lib test",
         "test": "./node_modules/.bin/mocha -R spec ./test/express.js ./test/permissions.js ./test/resource_filter.js --timeout 5s && ./node_modules/.bin/mocha -R spec ./test/restify.js --timeout 5s"
     },
-    "version": "0.7.5"
+    "version": "1.0.0"
 }
