@@ -1590,6 +1590,89 @@ module.exports = function(createFn) {
                     });
                 });
             });
+            
+            describe('limit option', function () {
+                var server,
+                    app = createFn();
+        
+                setup();
+            
+                before(function (done) {
+                    erm.defaults({
+                        restify: app.isRestify,
+                        outputFn: app.outputFn,
+                        limit: 2
+                    });
+                    erm.serve(app, setup.customerModel);
+                
+                    setup.customerModel.create(
+                        { name: 'A' },
+                        { name: 'B' },
+                        { name: 'C' },
+                        function(err) {
+                            if (err) {
+                                done(err);
+                            }
+                            server = app.listen(testPort, done);
+                        }
+                    );
+                });
+        
+                after(function (done) {
+                    if (app.close) {
+                        return app.close(done);
+                    }
+                    server.close(done);
+                });
+            
+                it('limit: GET Customers/count should return 3', function (done) {
+                    request.get({
+                        url: util.format('%s/api/v1/Customers/count', testUrl),
+                        json: true
+                    }, function (err, res, body) {
+                        assert.equal(res.statusCode, 200, 'Wrong status code');
+                        assert.equal(body.count, 3, 'Wrong count');
+                        done();
+                    });
+                });
+            
+                it('limit: GET Customers should return 2 objects', function (done) {
+                    request.get({
+                        url: util.format('%s/api/v1/Customers', testUrl),
+                        json: true
+                    }, function (err, res, body) {
+                        assert.equal(res.statusCode, 200, 'Wrong status code');
+                        assert.ok(Array.isArray(body), 'Body is not an array');
+                        assert.equal(body.length, 2, 'Wrong count');
+                        done();
+                    });
+                });
+                
+                it('limit: GET Customers should return 2 objects', function (done) {
+                    request.get({
+                        url: util.format('%s/api/v1/Customers?limit=3', testUrl),
+                        json: true
+                    }, function (err, res, body) {
+                        assert.equal(res.statusCode, 200, 'Wrong status code');
+                        assert.ok(Array.isArray(body), 'Body is not an array');
+                        assert.equal(body.length, 2, 'Wrong count');
+                        done();
+                    });
+                });
+            
+                it('limit: GET Customers should return 1 object', function (done) {
+                    request.get({
+                        url: util.format('%s/api/v1/Customers?limit=1', testUrl),
+                        json: true
+                    }, function (err, res, body) {
+                        assert.equal(res.statusCode, 200, 'Wrong status code');
+                        assert.ok(Array.isArray(body), 'Body is not an array');
+                        assert.equal(body.length, 1, 'Wrong count');
+                        done();
+                    });
+                });
+        
+            });
 
             describe('postCreate', function() {
                 var server,
