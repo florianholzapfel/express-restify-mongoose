@@ -32,9 +32,9 @@ module.exports = function (createFn) {
           lean: false,
           middleware: []
         })
-        erm.serve(app, setup.customerModel)
-        erm.serve(app, setup.productModel)
-        erm.serve(app, setup.invoiceModel)
+        erm.serve(app, setup.CustomerModel)
+        erm.serve(app, setup.ProductModel)
+        erm.serve(app, setup.InvoiceModel)
 
         server = app.listen(testPort, done)
       })
@@ -690,7 +690,7 @@ module.exports = function (createFn) {
       setup()
 
       before(function (done) {
-        erm.serve(app, setup.customerModel, {
+        erm.serve(app, setup.CustomerModel, {
           lean: false,
           outputFn: app.outputFn,
           restify: app.isRestify
@@ -744,11 +744,11 @@ module.exports = function (createFn) {
           outputFn: app.outputFn
         })
 
-        erm.serve(app, setup.customerModel, {
+        erm.serve(app, setup.CustomerModel, {
           'private': 'comment',
           lean: false
         })
-        erm.serve(app, setup.invoiceModel)
+        erm.serve(app, setup.InvoiceModel)
 
         server = app.listen(testPort, function () {
           async.waterfall([function (next) {
@@ -860,7 +860,7 @@ module.exports = function (createFn) {
         setup()
 
         before(function (done) {
-          erm.serve(app, setup.customerModel, {
+          erm.serve(app, setup.CustomerModel, {
             lowercase: true,
             restify: app.isRestify,
             outputFn: app.outputFn
@@ -906,7 +906,7 @@ module.exports = function (createFn) {
       setup()
 
       before(function (done) {
-        erm.serve(app, setup.customerModel, {
+        erm.serve(app, setup.CustomerModel, {
           lean: false,
           outputFn: app.outputFn,
           restify: app.isRestify,
@@ -988,7 +988,7 @@ module.exports = function (createFn) {
       setup()
 
       before(function (done) {
-        erm.serve(app, setup.customerModel, {
+        erm.serve(app, setup.CustomerModel, {
           outputFn: app.outputFn,
           restify: app.isRestify,
           name: 'Customer',
@@ -1024,7 +1024,7 @@ module.exports = function (createFn) {
       setup()
 
       before(function (done) {
-        erm.serve(app, setup.customerModel, {
+        erm.serve(app, setup.CustomerModel, {
           restify: app.isRestify,
           outputFn: app.outputFn,
           postProcess: function (req, res) {
@@ -1087,7 +1087,7 @@ module.exports = function (createFn) {
       before(function (done) {
         erm.defaults({version: '/custom'})
 
-        erm.serve(app, setup.customerModel, {
+        erm.serve(app, setup.CustomerModel, {
           lowercase: true,
           restify: app.isRestify,
           outputFn: app.outputFn
@@ -1127,7 +1127,7 @@ module.exports = function (createFn) {
         setup()
 
         before(function (done) {
-          erm.serve(app, setup.customerModel, {
+          erm.serve(app, setup.CustomerModel, {
             prereq: function () {
               return true
             },
@@ -1207,7 +1207,7 @@ module.exports = function (createFn) {
         setup()
 
         before(function (done) {
-          erm.serve(app, setup.customerModel, {
+          erm.serve(app, setup.CustomerModel, {
             prereq: function () {
               return false
             },
@@ -1296,7 +1296,7 @@ module.exports = function (createFn) {
           return access
         }
 
-        erm.serve(app, setup.customerModel, {
+        erm.serve(app, setup.CustomerModel, {
           restify: app.isRestify,
           access: accessFn,
           outputFn: app.outputFn
@@ -1529,9 +1529,9 @@ module.exports = function (createFn) {
             lean: false,
             contextFilter: filter
           })
-          erm.serve(app, setup.customerModel)
+          erm.serve(app, setup.CustomerModel)
 
-          setup.customerModel.create({
+          setup.CustomerModel.create({
             name: 'A', address: 'addy1'
           }, {
             name: 'B', address: 'addy2'
@@ -1604,7 +1604,7 @@ module.exports = function (createFn) {
           }, function (err, res, body) {
             assert.ok(!err)
             assert.equal(res.statusCode, 200, 'Wrong status code')
-            setup.customerModel.findById(goodCustomerId, function (err, customer) {
+            setup.CustomerModel.findById(goodCustomerId, function (err, customer) {
               assert.ok(!err)
               assert.equal(customer.name, 'newName', 'Customer Deleted')
               done()
@@ -1618,7 +1618,7 @@ module.exports = function (createFn) {
           }, function (err, res, body) {
             assert.ok(!err)
             assert.equal(res.statusCode, 404, 'Wrong status code')
-            setup.customerModel.findById(badCustomerId, function (err, customer) {
+            setup.CustomerModel.findById(badCustomerId, function (err, customer) {
               assert.ok(!err)
               assert.notEqual(customer.name, 'newName', 'Customer Deleted')
               done()
@@ -1632,7 +1632,7 @@ module.exports = function (createFn) {
           }, function (err, res, body) {
             assert.ok(!err)
             assert.equal(res.statusCode, 404, 'Wrong status code')
-            setup.customerModel.count(function (err, count) {
+            setup.CustomerModel.count(function (err, count) {
               assert.ok(!err)
               assert.equal(count, 4, 'Customer Deleted')
               done()
@@ -1646,7 +1646,7 @@ module.exports = function (createFn) {
           }, function (err, res, body) {
             assert.ok(!err)
             assert.equal(res.statusCode, 404, 'Wrong status code')
-            setup.customerModel.count(function (err, count) {
+            setup.CustomerModel.count(function (err, count) {
               assert.ok(!err)
               assert.equal(count, 4, 'Customer Deleted')
               done()
@@ -1660,7 +1660,7 @@ module.exports = function (createFn) {
           }, function (err, res, body) {
             assert.ok(!err)
             assert.equal(res.statusCode, 204, 'Wrong status code')
-            setup.customerModel.count(function (err, count) {
+            setup.CustomerModel.count(function (err, count) {
               assert.ok(!err)
               assert.equal(count, 3, 'Customer Not Deleted')
               done()
@@ -1674,7 +1674,7 @@ module.exports = function (createFn) {
           }, function (err, res, body) {
             assert.ok(!err)
             assert.equal(res.statusCode, 400, 'Wrong status code')
-            setup.customerModel.count(function (err, count) {
+            setup.CustomerModel.count(function (err, count) {
               assert.ok(!err)
               assert.equal(count, 3, 'Customer Deleted')
               done()
@@ -1696,9 +1696,9 @@ module.exports = function (createFn) {
           outputFn: app.outputFn,
           limit: 2
         })
-        erm.serve(app, setup.customerModel)
+        erm.serve(app, setup.CustomerModel)
 
-        setup.customerModel.create(
+        setup.CustomerModel.create(
           { name: 'A' },
           { name: 'B' },
           { name: 'C' },
@@ -1788,7 +1788,7 @@ module.exports = function (createFn) {
           outputFn: app.outputFn,
           lean: false
         })
-        erm.serve(app, setup.customerModel, options)
+        erm.serve(app, setup.CustomerModel, options)
         server = app.listen(testPort, done)
       })
       afterEach(function () {
@@ -1862,11 +1862,11 @@ module.exports = function (createFn) {
           outputFn: app.outputFn,
           lean: false
         })
-        erm.serve(app, setup.customerModel, options)
+        erm.serve(app, setup.CustomerModel, options)
         server = app.listen(testPort, done)
       })
       beforeEach(function (done) {
-        setup.customerModel.create({
+        setup.CustomerModel.create({
           name: 'a'
         }, function (err, customer) {
           assert.ok(!err)
@@ -1876,7 +1876,7 @@ module.exports = function (createFn) {
       })
       afterEach(function (done) {
         options.postDelete.reset()
-        setup.customerModel.remove(done)
+        setup.CustomerModel.remove(done)
       })
       after(function (done) {
         if (app.close) {
@@ -1983,9 +1983,9 @@ module.exports = function (createFn) {
           outputFn: app.outputFn,
           lean: false
         })
-        erm.serve(app, setup.customerModel, options)
+        erm.serve(app, setup.CustomerModel, options)
 
-        setup.customerModel.create({
+        setup.CustomerModel.create({
           name: 'A', address: 'addy1'
         }, function (err, good1) {
           assert.ok(!err)
@@ -2052,9 +2052,9 @@ module.exports = function (createFn) {
           outputFn: app.outputFn,
           lean: false
         })
-        erm.serve(app, setup.customerModel, options)
+        erm.serve(app, setup.CustomerModel, options)
 
-        setup.customerModel.create({
+        setup.CustomerModel.create({
           name: 'A', address: 'addy1'
         }, function (err, good1) {
           assert.ok(!err)
