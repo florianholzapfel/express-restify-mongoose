@@ -400,7 +400,7 @@ describe('Filter', function () {
   })
 
   describe('descriminated schemas', function () {
-    // var accountFilter = new Filter(setup.accountModel, ['accountNumber'])
+    // var accountFilter = new Filter(setup.AccountModel, ['accountNumber'])
     var repeatCustFilter = new Filter(setup.RepeatCustomerModel, [])
 
     before(function (done) {
@@ -426,8 +426,7 @@ describe('Filter', function () {
       setup.RepeatCustomerModel.findOne().populate('loyaltyProgram')
         .exec(function (err, doc) {
           assert(!err, err)
-          var customer = repeatCustFilter
-            .filterObject(doc, {populate: 'loyaltyProgram'})
+          var customer = repeatCustFilter.filterObject(doc, {populate: 'loyaltyProgram'})
           assert.equal(customer.name, 'John Smith')
           assert.equal(customer.loyaltyProgram.points, 244)
           assert.ok(customer.loyaltyProgram.accountNumber === undefined,
