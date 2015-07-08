@@ -109,12 +109,7 @@
         "mongodb",
         "mongoose"
     ],
-    "licenses": [
-        {
-            "type": "The MIT License (MIT)",
-            "url": "http://opensource.org/licenses/MIT"
-        }
-    ],
+    "license" : "MIT",
     "main": "./lib/express-restify-mongoose",
     "name": "express-restify-mongoose",
     "readmeFilename": "README.md",
