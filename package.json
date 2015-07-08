@@ -89,14 +89,14 @@
     "devDependencies": {
         "assertmessage": "0.0.2",
         "async": "~0.9.0",
-        "jshint": "~2.7",
         "mocha": "~2.2",
         "request": "~2",
         "express": "~4",
 		"body-parser": "*",
 		"method-override": "*",
         "restify": "~3.0",
-        "sinon": "~1"
+        "sinon": "~1",
+        "standard": "^4.0.0"
     },
     "engines": {
         "node": "*"
@@ -118,7 +118,7 @@
         "url": "git://github.com/florianholzapfel/express-restify-mongoose.git"
     },
     "scripts": {
-        "pretest": "./node_modules/.bin/jshint lib test",
+        "pretest": "./node_modules/standard/bin/cmd.js",
         "test": "./node_modules/.bin/mocha -R spec ./test/express.js ./test/permissions.js ./test/resource_filter.js --timeout 5s && ./node_modules/.bin/mocha -R spec ./test/restify.js --timeout 5s"
     },
     "version": "1.0.2"
