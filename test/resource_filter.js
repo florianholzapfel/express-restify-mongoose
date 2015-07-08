@@ -423,26 +423,22 @@ describe('Filter', function () {
     })
 
     it('should filter populated from subschema', function (done) {
-      setup.RepeatCustomerModel.findOne().populate('loyaltyProgram')
-        .exec(function (err, doc) {
+      setup.RepeatCustomerModel.findOne().populate('loyaltyProgram').exec(function (err, doc) {
           assert(!err, err)
           var customer = repeatCustFilter.filterObject(doc, {populate: 'loyaltyProgram'})
           assert.equal(customer.name, 'John Smith')
           assert.equal(customer.loyaltyProgram.points, 244)
-          assert.ok(customer.loyaltyProgram.accountNumber === undefined,
-            'account number should be excluded')
+          assert.ok(customer.loyaltyProgram.accountNumber === undefined, 'account number should be excluded')
           done()
         })
     })
 
     it('should filter populated from base schema', function (done) {
-      setup.CustomerModel.findOne()
-        .exec(function (err, doc) {
+      setup.CustomerModel.findOne().exec(function (err, doc) {
           assert(!err, err)
           doc.populate('loyaltyProgram', function (err, doc) {
             assert(!err, err)
-            var customer = customerFilter
-              .filterObject(doc, {populate: 'loyaltyProgram'})
+            var customer = customerFilter.filterObject(doc, {populate: 'loyaltyProgram'})
             assert.equal(customer.name, 'John Smith')
             assert.equal(customer.loyaltyProgram.points, 244)
             assert.ok(customer.loyaltyProgram.accountNumber === undefined, 'account number should be excluded')
