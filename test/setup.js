@@ -67,35 +67,35 @@ var Account = new Schema({
 })
 
 var setup = module.exports = function () {
-  if (!setup.customerModel) {
-    setup.customerModel = mongoose.model('Customer', Customer)
+  if (!setup.CustomerModel) {
+    setup.CustomerModel = mongoose.model('Customer', Customer)
   }
-  if (!setup.invoiceModel) {
-    setup.invoiceModel = mongoose.model('Invoice', Invoice)
+  if (!setup.InvoiceModel) {
+    setup.InvoiceModel = mongoose.model('Invoice', Invoice)
   }
-  if (!setup.productModel) {
-    setup.productModel = mongoose.model('Product', Product)
+  if (!setup.ProductModel) {
+    setup.ProductModel = mongoose.model('Product', Product)
   }
-  if (!setup.repeatCustomerModel) {
-    setup.repeatCustomerModel =
-      setup.customerModel.discriminator('RepeatCustomer', RepeatCustomer)
+  if (!setup.RepeatCustomerModel) {
+    setup.RepeatCustomerModel =
+      setup.CustomerModel.discriminator('RepeatCustomer', RepeatCustomer)
   }
-  if (!setup.accountModel) {
-    setup.accountModel = mongoose.model('Account', Account)
+  if (!setup.AccountModel) {
+    setup.AccountModel = mongoose.model('Account', Account)
   }
 
   before(function (done) {
     mongoose.connect('mongodb://localhost/database', function (err) {
       assert(!err, err)
-      setup.customerModel.remove(function (err) {
+      setup.CustomerModel.remove(function (err) {
         assert(!err, err)
-        setup.invoiceModel.remove(function (err) {
+        setup.InvoiceModel.remove(function (err) {
           assert(!err, err)
-          setup.productModel.remove(function (err) {
+          setup.ProductModel.remove(function (err) {
             assert(!err, err)
-            setup.repeatCustomerModel.remove(function (err) {
+            setup.RepeatCustomerModel.remove(function (err) {
               assert(!err, err)
-              setup.accountModel.remove(done)
+              setup.AccountModel.remove(done)
             })
           })
         })
