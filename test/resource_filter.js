@@ -9,16 +9,16 @@ var OID = require('mongoose').Types.ObjectId
 describe('Filter', function () {
   setup()
 
-  var customerFilter = new Filter(setup.customerModel,
+  var customerFilter = new Filter(setup.CustomerModel,
     ['comment',
       'address',
       'purchases.number',
       'purchases.item.price'])
-  var invoiceFilter = new Filter(setup.invoiceModel,
+  var invoiceFilter = new Filter(setup.InvoiceModel,
     ['amount',
       'customer.address',
       'products.price'])
-  var productFilter = new Filter(setup.productModel,
+  var productFilter = new Filter(setup.ProductModel,
     ['price', 'department.code'])
 
   describe('lean', function () {
@@ -239,7 +239,7 @@ describe('Filter', function () {
         this.invoiceId = null
         this.customerId = null
 
-        setup.productModel.create(products, function (err, createdProducts) {
+        setup.ProductModel.create(products, function (err, createdProducts) {
           assert(!err, err)
           new setup.CustomerModel({
             name: 'John',
@@ -271,17 +271,17 @@ describe('Filter', function () {
       })
 
       after(function (done) {
-        setup.customerModel.remove(function (err) {
+        setup.CustomerModel.remove(function (err) {
           assert(!err, err)
-          setup.invoiceModel.remove(function (err) {
+          setup.InvoiceModel.remove(function (err) {
             assert(!err, err)
-            setup.productModel.remove(done)
+            setup.ProductModel.remove(done)
           })
         })
       })
 
       it('excludes fields from populated items', function (done) {
-        setup.invoiceModel.findById(this.invoiceId).populate('customer')
+        setup.InvoiceModel.findById(this.invoiceId).populate('customer')
           .exec(function (err, invoice) {
             assert(!err, err)
             invoice = invoiceFilter
@@ -298,7 +298,7 @@ describe('Filter', function () {
       })
 
       it('iterates through array of populated objects', function (done) {
-        setup.invoiceModel.findById(this.invoiceId).populate('products')
+        setup.InvoiceModel.findById(this.invoiceId).populate('products')
           .exec(function (err, invoice) {
             assert(!err, err)
             invoice = invoiceFilter
@@ -316,7 +316,7 @@ describe('Filter', function () {
       })
 
       it('filters multiple populated models', function (done) {
-        setup.invoiceModel.findById(this.invoiceId)
+        setup.InvoiceModel.findById(this.invoiceId)
           .populate('products customer').exec(function (err, invoice) {
           assert(!err, err)
           invoice = invoiceFilter
@@ -339,7 +339,7 @@ describe('Filter', function () {
 
       it('filters embedded array of populated docs', function (done) {
         var self = this
-        setup.customerModel.findById(this.customerId)
+        setup.CustomerModel.findById(this.customerId)
           .populate('purchases.item').exec(function (err, customer) {
           assert(!err, err)
           customer = customerFilter
@@ -360,7 +360,7 @@ describe('Filter', function () {
 
   describe('protected fields', function () {
     it('defaults to not including any', function () {
-      invoiceFilter = new Filter(setup.invoiceModel,
+      invoiceFilter = new Filter(setup.InvoiceModel,
         ['amount'],
         ['products'])
 
@@ -379,7 +379,7 @@ describe('Filter', function () {
     })
 
     it('returns protected fields', function () {
-      invoiceFilter = new Filter(setup.invoiceModel,
+      invoiceFilter = new Filter(setup.InvoiceModel,
         ['amount'],
         ['products'])
 
@@ -401,15 +401,15 @@ describe('Filter', function () {
 
   describe('descriminated schemas', function () {
     // var accountFilter = new Filter(setup.accountModel, ['accountNumber'])
-    var repeatCustFilter = new Filter(setup.repeatCustomerModel, [])
+    var repeatCustFilter = new Filter(setup.RepeatCustomerModel, [])
 
     before(function (done) {
-      setup.accountModel.create({
+      setup.AccountModel.create({
         accountNumber: '123XYZ',
         points: 244
       }, function (err, account) {
         assert(!err, err)
-        setup.repeatCustomerModel.create({
+        setup.RepeatCustomerModel.create({
           name: 'John Smith',
           loyaltyProgram: account._id
         }, done)
@@ -417,13 +417,13 @@ describe('Filter', function () {
     })
 
     after(function (done) {
-      setup.accountModel.remove(function () {
-        setup.customerModel.remove(done)
+      setup.AccountModel.remove(function () {
+        setup.CustomerModel.remove(done)
       })
     })
 
     it('should filter populated from subschema', function (done) {
-      setup.repeatCustomerModel.findOne().populate('loyaltyProgram')
+      setup.RepeatCustomerModel.findOne().populate('loyaltyProgram')
         .exec(function (err, doc) {
           assert(!err, err)
           var customer = repeatCustFilter
@@ -437,7 +437,7 @@ describe('Filter', function () {
     })
 
     it('should filter populated from base schema', function (done) {
-      setup.customerModel.findOne()
+      setup.CustomerModel.findOne()
         .exec(function (err, doc) {
           assert(!err, err)
           doc.populate('loyaltyProgram', function (err, doc) {
@@ -446,9 +446,7 @@ describe('Filter', function () {
               .filterObject(doc, {populate: 'loyaltyProgram'})
             assert.equal(customer.name, 'John Smith')
             assert.equal(customer.loyaltyProgram.points, 244)
-            assert.ok(customer.loyaltyProgram.accountNumber ===
-            undefined,
-              'account number should be excluded')
+            assert.ok(customer.loyaltyProgram.accountNumber === undefined, 'account number should be excluded')
             done()
           })
         })
