@@ -400,7 +400,9 @@ describe('Filter', function () {
   })
 
   describe('descriminated schemas', function () {
-    // var accountFilter = new Filter(setup.AccountModel, ['accountNumber'])
+    // we need the accountFilter to be defined since its creation adds
+    // an entry in resource_filter's excludedMap
+    var accountFilter = new Filter(setup.AccountModel, ['accountNumber']) // eslint-disable-line
     var repeatCustFilter = new Filter(setup.RepeatCustomerModel, [])
 
     before(function (done) {
