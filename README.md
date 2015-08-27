@@ -265,6 +265,7 @@ restify.serve(app, MyModel, {
 * Urs Wolfer (https://github.com/uwolfer)
 * Thomas Forrer (https://github.com/forrert)
 * Stefan Kleeschulte (https://github.com/skleeschulte)
+* Reimund Trost (https://github.com/reimund)
 
 ## Formalia
 

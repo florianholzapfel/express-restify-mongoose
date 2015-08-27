@@ -78,6 +78,9 @@
         },
         {
             "name": "Stefan Kleeschulte"
+        },
+        {
+            "name": "Reimund Trost"
         }
     ],
     "dependencies": {
@@ -116,6 +119,9 @@
     "repository": {
         "type": "git",
         "url": "git://github.com/florianholzapfel/express-restify-mongoose.git"
+    },
+    "bugs": {
+        "url": "https://github.com/florianholzapfel/express-restify-mongoose/issues"
     },
     "scripts": {
         "pretest": "./node_modules/standard/bin/cmd.js",
