@@ -204,6 +204,7 @@ serve(app, model, [options])
   * **limit** - Set a limit for all queries except count queries. Can be overriden with the `limit` query parameter to a smaller value.
  * **postCreate** - A function with the signature `function (res, result, done)` which is run after document creation.
  * **postDelete** - A function with the signature `function (res, result, done)` which is run after document deletion.
+ * **runValidators** - Validate schema during update commands. Defaults is `false`. (For more information read the Mongoose docs: http://mongoosejs.com/docs/validation.html).
 
 ### defaults
 ```
@@ -266,6 +267,7 @@ restify.serve(app, MyModel, {
 * Thomas Forrer (https://github.com/forrert)
 * Stefan Kleeschulte (https://github.com/skleeschulte)
 * Reimund Trost (https://github.com/reimund)
+* Elliott Garcea (https://github.com/redwood-egarcea)
 
 ## Formalia
 
