@@ -910,7 +910,6 @@ module.exports = function (createFn) {
           lean: false,
           outputFn: app.outputFn,
           restify: app.isRestify,
-          fullErrors: true,
           findOneAndUpdate: false
         })
         server = app.listen(testPort, function () {
