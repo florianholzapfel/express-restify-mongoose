@@ -1,128 +1,90 @@
 <!DOCTYPE html>
 <html>
 
-  <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="description" content="express-restify-mongoose : Easily restify mongoose databases">
+<head>
+  <meta charset='utf-8'>
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="description" content="express-restify-mongoose : Easily create a flexible REST interface from mongoose schemas">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.1.1/gh-fork-ribbon.min.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.5/cosmo/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <title>express-restify-mongoose : Easily create a flexible REST interface for mongoose models</title>
+</head>
 
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+<body>
 
-    <title>express-restify-mongoose</title>
-  </head>
-
-  <body>
-
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/florianholzapfel/express-restify-mongoose">View on GitHub</a>
-
-          <h1 id="project_title">express-restify-mongoose</h1>
-          <h2 id="project_tagline">Easily restify mongoose databases</h2>
-
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/florianholzapfel/express-restify-mongoose/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/florianholzapfel/express-restify-mongoose/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
+  <header class="container-fluid">
+    <div class="row">
+      <div class="col-md-offset-1 col-md-7">
+        <h1>express-restify-mongoose</h1>
+        <h2>Easily create a flexible REST interface for mongoose models</h2>
+      </div>
     </div>
+  </header>
 
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-        <h1>
-<a id="express-restify-mongoose" class="anchor" href="#express-restify-mongoose" aria-hidden="true"><span class="octicon octicon-link"></span></a>express-restify-mongoose</h1>
+  <hr>
 
-<p>This library provides mongoose database models with a REST interface.</p>
+  <div class="github-fork-ribbon-wrapper right">
+    <div class="github-fork-ribbon">
+      <a href="https://github.com/florianholzapfel/express-restify-mongoose">Contribute on GitHub</a>
+    </div>
+  </div>
 
-<p><a href="https://travis-ci.org/florianholzapfel/express-restify-mongoose"><img src="https://travis-ci.org/florianholzapfel/express-restify-mongoose.png" alt="Build Status"></a>
-<a href="http://badge.fury.io/js/express-restify-mongoose"><img src="https://badge.fury.io/js/express-restify-mongoose.png" alt="NPM version"></a>
-<a href="https://david-dm.org/florianholzapfel/express-restify-mongoose"><img src="https://david-dm.org/florianholzapfel/express-restify-mongoose.png" alt="Dependencies"></a></p>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-offset-1 col-md-8">
+        <section id="getting-started">
+          <h2 class="section-header">
+            <a class="section-anchor" href="#getting-started">
+              <span class="glyphicon glyphicon-link"></span>
+            </a>Getting started
+          </h2>
 
-<h2>
-<a id="getting-started" class="anchor" href="#getting-started" aria-hidden="true"><span class="octicon octicon-link"></span></a>Getting started</h2>
+          <pre class="hljs"><code>npm install express-restify-mongoose --save</code></pre>
 
-<p>In your shell, install with npm:</p>
+          <h3 id="express4" class="section-header">
+            <a class="section-anchor" href="#express4">
+              <span class="glyphicon glyphicon-link"></span>
+            </a>Express 4 app
+          </h3>
 
-<div class="highlight highlight-sh"><pre>npm install express-restify-mongoose</pre></div>
+          <div class="row">
+            <div class="col-md-6">
+              <p>This snippet...</p>
 
-<p>In your code:</p>
+              <pre class="hljs"><code>var express = require('express')
+var bodyParser = require('body-parser')
+var methodOverride = require('method-override')
+var mongoose = require('mongoose')
+var restify = require('express-restify-mongoose')
+var app = express()
+var router = express.Router()
 
-<p><strong>Express 3</strong></p>
+app.use(bodyParser.json())
+app.use(methodOverride())
 
-<div class="highlight highlight-javascript"><pre><span class="pl-k">var</span> http <span class="pl-k">=</span> <span class="pl-c1">require</span>(<span class="pl-s"><span class="pl-pds">'</span>http<span class="pl-pds">'</span></span>);
-<span class="pl-k">var</span> express <span class="pl-k">=</span> <span class="pl-c1">require</span>(<span class="pl-s"><span class="pl-pds">'</span>express<span class="pl-pds">'</span></span>);
-<span class="pl-k">var</span> mongoose <span class="pl-k">=</span> <span class="pl-c1">require</span>(<span class="pl-s"><span class="pl-pds">'</span>mongoose<span class="pl-pds">'</span></span>);
-<span class="pl-k">var</span> Schema <span class="pl-k">=</span> mongoose.Schema;
-<span class="pl-k">var</span> restify <span class="pl-k">=</span> <span class="pl-c1">require</span>(<span class="pl-s"><span class="pl-pds">'</span>express-restify-mongoose<span class="pl-pds">'</span></span>)
+mongoose.connect('mongodb://localhost/database')
 
-mongoose.connect(<span class="pl-s"><span class="pl-pds">'</span>mongodb://localhost/database<span class="pl-pds">'</span></span>);
+restify.serve(router, mongoose.model('Customer', new mongoose.Schema({
+  name: { type: String, required: true },
+  comment: { type: String }
+})))
 
-<span class="pl-k">var</span> Customer <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Schema</span>({
-    name<span class="pl-k">:</span> { type<span class="pl-k">:</span> <span class="pl-c1">String</span>, required<span class="pl-k">:</span> <span class="pl-c1">true</span> },
-    comment<span class="pl-k">:</span> { type<span class="pl-k">:</span> <span class="pl-c1">String</span> }
-});
-<span class="pl-k">var</span> CustomerModel <span class="pl-k">=</span> mongoose.model(<span class="pl-s"><span class="pl-pds">'</span>Customer<span class="pl-pds">'</span></span>, Customer);
+restify.serve(router, mongoose.model('Invoice', new mongoose.Schema({
+  customer: { type: Schema.Types.ObjectId, ref: 'Customer' },
+  amount: { type: Number, required: true }
+})))
 
-<span class="pl-k">var</span> Invoice <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Schema</span>({
-    customer<span class="pl-k">:</span> { type<span class="pl-k">:</span> Schema.Types.ObjectId, ref<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>Customer<span class="pl-pds">'</span></span> },
-    amount<span class="pl-k">:</span> { type<span class="pl-k">:</span> <span class="pl-c1">Number</span>, required<span class="pl-k">:</span> <span class="pl-c1">true</span> }
-});
-<span class="pl-k">var</span> InvoiceModel <span class="pl-k">=</span> mongoose.model(<span class="pl-s"><span class="pl-pds">'</span>Invoice<span class="pl-pds">'</span></span>, Invoice);
+app.use(router)
 
-<span class="pl-k">var</span> app <span class="pl-k">=</span> express();
-app.configure(<span class="pl-k">function</span>(){
-    app.use(express.bodyParser());
-    app.use(express.methodOverride());
-    restify.serve(app, CustomerModel);
-    restify.serve(app, InvoiceModel);
-});
+app.listen(3000, function () {
+  console.log('Express server listening on port 3000')
+})</code></pre>
+            </div>
+            <div class="col-md-6">
+              <p>...automatically generates those endpoints.</p>
 
-http.createServer(app).listen(<span class="pl-c1">3000</span>, <span class="pl-k">function</span>() {
-    <span class="pl-en">console</span><span class="pl-c1">.log</span>(<span class="pl-s"><span class="pl-pds">"</span>Express server listening on port 3000<span class="pl-pds">"</span></span>);
-});</pre></div>
-
-<p><strong>Express 4</strong></p>
-
-<div class="highlight highlight-javascript"><pre><span class="pl-k">var</span> express <span class="pl-k">=</span> <span class="pl-c1">require</span>(<span class="pl-s"><span class="pl-pds">'</span>express<span class="pl-pds">'</span></span>);
-<span class="pl-k">var</span> bodyParser <span class="pl-k">=</span> <span class="pl-c1">require</span>(<span class="pl-s"><span class="pl-pds">'</span>body-parser<span class="pl-pds">'</span></span>);
-<span class="pl-k">var</span> methodOverride <span class="pl-k">=</span> <span class="pl-c1">require</span>(<span class="pl-s"><span class="pl-pds">'</span>method-override<span class="pl-pds">'</span></span>);
-<span class="pl-k">var</span> mongoose <span class="pl-k">=</span> <span class="pl-c1">require</span>(<span class="pl-s"><span class="pl-pds">'</span>mongoose<span class="pl-pds">'</span></span>);
-<span class="pl-k">var</span> Schema <span class="pl-k">=</span> mongoose.Schema;
-<span class="pl-k">var</span> restify <span class="pl-k">=</span> <span class="pl-c1">require</span>(<span class="pl-s"><span class="pl-pds">'</span>express-restify-mongoose<span class="pl-pds">'</span></span>)
-
-mongoose.connect(<span class="pl-s"><span class="pl-pds">'</span>mongodb://localhost/database<span class="pl-pds">'</span></span>);
-
-<span class="pl-k">var</span> Customer <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Schema</span>({
-    name<span class="pl-k">:</span> { type<span class="pl-k">:</span> <span class="pl-c1">String</span>, required<span class="pl-k">:</span> <span class="pl-c1">true</span> },
-    comment<span class="pl-k">:</span> { type<span class="pl-k">:</span> <span class="pl-c1">String</span> }
-});
-<span class="pl-k">var</span> CustomerModel <span class="pl-k">=</span> mongoose.model(<span class="pl-s"><span class="pl-pds">'</span>Customer<span class="pl-pds">'</span></span>, Customer);
-
-<span class="pl-k">var</span> Invoice <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Schema</span>({
-    customer<span class="pl-k">:</span> { type<span class="pl-k">:</span> Schema.Types.ObjectId, ref<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>Customer<span class="pl-pds">'</span></span> },
-    amount<span class="pl-k">:</span> { type<span class="pl-k">:</span> <span class="pl-c1">Number</span>, required<span class="pl-k">:</span> <span class="pl-c1">true</span> }
-});
-<span class="pl-k">var</span> InvoiceModel <span class="pl-k">=</span> mongoose.model(<span class="pl-s"><span class="pl-pds">'</span>Invoice<span class="pl-pds">'</span></span>, Invoice);
-
-<span class="pl-k">var</span> app <span class="pl-k">=</span> express();
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended<span class="pl-k">:</span> <span class="pl-c1">true</span> }));
-app.use(methodOverride());
-
-<span class="pl-k">var</span> router <span class="pl-k">=</span> express.Router();
-restify.serve(router, CustomerModel);
-restify.serve(router, InvoiceModel);
-app.use(router);
-
-app.listen(<span class="pl-c1">3000</span>, <span class="pl-k">function</span>() {
-    <span class="pl-en">console</span><span class="pl-c1">.log</span>(<span class="pl-s"><span class="pl-pds">"</span>Express server listening on port 3000<span class="pl-pds">"</span></span>);
-});</pre></div>
-
-<p>Then you can excute the following queries:</p>
-
-<pre><code>GET http://localhost/api/v1/Customers/count
+              <pre class="hljs"><code>GET http://localhost/api/v1/Customers/count
 GET http://localhost/api/v1/Customers
 PUT http://localhost/api/v1/Customers
 POST http://localhost/api/v1/Customers
@@ -132,13 +94,64 @@ GET http://localhost/api/v1/Customers/:id
 GET http://localhost/api/v1/Customers/:id/shallow
 PUT http://localhost/api/v1/Customers/:id
 POST http://localhost/api/v1/Customers/:id
-DELETE http://localhost/api/v1/Customers/:id
-</code></pre>
+DELETE http://localhost/api/v1/Customers/:id</code></pre>
 
-<h3>
-<a id="query" class="anchor" href="#query" aria-hidden="true"><span class="octicon octicon-link"></span></a>Query</h3>
+              <pre class="hljs"><code>GET http://localhost/api/v1/Invoices/count
+GET http://localhost/api/v1/Invoices
+PUT http://localhost/api/v1/Invoices
+POST http://localhost/api/v1/Invoices
+DELETE http://localhost/api/v1/Invoices
 
-<pre><code>GET http://localhost/api/v1/Customers?name=~regex
+GET http://localhost/api/v1/Invoices/:id
+GET http://localhost/api/v1/Invoices/:id/shallow
+PUT http://localhost/api/v1/Invoices/:id
+POST http://localhost/api/v1/Invoices/:id
+DELETE http://localhost/api/v1/Invoices/:id</code></pre>
+            </div>
+          </div>
+
+          <h3 id="request" class="section-header">
+            <a class="section-anchor" href="#request">
+              <span class="glyphicon glyphicon-link"></span>
+            </a>Usage with <a href="https://www.npmjs.com/package/request">request</a>
+          </h3>
+
+          <pre class="hljs"><code>var query = {
+  $or: [{
+    name: '~Another'
+  }, {
+    $and: [{
+      name: '~Product'
+    }, {
+      price: '&lt;=10'
+    }]
+  }],
+  price: 20
+}
+
+request({
+  url: '/api/v1/Model',
+  qs: {
+    query: encodeURIComponent(JSON.stringify(query)
+  }
+})</code></pre>
+
+        </section>
+        <hr>
+        <section id="query">
+          <h2 class="section-header">
+            <a class="section-anchor" href="#query">
+              <span class="glyphicon glyphicon-link"></span>
+            </a>Query
+          </h2>
+
+          <h3 id="operators" class="section-header">
+            <a class="section-anchor" href="#operators">
+              <span class="glyphicon glyphicon-link"></span>
+            </a>Operators
+          </h3>
+
+          <pre class="hljs"><code>GET http://localhost/api/v1/Customers?name=~regex
 GET http://localhost/api/v1/Customers?name=value
 GET http://localhost/api/v1/Customers?name=&gt;value
 GET http://localhost/api/v1/Customers?name=&gt;=value
@@ -146,247 +159,255 @@ GET http://localhost/api/v1/Customers?name=&lt;value
 GET http://localhost/api/v1/Customers?name=&lt;=value
 GET http://localhost/api/v1/Customers?name=!=value
 GET http://localhost/api/v1/Customers?select=name
-GET http://localhost/api/v1/Customers?select=-name
-</code></pre>
+GET http://localhost/api/v1/Customers?select=-name</code></pre>
 
-<h2>
-<a id="mongoose-query" class="anchor" href="#mongoose-query" aria-hidden="true"><span class="octicon octicon-link"></span></a>Mongoose Query</h2>
+          <h3>Sort, skip and limit</h3>
 
-<pre><code>var query = { $or: [
-                {name: '~Another'},
-                {$and: [
-                    {name: '~Product'},
-                    {price: '&lt;=10'}
-                ]}
-            ],
-                price: 20
-            };
-request({
-    url: 'api/v1/Model',
-    qs: { query: encodeURIComponent(JSON.stringify(query) }
-})
-GET http://localhost/api/v1/Customers?query={"field":"&gt;=value", "field":[value1,value2]
-                                                 "$and":[{"field":"~value"},{"field":"!=value"}]}
-</code></pre>
-
-<h2>
-<a id="logical-queries-andor" class="anchor" href="#logical-queries-andor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Logical Queries (and,or)</h2>
-
-<pre><code>GET http://localhost/api/v1/Customers?$and=[{"field":"&gt;=value"},{"field":[value1,value2]}]
-GET http://localhost/api/v1/Customers?$or=[{"field":"value"},{"$and",[{"field":"~value"},{"field":"!=value"}]}]
-</code></pre>
-
-<h3>
-<a id="ordering--sorting" class="anchor" href="#ordering--sorting" aria-hidden="true"><span class="octicon octicon-link"></span></a>Ordering &amp; Sorting</h3>
-
-<pre><code>GET http://localhost/api/v1/Customers?sort=name
+          <pre class="hljs"><code>GET http://localhost/api/v1/Customers?sort=name
 GET http://localhost/api/v1/Customers?sort=-name
-GET http://localhost/api/v1/Customers?skip=10&amp;limit=10
-</code></pre>
+GET http://localhost/api/v1/Customers?skip=10&amp;limit=10</code></pre>
 
-<h3>
-<a id="populate-fields" class="anchor" href="#populate-fields" aria-hidden="true"><span class="octicon octicon-link"></span></a>Populate Fields</h3>
+          <h3>Populate</h3>
 
-<pre><code>GET http://localhost/api/v1/Invoices?populate=customer
+          <pre class="hljs"><code>GET http://localhost/api/v1/Invoices?populate=customer
 GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name
 
-## populate fields will not have effect on select fields as supported by Mongoose
+# populate fields will not have effect on select fields as supported by Mongoose
 # populate fields will be fetched along with select fields
 GET http://localhost/api/v1/Invoices?populate=customer
 GET http://localhost/api/v1/Invoices?populate=customer&amp;select=amount
 GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer,amount
-GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name,amount
+GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name,amount</code></pre>
+        </section>
 
-</code></pre>
+        <hr>
 
-<h2>
-<a id="reference" class="anchor" href="#reference" aria-hidden="true"><span class="octicon octicon-link"></span></a>Reference</h2>
+        <section id="reference">
+          <h2 class="section-header">
+            <a class="section-anchor" href="#reference">
+              <span class="glyphicon glyphicon-link"></span>
+            </a>Reference
+          </h2>
 
-<h3>
-<a id="serve" class="anchor" href="#serve" aria-hidden="true"><span class="octicon octicon-link"></span></a>serve</h3>
+          <h3 id="serve" class="section-header">
+            <a class="section-anchor" href="#serve">
+              <span class="glyphicon glyphicon-link"></span>
+            </a>serve
+          </h3>
 
-<pre><code>serve(app, model, [options])
-</code></pre>
+          <pre class="hljs"><code>restify.serve(router, model[, options])</code></pre>
+          <p><strong>router</strong>: express.Router() instance (Express 4) or app object (Express 3)</p>
+          <p><strong>model</strong>: mongoose model</p>
+          <p><strong>options</strong>: object</p>
 
-<h4>
-<a id="arguments" class="anchor" href="#arguments" aria-hidden="true"><span class="octicon octicon-link"></span></a>arguments</h4>
-
-<ul>
-<li>
-<strong>app</strong> - The express app</li>
-<li>
-<strong>model</strong> - Your mongoose database model</li>
-<li>
-<strong>options</strong> - Optional options object
-
-<ul>
-<li>
-<strong>strict</strong> - When set to true, disallows DELETE all, POST with id param, and PUT without id param</li>
-<li>
-<strong>prefix</strong> - Some path that will be prefixed to the REST path. Defaults to <code>/api</code>
-</li>
-<li>
-<strong>version</strong> - An API version that will be prefixed to the rest path. Defaults to <code>/v1</code>
-
-<ul>
-<li>if either api or version contain <code>/:id</code> then that will be used as the location to search for the id. <code>version: 'v1/Entities/:id'</code> will generate <code>/api/v1/Entities/:id/&lt;modelName&gt;</code> and <code>/api/v1/Entities/&lt;modelName&gt;</code> for all pertinent methods</li>
-</ul>
-</li>
-<li>
-<strong>idProperty</strong> - If specified, the 'by id' methods will query on the given property instead of _id</li>
-<li>
-<strong>middleware</strong> - An express middleware or an array of express middlewares that will be used.</li>
-<li>
-<strong>prereq</strong> - A function that takes the req object and returns or yields true or false. This function will be called for every POST PUT and DELETE request and send 403 on false.</li>
-<li>
-<strong>access</strong> - A function that takes the req object and returns or yields 'public', 'private', or 'protected'. This function will be called for every GET POST and PUT request and filter out the appropriate fields</li>
-<li>
-<strong>plural</strong> - If <code>true</code>, does not pluralize the database model name. Default is <code>false</code>
-</li>
-<li>
-<strong>lowercase</strong> - If <code>true</code>, turn model name to lower case before generating the routes.</li>
-<li>
-<strong>name</strong> - If specified, this is used as the name of the endpoint</li>
-<li>
-<strong>onError</strong> - A function with the signature <code>function(err, req, res, next)</code> that is used to output an error. <code>err</code> is the error object that is returned by mongoose. Works best with <code>fullErrors = true</code>
-</li>
-<li>
-<strong>outputFn</strong> - A function with the signature <code>function(res, result)</code> that is used to output the result. <code>res</code> is a restify or express result object, <code>result</code> is the result that is returned from the mongo db.</li>
-<li>
-<strong>private</strong> - String of comma separated field names which are not to be returned by queries that do not have private access.</li>
-<li>
-<strong>protected</strong> - String of comma separated field names which are not to be returned by queries that have public access.</li>
-<li>
-<strong>postProcess</strong> - A middleware to be called after the response has been sent. It is only executed on success.  If an error is sent to the client, this is not executed.</li>
-<li>
-<strong>lean</strong> - If <code>false</code>, will not convert to returned values to plain old javascript objects. This is bad for performance, but it allows for returning virtuals, getters    and setters.</li>
-<li>
-<strong>findOneAndUpdate</strong> - If <code>false</code>, will first find documents by id and then call save. This
-allows mongoose validators to be called. Default is <code>true</code>.
-(For more information, read the Mongoose docs:
-<a href="http://mongoosejs.com/docs/api.html#model_Model.findByIdAndUpdate">http://mongoosejs.com/docs/api.html#model_Model.findByIdAndUpdate</a>)</li>
-<li>
-<strong>findOneAndRemove</strong> - If <code>false</code>, will first find documents by id and then call remove. This
-allows mongoose post and pre hooks to be called. Default is <code>true</code>.
-(For more information, read the Mongoose docs:
-<a href="http://mongoosejs.com/docs/api.html#model_Model.findOneAndRemove">http://mongoosejs.com/docs/api.html#model_Model.findOneAndRemove</a>)</li>
-<li>
-<strong>contextFilter</strong> - <code>function(model, req, cb)</code>. Allows authorization per request, for example filtering items based on req.user. Defaults to <code>cb(model)</code>.</li>
-<li>
-<strong>postCreate</strong> - A function with the signature <code>function (res, result, done)</code> which is run after document creation.</li>
-<li>
-<strong>postDelete</strong> - A function with the signature <code>function (res, result, done)</code> which is run after document deletion.</li>
-<li>
-<strong>fullErrors</strong> - When an occurs in mongoose, the full error object, if available, will be returned instead of just the HTTP status message.  Default false</li>
-</ul>
-</li>
-</ul>
-
-<h3>
-<a id="defaults" class="anchor" href="#defaults" aria-hidden="true"><span class="octicon octicon-link"></span></a>defaults</h3>
-
-<pre><code>defaults(options)
-</code></pre>
-
-<h4>
-<a id="arguments-1" class="anchor" href="#arguments-1" aria-hidden="true"><span class="octicon octicon-link"></span></a>arguments</h4>
-
-<ul>
-<li>options - Same options as above. This function will set this object as the defaults for anything you declare afterwards.</li>
-</ul>
-
-<h2>
-<a id="examples" class="anchor" href="#examples" aria-hidden="true"><span class="octicon octicon-link"></span></a>Examples</h2>
-
-<h3>
-<a id="basic-access-control" class="anchor" href="#basic-access-control" aria-hidden="true"><span class="octicon octicon-link"></span></a>Basic access control</h3>
-
-<div class="highlight highlight-javascript"><pre>restify.serve(app, MyModel, {
-  <span class="pl-en">prereq</span>: <span class="pl-k">function</span>(<span class="pl-smi">req</span>) {
-    <span class="pl-k">if</span> (req.<span class="pl-c1">method</span> <span class="pl-k">===</span> <span class="pl-s"><span class="pl-pds">'</span>DELETE<span class="pl-pds">'</span></span>) {
-      <span class="pl-k">return</span> <span class="pl-c1">false</span>;
-    } <span class="pl-k">else</span> <span class="pl-k">if</span> (req.user) {
-      <span class="pl-k">return</span> <span class="pl-c1">true</span>;
-    } <span class="pl-k">else</span> {
-      <span class="pl-k">return</span> <span class="pl-c1">false</span>;
-    }
-  },
-  <span class="pl-en">contextFilter</span>: <span class="pl-k">function</span>(<span class="pl-smi">model</span>, <span class="pl-smi">req</span>, <span class="pl-smi">cb</span>) {
-    <span class="pl-k">if</span> (req.user) {
-      cb(model);
-    } <span class="pl-k">else</span> {
-      cb(model.<span class="pl-c1">find</span>({
-        isPublic<span class="pl-k">:</span> <span class="pl-c1">true</span>
-      }));
-    }
+          <ul>
+            <li>
+              <h4>strict<small>default: <code>true</code></small></h4>
+              <p>true disallows DELETE all, POST with id param, and PUT without id param</p>
+            </li>
+            <li>
+              <h4>prefix<small>default: <code>/api</code></small></h4>
+              <p>Path to prefix to the REST endpoint.</p>
+            </li>
+            <li>
+              <h4>version<small>default: <code>/v1</code></small></h4>
+              <p>API version that will be prefixed to the rest path.</p>
+              <p>If prefix or version contains <code>/:id</code>, then that will be used as the location to search for the id.</p>
+              <h5>Example</h5>
+              <p><code>version: '/v1/Entities/:id'</code> generates <code>/api/v1/Entities/:id/Model</code> and <code>/api/v1/Entities/Model</code> for all pertinent methods</p>
+            </li>
+            <li>
+              <h4>idProperty<small>default: <code>_id</code></small></h4>
+              <p><code>findById</code> and <code>findByIdAnd*</code> methods will query on the given property</p>
+            </li>
+            <li>
+              <h4>middleware<small>default: <code>[]</code></small></h4>
+              <p>An Express middleware or an array of express middlewares that will be used.</p>
+              <h5>Example</h5>
+              <pre class="hljs"><code>middleware: function(req, res, next) {
+  console.log('Incoming %s request', req.method)
+}</code></pre>
+            </li>
+            <li>
+              <h4>prereq</h4>
+              <p>A function that takes the req object and returns or yields true or false. This function is called on POST, PUT and DELETE requests and sends 403 (Forbidden) on false.</p>
+              <h5>Examples</h5>
+              <p>Sync</p>
+              <pre class="hljs"><code>prereq: function(req) {
+  if (req.isAuthenticated()) {
+    return true
   }
-});</pre></div>
 
-<h2>
-<a id="contributors" class="anchor" href="#contributors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Contributors</h2>
+  return false
+}</code></pre>
+              <p>Async</p>
+              <pre class="hljs"><code>prereq: function(req, cb) {
+  performAsyncLogic(function (err, result) {
+    cb(err, true)
+  })
+}</code></pre>
+            </li>
+            <li>
+              <h4>access</h4>
+              <p>A function that takes the req object and returns or yields 'public', 'private' or 'protected'. It is called on GET, POST and PUT requests and filters out the appropriate fields.</p>
+              <h5>Examples</h5>
+              <p>Sync:</p>
+              <pre class="hljs"><code>access: function(req) {
+  if (req.isAuthenticated()) {
+    return req.user.isAdmin ? 'private' : 'protected'
+  } else {
+    return 'public'
+  }
+}</code></pre>
+              <p>Async</p>
+              <pre class="hljs"><code>access: function(req, cb) {
+  performAsyncLogic(function (err, result) {
+    cb(err, 'public')
+  })
+}</code></pre>
+            </li>
+            <li>
+              <h4>plural<small>default: <code>false</code></small></h4>
+              <p>If <code>true</code>, does not pluralize the database model name.</p>
+            </li>
+            <li>
+              <h4>lowercase<small>default: <code>false</code></small></h4>
+              <p>If <code>true</code>, calls <code>.toLowerCase()</code> on the model's name before generating the routes.</p>
+            </li>
+            <li>
+              <h4>name<small>default: model's name</small></h4>
+              <p>Used as the endpoint's name.</p>
+            </li>
+            <li>
+              <h4>onError<small>default: <code>JSON.stringify()</code> the entire mongoose err object</small></h4>
+              <div class="alert alert-warning">
+                <i class="glyphicon glyphicon-alert"></i> Leaving this as default will leak information about your database.
+              </div>
+              <p>A function with the signature <code>function (err, req, res, next)</code> that is used to output an error. <code>err</code> is the error object that is returned by mongoose.</p>
+              <h5>Example</h5>
+              <pre class="hljs"><code>onError: function (err, req, res, next) {
+  next(err);
+}</code></pre>
+            </li>
+            <li>
+              <h4>outputFn</h4>
+              <p>A function with the signature <code>function (res, result)</code> that is used to output the result. <code>res</code> is a restify or express response object and <code>result</code> is the data returned by mongoose.</p>
+              <h5>Example</h5>
+              <pre class="hljs"><code>outputFn: function(res, result) {
+  if (result.length > 100) {
+    result.length = 100
+  }
 
-<ul>
-<li>Enric León (<a href="https://github.com/nothingbuttumbleweed">https://github.com/nothingbuttumbleweed</a>)</li>
-<li>David Higginbotham (<a href="https://github.com/dhigginbotham">https://github.com/dhigginbotham</a>)</li>
-<li>Jonathan Greenemeier (<a href="https://github.com/6eDesign">https://github.com/6eDesign</a>)</li>
-<li>Alan Levicki (<a href="https://github.com/alevicki">https://github.com/alevicki</a>)</li>
-<li>Michael (<a href="https://github.com/micheee">https://github.com/micheee</a>)</li>
-<li>Matt Roman (<a href="https://github.com/romanmt">https://github.com/romanmt</a>)</li>
-<li>Fetrarijaona R. (<a href="https://github.com/fetrarij">https://github.com/fetrarij</a>)</li>
-<li>Jan Paul Erkelens (<a href="https://github.com/jperkelens">https://github.com/jperkelens</a>)</li>
-<li>Christoph Herbst (<a href="https://github.com/cherbst">https://github.com/cherbst</a>)</li>
-<li>doobinay (<a href="https://github.com/doobinay">https://github.com/doobinay</a>)</li>
-<li>Hareesh (<a href="https://github.com/hareeshbabu82ns">https://github.com/hareeshbabu82ns</a>)</li>
-<li>09setht (<a href="https://github.com/09setht">https://github.com/09setht</a>)</li>
-<li>Zertz (<a href="https://github.com/Zertz">https://github.com/Zertz</a>)</li>
-<li>Ph3n1x (<a href="https://github.com/Ph3n1x">https://github.com/Ph3n1x</a>)</li>
-<li>Emre Efendioğlu (<a href="https://github.com/emreefendioglu">https://github.com/emreefendioglu</a>)</li>
-<li>Tim Mckenzie (<a href="https://github.com/timmckenzie">https://github.com/timmckenzie</a>)</li>
-<li>Emil Janitzek (<a href="https://github.com/wiggin">https://github.com/wiggin</a>)</li>
-<li>Daniel Henrique Joppi (<a href="https://github.com/danieljoppi">https://github.com/danieljoppi</a>)</li>
-<li>Caleb Meredith (<a href="https://github.com/CalebMer">https://github.com/CalebMer</a>)</li>
-<li>David Souther (<a href="https://github.com/DavidSouther">https://github.com/DavidSouther</a>)</li>
-<li>Marco Cameriero (<a href="https://github.com/95ulisse">https://github.com/95ulisse</a>)</li>
-<li>Jan Melcher (<a href="https://github.com/Yogu">https://github.com/Yogu</a>)</li>
-<li>Urs Wolfer (<a href="https://github.com/uwolfer">https://github.com/uwolfer</a>)</li>
-<li>Thomas Forrer (<a href="https://github.com/forrert">https://github.com/forrert</a>)</li>
-</ul>
+  res.status(200).json(result)
+}</code></pre>
+            </li>
+            <li>
+              <h4>private</h4>
+              <p>Array of fields which are only to be returned by queries that have private access.</p>
+              <h5>Example</h5>
+              <pre class="hljs"><code>private: ['topSecret', 'fields']</code></pre>
+            </li>
+            <li>
+              <h4>protected</h4>
+              <p>Array of fields which are only to be returned by queries that have private or protected access.
+              <h5>Example</h5>
+              <pre class="hljs"><code>private: ['somewhatSecret', 'keys']</code></pre>
+            </li>
+            <li>
+              <h4>postProcess</h4>
+              <p>A middleware to be called after a successful response has been sent. If an error is sent to the client, this is not called.</p>
+              <h5>Example</h5>
+              <pre class="hljs"><code>postProcess: function(req, res, next) {
+  console.log('Successful %s request', req.method)
+}</code></pre>
+            </li>
+            <li>
+              <h4>lean<small>default: <code>true</code></small></h4>
+              <p>Whether or not mongoose should use <code>.lean()</code> to convert results to plain old JavaScript objects. This is bad for performance, but allows returning virtuals, getters and setters.</p>
+            </li>
+            <li>
+              <h4>findOneAndUpdate<small>default: <code>true</code></small></h4>
+              <p>If <code>false</code>, will first find documents by id and then call save, allowing document middleware to be called. For more information regarding mongoose middleware, <a href="http://mongoosejs.com/docs/middleware.html">read the docs</a>.</p>
+            </li>
+            <li>
+              <h4>findOneAndRemove<small>default: <code>true</code></small></h4>
+              <p>If <code>false</code>, will first find documents by id and then call remove, allowing document middleware to be called. For more information regarding mongoose middleware, <a href="http://mongoosejs.com/docs/middleware.html">read the docs</a>.</p>
+            </li>
+            <li>
+              <h4>contextFilter<small>default: <code>cb(model)</code></small></h4>
+              <p>A function with the signature <code>function (model, req, cb)</code> that allows request specific filtering.</p>
+              <h5>Example</h5>
+              <pre class="hljs"><code>contextFilter: function(model, req, cb) {
+  cb(model.find({
+    user: req.user._id
+  }))
+}</code></pre>
+            </li>
+            <li>
+              <h4>postCreate</h4>
+              <p>A function with the signature <code>function (res, result, done)</code> which is run after document creation.</p>
+            </li>
+            <li>
+              <h4>postDelete</h4>
+              <p>A function with the signature <code>function (res, result, done)</code> which is run after document deletion.</p>
+            </li>
+          </ul>
 
-<h2>
-<a id="formalia" class="anchor" href="#formalia" aria-hidden="true"><span class="octicon octicon-link"></span></a>Formalia</h2>
+          <h3 id="defaults" class="section-header">
+            <a class="section-anchor" href="#defaults">
+              <span class="glyphicon glyphicon-link"></span>
+            </a>defaults
+          </h3>
 
-<pre><code>Copyright (C) 2013 by Florian Holzapfel
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-</code></pre>
-      </section>
+          <pre class="hljs"><code>restify.defaults(options)</code></pre>
+          <p><strong>options</strong>: same as above, sets this object as the defaults for anything you <code>.serve()</code> afterwards.</p>
+        </section>
+      </div>
+      <div class="col-md-2">
+        <nav id="nav" class="hidden-print hidden-xs hidden-sm" data-spy="affix">
+          <ul class="nav">
+            <li>
+              <a href="#getting-started">Getting started</a>
+              <ul class="nav">
+                <li><a href="#express4">Express 4 app</a></li>
+                <li><a href="#request">Request</a></li>
+              </ul>
+              <a href="#query">Query</a>
+              <ul class="nav">
+                <li><a href="#operators">Operators</a></li>
+                <li><a href="#queries">Sort, skip and limit</a></li>
+                <li><a href="#queries">Populate</a></li>
+              </ul>
+              <a href="#reference">Reference</a>
+              <ul class="nav">
+                <li><a href="#serve">serve</a></li>
+                <li><a href="#defaults">defaults</a></li>
+              </ul>
+              <a href="https://github.com/florianholzapfel/express-restify-mongoose/graphs/contributors" target="github">Contributors</a>
+              <a href="https://github.com/florianholzapfel/express-restify-mongoose/blob/master/LICENSE" target="github">License (MIT)</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
     </div>
 
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">express-restify-mongoose maintained by <a href="https://github.com/florianholzapfel">florianholzapfel</a></p>
-        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
-      </footer>
-    </div>
+    <footer class="container-fluid">
+      <div class="row">
+        <div class="col-md-offset-1 col-md-7">
+          <p class="copyright">express-restify-mongoose is maintained by <a href="https://github.com/florianholzapfel">florianholzapfel</a></p>
+        </div>
+      </div>
+    </footer>
 
-    
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="/js/main.js"></script>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.7/styles/monokai_sublime.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.7/highlight.min.js"></script>
+    <script>
+      hljs.initHighlightingOnLoad()
+    </script>
 
-  </body>
+</body>
+
 </html>

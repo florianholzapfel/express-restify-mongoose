@@ -1,0 +1,26 @@
+.section-anchor {
+  display: none;
+  font-size: 0.5em;
+  margin-left: -1.2em;
+}
+
+.section-header:hover > .section-anchor {
+  display: inline;
+  text-decoration: none;
+}
+
+.nav > li > .nav {
+  margin-left: 10px;
+}
+
+.affix {
+  top: 0;
+}
+
+.affix-bottom {
+  position: absolute;
+}
+
+h4 > small {
+  margin-left: 10px;
+}
