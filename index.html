@@ -224,7 +224,7 @@ GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name,
               <h4>middleware<small>default: <code>[]</code></small></h4>
               <p>An Express middleware or an array of express middlewares that will be used.</p>
               <h5>Example</h5>
-              <pre class="hljs"><code>middleware: function(req, res, next) {
+              <pre class="hljs"><code>middleware: function (req, res, next) {
   console.log('Incoming %s request', req.method)
 }</code></pre>
             </li>
@@ -233,7 +233,7 @@ GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name,
               <p>A function that takes the req object and returns or yields true or false. This function is called on POST, PUT and DELETE requests and sends 403 (Forbidden) on false.</p>
               <h5>Examples</h5>
               <p>Sync</p>
-              <pre class="hljs"><code>prereq: function(req) {
+              <pre class="hljs"><code>prereq: function (req) {
   if (req.isAuthenticated()) {
     return true
   }
@@ -241,7 +241,7 @@ GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name,
   return false
 }</code></pre>
               <p>Async</p>
-              <pre class="hljs"><code>prereq: function(req, cb) {
+              <pre class="hljs"><code>prereq: function (req, cb) {
   performAsyncLogic(function (err, result) {
     cb(err, true)
   })
@@ -252,7 +252,7 @@ GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name,
               <p>A function that takes the req object and returns or yields 'public', 'private' or 'protected'. It is called on GET, POST and PUT requests and filters out the appropriate fields.</p>
               <h5>Examples</h5>
               <p>Sync:</p>
-              <pre class="hljs"><code>access: function(req) {
+              <pre class="hljs"><code>access: function (req) {
   if (req.isAuthenticated()) {
     return req.user.isAdmin ? 'private' : 'protected'
   } else {
@@ -260,7 +260,7 @@ GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name,
   }
 }</code></pre>
               <p>Async</p>
-              <pre class="hljs"><code>access: function(req, cb) {
+              <pre class="hljs"><code>access: function (req, cb) {
   performAsyncLogic(function (err, result) {
     cb(err, 'public')
   })
@@ -286,14 +286,14 @@ GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name,
               <p>A function with the signature <code>function (err, req, res, next)</code> that is used to output an error. <code>err</code> is the error object that is returned by mongoose.</p>
               <h5>Example</h5>
               <pre class="hljs"><code>onError: function (err, req, res, next) {
-  next(err);
+  next(err)
 }</code></pre>
             </li>
             <li>
               <h4>outputFn</h4>
               <p>A function with the signature <code>function (res, result)</code> that is used to output the result. <code>res</code> is a restify or express response object and <code>result</code> is the data returned by mongoose.</p>
               <h5>Example</h5>
-              <pre class="hljs"><code>outputFn: function(res, result) {
+              <pre class="hljs"><code>outputFn: function (res, result) {
   if (result.length > 100) {
     result.length = 100
   }
@@ -317,7 +317,7 @@ GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name,
               <h4>postProcess</h4>
               <p>A middleware to be called after a successful response has been sent. If an error is sent to the client, this is not called.</p>
               <h5>Example</h5>
-              <pre class="hljs"><code>postProcess: function(req, res, next) {
+              <pre class="hljs"><code>postProcess: function (req, res, next) {
   console.log('Successful %s request', req.method)
 }</code></pre>
             </li>
@@ -337,7 +337,7 @@ GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name,
               <h4>contextFilter<small>default: <code>cb(model)</code></small></h4>
               <p>A function with the signature <code>function (model, req, cb)</code> that allows request specific filtering.</p>
               <h5>Example</h5>
-              <pre class="hljs"><code>contextFilter: function(model, req, cb) {
+              <pre class="hljs"><code>contextFilter: function (model, req, cb) {
   cb(model.find({
     user: req.user._id
   }))
