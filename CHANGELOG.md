@@ -3,7 +3,7 @@ Changelog
 
 ### 1.0.0
 
-> **This release is no longer compatible with mongoose 3**
+> **This release requires mongoose ^4.0.0**
 
 * updated mongoose to version 4
 * removed `fullErrors`, implement a custom `onError` handler instead
@@ -11,3 +11,7 @@ Changelog
 * async `prereq` and `access` now use the standard `(err, data)` callback signature
 * `access` will throw an exception when an unsupported value is passed
 * changed `outputFn`'s signature to: `(req, res, { result: result, statusCode: statusCode })`
+
+### 0.7.0
+
+> **This release requires mongoose ~3**
