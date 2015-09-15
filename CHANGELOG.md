@@ -3,7 +3,7 @@ Changelog
 
 ### 1.0.0
 
-> **This release requires mongoose ^4.0.0**
+> **This release requires mongoose ~4**
 
 * updated mongoose to version 4
 * removed `fullErrors`, implement a custom `onError` handler instead
