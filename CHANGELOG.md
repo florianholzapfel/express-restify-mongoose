@@ -1,6 +1,11 @@
 Changelog
 =========
 
+### 2.0.0
+
+* removed `options.excluded`, use `options.private` instead
+* `options.private` and `options.protected` no longer accept comma separated fields, pass an array instead
+
 ### 1.0.0
 
 > **This release is no longer compatible with mongoose 3**
