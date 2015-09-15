@@ -42,10 +42,10 @@ describe('permissions', function () {
         return false
       }
 
-      middleware.allow(prereq, function () {
+      middleware.allow(prereq)({}, res, function () {
         assert(true)
         done()
-      })({}, res)
+      })
     })
   })
 
@@ -62,10 +62,10 @@ describe('permissions', function () {
     it('fails', function (done) {
       var prereq = function (req, cb) { cb(null, false) }
 
-      middleware.allow(prereq, function () {
+      middleware.allow(prereq)({}, res, function () {
         assert(true)
         done()
-      })({}, res)
+      })
     })
   })
 
