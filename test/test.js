@@ -437,8 +437,8 @@ module.exports = function (createFn) {
         var query = { $or: [
             {name: '~Another'},
             {$and: [
-                {name: '~Product'},
-                {price: '<=10'}
+              {name: '~Product'},
+              {price: '<=10'}
             ]}
           ],
           price: 20
@@ -745,7 +745,7 @@ module.exports = function (createFn) {
         })
 
         erm.serve(app, setup.CustomerModel, {
-          'private': 'comment',
+          'private': ['comment'],
           lean: false
         })
         erm.serve(app, setup.InvoiceModel)
@@ -1070,8 +1070,7 @@ module.exports = function (createFn) {
       it('DELETE', function (done) {
         postProcess = done
         request.del({
-          url: util.format('%s/api/v1/Customers/%s', testUrl,
-            savedCustomer._id),
+          url: util.format('%s/api/v1/Customers/%s', testUrl, savedCustomer._id),
           json: true
         })
       })
@@ -1084,7 +1083,9 @@ module.exports = function (createFn) {
       setup()
 
       before(function (done) {
-        erm.defaults({version: '/custom'})
+        erm.defaults({
+          version: '/custom'
+        })
 
         erm.serve(app, setup.CustomerModel, {
           lowercase: true,
@@ -1286,8 +1287,8 @@ module.exports = function (createFn) {
 
       before(function (done) {
         erm.defaults({
-          'private': 'address',
-          'protected': 'comment'
+          'private': ['address'],
+          'protected': ['comment']
         })
 
         app = createFn()
