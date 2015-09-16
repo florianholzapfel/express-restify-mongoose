@@ -25,50 +25,6 @@ describe('permissions', function () {
       .withArgs(403, { msg: http.STATUS_CODES[403] })
   })
 
-  describe('with prereq that returns', function () {
-    it('passes', function (done) {
-      var prereq = function () {
-        return true
-      }
-
-      middleware.allow(prereq)({}, res, function () {
-        assert(true)
-        done()
-      })
-    })
-
-    it('fails', function (done) {
-      var prereq = function () {
-        return false
-      }
-
-      middleware.allow(prereq)({}, res, function () {
-        assert(true)
-        done()
-      })
-    })
-  })
-
-  describe('with prereq that yields', function (done) {
-    it('passes', function (done) {
-      var prereq = function (req, cb) { cb(null, true) }
-
-      middleware.allow(prereq)({}, res, function () {
-        assert(true)
-        done()
-      })
-    })
-
-    it('fails', function (done) {
-      var prereq = function (req, cb) { cb(null, false) }
-
-      middleware.allow(prereq)({}, res, function () {
-        assert(true)
-        done()
-      })
-    })
-  })
-
   describe('with access that returns', function () {
     it('adds access field to req', function (done) {
       var req = {}
