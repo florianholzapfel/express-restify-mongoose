@@ -10,6 +10,10 @@ Changelog
 * drop support for querying with parameters, use `url?query={"name":"hello"}`
 * removed $and and $or passed as parameters, use `url?query={"$or":[...]}`
 
+### 1.1.0
+
+* added a `postUpdate` hook
+
 ### 1.0.0
 
 > **This release requires mongoose ~4**
