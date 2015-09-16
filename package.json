@@ -130,5 +130,5 @@
         "pretest": "./node_modules/standard/bin/cmd.js",
         "test": "./node_modules/.bin/mocha -R spec ./test/express.js ./test/permissions.js ./test/resource_filter.js --timeout 5s && ./node_modules/.bin/mocha -R spec ./test/restify.js --timeout 5s"
     },
-    "version": "1.0.4"
+    "version": "1.1.0"
 }
