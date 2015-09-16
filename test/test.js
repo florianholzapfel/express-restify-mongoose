@@ -71,24 +71,21 @@ module.exports = function (createFn) {
       it('200 POST 2 Products', function (done) {
         request.post({
           url: util.format('%s/api/v1/Products', testUrl),
-          json: [
-            {
-              name: 'ACME Product',
-              department: {
-                name: 'Sales',
-                code: 1
-              },
-              price: 10
+          json: [{
+            name: 'ACME Product',
+            department: {
+              name: 'Sales',
+              code: 1
             },
-            {
-              name: 'Another ACME Product',
-              department: {
-                name: 'Sales',
-                code: 1
-              },
-              price: 20
-            }
-          ]
+            price: 10
+          }, {
+            name: 'Another ACME Product',
+            department: {
+              name: 'Sales',
+              code: 1
+            },
+            price: 20
+          }]
         }, function (err, res, body) {
           assert.ok(!err)
           assert.equal(res.statusCode, 201, 'Wrong status code')
@@ -100,8 +97,7 @@ module.exports = function (createFn) {
 
       it('200 POST Products/:id', function (done) {
         request.post({
-          url: util.format('%s/api/v1/Products/%s', testUrl,
-            savedProduct._id),
+          url: util.format('%s/api/v1/Products/%s', testUrl, savedProduct._id),
           json: {
             name: 'Product',
             department: {
@@ -123,8 +119,7 @@ module.exports = function (createFn) {
 
       it('200 GET Products/:id', function (done) {
         request.get({
-          url: util.format('%s/api/v1/Products/%s', testUrl,
-            savedProduct._id),
+          url: util.format('%s/api/v1/Products/%s', testUrl, savedProduct._id),
           json: true
         }, function (err, res, body) {
           assert.ok(!err)
@@ -136,16 +131,14 @@ module.exports = function (createFn) {
 
       it('200 GET Products/:id/shallow', function (done) {
         request.get({
-          url: util.format('%s/api/v1/Products/%s/shallow',
-            testUrl, savedProduct._id),
+          url: util.format('%s/api/v1/Products/%s/shallow', testUrl, savedProduct._id),
           json: true
         }, function (err, res, body) {
           assert.ok(!err)
           assert.equal(res.statusCode, 200, 'Wrong status code')
           var obj = {}
           for (var prop in savedProduct) {
-            obj[prop] = typeof savedProduct[prop] === 'object' && prop !== '_id' ?
-              true : savedProduct[prop]
+            obj[prop] = typeof savedProduct[prop] === 'object' && prop !== '_id' ? true : savedProduct[prop]
           }
           assert.deepEqual(body, obj)
           done()
@@ -199,16 +192,13 @@ module.exports = function (createFn) {
       it('200 POST 2 Customers', function (done) {
         request.post({
           url: util.format('%s/api/v1/Customers', testUrl),
-          json: [
-            {
-              name: 'First Customer',
-              comment: 'Comment'
-            },
-            {
-              name: 'Second Customer',
-              comment: 'Comment 2'
-            }
-          ]
+          json: [ {
+            name: 'First Customer',
+            comment: 'Comment'
+          }, {
+            name: 'Second Customer',
+            comment: 'Comment 2'
+          }]
         }, function (err, res, body) {
           assert.ok(!err)
           assert.equal(res.statusCode, 201, 'Wrong status code')
@@ -305,135 +295,98 @@ module.exports = function (createFn) {
         })
       })
 
-      it('200 POST Invoice with 2 products referencing _id',
-        function (done) {
-          request.post({
-            url: util.format('%s/api/v1/Invoices', testUrl),
-            json: {
-              customer: savedCustomer._id,
-              products: [
-                savedProduct._id,
-                savedProduct._id
-              ],
-              amount: 8.5
-            }
-          }, function (err, res, body) {
-            assert.ok(!err)
-            assert.equal(res.statusCode, 201, 'Wrong status code')
-            assert.ok(body._id, '_id is not set')
-            assert.equal(body.customer, savedCustomer._id)
-            assert.ok(Array.isArray(body.products))
-            assert.equal(body.products.length, 2)
-            assert.equal(body.products[0], savedProduct._id)
-            assert.equal(body.products[1], savedProduct._id)
-            assert.equal(body.amount, 8.5)
-            done()
-          })
+      it('200 POST Invoice with 2 products referencing _id', function (done) {
+        request.post({
+          url: util.format('%s/api/v1/Invoices', testUrl),
+          json: {
+            customer: savedCustomer._id,
+            products: [
+              savedProduct._id,
+              savedProduct._id
+            ],
+            amount: 8.5
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 201, 'Wrong status code')
+          assert.ok(body._id, '_id is not set')
+          assert.equal(body.customer, savedCustomer._id)
+          assert.ok(Array.isArray(body.products))
+          assert.equal(body.products.length, 2)
+          assert.equal(body.products[0], savedProduct._id)
+          assert.equal(body.products[1], savedProduct._id)
+          assert.equal(body.amount, 8.5)
+          done()
         })
+      })
 
-      it('200 POST Invoice with 2 products referencing objects',
-        function (done) {
-          request.post({
-            url: util.format('%s/api/v1/Invoices', testUrl),
-            json: {
-              customer: savedCustomer._id,
-              products: [
-                savedProduct,
-                savedProduct
-              ],
-              amount: 8.5
-            }
-          }, function (err, res, body) {
-            assert.ok(!err)
-            assert.equal(res.statusCode, 201, 'Wrong status code')
-            assert.ok(body._id, '_id is not set')
-            assert.equal(body.customer, savedCustomer._id)
-            assert.ok(Array.isArray(body.products))
-            assert.equal(body.products.length, 2)
-            assert.equal(body.products[0], savedProduct._id)
-            assert.equal(body.products[1], savedProduct._id)
-            assert.equal(body.amount, 8.5)
-            done()
-          })
+      it('200 POST Invoice with 2 products referencing objects', function (done) {
+        request.post({
+          url: util.format('%s/api/v1/Invoices', testUrl),
+          json: {
+            customer: savedCustomer._id,
+            products: [
+              savedProduct,
+              savedProduct
+            ],
+            amount: 8.5
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 201, 'Wrong status code')
+          assert.ok(body._id, '_id is not set')
+          assert.equal(body.customer, savedCustomer._id)
+          assert.ok(Array.isArray(body.products))
+          assert.equal(body.products.length, 2)
+          assert.equal(body.products[0], savedProduct._id)
+          assert.equal(body.products[1], savedProduct._id)
+          assert.equal(body.amount, 8.5)
+          done()
         })
+      })
 
-      it('400 GET Customers/invalid field query', function (done) {
+      it('200 GET Customers/?bogue=field should ignore unknown parameters', function (done) {
         request.get({
           url: util.format('%s/api/v1/Customers/?foo=bar', testUrl),
           json: true
         }, function (err, res, body) {
           assert.ok(!err)
-          assert.equal(res.statusCode, 400, 'Wrong status code')
+          assert.equal(res.statusCode, 200, 'Wrong status code')
           done()
         })
       })
 
-      it('200 GET Customers?limit=1 should return 1 object',
-        function (done) {
-          request.get({
-            url: util.format('%s/api/v1/Customers', testUrl),
-            qs: {
-              limit: 1
-            },
-            json: true
-          }, function (err, res, body) {
-            assert.ok(!err)
-            assert.equal(res.statusCode, 200, 'Wrong status code')
-            assert.equal(body.length, 1, 'Wrong count')
-            done()
-          })
-        })
-
-      it('200 GET Customers?skip=2 should return 1 object',
-        function (done) {
-          request.get({
-            url: util.format('%s/api/v1/Customers', testUrl),
-            qs: {
-              skip: 2
-            },
-            json: true
-          }, function (err, res, body) {
-            assert.ok(!err)
-            assert.equal(res.statusCode, 200, 'Wrong status code')
-            assert.equal(body.length, 1, 'Wrong count')
-            done()
-          })
-        })
-
-      it('200 GET Customers?name=Test', function (done) {
+      it('200 GET Customers?limit=1 should return 1 object', function (done) {
         request.get({
           url: util.format('%s/api/v1/Customers', testUrl),
           qs: {
-            name: 'Test'
+            limit: 1
           },
           json: true
         }, function (err, res, body) {
           assert.ok(!err)
           assert.equal(res.statusCode, 200, 'Wrong status code')
-          assert.equal(body.length, 1,
-            'Wrong count of customers returned')
-          assert.deepEqual(savedCustomer, body[0])
+          assert.equal(body.length, 1, 'Wrong count')
           done()
         })
       })
 
-      it('200 GET Customers?name!=Test', function (done) {
+      it('200 GET Customers?skip=2 should return 1 object', function (done) {
         request.get({
           url: util.format('%s/api/v1/Customers', testUrl),
           qs: {
-            name: '!=Test'
+            skip: 2
           },
           json: true
         }, function (err, res, body) {
           assert.ok(!err)
           assert.equal(res.statusCode, 200, 'Wrong status code')
-          assert.equal(body.length, 2,
-            'Wrong count of customers returned')
+          assert.equal(body.length, 1, 'Wrong count')
           done()
         })
       })
 
-      it('200 GET Products?query', function (done) {
+      it('200 GET Products?query={ ... }', function (done) {
         var query = { $or: [
             {name: '~Another'},
             {$and: [
@@ -444,75 +397,36 @@ module.exports = function (createFn) {
           price: 20
         }
         request.get({
-          url: util.format('%s/api/v1/Products?query=%s',
-            testUrl,
-            encodeURIComponent(JSON.stringify(query))),
-          json: true
-        }, function (err, res, body) {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 200,
-            'Wrong status code')
-          assert.equal(body.length, 1,
-            'Wrong count of customers returned')
-          done()
-        })
-      }
-      )
-
-      it('200 GET Products?$and[?]', function (done) {
-        request.get({
-          url: util.format('%s/api/v1/Products?$and=%s',
-            testUrl,
-            '[{"name":"~ACME"},{"price":"!=20"}]'),
+          url: util.format('%s/api/v1/Products?query=%s', testUrl, encodeURIComponent(JSON.stringify(query))),
           json: true
         }, function (err, res, body) {
           assert.ok(!err)
           assert.equal(res.statusCode, 200, 'Wrong status code')
-          assert.equal(body.length, 1,
-            'Wrong count of customers returned')
+          assert.equal(body.length, 1, 'Wrong count of customers returned')
           done()
         })
       })
 
-      it('200 GET Products?$or[$and[?]]', function (done) {
+      it('200 GET Invoices?populate=customer should populate customer', function (done) {
         request.get({
-          url: util.format('%s/api/v1/Products?$or=%s',
-            testUrl,
-            '[{"name":"~Another"},' +
-            '{"$and":[{"name":"~Product"},' +
-            '{"price":"<=10"}]}]'),
+          url: util.format('%s/api/v1/Invoices', testUrl),
+          qs: {
+            populate: 'customer'
+          },
           json: true
         }, function (err, res, body) {
           assert.ok(!err)
+          savedInvoice = body[0]
+          savedInvoice.amount = 9.5
           assert.equal(res.statusCode, 200, 'Wrong status code')
-          assert.equal(body.length, 2,
-            'Wrong count of customers returned')
+          assert.deepEqual(body[0].customer, savedCustomer)
           done()
         })
       })
-
-      it('200 GET Invoices?populate=customer should populate ' +
-        'customer', function (done) {
-          request.get({
-            url: util.format('%s/api/v1/Invoices', testUrl),
-            qs: {
-              populate: 'customer'
-            },
-            json: true
-          }, function (err, res, body) {
-            assert.ok(!err)
-            savedInvoice = body[0]
-            savedInvoice.amount = 9.5
-            assert.equal(res.statusCode, 200, 'Wrong status code')
-            assert.deepEqual(body[0].customer, savedCustomer)
-            done()
-          })
-        })
 
       it('200 POST Updated and populated Invoice', function (done) {
         request.post({
-          url: util.format('%s/api/v1/Invoices/%s', testUrl,
-            savedInvoice._id),
+          url: util.format('%s/api/v1/Invoices/%s', testUrl, savedInvoice._id),
           json: savedInvoice
         }, function (err, res, body) {
           assert.ok(!err)
@@ -522,51 +436,38 @@ module.exports = function (createFn) {
         })
       })
 
-      // here
-      it('200 GET Customers/:id?select=name should not fetch ' +
-        'comment or address fields', function (done) {
-          request.get({
-            url: util.format('%s/api/v1/Customers/%s?select=name',
-              testUrl,
-              savedCustomer._id),
-            json: true
-          }, function (err, res, body) {
-            assert.ok(!err)
-            assert.equal(res.statusCode, 200, 'Wrong status code')
-            assert.equal('Test', body.name)
-            assert.equal(undefined, body.comment,
-              'Comment field should not be included')
-            assert.equal(undefined, body.address,
-              'Address field should not be included')
-            done()
-          })
+      it('200 GET Customers/:id?select=name should not fetch comment or address fields', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers/%s?select=name', testUrl, savedCustomer._id),
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200, 'Wrong status code')
+          assert.equal('Test', body.name)
+          assert.equal(undefined, body.comment, 'Comment field should not be included')
+          assert.equal(undefined, body.address, 'Address field should not be included')
+          done()
         })
-      it('200 GET Customers/:id?select=-name should not fetch name ' +
-        '(but e.g. comment should be available)', function (done) {
-          request.get({
-            url: util.format('%s/api/v1/Customers/%s?select=-name',
-              testUrl,
-              savedCustomer._id),
-            json: true
-          }, function (err, res, body) {
-            assert.ok(!err)
-            assert.equal(res.statusCode, 200, 'Wrong status code')
-            assert.equal(undefined, body.name,
-              'Name field should not be included')
-            assert.equal('Comment', body.comment,
-              'Comment field should be included')
-            done()
-          })
+      })
+
+      it('200 GET Customers/:id?select=-name should not fetch name (but e.g. comment should be available)', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers/%s?select=-name', testUrl, savedCustomer._id),
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200, 'Wrong status code')
+          assert.equal(undefined, body.name, 'Name field should not be included')
+          assert.equal('Comment', body.comment, 'Comment field should be included')
+          done()
         })
+      })
 
       it('200 GET Invoices/:id?populate=customer&select=' +
         'customer.name,amount should not fetch ' +
         'customer.comment field', function (done) {
           request.get({
-            url: util.format('%s/api/v1/Invoices/%s?populate' +
-            '=customer&select=amount,customer.name',
-              testUrl,
-              savedInvoice._id),
+            url: util.format('%s/api/v1/Invoices/%s?populate=customer&select=amount,customer.name', testUrl, savedInvoice._id),
             json: true
           }, function (err, res, body) {
             assert.ok(!err)
@@ -582,10 +483,7 @@ module.exports = function (createFn) {
         'customer.name should not suppress ' +
         'invoice fields', function (done) {
           request.get({
-            url: util.format('%s/api/v1/Invoices/%s?populate' +
-            '=customer&select=customer.name',
-              testUrl,
-              savedInvoice._id),
+            url: util.format('%s/api/v1/Invoices/%s?populate=customer&select=customer.name', testUrl, savedInvoice._id),
             json: true
           }, function (err, res, body) {
             assert.ok(!err)
@@ -600,10 +498,7 @@ module.exports = function (createFn) {
         'customer.name,amount should not fetch ' +
         'invoice.products fields', function (done) {
           request.get({
-            url: util.format('%s/api/v1/Invoices/%s?populate' +
-            '=customer&select=customer.name,amount',
-              testUrl,
-              savedInvoice._id),
+            url: util.format('%s/api/v1/Invoices/%s?populate=customer&select=customer.name,amount', testUrl, savedInvoice._id),
             json: true
           }, function (err, res, body) {
             assert.ok(!err)
@@ -618,8 +513,7 @@ module.exports = function (createFn) {
 
       it('200 GET Customers/:id', function (done) {
         request.get({
-          url: util.format('%s/api/v1/Customers/%s', testUrl,
-            savedCustomer._id),
+          url: util.format('%s/api/v1/Customers/%s', testUrl, savedCustomer._id),
           json: true
         }, function (err, res, body) {
           assert.ok(!err)
@@ -633,8 +527,7 @@ module.exports = function (createFn) {
         savedCustomer.name = 'Test 2'
         savedCustomer.info = savedCustomer.name + ' is awesome'
         request.put({
-          url: util.format('%s/api/v1/Customers/%s', testUrl,
-            savedCustomer._id),
+          url: util.format('%s/api/v1/Customers/%s', testUrl, savedCustomer._id),
           json: savedCustomer
         }, function (err, res, body) {
           assert.ok(!err)
@@ -646,8 +539,7 @@ module.exports = function (createFn) {
 
       it('200 POST Customers/:id', function (done) {
         request.post({
-          url: util.format('%s/api/v1/Customers/%s', testUrl,
-            savedCustomer._id),
+          url: util.format('%s/api/v1/Customers/%s', testUrl, savedCustomer._id),
           json: savedCustomer
         }, function (err, res, body) {
           assert.ok(!err)
@@ -659,8 +551,7 @@ module.exports = function (createFn) {
 
       it('200 DEL Customers/:id', function (done) {
         request.del({
-          url: util.format('%s/api/v1/Customers/%s', testUrl,
-            savedCustomer._id),
+          url: util.format('%s/api/v1/Customers/%s', testUrl, savedCustomer._id),
           json: true
         }, function (err, res) {
           assert.ok(!err)
@@ -671,8 +562,7 @@ module.exports = function (createFn) {
 
       it('404 on deleted Customers/:id', function (done) {
         request.get({
-          url: util.format('%s/api/v1/Customers/%s', testUrl,
-            savedCustomer._id),
+          url: util.format('%s/api/v1/Customers/%s', testUrl, savedCustomer._id),
           json: true
         }, function (err, res, body) {
           assert.ok(!err)
@@ -798,54 +688,36 @@ module.exports = function (createFn) {
           assert.ok(!err)
           assert.equal(res.statusCode, 200, 'Wrong status code')
           assert.ok(body[0], 'no items found')
-          assert.ok(body[0].comment === undefined,
-            'comment is not undefined')
-
+          assert.ok(body[0].comment === undefined, 'comment is not undefined')
           done()
         })
       })
 
       it('200 GET Customers/:id', function (done) {
         request.get({
-          url: util.format('%s/api/v1/Customers/%s', testUrl,
-            savedCustomer._id),
+          url: util.format('%s/api/v1/Customers/%s', testUrl, savedCustomer._id),
           json: true
         }, function (err, res, body) {
           assert.ok(!err)
           assert.equal(res.statusCode, 200, 'Wrong status code')
           assert.ok(body, 'no item found')
           assert.deepEqual(savedCustomer, body)
-          assert.ok(body.comment === undefined,
-            'comment is not undefined')
+          assert.ok(body.comment === undefined, 'comment is not undefined')
           done()
         })
       })
 
-      it('400 GET Customers?comment=Comment should return HTTP 400',
-        function (done) {
-          request.get({
-            url: util.format('%s/api/v1/Customers', testUrl),
-            qs: {
-              comment: 'Comment'
-            },
-            json: true
-          }, function (err, res, body) {
-            assert.ok(!err)
-            assert.equal(res.statusCode, 400, 'Wrong status code')
-            done()
-          })
-        })
       it('excludes populated fields', function (done) {
         request.get({
-          url: util.format('%s/api/v1/Invoices/%s', testUrl,
-            savedInvoice._id),
-          qs: { populate: 'customer' },
+          url: util.format('%s/api/v1/Invoices/%s', testUrl, savedInvoice._id),
+          qs: {
+            populate: 'customer'
+          },
           json: true
         }, function (err, res, body) {
           assert.ok(!err)
           assert.ok(body.customer._id, 'customer not populated')
-          assert.ok(body.customer.comment === undefined,
-            'comment is not undefined')
+          assert.ok(body.customer.comment === undefined, 'comment is not undefined')
           done()
         })
       })
@@ -944,8 +816,7 @@ module.exports = function (createFn) {
             body = JSON.parse(body)
           }
           assert.equal(res.statusCode, 400, 'Wrong status code')
-          assert.strictEqual(body.errmsg.indexOf('duplicate key') >= 0,
-            true, 'Duplicate key error not found')
+          assert.strictEqual(body.errmsg.indexOf('duplicate key') >= 0, true, 'Duplicate key error not found')
           done()
         })
       })
@@ -970,12 +841,9 @@ module.exports = function (createFn) {
             }
 
             assert.equal(res.statusCode, 400, 'Wrong status code')
-            assert.strictEqual(body.errmsg.indexOf('duplicate key') >= 0,
-              true, 'Duplicate key error not found')
+            assert.strictEqual(body.errmsg.indexOf('duplicate key') >= 0, true, 'Duplicate key error not found')
             done()
-
           })
-
         })
       })
     })
@@ -1175,16 +1043,13 @@ module.exports = function (createFn) {
 
         it('returns only public fields', function (done) {
           request.get({
-            url: util.format('%s/api/v1/Customers/%s', testUrl,
-              savedCustomer._id),
+            url: util.format('%s/api/v1/Customers/%s', testUrl, savedCustomer._id),
             json: true
           }, function (err, res, body) {
             assert.ok(!err)
             assert.equal(body.name, 'Test')
-            assert.ok(body.address === undefined,
-              'address is not undefined')
-            assert.ok(body.comment === undefined,
-              'comment is not undefined')
+            assert.ok(body.address === undefined, 'address is not undefined')
+            assert.ok(body.comment === undefined, 'comment is not undefined')
             done()
           })
         })
@@ -1202,23 +1067,18 @@ module.exports = function (createFn) {
             var customer = body
 
             assert.equal(body.name, 'Test 2')
-            assert.ok(body.address === undefined,
-              'address is not undefined')
-            assert.ok(body.comment === undefined,
-              'comment is not undefined')
+            assert.ok(body.address === undefined, 'address is not undefined')
+            assert.ok(body.comment === undefined, 'comment is not undefined')
 
             access = 'private'
             request.get({
-              url: util.format('%s/api/v1/Customers/%s', testUrl,
-                customer._id),
+              url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
               json: true
             }, function (err, res, body) {
               assert.ok(!err)
               assert.equal(body.name, 'Test 2')
-              assert.ok(body.address === undefined,
-                'address is not undefined')
-              assert.ok(body.comment === undefined,
-                'comment is not undefined')
+              assert.ok(body.address === undefined, 'address is not undefined')
+              assert.ok(body.comment === undefined, 'comment is not undefined')
               done()
             })
           })
@@ -1232,14 +1092,12 @@ module.exports = function (createFn) {
 
         it('excludes private fields', function (done) {
           request.get({
-            url: util.format('%s/api/v1/Customers/%s', testUrl,
-              savedCustomer._id),
+            url: util.format('%s/api/v1/Customers/%s', testUrl, savedCustomer._id),
             json: true
           }, function (err, res, body) {
             assert.ok(!err)
             assert.equal(body.name, 'Test')
-            assert.ok(body.address === undefined,
-              'address is not undefined')
+            assert.ok(body.address === undefined, 'address is not undefined')
             assert.equal(body.comment, 'Comment')
             done()
           })
@@ -1247,14 +1105,12 @@ module.exports = function (createFn) {
 
         it('excludes private fields defined in the schema', function (done) {
           request.get({
-            url: util.format('%s/api/v1/Customers/%s', testUrl,
-              savedCustomer._id),
+            url: util.format('%s/api/v1/Customers/%s', testUrl, savedCustomer._id),
             json: true
           }, function (err, res, body) {
             assert.ok(!err)
             assert.equal(body.name, 'Test')
-            assert.ok(body.ssn === undefined,
-              'ssn not undefined')
+            assert.ok(body.ssn === undefined, 'ssn not undefined')
             assert.equal(body.comment, 'Comment')
             assert.equal(body.creditCard, '123412345612345')
             done()
@@ -1274,21 +1130,18 @@ module.exports = function (createFn) {
             var customer = body
 
             assert.equal(body.name, 'Test 3')
-            assert.ok(body.address === undefined,
-              'address is not undefined')
+            assert.ok(body.address === undefined, 'address is not undefined')
             assert.equal(body.comment, 'Comment')
 
             access = 'private'
             request.get({
-              url: util.format('%s/api/v1/Customers/%s', testUrl,
-                customer._id),
+              url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
               json: true
             }, function (err, res, body) {
               assert.ok(!err)
               assert.equal(body.name, 'Test 3')
               assert.equal(body.comment, 'Comment')
-              assert.ok(body.address === undefined,
-                'address is not undefined')
+              assert.ok(body.address === undefined, 'address is not undefined')
               done()
             })
           })
@@ -1302,8 +1155,7 @@ module.exports = function (createFn) {
 
         it('returns all fields', function (done) {
           request.get({
-            url: util.format('%s/api/v1/Customers/%s', testUrl,
-              savedCustomer._id),
+            url: util.format('%s/api/v1/Customers/%s', testUrl, savedCustomer._id),
             json: true
           }, function (err, res, body) {
             assert.ok(!err)
@@ -1331,15 +1183,13 @@ module.exports = function (createFn) {
             assert.equal(body.comment, 'Comment')
 
             request.get({
-              url: util.format('%s/api/v1/Customers/%s', testUrl,
-                customer._id),
+              url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
               json: true
             }, function (err, res, body) {
               assert.ok(!err)
               assert.equal(body.name, 'Test 4')
               assert.equal(body.address, '123 Drury Lane')
               assert.equal(body.comment, 'Comment')
-
               done()
             })
           })
@@ -1355,7 +1205,10 @@ module.exports = function (createFn) {
         var server
         var app = createFn()
         var filter = function (model, req, done) {
-          done(model.find({address: {$ne: null}, _id: {$ne: disallowedId}}))
+          done(model.find({
+            address: { $ne: null },
+            _id: { $ne: disallowedId }
+          }))
         }
 
         setup()
@@ -1404,6 +1257,7 @@ module.exports = function (createFn) {
             done()
           })
         })
+
         it('cannot get customer without an address', function (done) {
           request.get({
             url: util.format('%s/api/v1/Customers/%s', testUrl, badCustomerId),
@@ -1414,6 +1268,7 @@ module.exports = function (createFn) {
             done()
           })
         })
+
         it('cannot get customer disallowed by id', function (done) {
           request.get({
             url: util.format('%s/api/v1/Customers/%s', testUrl, disallowedId),
@@ -1424,6 +1279,7 @@ module.exports = function (createFn) {
             done()
           })
         })
+
         it('gets count of customers with an address', function (done) {
           request.get({
             url: util.format('%s/api/v1/Customers/count', testUrl),
@@ -1435,6 +1291,7 @@ module.exports = function (createFn) {
             done()
           })
         })
+
         it('updates customer with an address', function (done) {
           request.put({
             url: util.format('%s/api/v1/Customers/%s', testUrl, goodCustomerId),
@@ -1449,6 +1306,7 @@ module.exports = function (createFn) {
             })
           })
         })
+
         it('cannot update a customer without an address', function (done) {
           request.put({
             url: util.format('%s/api/v1/Customers/%s', testUrl, badCustomerId),
@@ -1463,6 +1321,7 @@ module.exports = function (createFn) {
             })
           })
         })
+
         it('cannot remove customer without an address by id', function (done) {
           request.del({
             url: util.format('%s/api/v1/Customers/%s', testUrl, badCustomerId),
@@ -1477,6 +1336,7 @@ module.exports = function (createFn) {
             })
           })
         })
+
         it('cannot remove customer disalllowed by id', function (done) {
           request.del({
             url: util.format('%s/api/v1/Customers/%s', testUrl, disallowedId),
@@ -1491,6 +1351,7 @@ module.exports = function (createFn) {
             })
           })
         })
+
         it('can remove customer with an address by id', function (done) {
           request.del({
             url: util.format('%s/api/v1/Customers/%s', testUrl, goodCustomerId),
@@ -1505,6 +1366,7 @@ module.exports = function (createFn) {
             })
           })
         })
+
         it.skip('cannot remove customers without an address', function (done) {
           request.del({
             url: util.format('%s/api/v1/Customers', testUrl),
@@ -1606,7 +1468,6 @@ module.exports = function (createFn) {
           done()
         })
       })
-
     })
 
     describe('postCreate', function () {
@@ -1629,9 +1490,11 @@ module.exports = function (createFn) {
         erm.serve(app, setup.CustomerModel, options)
         server = app.listen(testPort, done)
       })
+
       afterEach(function () {
         options.postCreate.reset()
       })
+
       after(function (done) {
         if (app.close) {
           return app.close(done)
@@ -1654,6 +1517,7 @@ module.exports = function (createFn) {
           done()
         })
       })
+
       it('calls next() on success', function (done) {
         error = false
         request.post({
@@ -1667,6 +1531,7 @@ module.exports = function (createFn) {
           done()
         })
       })
+
       it('sends 400 on failure', function (done) {
         error = new Error()
         request.post({
@@ -1703,6 +1568,7 @@ module.exports = function (createFn) {
         erm.serve(app, setup.CustomerModel, options)
         server = app.listen(testPort, done)
       })
+
       beforeEach(function (done) {
         setup.CustomerModel.create({
           name: 'a'
@@ -1712,10 +1578,12 @@ module.exports = function (createFn) {
           done()
         })
       })
+
       afterEach(function (done) {
         options.postUpdate.reset()
         setup.CustomerModel.remove(done)
       })
+
       after(function (done) {
         if (app.close) {
           return app.close(done)
@@ -1738,6 +1606,7 @@ module.exports = function (createFn) {
           done()
         })
       })
+
       it('calls next() on success (byId)', function (done) {
         error = null
         request.put({
@@ -1752,6 +1621,7 @@ module.exports = function (createFn) {
           done()
         })
       })
+
       it('sends 400 on failure (byId)', function (done) {
         error = new Error()
         request.put({
@@ -1782,6 +1652,7 @@ module.exports = function (createFn) {
           done()
         })
       })
+
       it('calls next() on success', function (done) {
         error = null
         request.put({
@@ -1796,6 +1667,7 @@ module.exports = function (createFn) {
           done()
         })
       })
+
       it('sends 400 on failure', function (done) {
         error = new Error()
         request.put({
@@ -1833,6 +1705,7 @@ module.exports = function (createFn) {
         erm.serve(app, setup.CustomerModel, options)
         server = app.listen(testPort, done)
       })
+
       beforeEach(function (done) {
         setup.CustomerModel.create({
           name: 'a'
@@ -1842,10 +1715,12 @@ module.exports = function (createFn) {
           done()
         })
       })
+
       afterEach(function (done) {
         options.postDelete.reset()
         setup.CustomerModel.remove(done)
       })
+
       after(function (done) {
         if (app.close) {
           return app.close(done)
@@ -1866,6 +1741,7 @@ module.exports = function (createFn) {
           done()
         })
       })
+
       it('calls next() on success (byId)', function (done) {
         error = null
         request.del({
@@ -1878,6 +1754,7 @@ module.exports = function (createFn) {
           done()
         })
       })
+
       it('sends 400 on failure (byId)', function (done) {
         error = new Error()
         request.del({
@@ -1904,6 +1781,7 @@ module.exports = function (createFn) {
           done()
         })
       })
+
       it('calls next() on success', function (done) {
         error = null
         request.del({
@@ -1968,6 +1846,7 @@ module.exports = function (createFn) {
         }
         server.close(done)
       })
+
       describe('can be located in the middle of the url', function () {
         it('works with GET all', function (done) {
           request.get({
@@ -1980,6 +1859,7 @@ module.exports = function (createFn) {
             done()
           })
         })
+
         it('works with GET/:id', function (done) {
           request.get({
             url: util.format('%s/api/v1/Entities/%s/Customers', testUrl,
@@ -1991,6 +1871,7 @@ module.exports = function (createFn) {
             done()
           })
         })
+
         it('works with GET count', function (done) {
           request.get({
             url: util.format('%s/api/v1/Entities/Customers/count', testUrl),
@@ -2037,6 +1918,7 @@ module.exports = function (createFn) {
         }
         server.close(done)
       })
+
       describe('can be located in the middle of the url', function () {
         it('works with GET/:id', function (done) {
           request.get({
@@ -2048,6 +1930,7 @@ module.exports = function (createFn) {
             done()
           })
         })
+
         it('works with PUT/:id', function (done) {
           request.put({
             url: util.format('%s/api/v1/Customers/%s', testUrl, goodCustomerId),
@@ -2058,6 +1941,7 @@ module.exports = function (createFn) {
             done()
           })
         })
+
         it('works with DELETE/:id', function (done) {
           request.del({
             url: util.format('%s/api/v1/Customers/%s', testUrl, goodCustomerId),
