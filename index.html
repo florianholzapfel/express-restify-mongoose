@@ -198,30 +198,54 @@ GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name,
           <pre class="hljs"><code>restify.serve(router, model[, options])</code></pre>
           <p><strong>router</strong>: express.Router() instance (Express 4) or app object (Express 3)</p>
           <p><strong>model</strong>: mongoose model</p>
-          <p><strong>options</strong>: object</p>
+          <p>
+            <strong>options</strong>: object
+            <span class="label label-primary">type</span>
+            <span class="label label-success">default</span>
+            <span class="label label-info">version</span>
+          </p>
 
           <ul>
             <li>
-              <h4>strict<small>default: <code>true</code></small></h4>
+              <h4>
+                strict
+                <span class="label label-primary" title="type">boolean</span>
+                <span class="label label-success" title="default">true</span>
+              </h4>
               <p>true disallows DELETE all, POST with id param, and PUT without id param</p>
             </li>
             <li>
-              <h4>prefix<small>default: <code>/api</code></small></h4>
+              <h4>
+                prefix
+                <span class="label label-primary" title="type">string</span>
+                <span class="label label-success" title="default">/api</span>
+              </h4>
               <p>Path to prefix to the REST endpoint.</p>
             </li>
             <li>
-              <h4>version<small>default: <code>/v1</code></small></h4>
+              <h4>
+                version
+                <span class="label label-primary" title="type">string</span>
+                <span class="label label-success" title="default">/v1</span>
+              </h4>
               <p>API version that will be prefixed to the rest path.</p>
               <p>If prefix or version contains <code>/:id</code>, then that will be used as the location to search for the id.</p>
               <h5>Example</h5>
               <p><code>version: '/v1/Entities/:id'</code> generates <code>/api/v1/Entities/:id/Model</code> and <code>/api/v1/Entities/Model</code> for all pertinent methods</p>
             </li>
             <li>
-              <h4>idProperty<small>default: <code>_id</code></small></h4>
+              <h4>
+                idProperty
+                <span class="label label-primary" title="type">string</span>
+                <span class="label label-success" title="default">_id</span>
+              </h4>
               <p><code>findById</code> and <code>findByIdAnd*</code> methods will query on the given property</p>
             </li>
             <li>
-              <h4>middleware<small>default: <code>[]</code></small></h4>
+              <h4>
+                middleware
+                <span class="label label-primary" title="type">array</span>
+              </h4>
               <p>An Express middleware or an array of express middlewares that will be used.</p>
               <h5>Example</h5>
               <pre class="hljs"><code>middleware: function (req, res, next) {
@@ -229,7 +253,11 @@ GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name,
 }</code></pre>
             </li>
             <li>
-              <h4>prereq</h4>
+              <h4>
+                prereq
+                <span class="label label-primary" title="type">boolean</span>
+                <span class="label label-success" title="default">true</span>
+              </h4>
               <p>A function that takes the req object and returns or yields true or false. This function is called on POST, PUT and DELETE requests and sends 403 (Forbidden) on false.</p>
               <h5>Examples</h5>
               <p>Sync</p>
@@ -248,7 +276,11 @@ GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name,
 }</code></pre>
             </li>
             <li>
-              <h4>access</h4>
+              <h4>
+                access
+                <span class="label label-primary" title="type">string</span>
+                <span class="label label-success" title="default">public</span>
+              </h4>
               <p>A function that takes the req object and returns or yields 'public', 'private' or 'protected'. It is called on GET, POST and PUT requests and filters out the appropriate fields.</p>
               <h5>Examples</h5>
               <p>Sync:</p>
@@ -267,19 +299,35 @@ GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name,
 }</code></pre>
             </li>
             <li>
-              <h4>plural<small>default: <code>false</code></small></h4>
+              <h4>
+                plural
+                <span class="label label-primary" title="type">boolean</span>
+                <span class="label label-success" title="default">false</span>
+              </h4>
               <p>If <code>true</code>, does not pluralize the database model name.</p>
             </li>
             <li>
-              <h4>lowercase<small>default: <code>false</code></small></h4>
+              <h4>
+                lowercase
+                <span class="label label-primary" title="type">boolean</span>
+                <span class="label label-success" title="default">false</span>
+              </h4>
               <p>If <code>true</code>, calls <code>.toLowerCase()</code> on the model's name before generating the routes.</p>
             </li>
             <li>
-              <h4>name<small>default: model's name</small></h4>
+              <h4>
+                name
+                <span class="label label-primary" title="type">string</span>
+                <span class="label label-success" title="default">the model's name</span>
+              </h4>
               <p>Used as the endpoint's name.</p>
             </li>
             <li>
-              <h4>onError<small>default: <code>JSON.stringify()</code> the entire mongoose err object</small></h4>
+              <h4>
+                onError
+                <span class="label label-primary" title="type">function</span>
+                <span class="label label-success" title="default">send the entire mongoose error</span>
+              </h4>
               <div class="alert alert-warning">
                 <i class="glyphicon glyphicon-alert"></i> Leaving this as default will leak information about your database.
               </div>
@@ -290,7 +338,10 @@ GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name,
 }</code></pre>
             </li>
             <li>
-              <h4>outputFn</h4>
+              <h4>
+                outputFn
+                <span class="label label-primary" title="type">function</span>
+              </h4>
               <p>A function with the signature <code>function (res, result)</code> that is used to output the result. <code>res</code> is a restify or express response object and <code>result</code> is the data returned by mongoose.</p>
               <h5>Example</h5>
               <pre class="hljs"><code>outputFn: function (res, result) {
@@ -302,19 +353,28 @@ GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name,
 }</code></pre>
             </li>
             <li>
-              <h4>private</h4>
+              <h4>
+                private
+                <span class="label label-primary" title="type">array</span>
+              </h4>
               <p>Array of fields which are only to be returned by queries that have private access.</p>
               <h5>Example</h5>
               <pre class="hljs"><code>private: ['topSecret', 'fields']</code></pre>
             </li>
             <li>
-              <h4>protected</h4>
+              <h4>
+                protected
+                <span class="label label-primary" title="type">array</span>
+              </h4>
               <p>Array of fields which are only to be returned by queries that have private or protected access.
               <h5>Example</h5>
               <pre class="hljs"><code>private: ['somewhatSecret', 'keys']</code></pre>
             </li>
             <li>
-              <h4>postProcess</h4>
+              <h4>
+                postProcess
+                <span class="label label-primary" title="type">function</span>
+              </h4>
               <p>A middleware to be called after a successful response has been sent. If an error is sent to the client, this is not called.</p>
               <h5>Example</h5>
               <pre class="hljs"><code>postProcess: function (req, res, next) {
@@ -322,19 +382,34 @@ GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name,
 }</code></pre>
             </li>
             <li>
-              <h4>lean<small>default: <code>true</code></small></h4>
+              <h4>
+                lean
+                <span class="label label-primary" title="type">boolean</span>
+                <span class="label label-success" title="default">true</span>
+              </h4>
               <p>Whether or not mongoose should use <code>.lean()</code> to convert results to plain old JavaScript objects. This is bad for performance, but allows returning virtuals, getters and setters.</p>
             </li>
             <li>
-              <h4>findOneAndUpdate<small>default: <code>true</code></small></h4>
+              <h4>
+                findOneAndUpdate
+                <span class="label label-primary" title="type">boolean</span>
+                <span class="label label-success" title="default">true</span>
+              </h4>
               <p>If <code>false</code>, will first find documents by id and then call save, allowing document middleware to be called. For more information regarding mongoose middleware, <a href="http://mongoosejs.com/docs/middleware.html">read the docs</a>.</p>
             </li>
             <li>
-              <h4>findOneAndRemove<small>default: <code>true</code></small></h4>
+              <h4>
+                findOneAndRemove
+                <span class="label label-primary" title="type">boolean</span>
+                <span class="label label-success" title="default">true</span>
+              </h4>
               <p>If <code>false</code>, will first find documents by id and then call remove, allowing document middleware to be called. For more information regarding mongoose middleware, <a href="http://mongoosejs.com/docs/middleware.html">read the docs</a>.</p>
             </li>
             <li>
-              <h4>contextFilter<small>default: <code>cb(model)</code></small></h4>
+              <h4>
+                contextFilter
+                <span class="label label-primary" title="type">function</span>
+              </h4>
               <p>A function with the signature <code>function (model, req, cb)</code> that allows request specific filtering.</p>
               <h5>Example</h5>
               <pre class="hljs"><code>contextFilter: function (model, req, cb) {
@@ -344,11 +419,17 @@ GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name,
 }</code></pre>
             </li>
             <li>
-              <h4>postCreate</h4>
+              <h4>
+                postCreate
+                <span class="label label-primary" title="type">function</span>
+              </h4>
               <p>A function with the signature <code>function (res, result, done)</code> which is run after document creation.</p>
             </li>
             <li>
-              <h4>postDelete</h4>
+              <h4>
+                postDelete
+                <span class="label label-primary" title="type">function</span>
+              </h4>
               <p>A function with the signature <code>function (res, result, done)</code> which is run after document deletion.</p>
             </li>
           </ul>

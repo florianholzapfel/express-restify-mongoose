@@ -21,6 +21,6 @@
   position: absolute;
 }
 
-h4 > small {
+h4 > * {
   margin-left: 10px;
 }
