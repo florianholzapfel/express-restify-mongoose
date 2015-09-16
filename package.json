@@ -3,61 +3,6 @@
     "email": "flo.holzapfel@gmail.com",
     "name": "Florian Holzapfel"
   },
-  "contributors": [{
-    "name": "Enric Le\u00f3n"
-  }, {
-    "name": "David Higginbotham"
-  }, {
-    "name": "Jonathan Greenemeier"
-  }, {
-    "name": "Alan Levicki"
-  }, {
-    "name": "Michael"
-  }, {
-    "name": "Matt Roman"
-  }, {
-    "name": "Fetrarijaona R."
-  }, {
-    "name": "Jan Paul Erkelens"
-  }, {
-    "name": "Christoph Herbst"
-  }, {
-    "name": "doobinay"
-  }, {
-    "name": "Hareesh"
-  }, {
-    "name": "09setht"
-  }, {
-    "name": "Ph3n1x"
-  }, {
-    "name": "Pier-Luc Gendreau"
-  }, {
-    "name": "Emre Efendioğlu"
-  }, {
-    "name": "Tim Mckenzie"
-  }, {
-    "name": "Emil Janitzek"
-  }, {
-    "name": "Daniel Henrique"
-  }, {
-    "name": "Caleb Meredith"
-  }, {
-    "name": "David Souther"
-  }, {
-    "name": "Marco Cameriero"
-  }, {
-    "name": "Jan Melcher"
-  }, {
-    "name": "Urs Wolfer"
-  }, {
-    "name": "Thomas Forrer"
-  }, {
-    "name": "Stefan Kleeschulte"
-  }, {
-    "name": "Reimund Trost"
-  }, {
-    "name": "Elliott Garcea"
-  }],
   "dependencies": {
     "inflection": "~1.7.0",
     "lodash": "~3.10.0",
