@@ -7,7 +7,7 @@
   <meta name="description" content="express-restify-mongoose : Easily create a flexible REST interface from mongoose schemas">
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.1.1/gh-fork-ribbon.min.css" />
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.5/cosmo/bootstrap.min.css">
-  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="/express-restify-mongoose/css/main.css">
   <title>express-restify-mongoose : Easily create a flexible REST interface for mongoose models</title>
 </head>
 
@@ -70,11 +70,6 @@ restify.serve(router, mongoose.model('Customer', new mongoose.Schema({
   comment: { type: String }
 })))
 
-restify.serve(router, mongoose.model('Invoice', new mongoose.Schema({
-  customer: { type: Schema.Types.ObjectId, ref: 'Customer' },
-  amount: { type: Number, required: true }
-})))
-
 app.use(router)
 
 app.listen(3000, function () {
@@ -95,18 +90,6 @@ GET http://localhost/api/v1/Customers/:id/shallow
 PUT http://localhost/api/v1/Customers/:id
 POST http://localhost/api/v1/Customers/:id
 DELETE http://localhost/api/v1/Customers/:id</code></pre>
-
-              <pre class="hljs"><code>GET http://localhost/api/v1/Invoices/count
-GET http://localhost/api/v1/Invoices
-PUT http://localhost/api/v1/Invoices
-POST http://localhost/api/v1/Invoices
-DELETE http://localhost/api/v1/Invoices
-
-GET http://localhost/api/v1/Invoices/:id
-GET http://localhost/api/v1/Invoices/:id/shallow
-PUT http://localhost/api/v1/Invoices/:id
-POST http://localhost/api/v1/Invoices/:id
-DELETE http://localhost/api/v1/Invoices/:id</code></pre>
             </div>
           </div>
 
@@ -132,7 +115,7 @@ DELETE http://localhost/api/v1/Invoices/:id</code></pre>
 request({
   url: '/api/v1/Model',
   qs: {
-    query: encodeURIComponent(JSON.stringify(query)
+    query: encodeURIComponent(JSON.stringify(query))
   }
 })</code></pre>
 
@@ -169,13 +152,10 @@ GET http://localhost/api/v1/Customers?skip=10&amp;limit=10</code></pre>
 
           <h3>Populate</h3>
 
+          <p>Populated fields will not have any effect on select fields as supported by Mongoose, they will be fetched along with select fields.</p>
           <pre class="hljs"><code>GET http://localhost/api/v1/Invoices?populate=customer
-GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name
-
-# populate fields will not have effect on select fields as supported by Mongoose
-# populate fields will be fetched along with select fields
-GET http://localhost/api/v1/Invoices?populate=customer
 GET http://localhost/api/v1/Invoices?populate=customer&amp;select=amount
+GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name
 GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer,amount
 GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name,amount</code></pre>
         </section>
@@ -196,7 +176,7 @@ GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name,
           </h3>
 
           <pre class="hljs"><code>restify.serve(router, model[, options])</code></pre>
-          <p><strong>router</strong>: express.Router() instance (Express 4) or app object (Express 3)</p>
+          <p><strong>router</strong>: express.Router() instance (Express 4), app object (Express 3) or server object (restify)</p>
           <p><strong>model</strong>: mongoose model</p>
           <p>
             <strong>options</strong>: object
@@ -238,7 +218,7 @@ GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name,
                 middleware
                 <span class="label label-primary" title="type">function | array</span>
               </h4>
-              <p>An Express middleware or an array of express middlewares that will be used.</p>
+              <p>An Express middleware or an array of Express middlewares that will be called after <a>prereq</a> and before <a>access</a>.</p>
               <h5>Example</h5>
               <pre class="hljs"><code>middleware: function (req, res, next) {
   console.log('Incoming %s request', req.method)
@@ -249,7 +229,7 @@ GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name,
                 prereq
                 <span class="label label-primary" title="type">function</span>
               </h4>
-              <p>A function that takes the req object and returns or yields true or false. This function is called on POST, PUT and DELETE requests and sends 403 (Forbidden) on false.</p>
+              <p>Returns or yields true or false. It is called on POST, PUT and DELETE requests and sends 403 (Forbidden) on false.</p>
               <h5>Examples</h5>
               <p>Sync</p>
               <pre class="hljs"><code>prereq: function (req) {
@@ -271,7 +251,7 @@ GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name,
                 access
                 <span class="label label-primary" title="type">function</span>
               </h4>
-              <p>A function that takes the req object and returns or yields 'public', 'private' or 'protected'. It is called on GET, POST and PUT requests and filters out the appropriate fields.</p>
+              <p>Returns or yields 'private', 'protected' or 'public'. It is called on GET, POST and PUT requests and filters out the fields defined in <a>private</a> and <a>protected</a>.</p>
               <h5>Examples</h5>
               <p>Sync:</p>
               <pre class="hljs"><code>access: function (req) {
@@ -294,7 +274,7 @@ GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name,
                 <span class="label label-primary" title="type">boolean</span>
                 <span class="label label-success" title="default">false</span>
               </h4>
-              <p>If <code>true</code>, does not pluralize the database model name.</p>
+              <p>Automatically pluralize the model's name using <a href="https://www.npmjs.com/package/inflection" target="npm">inflection</a>.</p>
             </li>
             <li>
               <h4>
@@ -302,7 +282,7 @@ GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name,
                 <span class="label label-primary" title="type">boolean</span>
                 <span class="label label-success" title="default">false</span>
               </h4>
-              <p>If <code>true</code>, calls <code>.toLowerCase()</code> on the model's name before generating the routes.</p>
+              <p>Whether to call <code>.toLowerCase()</code> on the model's name before generating the routes.</p>
             </li>
             <li>
               <h4>
@@ -310,7 +290,7 @@ GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name,
                 <span class="label label-primary" title="type">string</span>
                 <span class="label label-success" title="default">the model's name</span>
               </h4>
-              <p>Used as the endpoint's name.</p>
+              <p>The endpoint's name.</p>
             </li>
             <li>
               <h4>
@@ -445,23 +425,37 @@ GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name,
         <nav id="nav" class="hidden-print hidden-xs hidden-sm" data-spy="affix">
           <ul class="nav">
             <li>
+              <a class="active" href="/express-restify-mongoose/">Version 1</a>
+            </li>
+            <li>
+              <a href="/express-restify-mongoose/v2/">Version 2</a>
+            </li>
+            <li>
               <a href="#getting-started">Getting started</a>
               <ul class="nav">
                 <li><a href="#express4">Express 4 app</a></li>
                 <li><a href="#request">Request</a></li>
               </ul>
+            </li>
+            <li>
               <a href="#query">Query</a>
               <ul class="nav">
                 <li><a href="#operators">Operators</a></li>
                 <li><a href="#queries">Sort, skip and limit</a></li>
                 <li><a href="#queries">Populate</a></li>
               </ul>
+            </li>
+            <li>
               <a href="#reference">Reference</a>
               <ul class="nav">
                 <li><a href="#serve">serve</a></li>
                 <li><a href="#defaults">defaults</a></li>
               </ul>
+            </li>
+            <li>
               <a href="https://github.com/florianholzapfel/express-restify-mongoose/graphs/contributors" target="github">Contributors</a>
+            </li>
+            <li>
               <a href="https://github.com/florianholzapfel/express-restify-mongoose/blob/master/LICENSE" target="github">License (MIT)</a>
             </li>
           </ul>
@@ -479,7 +473,7 @@ GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name,
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
-    <script src="js/main.js"></script>
+    <script src="/express-restify-mongoose/js/main.js"></script>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.7/styles/monokai_sublime.min.css">
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.7/highlight.min.js"></script>
     <script>
