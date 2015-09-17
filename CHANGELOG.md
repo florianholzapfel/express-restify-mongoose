@@ -5,10 +5,11 @@ Changelog
 
 > **This release requires restify ~unreleased**
 
-* removed `options.excluded`, use `options.private`
 * `options.private` and `options.protected` no longer accept comma separated fields, pass an array instead
-* drop support for querying with parameters, use `url?query={"name":"hello"}`
+* removed `options.excluded`, use `options.private`
+* removed support for querying with parameters, use `url?query={"name":"hello"}`
 * removed $and and $or passed as parameters, use `url?query={"$or":[...]}`
+* removed `prereq`, use `middleware` as a drop in replacement
 
 ### 1.1.0
 
