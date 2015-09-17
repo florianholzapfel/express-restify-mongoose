@@ -406,6 +406,30 @@ module.exports = function (createFn) {
         })
       })
 
+      it('400 GET Products?query=badJSON', function (done) {
+        var query = 'badJSON'
+        request.get({
+          url: util.format('%s/api/v1/Products?query=%s', testUrl, query),
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 400, 'Wrong status code')
+          done()
+        })
+      })
+
+      it('400 GET Products?projection=badJSON', function (done) {
+        var query = 'badJSON'
+        request.get({
+          url: util.format('%s/api/v1/Products?query=%s', testUrl, query),
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 400, 'Wrong status code')
+          done()
+        })
+      })
+
       it('200 GET Invoices?populate=customer should populate customer', function (done) {
         request.get({
           url: util.format('%s/api/v1/Invoices', testUrl),
