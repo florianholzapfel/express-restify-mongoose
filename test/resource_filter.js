@@ -1,4 +1,3 @@
-/* global describe, before, after, it */
 'use strict'
 
 var Filter = require('../lib/resource_filter')

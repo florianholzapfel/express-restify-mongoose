@@ -48,5 +48,10 @@
     "pretest": "./node_modules/standard/bin/cmd.js",
     "test": "./node_modules/.bin/mocha -R spec ./test/express.js ./test/permissions.js ./test/resource_filter.js --timeout 5s && ./node_modules/.bin/mocha -R spec ./test/restify.js --timeout 5s"
   },
+  "standard": {
+    "globals": [
+      "describe", "before", "beforeEach", "after", "afterEach", "it"
+    ]
+  },
   "version": "1.1.0"
 }

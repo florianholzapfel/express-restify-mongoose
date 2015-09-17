@@ -1,4 +1,3 @@
-/* global describe, beforeEach, it */
 'use strict'
 
 var sinon = require('sinon')

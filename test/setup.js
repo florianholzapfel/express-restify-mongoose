@@ -1,4 +1,3 @@
-/* global before, after */
 'use strict'
 
 var mongoose = require('mongoose')

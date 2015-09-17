@@ -1,4 +1,3 @@
-/* global describe, before, after, beforeEach, afterEach, it */
 'use strict'
 
 var erm = require('../lib/express-restify-mongoose')
