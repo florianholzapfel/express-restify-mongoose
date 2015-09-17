@@ -17,9 +17,10 @@ function ExpressCustomOutputFunction () {
   app.use(bodyParser.json())
   app.use(bodyParser.urlencoded({ extended: true }))
   app.use(methodOverride())
-  app.outputFn = function (req, res, data) {
+  app.outputFn = function (req, res, next, data) {
     res.type('json')
     res.status(data.statusCode || 200).send(JSON.stringify(data.result))
+    next()
   }
   return app
 }

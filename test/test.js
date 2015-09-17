@@ -883,67 +883,6 @@ module.exports = function (createFn) {
       })
     })
 
-    describe('postProcess', function () {
-      var savedCustomer
-      var server, postProcess
-      var app = createFn()
-
-      setup()
-
-      before(function (done) {
-        erm.serve(app, setup.CustomerModel, {
-          restify: app.isRestify,
-          outputFn: app.outputFn,
-          postProcess: function (req, res) {
-            postProcess(null, req, res)
-          }
-        })
-        server = app.listen(testPort, done)
-      })
-
-      after(function (done) {
-        if (app.close) {
-          return app.close(done)
-        }
-        server.close(done)
-      })
-
-      it('GET', function (done) {
-        postProcess = done
-        request.get(util.format('%s/api/v1/Customers', testUrl))
-      })
-
-      it('POST', function (done) {
-        postProcess = done
-        request.post({
-          url: util.format('%s/api/v1/Customers', testUrl),
-          json: {
-            name: 'Test',
-            comment: 'Comment'
-          }
-        }, function (err, res, body) {
-          assert.ok(!err)
-          savedCustomer = body
-        })
-      })
-
-      it('GET count', function (done) {
-        postProcess = done
-        request.get({
-          url: util.format('%s/api/v1/Customers/count', testUrl),
-          json: true
-        })
-      })
-
-      it('DELETE', function (done) {
-        postProcess = done
-        request.del({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, savedCustomer._id),
-          json: true
-        })
-      })
-    })
-
     describe('Use default options', function () {
       var server
       var app = createFn()
@@ -1470,13 +1409,11 @@ module.exports = function (createFn) {
       })
     })
 
-    describe('postCreate', function () {
+    describe('postMiddleware', function () {
       var server
-      var error
+      var customerId
       var options = {
-        postCreate: sinon.spy(function (res, result, done) {
-          done(error)
-        })
+        postMiddleware: sinon.spy(function (req, res, next) {})
       }
       var app = createFn()
       setup()
@@ -1492,7 +1429,7 @@ module.exports = function (createFn) {
       })
 
       afterEach(function () {
-        options.postCreate.reset()
+        options.postMiddleware.reset()
       })
 
       after(function (done) {
@@ -1502,113 +1439,52 @@ module.exports = function (createFn) {
         server.close(done)
       })
 
-      it('is called with the response, result, and a callback', function (done) {
+      it('is called after POST Customers', function (done) {
         request.post({
           url: util.format('%s/api/v1/Customers', testUrl),
           json: {
             name: 'A'
           }
         }, function (err, res, body) {
+          customerId = body.id
           assert.ok(!err)
-          sinon.assert.calledOnce(options.postCreate)
-          var args = options.postCreate.args[0]
+          sinon.assert.calledOnce(options.postMiddleware)
+          var args = options.postMiddleware.args[0]
           assert.equal(args.length, 3)
           assert.equal(typeof args[2], 'function')
           done()
         })
       })
 
-      it('calls next() on success', function (done) {
-        error = false
-        request.post({
+      it('is called after GET Customers/:id', function (done) {
+        request.get({
           url: util.format('%s/api/v1/Customers', testUrl),
-          json: {
-            name: 'B'
-          }
+          json: true
         }, function (err, res, body) {
           assert.ok(!err)
-          assert.equal(res.statusCode, 201)
+          sinon.assert.calledOnce(options.postMiddleware)
+          var args = options.postMiddleware.args[0]
+          assert.equal(args.length, 3)
+          assert.equal(typeof args[2], 'function')
           done()
         })
       })
 
-      it('sends 400 on failure', function (done) {
-        error = new Error()
-        request.post({
+      it('is called after GET Customers', function (done) {
+        request.get({
           url: util.format('%s/api/v1/Customers', testUrl),
-          json: {
-            name: 'A'
-          }
+          json: true
         }, function (err, res, body) {
           assert.ok(!err)
-          assert.equal(res.statusCode, 400)
-          done()
-        })
-      })
-    })
-
-    describe('postUpdate', function () {
-      var server
-      var error
-      var customerId
-      var options = {
-        postUpdate: sinon.spy(function (res, result, done) {
-          done(error)
-        })
-      }
-      var app = createFn()
-      setup()
-
-      before(function (done) {
-        erm.defaults({
-          restify: app.isRestify,
-          outputFn: app.outputFn,
-          lean: false
-        })
-        erm.serve(app, setup.CustomerModel, options)
-        server = app.listen(testPort, done)
-      })
-
-      beforeEach(function (done) {
-        setup.CustomerModel.create({
-          name: 'a'
-        }, function (err, customer) {
-          assert.ok(!err)
-          customerId = customer.id
-          done()
-        })
-      })
-
-      afterEach(function (done) {
-        options.postUpdate.reset()
-        setup.CustomerModel.remove(done)
-      })
-
-      after(function (done) {
-        if (app.close) {
-          return app.close(done)
-        }
-        server.close(done)
-      })
-
-      it('is called with the response, result, and a callback (byId)', function (done) {
-        request.put({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customerId),
-          json: {
-            name: 'B'
-          }
-        }, function (err, res, body) {
-          assert.ok(!err)
-          sinon.assert.calledOnce(options.postUpdate)
-          var args = options.postUpdate.args[0]
+          sinon.assert.calledOnce(options.postMiddleware)
+          var args = options.postMiddleware.args[0]
           assert.equal(args.length, 3)
           assert.equal(typeof args[2], 'function')
           done()
         })
       })
 
-      it('calls next() on success (byId)', function (done) {
-        error = null
+      it('is called after PUT Customers/:id', function (done) {
         request.put({
           url: util.format('%s/api/v1/Customers/%s', testUrl, customerId),
           json: {
@@ -1616,193 +1492,38 @@ module.exports = function (createFn) {
           }
         }, function (err, res, body) {
           assert.ok(!err)
-          sinon.assert.calledOnce(options.postUpdate)
-          assert.equal(res.statusCode, 200)
-          done()
-        })
-      })
-
-      it('sends 400 on failure (byId)', function (done) {
-        error = new Error()
-        request.put({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customerId),
-          json: {
-            name: 'B'
-          }
-        }, function (err, res, body) {
-          assert.ok(!err)
-          sinon.assert.calledOnce(options.postUpdate)
-          assert.equal(res.statusCode, 400)
-          done()
-        })
-      })
-
-      it('is called with the response, result, and a callback', function (done) {
-        request.put({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customerId),
-          json: {
-            name: 'B'
-          }
-        }, function (err, res, body) {
-          assert.ok(!err)
-          sinon.assert.calledOnce(options.postUpdate)
-          var args = options.postUpdate.args[0]
+          sinon.assert.calledOnce(options.postMiddleware)
+          var args = options.postMiddleware.args[0]
           assert.equal(args.length, 3)
           assert.equal(typeof args[2], 'function')
           done()
         })
       })
 
-      it('calls next() on success', function (done) {
-        error = null
-        request.put({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customerId),
-          json: {
-            name: 'B'
-          }
-        }, function (err, res, body) {
-          assert.ok(!err)
-          sinon.assert.calledOnce(options.postUpdate)
-          assert.equal(res.statusCode, 200)
-          done()
-        })
-      })
-
-      it('sends 400 on failure', function (done) {
-        error = new Error()
-        request.put({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customerId),
-          json: {
-            name: 'B'
-          }
-        }, function (err, res, body) {
-          assert.ok(!err)
-          sinon.assert.calledOnce(options.postUpdate)
-          assert.equal(res.statusCode, 400)
-          done()
-        })
-      })
-    })
-
-    describe('postDelete', function () {
-      var server
-      var error
-      var customerId
-      var options = {
-        postDelete: sinon.spy(function (res, result, done) {
-          done(error)
-        })
-      }
-      var app = createFn()
-      setup()
-
-      before(function (done) {
-        erm.defaults({
-          restify: app.isRestify,
-          outputFn: app.outputFn,
-          lean: false
-        })
-        erm.serve(app, setup.CustomerModel, options)
-        server = app.listen(testPort, done)
-      })
-
-      beforeEach(function (done) {
-        setup.CustomerModel.create({
-          name: 'a'
-        }, function (err, customer) {
-          assert.ok(!err)
-          customerId = customer.id
-          done()
-        })
-      })
-
-      afterEach(function (done) {
-        options.postDelete.reset()
-        setup.CustomerModel.remove(done)
-      })
-
-      after(function (done) {
-        if (app.close) {
-          return app.close(done)
-        }
-        server.close(done)
-      })
-
-      it('is called with the response, result, and a callback (byId)', function (done) {
+      it('is called after DELETE Customers/:id', function (done) {
         request.del({
           url: util.format('%s/api/v1/Customers/%s', testUrl, customerId),
           json: true
         }, function (err, res, body) {
           assert.ok(!err)
-          sinon.assert.calledOnce(options.postDelete)
-          var args = options.postDelete.args[0]
+          sinon.assert.calledOnce(options.postMiddleware)
+          var args = options.postMiddleware.args[0]
           assert.equal(args.length, 3)
           assert.equal(typeof args[2], 'function')
           done()
         })
       })
 
-      it('calls next() on success (byId)', function (done) {
-        error = null
+      it('is called after DELETE Customers', function (done) {
         request.del({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customerId),
+          url: util.format('%s/api/v1/Customers', testUrl),
           json: true
         }, function (err, res, body) {
           assert.ok(!err)
-          sinon.assert.calledOnce(options.postDelete)
-          assert.equal(res.statusCode, 204)
-          done()
-        })
-      })
-
-      it('sends 400 on failure (byId)', function (done) {
-        error = new Error()
-        request.del({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customerId),
-          json: true
-        }, function (err, res, body) {
-          assert.ok(!err)
-          sinon.assert.calledOnce(options.postDelete)
-          assert.equal(res.statusCode, 400)
-          done()
-        })
-      })
-
-      it('is called with the response, result, and a callback', function (done) {
-        request.del({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customerId),
-          json: true
-        }, function (err, res, body) {
-          assert.ok(!err)
-          sinon.assert.calledOnce(options.postDelete)
-          var args = options.postDelete.args[0]
+          sinon.assert.calledOnce(options.postMiddleware)
+          var args = options.postMiddleware.args[0]
           assert.equal(args.length, 3)
           assert.equal(typeof args[2], 'function')
-          done()
-        })
-      })
-
-      it('calls next() on success', function (done) {
-        error = null
-        request.del({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customerId),
-          json: true
-        }, function (err, res, body) {
-          assert.ok(!err)
-          sinon.assert.calledOnce(options.postDelete)
-          assert.equal(res.statusCode, 204)
-          done()
-        })
-      })
-      it('sends 400 on failure', function (done) {
-        error = new Error()
-        request.del({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customerId),
-          json: true
-        }, function (err, res, body) {
-          assert.ok(!err)
-          sinon.assert.calledOnce(options.postDelete)
-          assert.equal(res.statusCode, 400)
           done()
         })
       })
