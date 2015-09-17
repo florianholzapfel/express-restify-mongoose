@@ -13,6 +13,10 @@
   margin-left: 10px;
 }
 
+.nav > li > a.active {
+  background-color: #e6e6e6;
+}
+
 .affix {
   top: 0;
 }
