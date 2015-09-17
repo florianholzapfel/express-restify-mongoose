@@ -10,7 +10,7 @@ Changelog
 * removed support for querying with parameters, use `url?query={"name":"hello"}`
 * removed $and and $or passed as parameters, use `url?query={"$or":[...]}`
 * removed `prereq`, use `preMiddleware` as a drop in replacement
-* removed `postCreate`, `postUpdate` and `postDelete`, use `postMiddleware`
+* removed `postCreate`, `postUpdate`, `postDelete` and `postProcess`, use `postMiddleware`
 * changed `ouputFn`'s signature to `(req, res, next, { result: result, statusCode: statusCode })`
 
 ### 1.1.0
