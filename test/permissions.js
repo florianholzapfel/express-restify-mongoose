@@ -2,7 +2,7 @@
 'use strict'
 
 var sinon = require('sinon')
-var middleware = require('../lib/permissions')
+var access = require('../lib/middlewares/access')
 var assert = require('assertmessage')
 var http = require('http')
 
@@ -32,7 +32,7 @@ describe('permissions', function () {
         return 'private'
       }
 
-      middleware.access(accessFn)(req, {}, function () {
+      access(accessFn)(req, {}, function () {
         assert.equal(req.access, 'private')
         done()
       })
@@ -46,7 +46,7 @@ describe('permissions', function () {
       }
 
       assert.throws(function () {
-        middleware.access(accessFn)(req, {}, next)
+        access(accessFn)(req, {}, next)
       }, 'Unsupported access, must be "public", "private" or "protected"')
 
       sinon.assert.notCalled(next)
@@ -60,7 +60,7 @@ describe('permissions', function () {
         return cb(null, 'private')
       }
 
-      middleware.access(accessFn)(req, {}, function () {
+      access(accessFn)(req, {}, function () {
         assert.equal(req.access, 'private')
         done()
       })
@@ -74,7 +74,7 @@ describe('permissions', function () {
       }
 
       assert.throws(function () {
-        middleware.access(accessFn)(req, {}, next)
+        access(accessFn)(req, {}, next)
       }, 'Unsupported access, must be "public", "private" or "protected"')
 
       sinon.assert.notCalled(next)
