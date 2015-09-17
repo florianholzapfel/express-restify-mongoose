@@ -236,7 +236,7 @@ GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name,
             <li>
               <h4>
                 middleware
-                <span class="label label-primary" title="type">array</span>
+                <span class="label label-primary" title="type">function | array</span>
               </h4>
               <p>An Express middleware or an array of express middlewares that will be used.</p>
               <h5>Example</h5>
@@ -332,9 +332,9 @@ GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name,
                 outputFn
                 <span class="label label-primary" title="type">function</span>
               </h4>
-              <p>A function with the signature <code>function (res, result)</code> that is used to output the result. <code>res</code> is a restify or express response object and <code>result</code> is the data returned by mongoose.</p>
+              <p>A function with the signature <code>function (req, res, result)</code> that is used to output the result. <code>res</code> is a restify or express response object and <code>result</code> is the data returned by mongoose.</p>
               <h5>Example</h5>
-              <pre class="hljs"><code>outputFn: function (res, result) {
+              <pre class="hljs"><code>outputFn: function (req, res, result) {
   if (result.length > 100) {
     result.length = 100
   }
