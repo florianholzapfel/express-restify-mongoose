@@ -345,7 +345,7 @@ module.exports = function (createFn) {
         })
       })
 
-      it('200 GET Customers/?bogue=field should ignore unknown parameters', function (done) {
+      it('200 GET Customers/?bogus=field should ignore unknown parameters', function (done) {
         request.get({
           url: util.format('%s/api/v1/Customers/?foo=bar', testUrl),
           json: true
