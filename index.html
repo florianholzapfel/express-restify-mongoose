@@ -302,6 +302,13 @@ GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name,
             </li>
             <li>
               <h4>
+                limit
+                <span class="label label-primary" title="type">number</span>
+              </h4>
+              <p>Set a hard limit on the number of documents to return. Cannot be overriden by the client.</p>
+            </li>
+            <li>
+              <h4>
                 onError
                 <span class="label label-primary" title="type">function</span>
                 <span class="label label-success" title="default">send the entire mongoose error</span>
