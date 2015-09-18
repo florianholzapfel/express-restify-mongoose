@@ -46,8 +46,9 @@
     "url": "https://github.com/florianholzapfel/express-restify-mongoose/issues"
   },
   "scripts": {
-    "pretest": "./node_modules/standard/bin/cmd.js",
-    "test": "./node_modules/.bin/mocha -R spec ./test/express.js ./test/permissions.js ./test/resource_filter.js --timeout 5s && ./node_modules/.bin/mocha -R spec ./test/restify.js --timeout 5s"
+    "pretest": "standard",
+    "test": "mocha -R spec ./test/express.js ./test/permissions.js ./test/resource_filter.js --timeout 5s && mocha -R spec ./test/restify.js --timeout 5s",
+    "coverage": "istanbul cover node_modules/mocha/bin/_mocha -- -R spec ./test/express.js ./test/permissions.js ./test/resource_filter.js --timeout 5s"
   },
   "standard": {
     "globals": [
