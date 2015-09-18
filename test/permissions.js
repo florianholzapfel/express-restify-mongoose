@@ -1,7 +1,7 @@
 'use strict'
 
 var sinon = require('sinon')
-var access = require('../lib/middlewares/access')
+var access = require('../lib/middleware/access')
 var assert = require('assertmessage')
 var http = require('http')
 
