@@ -593,6 +593,61 @@ module.exports = function (createFn) {
           done()
         })
       })
+
+      xit('200 GET Customers/ should strip the trailing slash', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers/', testUrl),
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200, 'Wrong status code')
+          done()
+        })
+      })
+
+      xit('201 POST Products/ should strip the trailing slash', function (done) {
+        request.post({
+          url: util.format('%s/api/v1/Products/', testUrl),
+          json: {
+            name: 'ACME Product',
+            department: {
+              name: 'Sales',
+              code: 1
+            },
+            price: 10
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 201, 'Wrong status code')
+          assert.ok(body._id, '_id is not set')
+          assert.equal(body.name, 'ACME Product')
+          assert.equal(body.price, 10)
+          savedProduct = body
+          done()
+        })
+      })
+
+      xit('404 PUT Customers/ should strip the trailing slash', function (done) {
+        request.put({
+          url: util.format('%s/api/v1/Customers/', testUrl),
+          json: savedCustomer
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 404, 'Wrong status code')
+          done()
+        })
+      })
+
+      xit('204 DEL Customers/ should strip the trailing slash', function (done) {
+        request.del({
+          url: util.format('%s/api/v1/Customers/', testUrl),
+          json: true
+        }, function (err, res) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 204, 'Wrong status code')
+          done()
+        })
+      })
     })
 
     describe('Return virtuals', function () {
