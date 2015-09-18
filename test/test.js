@@ -590,7 +590,7 @@ module.exports = function (createFn) {
         })
       })
 
-      xit('200 GET Customers/ should strip the trailing slash', function (done) {
+      it.skip('200 GET Customers/ should strip the trailing slash', function (done) {
         request.get({
           url: util.format('%s/api/v1/Customers/', testUrl),
           json: true
@@ -601,7 +601,7 @@ module.exports = function (createFn) {
         })
       })
 
-      xit('201 POST Products/ should strip the trailing slash', function (done) {
+      it.skip('201 POST Products/ should strip the trailing slash', function (done) {
         request.post({
           url: util.format('%s/api/v1/Products/', testUrl),
           json: {
@@ -623,7 +623,7 @@ module.exports = function (createFn) {
         })
       })
 
-      xit('404 PUT Customers/ should strip the trailing slash', function (done) {
+      it.skip('404 PUT Customers/ should strip the trailing slash', function (done) {
         request.put({
           url: util.format('%s/api/v1/Customers/', testUrl),
           json: savedCustomer
@@ -634,7 +634,7 @@ module.exports = function (createFn) {
         })
       })
 
-      xit('204 DEL Customers/ should strip the trailing slash', function (done) {
+      it.skip('204 DEL Customers/ should strip the trailing slash', function (done) {
         request.del({
           url: util.format('%s/api/v1/Customers/', testUrl),
           json: true
