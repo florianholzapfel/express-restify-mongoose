@@ -486,53 +486,49 @@ module.exports = function (createFn) {
         })
       })
 
-      it('200 GET Invoices/:id?populate=customer&select=' +
-        'customer.name,amount should not fetch ' +
-        'customer.comment field', function (done) {
-          request.get({
-            url: util.format('%s/api/v1/Invoices/%s?populate=customer&select=amount,customer.name', testUrl, savedInvoice._id),
-            json: true
-          }, function (err, res, body) {
-            assert.ok(!err)
-            assert.equal(res.statusCode, 200, 'Wrong status code')
-            assert.equal(9.5, body.amount)
-            assert.equal(undefined, body.products)
-            assert.equal(undefined, body.customer.comment)
-            assert.equal('Test', body.customer.name)
-            done()
-          })
+      it('200 GET Invoices/:id?populate=customer&select=customer.name,amount should not fetch customer.comment field', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Invoices/%s?populate=customer&select=amount,customer.name', testUrl, savedInvoice._id),
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200, 'Wrong status code')
+          assert.equal(9.5, body.amount)
+          assert.equal(undefined, body.products)
+          assert.equal(undefined, body.customer.comment)
+          assert.equal('Test', body.customer.name)
+          done()
         })
-      it('200 GET Invoices/:id?populate=customer&select=' +
-        'customer.name should not suppress ' +
-        'invoice fields', function (done) {
-          request.get({
-            url: util.format('%s/api/v1/Invoices/%s?populate=customer&select=customer.name', testUrl, savedInvoice._id),
-            json: true
-          }, function (err, res, body) {
-            assert.ok(!err)
-            assert.equal(res.statusCode, 200, 'Wrong status code')
-            assert.equal(9.5, body.amount)
-            assert.equal(undefined, body.customer.comment)
-            assert.equal('Test', body.customer.name)
-            done()
-          })
+      })
+
+      it('200 GET Invoices/:id?populate=customer&select=customer.name should not suppress invoice fields', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Invoices/%s?populate=customer&select=customer.name', testUrl, savedInvoice._id),
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200, 'Wrong status code')
+          assert.equal(9.5, body.amount)
+          assert.equal(undefined, body.customer.comment)
+          assert.equal('Test', body.customer.name)
+          done()
         })
-      it('200 GET Invoices/:id?populate=customer&select=' +
-        'customer.name,amount should not fetch ' +
-        'invoice.products fields', function (done) {
-          request.get({
-            url: util.format('%s/api/v1/Invoices/%s?populate=customer&select=customer.name,amount', testUrl, savedInvoice._id),
-            json: true
-          }, function (err, res, body) {
-            assert.ok(!err)
-            assert.equal(res.statusCode, 200, 'Wrong status code')
-            assert.equal(9.5, body.amount)
-            assert.equal(undefined, body.products)
-            assert.equal(undefined, body.customer.comment)
-            assert.equal('Test', body.customer.name)
-            done()
-          })
+      })
+
+      it('200 GET Invoices/:id?populate=customer&select=customer.name,amount should not fetch invoice.products fields', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Invoices/%s?populate=customer&select=customer.name,amount', testUrl, savedInvoice._id),
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200, 'Wrong status code')
+          assert.equal(9.5, body.amount)
+          assert.equal(undefined, body.products)
+          assert.equal(undefined, body.customer.comment)
+          assert.equal('Test', body.customer.name)
+          done()
         })
+      })
 
       it('200 GET Customers/:id', function (done) {
         request.get({
