@@ -45,7 +45,7 @@ module.exports = function (createFn) {
         server.close(done)
       })
 
-      it('200 POST Products', function (done) {
+      it('201 POST Products', function (done) {
         request.post({
           url: util.format('%s/api/v1/Products', testUrl),
           json: {
@@ -67,7 +67,7 @@ module.exports = function (createFn) {
         })
       })
 
-      it('200 POST 2 Products', function (done) {
+      it('201 POST 2 Products', function (done) {
         request.post({
           url: util.format('%s/api/v1/Products', testUrl),
           json: [{
@@ -94,7 +94,7 @@ module.exports = function (createFn) {
         })
       })
 
-      it('200 POST Products/:id', function (done) {
+      it('201 POST Products/:id', function (done) {
         request.post({
           url: util.format('%s/api/v1/Products/%s', testUrl, savedProduct._id),
           json: {
@@ -168,7 +168,7 @@ module.exports = function (createFn) {
         })
       })
 
-      it('200 POST Customers', function (done) {
+      it('201 POST Customers', function (done) {
         request.post({
           url: util.format('%s/api/v1/Customers', testUrl),
           json: {
@@ -188,7 +188,7 @@ module.exports = function (createFn) {
         })
       })
 
-      it('200 POST 2 Customers', function (done) {
+      it('201 POST 2 Customers', function (done) {
         request.post({
           url: util.format('%s/api/v1/Customers', testUrl),
           json: [ {
@@ -249,7 +249,7 @@ module.exports = function (createFn) {
         })
       })
 
-      it('200 POST Invoice using pre-defined version', function (done) {
+      it('201 POST Invoice using pre-defined version', function (done) {
         request.post({
           url: util.format('%s/api/v1/Invoices', testUrl),
           json: {
@@ -272,7 +272,7 @@ module.exports = function (createFn) {
         })
       })
 
-      it('200 POST Invoice referencing objects', function (done) {
+      it('201 POST Invoice referencing objects', function (done) {
         request.post({
           url: util.format('%s/api/v1/Invoices', testUrl),
           json: {
@@ -294,7 +294,7 @@ module.exports = function (createFn) {
         })
       })
 
-      it('200 POST Invoice with 2 products referencing _id', function (done) {
+      it('201 POST Invoice with 2 products referencing _id', function (done) {
         request.post({
           url: util.format('%s/api/v1/Invoices', testUrl),
           json: {
@@ -319,7 +319,7 @@ module.exports = function (createFn) {
         })
       })
 
-      it('200 POST Invoice with 2 products referencing objects', function (done) {
+      it('201 POST Invoice with 2 products referencing objects', function (done) {
         request.post({
           url: util.format('%s/api/v1/Invoices', testUrl),
           json: {
@@ -447,7 +447,7 @@ module.exports = function (createFn) {
         })
       })
 
-      it('200 POST Updated and populated Invoice', function (done) {
+      it('201 POST Updated and populated Invoice', function (done) {
         request.post({
           url: util.format('%s/api/v1/Invoices/%s', testUrl, savedInvoice._id),
           json: savedInvoice
@@ -556,7 +556,7 @@ module.exports = function (createFn) {
         })
       })
 
-      it('200 POST Customers/:id', function (done) {
+      it('201 POST Customers/:id', function (done) {
         request.post({
           url: util.format('%s/api/v1/Customers/%s', testUrl, savedCustomer._id),
           json: savedCustomer
@@ -568,7 +568,7 @@ module.exports = function (createFn) {
         })
       })
 
-      it('200 DEL Customers/:id', function (done) {
+      it('204 DEL Customers/:id', function (done) {
         request.del({
           url: util.format('%s/api/v1/Customers/%s', testUrl, savedCustomer._id),
           json: true
