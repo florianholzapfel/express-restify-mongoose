@@ -386,13 +386,16 @@ module.exports = function (createFn) {
       })
 
       it('200 GET Products?query={ ... }', function (done) {
-        var query = { $or: [
-            {name: '~Another'},
-            {$and: [
-              {name: '~Product'},
-              {price: '<=10'}
-            ]}
-          ],
+        var query = {
+          $or: [{
+            name: '~Another'
+          }, {
+            $and: [{
+              name: '~Product'
+            }, {
+              price: '<=10'
+            }]
+          }],
           price: 20
         }
         request.get({
@@ -715,7 +718,7 @@ module.exports = function (createFn) {
         erm.serve(app, setup.InvoiceModel)
 
         server = app.listen(testPort, function () {
-          async.waterfall([function (next) {
+          async.waterfall([ function (next) {
             request.post({
               url: util.format('%s/api/v1/Customers', testUrl),
               json: {
