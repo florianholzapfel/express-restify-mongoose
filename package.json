@@ -12,14 +12,14 @@
   "description": "Easily create a flexible REST interface for mongoose models",
   "devDependencies": {
     "assertmessage": "0.0.2",
-    "mocha": "~2.2",
+    "mocha": "~2",
     "request": "~2",
     "express": "~4",
-    "body-parser": "*",
-    "method-override": "*",
-    "restify": "~3.0",
+    "body-parser": "~1",
+    "method-override": "~2",
+    "restify": "~3",
     "sinon": "~1",
-    "standard": "^4.0.0"
+    "standard": "^5.0.0"
   },
   "engines": {
     "node": ">=0.10"
