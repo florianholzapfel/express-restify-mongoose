@@ -394,7 +394,6 @@ module.exports = function (createFn) {
         }, function (err, res, body) {
           assert.ok(!err)
           assert.equal(res.statusCode, 200, 'Wrong status code')
-          console.log(body)
           assert.ok(Array.isArray(body))
           assert.equal(body.length, 3)
           assert.equal(body[0].price, 10)
