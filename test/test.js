@@ -1524,7 +1524,7 @@ module.exports = function (createFn) {
           assert.ok(!err)
           sinon.assert.calledOnce(options.postMiddleware)
           var args = options.postMiddleware.args[0]
-          assert.equal(args.length, 3)
+          assert.equal(args.length, 4)
           assert.equal(typeof args[2], 'function')
           done()
         })
@@ -1538,7 +1538,7 @@ module.exports = function (createFn) {
           assert.ok(!err)
           sinon.assert.calledOnce(options.postMiddleware)
           var args = options.postMiddleware.args[0]
-          assert.equal(args.length, 3)
+          assert.equal(args.length, 4)
           assert.equal(typeof args[2], 'function')
           done()
         })
@@ -1552,7 +1552,7 @@ module.exports = function (createFn) {
           assert.ok(!err)
           sinon.assert.calledOnce(options.postMiddleware)
           var args = options.postMiddleware.args[0]
-          assert.equal(args.length, 3)
+          assert.equal(args.length, 4)
           assert.equal(typeof args[2], 'function')
           done()
         })
@@ -1568,7 +1568,7 @@ module.exports = function (createFn) {
           assert.ok(!err)
           sinon.assert.calledOnce(options.postMiddleware)
           var args = options.postMiddleware.args[0]
-          assert.equal(args.length, 3)
+          assert.equal(args.length, 4)
           assert.equal(typeof args[2], 'function')
           done()
         })
@@ -1582,7 +1582,7 @@ module.exports = function (createFn) {
           assert.ok(!err)
           sinon.assert.calledOnce(options.postMiddleware)
           var args = options.postMiddleware.args[0]
-          assert.equal(args.length, 3)
+          assert.equal(args.length, 4)
           assert.equal(typeof args[2], 'function')
           done()
         })
@@ -1596,7 +1596,7 @@ module.exports = function (createFn) {
           assert.ok(!err)
           sinon.assert.calledOnce(options.postMiddleware)
           var args = options.postMiddleware.args[0]
-          assert.equal(args.length, 3)
+          assert.equal(args.length, 4)
           assert.equal(typeof args[2], 'function')
           done()
         })
