@@ -28,8 +28,7 @@ module.exports = function (createFn) {
         erm.defaults({
           restify: app.isRestify,
           outputFn: app.outputFn,
-          lean: false,
-          middleware: []
+          lean: false
         })
         erm.serve(app, setup.CustomerModel)
         erm.serve(app, setup.ProductModel)
@@ -1481,6 +1480,128 @@ module.exports = function (createFn) {
           assert.equal(res.statusCode, 200, 'Wrong status code')
           assert.ok(Array.isArray(body), 'Body is not an array')
           assert.equal(body.length, 1, 'Wrong count')
+          done()
+        })
+      })
+    })
+
+    describe('preMiddleware', function () {
+      var server
+      var customerId
+      var options = {
+        preMiddleware: sinon.spy(function (req, res, next) {
+          next()
+        })
+      }
+      var app = createFn()
+      setup()
+
+      before(function (done) {
+        erm.defaults({
+          restify: app.isRestify,
+          outputFn: app.outputFn,
+          lean: false
+        })
+        erm.serve(app, setup.CustomerModel, options)
+        server = app.listen(testPort, done)
+      })
+
+      afterEach(function () {
+        options.preMiddleware.reset()
+      })
+
+      after(function (done) {
+        if (app.close) {
+          return app.close(done)
+        }
+        server.close(done)
+      })
+
+      it('is called before POST Customers', function (done) {
+        request.post({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          json: {
+            name: 'A'
+          }
+        }, function (err, res, body) {
+          customerId = body.id
+          assert.ok(!err)
+          sinon.assert.calledOnce(options.preMiddleware)
+          var args = options.preMiddleware.args[0]
+          assert.equal(args.length, 3)
+          assert.equal(typeof args[2], 'function')
+          done()
+        })
+      })
+
+      it('is called before GET Customers/:id', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          sinon.assert.calledOnce(options.preMiddleware)
+          var args = options.preMiddleware.args[0]
+          assert.equal(args.length, 3)
+          assert.equal(typeof args[2], 'function')
+          done()
+        })
+      })
+
+      it('is called before GET Customers', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          sinon.assert.calledOnce(options.preMiddleware)
+          var args = options.preMiddleware.args[0]
+          assert.equal(args.length, 3)
+          assert.equal(typeof args[2], 'function')
+          done()
+        })
+      })
+
+      it('is called before PUT Customers/:id', function (done) {
+        request.put({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customerId),
+          json: {
+            name: 'B'
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          sinon.assert.calledOnce(options.preMiddleware)
+          var args = options.preMiddleware.args[0]
+          assert.equal(args.length, 3)
+          assert.equal(typeof args[2], 'function')
+          done()
+        })
+      })
+
+      it('is called before DELETE Customers/:id', function (done) {
+        request.del({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customerId),
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          sinon.assert.calledOnce(options.preMiddleware)
+          var args = options.preMiddleware.args[0]
+          assert.equal(args.length, 3)
+          assert.equal(typeof args[2], 'function')
+          done()
+        })
+      })
+
+      it('is called before DELETE Customers', function (done) {
+        request.del({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          sinon.assert.calledOnce(options.preMiddleware)
+          var args = options.preMiddleware.args[0]
+          assert.equal(args.length, 3)
+          assert.equal(typeof args[2], 'function')
           done()
         })
       })
