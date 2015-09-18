@@ -384,6 +384,26 @@ module.exports = function (createFn) {
         })
       })
 
+      it('200 GET Products?sort=price', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Products', testUrl),
+          qs: {
+            sort: 'price'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200, 'Wrong status code')
+          console.log(body)
+          assert.ok(Array.isArray(body))
+          assert.equal(body.length, 3)
+          assert.equal(body[0].price, 10)
+          assert.equal(body[1].price, 11)
+          assert.equal(body[2].price, 20)
+          done()
+        })
+      })
+
       it('200 GET Products?query={ ... }', function (done) {
         var query = {
           $or: [{
