@@ -3,15 +3,13 @@ Changelog
 
 ### 2.0.0
 
-> **This release requires restify ~unreleased**
-
 * `options.private` and `options.protected` no longer accept comma separated fields, pass an array instead
 * removed `options.excluded`, use `options.private`
 * removed support for querying with parameters, use `url?query={"name":"hello"}`
 * removed $and and $or passed as parameters, use `url?query={"$or":[...]}`
 * removed `prereq`, use `preMiddleware` as a drop in replacement
-* removed `postCreate`, `postUpdate`, `postDelete` and `postProcess`, use `postMiddleware`
-* changed `ouputFn`'s signature to `(req, res, next, { result: result, statusCode: statusCode })`
+* removed `postCreate`, `postUpdate`, and `postDelete`, use `postMiddleware`
+* removed `postProcess`, use `postMiddleware` or hook into `outputFn`
 
 ### 1.1.0
 
