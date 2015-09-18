@@ -1487,7 +1487,9 @@ module.exports = function (createFn) {
       var server
       var customerId
       var options = {
-        postMiddleware: sinon.spy(function (req, res, next) {})
+        postMiddleware: sinon.spy(function (req, res, next) {
+          next()
+        })
       }
       var app = createFn()
       setup()
