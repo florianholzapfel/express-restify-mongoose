@@ -4,7 +4,6 @@ var sinon = require('sinon')
 var outputFn = require('../../lib/middleware/outputFn')
 
 describe('outputFn', function () {
-  var sendStatus, status, json, send
   var res = {
     sendStatus: function () {},
     status: function () {
@@ -14,12 +13,10 @@ describe('outputFn', function () {
     send: function () {}
   }
 
-  before(function () {
-    sendStatus = sinon.spy(res, 'sendStatus')
-    status = sinon.spy(res, 'status')
-    json = sinon.spy(res, 'json')
-    send = sinon.spy(res, 'send')
-  })
+  var sendStatus = sinon.spy(res, 'sendStatus')
+  var status = sinon.spy(res, 'status')
+  var json = sinon.spy(res, 'json')
+  var send = sinon.spy(res, 'send')
 
   afterEach(function () {
     sendStatus.reset()

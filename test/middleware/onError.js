@@ -4,7 +4,6 @@ var sinon = require('sinon')
 var onError = require('../../lib/middleware/onError')
 
 describe('onError', function () {
-  var setHeader, status, send, next
   var res = {
     setHeader: function () {},
     status: function () {
@@ -13,15 +12,13 @@ describe('onError', function () {
     send: function () {}
   }
 
+  var setHeader = sinon.spy(res, 'setHeader')
+  var status = sinon.spy(res, 'status')
+  var send = sinon.spy(res, 'send')
+  var next = sinon.spy()
+
   var err = new Error('An error occurred')
   err.statusCode = 400
-
-  before(function () {
-    setHeader = sinon.spy(res, 'setHeader')
-    status = sinon.spy(res, 'status')
-    send = sinon.spy(res, 'send')
-    next = sinon.spy()
-  })
 
   afterEach(function () {
     setHeader.reset()
