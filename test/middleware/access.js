@@ -1,35 +1,20 @@
 'use strict'
 
 var sinon = require('sinon')
-var access = require('../lib/middleware/access')
-var assert = require('assertmessage')
+var access = require('../../lib/middleware/access')
+var assert = require('assert')
 var http = require('http')
 
-describe('Permissions', function () {
-  var noop = function () {}
-  var res = { send: noop }
-  var sandbox
-
-  before(function () {
-    sandbox = sinon.sandbox.create()
-  })
-
-  beforeEach(function () {
-    sandbox.restore()
-    this.mock = sandbox.mock(res)
-    this.mock.expects('send').once().withArgs(403, {
-      msg: http.STATUS_CODES[403]
-    })
-  })
-
-  describe('with access that returns', function () {
+describe('access', function () {
+  describe('returns (sync)', function () {
     it('adds access field to req', function (done) {
       var req = {}
       var accessFn = function () {
         return 'private'
       }
 
-      access(accessFn)(req, {}, function () {
+      access(accessFn)(req, {}, function (err) {
+        assert.ifError(err)
         assert.equal(req.access, 'private')
         done()
       })
@@ -50,15 +35,30 @@ describe('Permissions', function () {
     })
   })
 
-  describe('with access that yields', function () {
+  describe('yields (async)', function () {
     it('adds access field to req', function (done) {
       var req = {}
       var accessFn = function (req, cb) {
         return cb(null, 'private')
       }
 
-      access(accessFn)(req, {}, function () {
+      access(accessFn)(req, {}, function (err) {
+        assert.ifError(err)
         assert.equal(req.access, 'private')
+        done()
+      })
+    })
+
+    it('calls next with an error', function (done) {
+      var req = {}
+      var error = new Error('Something bad happened')
+      var accessFn = function (req, cb) {
+        return cb(error, 'private')
+      }
+
+      access(accessFn)(req, {}, function (err) {
+        assert.equal(err, error)
+        assert.equal(req.access, undefined)
         done()
       })
     })
