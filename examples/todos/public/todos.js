@@ -1,10 +1,4 @@
 /* global angular */
-/**
- * todos.js
- *
- * based on the angularjs todo sample
- *
- **/
 var app = angular.module('app', ['ngResource'])
 app.controller('TodoCtrl', function ($scope, $resource) {
   var Todo = $resource('/api/v1/todos/:id', { id: '@_id' })

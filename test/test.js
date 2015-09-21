@@ -1749,12 +1749,7 @@ module.exports = function (createFn) {
     })
 
     describe('Id location', function () {
-      /*
-       Use for an endpoint like:
-       /api/v1/Users/Address
-       or
-       /api/v1/Users/:id/Address
-       */
+      // Use for an endpoint like: /api/v1/Users/Address or /api/v1/Users/:id/Address
       var server
       var goodCustomerId
       var options = {
