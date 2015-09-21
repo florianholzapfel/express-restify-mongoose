@@ -3,7 +3,6 @@
 var sinon = require('sinon')
 var access = require('../../lib/middleware/access')
 var assert = require('assert')
-var http = require('http')
 
 describe('access', function () {
   describe('returns (sync)', function () {

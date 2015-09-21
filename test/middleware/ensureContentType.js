@@ -1,9 +1,7 @@
 'use strict'
 
-var sinon = require('sinon')
 var ensureContentType = require('../../lib/middleware/ensureContentType')
 var assert = require('assert')
-var http = require('http')
 
 describe('ensureContentType', function () {
   it('calls next with an error (missing_content_type)', function (done) {
