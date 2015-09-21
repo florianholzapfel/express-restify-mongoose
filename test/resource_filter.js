@@ -1,23 +1,39 @@
 'use strict'
 
 var Filter = require('../lib/resource_filter')
-var setup = require('./setup')
+var db = require('./setup')()
 var assert = require('assertmessage')
-var OID = require('mongoose').Types.ObjectId
+var ObjectId = require('mongoose').Types.ObjectId
 
-describe('Filter', function () {
-  setup()
+describe('Resource filter', function () {
+  var customerFilter
+  var invoiceFilter
+  var productFilter
 
-  var customerFilter = new Filter(setup.CustomerModel, {
-    private: ['comment', 'address', 'purchases.number', 'purchases.item.price']
+  before(function (done) {
+    db.initialize(function (err) {
+      if (err) {
+        return done(err)
+      }
+
+      customerFilter = new Filter(db.models.Customer, {
+        private: ['comment', 'address', 'purchases.number', 'purchases.item.price']
+      })
+
+      invoiceFilter = new Filter(db.models.Invoice, {
+        private: ['amount', 'customer.address', 'products.price']
+      })
+
+      productFilter = new Filter(db.models.Product, {
+        private: ['price', 'department.code']
+      })
+
+      db.reset(done)
+    })
   })
 
-  var invoiceFilter = new Filter(setup.InvoiceModel, {
-    private: ['amount', 'customer.address', 'products.price']
-  })
-
-  var productFilter = new Filter(setup.ProductModel, {
-    private: ['price', 'department.code']
+  after(function (done) {
+    db.close(done)
   })
 
   describe('lean', function () {
@@ -160,7 +176,7 @@ describe('Filter', function () {
 
   describe('not lean', function () {
     it('excludes items in the excluded string', function () {
-      var customer = new setup.CustomerModel({
+      var customer = new db.models.Customer({
         name: 'John',
         address: '123 Drury Lane',
         comment: 'Has a big nose'
@@ -173,7 +189,7 @@ describe('Filter', function () {
     })
 
     it('excludes fields from embedded documents', function () {
-      var product = new setup.ProductModel({
+      var product = new db.models.Product({
         name: 'Garden Hose',
         department: {
           name: 'Gardening',
@@ -188,14 +204,14 @@ describe('Filter', function () {
     })
 
     it('excludes fields from embedded arrays', function () {
-      var customer = new setup.CustomerModel({
+      var customer = new db.models.Customer({
         name: 'John',
         purchases: [{
-          item: new OID(), number: 2
+          item: new ObjectId(), number: 2
         }, {
-          item: new OID(), number: 100
+          item: new ObjectId(), number: 100
         }, {
-          item: new OID(), number: 1
+          item: new ObjectId(), number: 1
         }]
       })
 
@@ -222,9 +238,9 @@ describe('Filter', function () {
         this.invoiceId = null
         this.customerId = null
 
-        setup.ProductModel.create(products, function (err, createdProducts) {
+        db.models.Product.create(products, function (err, createdProducts) {
           assert(!err, err)
-          new setup.CustomerModel({
+          new db.models.Customer({
             name: 'John',
             address: '123 Drury Lane',
             purchases: [{
@@ -238,7 +254,7 @@ describe('Filter', function () {
             assert(!err, err)
             self.customerId = res._id
 
-            new setup.InvoiceModel({
+            new db.models.Invoice({
               customer: res._id,
               amount: 42,
               products: [
@@ -256,17 +272,17 @@ describe('Filter', function () {
       })
 
       after(function (done) {
-        setup.CustomerModel.remove(function (err) {
+        db.models.Customer.remove(function (err) {
           assert(!err, err)
-          setup.InvoiceModel.remove(function (err) {
+          db.models.Invoice.remove(function (err) {
             assert(!err, err)
-            setup.ProductModel.remove(done)
+            db.models.Product.remove(done)
           })
         })
       })
 
       it('excludes fields from populated items', function (done) {
-        setup.InvoiceModel.findById(this.invoiceId).populate('customer').exec(function (err, invoice) {
+        db.models.Invoice.findById(this.invoiceId).populate('customer').exec(function (err, invoice) {
           assert(!err, err)
           invoice = invoiceFilter.filterObject(invoice, {populate: 'customer'})
           assert.ok(invoice.amount === undefined, 'Invoice amount should be excluded')
@@ -277,7 +293,7 @@ describe('Filter', function () {
       })
 
       it('iterates through array of populated objects', function (done) {
-        setup.InvoiceModel.findById(this.invoiceId).populate('products').exec(function (err, invoice) {
+        db.models.Invoice.findById(this.invoiceId).populate('products').exec(function (err, invoice) {
           assert(!err, err)
           invoice = invoiceFilter.filterObject(invoice, {populate: 'products'})
 
@@ -291,7 +307,7 @@ describe('Filter', function () {
       })
 
       it('filters multiple populated models', function (done) {
-        setup.InvoiceModel.findById(this.invoiceId).populate('products customer').exec(function (err, invoice) {
+        db.models.Invoice.findById(this.invoiceId).populate('products customer').exec(function (err, invoice) {
           assert(!err, err)
           invoice = invoiceFilter.filterObject(invoice, {populate: 'products,customer'})
           assert.equal(invoice.customer.name, 'John', 'customer name should be populated')
@@ -308,7 +324,7 @@ describe('Filter', function () {
 
       it('filters embedded array of populated docs', function (done) {
         var self = this
-        setup.CustomerModel.findById(this.customerId).populate('purchases.item').exec(function (err, customer) {
+        db.models.Customer.findById(this.customerId).populate('purchases.item').exec(function (err, customer) {
           assert(!err, err)
           customer = customerFilter.filterObject(customer, {populate: 'purchases.item'})
 
@@ -326,7 +342,7 @@ describe('Filter', function () {
 
   describe('protected fields', function () {
     it('defaults to not including any', function () {
-      invoiceFilter = new Filter(setup.InvoiceModel, {
+      invoiceFilter = new Filter(db.models.Invoice, {
         private: ['amount'],
         protected: ['products']
       })
@@ -344,7 +360,7 @@ describe('Filter', function () {
     })
 
     it('returns protected fields', function () {
-      invoiceFilter = new Filter(setup.InvoiceModel, {
+      invoiceFilter = new Filter(db.models.Invoice, {
         private: ['amount'],
         protected: ['products']
       })
@@ -368,18 +384,22 @@ describe('Filter', function () {
   describe('descriminated schemas', function () {
     // we need the accountFilter to be defined since its creation adds
     // an entry in resource_filter's excludedMap
-    var accountFilter = new Filter(setup.AccountModel, { // eslint-disable-line no-unused-vars
-      private: ['accountNumber']
-    })
-    var repeatCustFilter = new Filter(setup.RepeatCustomerModel, [])
+    var accountFilter // eslint-disable-line no-unused-vars
+    var repeatCustFilter
 
     before(function (done) {
-      setup.AccountModel.create({
+      accountFilter = new Filter(db.models.Account, {
+        private: ['accountNumber']
+      })
+
+      repeatCustFilter = new Filter(db.models.RepeatCustomer, [])
+
+      db.models.Account.create({
         accountNumber: '123XYZ',
         points: 244
       }, function (err, account) {
         assert(!err, err)
-        setup.RepeatCustomerModel.create({
+        db.models.RepeatCustomer.create({
           name: 'John Smith',
           loyaltyProgram: account._id
         }, done)
@@ -387,13 +407,13 @@ describe('Filter', function () {
     })
 
     after(function (done) {
-      setup.AccountModel.remove(function () {
-        setup.CustomerModel.remove(done)
+      db.models.Account.remove(function () {
+        db.models.Customer.remove(done)
       })
     })
 
     it('should filter populated from subschema', function (done) {
-      setup.RepeatCustomerModel.findOne().populate('loyaltyProgram').exec(function (err, doc) {
+      db.models.RepeatCustomer.findOne().populate('loyaltyProgram').exec(function (err, doc) {
         assert(!err, err)
         var customer = repeatCustFilter.filterObject(doc, {populate: 'loyaltyProgram'})
         assert.equal(customer.name, 'John Smith')
@@ -404,7 +424,7 @@ describe('Filter', function () {
     })
 
     it('should filter populated from base schema', function (done) {
-      setup.CustomerModel.findOne().exec(function (err, doc) {
+      db.models.Customer.findOne().exec(function (err, doc) {
         assert(!err, err)
         doc.populate('loyaltyProgram', function (err, doc) {
           assert(!err, err)

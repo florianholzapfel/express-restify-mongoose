@@ -2,7 +2,7 @@
 
 var erm = require('../lib/express-restify-mongoose')
 
-var setup = require('./setup')
+var db = require('./setup')()
 
 var assert = require('assertmessage')
 var async = require('async')
@@ -14,6 +14,16 @@ var testPort = 30023
 var testUrl = 'http://localhost:' + testPort
 
 module.exports = function (createFn) {
+  function setup (callback) {
+    db.initialize(function (err) {
+      if (err) {
+        return callback(err)
+      }
+
+      db.reset(callback)
+    })
+  }
+
   describe(createFn.name, function () {
     describe('General', function () {
       var savedProduct
@@ -22,26 +32,38 @@ module.exports = function (createFn) {
       var server
       var app = createFn()
 
-      setup()
-
       before(function (done) {
-        erm.defaults({
-          restify: app.isRestify,
-          outputFn: app.outputFn,
-          lean: false
-        })
-        erm.serve(app, setup.CustomerModel)
-        erm.serve(app, setup.ProductModel)
-        erm.serve(app, setup.InvoiceModel)
+        setup(function (err) {
+          if (err) {
+            return done(err)
+          }
 
-        server = app.listen(testPort, done)
+          erm.defaults({
+            restify: app.isRestify,
+            outputFn: app.outputFn,
+            lean: false
+          })
+
+          erm.serve(app, db.models.Customer)
+          erm.serve(app, db.models.Product)
+          erm.serve(app, db.models.Invoice)
+
+          server = app.listen(testPort, done)
+        })
       })
 
       after(function (done) {
-        if (app.close) {
-          return app.close(done)
-        }
-        server.close(done)
+        db.close(function (err) {
+          if (err) {
+            return done(err)
+          }
+
+          if (app.close) {
+            return app.close(done)
+          }
+
+          server.close(done)
+        })
       })
 
       it('201 POST Products', function (done) {
@@ -672,33 +694,45 @@ module.exports = function (createFn) {
       var server
       var app = createFn()
 
-      setup()
-
       before(function (done) {
-        erm.serve(app, setup.CustomerModel, {
-          lean: false,
-          outputFn: app.outputFn,
-          restify: app.isRestify
-        })
-        server = app.listen(testPort, function () {
-          request.post({
-            url: util.format('%s/api/v1/Customers', testUrl),
-            json: {
-              name: 'Bob'
-            }
-          }, function (err, res, body) {
-            assert.ok(!err)
-            savedCustomer = body
-            done()
+        setup(function (err) {
+          if (err) {
+            return done(err)
+          }
+
+          erm.serve(app, db.models.Customer, {
+            lean: false,
+            outputFn: app.outputFn,
+            restify: app.isRestify
+          })
+
+          server = app.listen(testPort, function () {
+            request.post({
+              url: util.format('%s/api/v1/Customers', testUrl),
+              json: {
+                name: 'Bob'
+              }
+            }, function (err, res, body) {
+              assert.ok(!err)
+              savedCustomer = body
+              done()
+            })
           })
         })
       })
 
       after(function (done) {
-        if (app.close) {
-          return app.close(done)
-        }
-        server.close(done)
+        db.close(function (err) {
+          if (err) {
+            return done(err)
+          }
+
+          if (app.close) {
+            return app.close(done)
+          }
+
+          server.close(done)
+        })
       })
 
       it('200 GET Customers', function (done) {
@@ -721,58 +755,69 @@ module.exports = function (createFn) {
       var server
       var app = createFn()
 
-      setup()
-
       before(function (done) {
-        erm.defaults({
-          restify: app.isRestify,
-          outputFn: app.outputFn
-        })
+        setup(function (err) {
+          if (err) {
+            return done(err)
+          }
 
-        erm.serve(app, setup.CustomerModel, {
-          private: ['comment'],
-          lean: false
-        })
-        erm.serve(app, setup.InvoiceModel)
+          erm.defaults({
+            restify: app.isRestify,
+            outputFn: app.outputFn
+          })
 
-        server = app.listen(testPort, function () {
-          async.waterfall([ function (next) {
-            request.post({
-              url: util.format('%s/api/v1/Customers', testUrl),
-              json: {
-                name: 'Test',
-                comment: 'Comment'
-              }
-            }, function (err, res, body) {
+          erm.serve(app, db.models.Customer, {
+            private: ['comment'],
+            lean: false
+          })
+          erm.serve(app, db.models.Invoice)
+
+          server = app.listen(testPort, function () {
+            async.waterfall([ function (next) {
+              request.post({
+                url: util.format('%s/api/v1/Customers', testUrl),
+                json: {
+                  name: 'Test',
+                  comment: 'Comment'
+                }
+              }, function (err, res, body) {
+                assert.ok(!err)
+                next(null, body)
+              })
+            }, function (customer, next) {
+              request.post({
+                url: util.format('%s/api/v1/Invoices', testUrl),
+                json: {
+                  customer: customer._id,
+                  amount: 42,
+                  __version: 1
+                }
+              }, function (err, res, body) {
+                assert.ok(!err)
+                next(null, customer, body)
+              })
+            }], function (err, customer, invoice) {
               assert.ok(!err)
-              next(null, body)
+              savedCustomer = customer
+              savedInvoice = invoice
+              done()
             })
-          }, function (customer, next) {
-            request.post({
-              url: util.format('%s/api/v1/Invoices', testUrl),
-              json: {
-                customer: customer._id,
-                amount: 42,
-                __version: 1
-              }
-            }, function (err, res, body) {
-              assert.ok(!err)
-              next(null, customer, body)
-            })
-          }], function (err, customer, invoice) {
-            assert.ok(!err)
-            savedCustomer = customer
-            savedInvoice = invoice
-            done()
           })
         })
       })
 
       after(function (done) {
-        if (app.close) {
-          return app.close(done)
-        }
-        server.close(done)
+        db.close(function (err) {
+          if (err) {
+            return done(err)
+          }
+
+          if (app.close) {
+            return app.close(done)
+          }
+
+          server.close(done)
+        })
       })
 
       it('200 GET Customers', function (done) {
@@ -824,22 +869,34 @@ module.exports = function (createFn) {
 
       // only restify's routes are case sensitive
       if (app.isRestify) {
-        setup()
-
         before(function (done) {
-          erm.serve(app, setup.CustomerModel, {
-            lowercase: true,
-            restify: app.isRestify,
-            outputFn: app.outputFn
+          setup(function (err) {
+            if (err) {
+              return done(err)
+            }
+
+            erm.serve(app, db.models.Customer, {
+              lowercase: true,
+              restify: app.isRestify,
+              outputFn: app.outputFn
+            })
+
+            server = app.listen(testPort, done)
           })
-          server = app.listen(testPort, done)
         })
 
         after(function (done) {
-          if (app.close) {
-            return app.close(done)
-          }
-          server.close(done)
+          db.close(function (err) {
+            if (err) {
+              return done(err)
+            }
+
+            if (app.close) {
+              return app.close(done)
+            }
+
+            server.close(done)
+          })
         })
 
         it('200 GET customers', function (done) {
@@ -870,33 +927,44 @@ module.exports = function (createFn) {
       var server
       var app = createFn()
 
-      setup()
-
       before(function (done) {
-        erm.serve(app, setup.CustomerModel, {
-          lean: false,
-          outputFn: app.outputFn,
-          restify: app.isRestify,
-          findOneAndUpdate: false
-        })
-        server = app.listen(testPort, function () {
-          request.post({
-            url: util.format('%s/api/v1/Customers', testUrl),
-            json: {
-              name: 'Bob'
-            }
-          }, function (err, res, body) {
-            assert.ok(!err)
-            done()
+        setup(function (err) {
+          if (err) {
+            return done(err)
+          }
+
+          erm.serve(app, db.models.Customer, {
+            lean: false,
+            outputFn: app.outputFn,
+            restify: app.isRestify,
+            findOneAndUpdate: false
+          })
+          server = app.listen(testPort, function () {
+            request.post({
+              url: util.format('%s/api/v1/Customers', testUrl),
+              json: {
+                name: 'Bob'
+              }
+            }, function (err, res, body) {
+              assert.ok(!err)
+              done()
+            })
           })
         })
       })
 
       after(function (done) {
-        if (app.close) {
-          return app.close(done)
-        }
-        server.close(done)
+        db.close(function (err) {
+          if (err) {
+            return done(err)
+          }
+
+          if (app.close) {
+            return app.close(done)
+          }
+
+          server.close(done)
+        })
       })
 
       it('Create Bad Customer', function (done) {
@@ -947,23 +1015,35 @@ module.exports = function (createFn) {
       var server
       var app = createFn()
 
-      setup()
-
       before(function (done) {
-        erm.serve(app, setup.CustomerModel, {
-          outputFn: app.outputFn,
-          restify: app.isRestify,
-          name: 'Customer',
-          plural: false
+        setup(function (err) {
+          if (err) {
+            return done(err)
+          }
+
+          erm.serve(app, db.models.Customer, {
+            outputFn: app.outputFn,
+            restify: app.isRestify,
+            name: 'Customer',
+            plural: false
+          })
+
+          server = app.listen(testPort, done)
         })
-        server = app.listen(testPort, done)
       })
 
       after(function (done) {
-        if (app.close) {
-          return app.close(done)
-        }
-        server.close(done)
+        db.close(function (err) {
+          if (err) {
+            return done(err)
+          }
+
+          if (app.close) {
+            return app.close(done)
+          }
+
+          server.close(done)
+        })
       })
 
       it('is used to specify the endpoint', function (done) {
@@ -982,30 +1062,40 @@ module.exports = function (createFn) {
       var server
       var app = createFn()
 
-      setup()
-
       before(function (done) {
-        erm.defaults({
-          version: '/custom'
-        })
+        setup(function (err) {
+          if (err) {
+            return done(err)
+          }
 
-        erm.serve(app, setup.CustomerModel, {
-          lowercase: true,
-          restify: app.isRestify,
-          outputFn: app.outputFn
-        })
+          erm.defaults({
+            version: '/custom'
+          })
 
-        server = app.listen(testPort, done)
+          erm.serve(app, db.models.Customer, {
+            lowercase: true,
+            restify: app.isRestify,
+            outputFn: app.outputFn
+          })
+
+          server = app.listen(testPort, done)
+        })
       })
 
       after(function (done) {
         erm.defaults(null)
 
-        if (app.close) {
-          return app.close(done)
-        }
+        db.close(function (err) {
+          if (err) {
+            return done(err)
+          }
 
-        server.close(done)
+          if (app.close) {
+            return app.close(done)
+          }
+
+          server.close(done)
+        })
       })
 
       it('200 GET custom/customers', function (done) {
@@ -1023,51 +1113,62 @@ module.exports = function (createFn) {
     describe('Access', function () {
       var savedCustomer, server, app, access
 
-      setup()
-
       before(function (done) {
-        erm.defaults({
-          private: ['address'],
-          protected: ['comment']
-        })
+        setup(function (err) {
+          if (err) {
+            return done(err)
+          }
 
-        app = createFn()
-        var accessFn = function () {
-          return access
-        }
+          erm.defaults({
+            private: ['address'],
+            protected: ['comment']
+          })
 
-        erm.serve(app, setup.CustomerModel, {
-          restify: app.isRestify,
-          access: accessFn,
-          outputFn: app.outputFn
-        })
+          app = createFn()
+          var accessFn = function () {
+            return access
+          }
 
-        access = 'private'
-        server = app.listen(testPort, function () {
-          request.post({
-            url: util.format('%s/api/v1/Customers', testUrl),
-            json: {
-              name: 'Test',
-              comment: 'Comment',
-              address: '123 Drury Lane',
-              creditCard: '123412345612345',
-              ssn: '123-45-6789'
-            }
-          }, function (err, res, body) {
-            assert.ok(!err)
-            savedCustomer = body
-            done()
+          erm.serve(app, db.models.Customer, {
+            restify: app.isRestify,
+            access: accessFn,
+            outputFn: app.outputFn
+          })
+
+          access = 'private'
+          server = app.listen(testPort, function () {
+            request.post({
+              url: util.format('%s/api/v1/Customers', testUrl),
+              json: {
+                name: 'Test',
+                comment: 'Comment',
+                address: '123 Drury Lane',
+                creditCard: '123412345612345',
+                ssn: '123-45-6789'
+              }
+            }, function (err, res, body) {
+              assert.ok(!err)
+              savedCustomer = body
+              done()
+            })
           })
         })
       })
 
       after(function (done) {
-        if (app.close) {
-          return app.close(done)
-        }
-        server.close(done)
-
         erm.defaults(null)
+
+        db.close(function (err) {
+          if (err) {
+            return done(err)
+          }
+
+          if (app.close) {
+            return app.close(done)
+          }
+
+          server.close(done)
+        })
       })
 
       describe('public access', function () {
@@ -1245,39 +1346,50 @@ module.exports = function (createFn) {
           }))
         }
 
-        setup()
-
         before(function (done) {
-          erm.defaults({
-            restify: app.isRestify,
-            outputFn: app.outputFn,
-            lean: false,
-            contextFilter: filter
-          })
-          erm.serve(app, setup.CustomerModel)
+          setup(function (err) {
+            if (err) {
+              return done(err)
+            }
 
-          setup.CustomerModel.create({
-            name: 'A', address: 'addy1'
-          }, {
-            name: 'B', address: 'addy2'
-          }, {
-            name: 'C', address: null
-          }, {
-            name: 'D', address: 'addy3'
-          }, function (err, good1, disallowed, bad, good3) {
-            assert.ok(!err)
-            badCustomerId = bad.id
-            goodCustomerId = good1.id
-            disallowedId = disallowed.id
-            server = app.listen(testPort, done)
+            erm.defaults({
+              restify: app.isRestify,
+              outputFn: app.outputFn,
+              lean: false,
+              contextFilter: filter
+            })
+            erm.serve(app, db.models.Customer)
+
+            db.models.Customer.create({
+              name: 'A', address: 'addy1'
+            }, {
+              name: 'B', address: 'addy2'
+            }, {
+              name: 'C', address: null
+            }, {
+              name: 'D', address: 'addy3'
+            }, function (err, good1, disallowed, bad, good3) {
+              assert.ok(!err)
+              badCustomerId = bad.id
+              goodCustomerId = good1.id
+              disallowedId = disallowed.id
+              server = app.listen(testPort, done)
+            })
           })
         })
 
         after(function (done) {
-          if (app.close) {
-            return app.close(done)
-          }
-          server.close(done)
+          db.close(function (err) {
+            if (err) {
+              return done(err)
+            }
+
+            if (app.close) {
+              return app.close(done)
+            }
+
+            server.close(done)
+          })
         })
 
         it('gets customers with an address', function (done) {
@@ -1333,7 +1445,7 @@ module.exports = function (createFn) {
           }, function (err, res, body) {
             assert.ok(!err)
             assert.equal(res.statusCode, 200, 'Wrong status code')
-            setup.CustomerModel.findById(goodCustomerId, function (err, customer) {
+            db.models.Customer.findById(goodCustomerId, function (err, customer) {
               assert.ok(!err)
               assert.equal(customer.name, 'newName', 'Customer Deleted')
               done()
@@ -1348,7 +1460,7 @@ module.exports = function (createFn) {
           }, function (err, res, body) {
             assert.ok(!err)
             assert.equal(res.statusCode, 404, 'Wrong status code')
-            setup.CustomerModel.findById(badCustomerId, function (err, customer) {
+            db.models.Customer.findById(badCustomerId, function (err, customer) {
               assert.ok(!err)
               assert.notEqual(customer.name, 'newName', 'Customer Deleted')
               done()
@@ -1363,7 +1475,7 @@ module.exports = function (createFn) {
           }, function (err, res, body) {
             assert.ok(!err)
             assert.equal(res.statusCode, 404, 'Wrong status code')
-            setup.CustomerModel.count(function (err, count) {
+            db.models.Customer.count(function (err, count) {
               assert.ok(!err)
               assert.equal(count, 4, 'Customer Deleted')
               done()
@@ -1378,7 +1490,7 @@ module.exports = function (createFn) {
           }, function (err, res, body) {
             assert.ok(!err)
             assert.equal(res.statusCode, 404, 'Wrong status code')
-            setup.CustomerModel.count(function (err, count) {
+            db.models.Customer.count(function (err, count) {
               assert.ok(!err)
               assert.equal(count, 4, 'Customer Deleted')
               done()
@@ -1393,7 +1505,7 @@ module.exports = function (createFn) {
           }, function (err, res, body) {
             assert.ok(!err)
             assert.equal(res.statusCode, 204, 'Wrong status code')
-            setup.CustomerModel.count(function (err, count) {
+            db.models.Customer.count(function (err, count) {
               assert.ok(!err)
               assert.equal(count, 3, 'Customer Not Deleted')
               done()
@@ -1408,7 +1520,7 @@ module.exports = function (createFn) {
           }, function (err, res, body) {
             assert.ok(!err)
             assert.equal(res.statusCode, 400, 'Wrong status code')
-            setup.CustomerModel.count(function (err, count) {
+            db.models.Customer.count(function (err, count) {
               assert.ok(!err)
               assert.equal(count, 3, 'Customer Deleted')
               done()
@@ -1422,34 +1534,47 @@ module.exports = function (createFn) {
       var server
       var app = createFn()
 
-      setup()
-
       before(function (done) {
-        erm.defaults({
-          restify: app.isRestify,
-          outputFn: app.outputFn,
-          limit: 2
-        })
-        erm.serve(app, setup.CustomerModel)
-
-        setup.CustomerModel.create(
-          { name: 'A' },
-          { name: 'B' },
-          { name: 'C' },
-          function (err) {
-            if (err) {
-              done(err)
-            }
-            server = app.listen(testPort, done)
+        setup(function (err) {
+          if (err) {
+            return done(err)
           }
-        )
+
+          erm.defaults({
+            restify: app.isRestify,
+            outputFn: app.outputFn,
+            limit: 2
+          })
+          erm.serve(app, db.models.Customer)
+
+          db.models.Customer.create({
+            name: 'A'
+          }, {
+            name: 'B'
+          }, {
+            name: 'C'
+          }, function (err) {
+            if (err) {
+              return done(err)
+            }
+
+            server = app.listen(testPort, done)
+          })
+        })
       })
 
       after(function (done) {
-        if (app.close) {
-          return app.close(done)
-        }
-        server.close(done)
+        db.close(function (err) {
+          if (err) {
+            return done(err)
+          }
+
+          if (app.close) {
+            return app.close(done)
+          }
+
+          server.close(done)
+        })
       })
 
       it('limit: GET Customers/count should return 3', function (done) {
@@ -1513,16 +1638,21 @@ module.exports = function (createFn) {
         })
       }
       var app = createFn()
-      setup()
 
       before(function (done) {
-        erm.defaults({
-          restify: app.isRestify,
-          outputFn: app.outputFn,
-          lean: false
+        setup(function (err) {
+          if (err) {
+            return done(err)
+          }
+
+          erm.defaults({
+            restify: app.isRestify,
+            outputFn: app.outputFn,
+            lean: false
+          })
+          erm.serve(app, db.models.Customer, options)
+          server = app.listen(testPort, done)
         })
-        erm.serve(app, setup.CustomerModel, options)
-        server = app.listen(testPort, done)
       })
 
       afterEach(function () {
@@ -1530,10 +1660,17 @@ module.exports = function (createFn) {
       })
 
       after(function (done) {
-        if (app.close) {
-          return app.close(done)
-        }
-        server.close(done)
+        db.close(function (err) {
+          if (err) {
+            return done(err)
+          }
+
+          if (app.close) {
+            return app.close(done)
+          }
+
+          server.close(done)
+        })
       })
 
       it('is called before POST Customers', function (done) {
@@ -1635,16 +1772,21 @@ module.exports = function (createFn) {
         })
       }
       var app = createFn()
-      setup()
 
       before(function (done) {
-        erm.defaults({
-          restify: app.isRestify,
-          outputFn: app.outputFn,
-          lean: false
+        setup(function (err) {
+          if (err) {
+            return done(err)
+          }
+
+          erm.defaults({
+            restify: app.isRestify,
+            outputFn: app.outputFn,
+            lean: false
+          })
+          erm.serve(app, db.models.Customer, options)
+          server = app.listen(testPort, done)
         })
-        erm.serve(app, setup.CustomerModel, options)
-        server = app.listen(testPort, done)
       })
 
       afterEach(function () {
@@ -1652,10 +1794,17 @@ module.exports = function (createFn) {
       })
 
       after(function (done) {
-        if (app.close) {
-          return app.close(done)
-        }
-        server.close(done)
+        db.close(function (err) {
+          if (err) {
+            return done(err)
+          }
+
+          if (app.close) {
+            return app.close(done)
+          }
+
+          server.close(done)
+        })
       })
 
       it('is called after POST Customers', function (done) {
@@ -1756,30 +1905,42 @@ module.exports = function (createFn) {
         version: '/v1/Entities/:id'
       }
       var app = createFn()
-      setup()
 
       before(function (done) {
-        erm.defaults({
-          restify: app.isRestify,
-          outputFn: app.outputFn,
-          lean: false
-        })
-        erm.serve(app, setup.CustomerModel, options)
+        setup(function (err) {
+          if (err) {
+            return done(err)
+          }
 
-        setup.CustomerModel.create({
-          name: 'A', address: 'addy1'
-        }, function (err, good1) {
-          assert.ok(!err)
-          goodCustomerId = good1.id
-          server = app.listen(testPort, done)
+          erm.defaults({
+            restify: app.isRestify,
+            outputFn: app.outputFn,
+            lean: false
+          })
+          erm.serve(app, db.models.Customer, options)
+
+          db.models.Customer.create({
+            name: 'A', address: 'addy1'
+          }, function (err, good1) {
+            assert.ok(!err)
+            goodCustomerId = good1.id
+            server = app.listen(testPort, done)
+          })
         })
       })
 
       after(function (done) {
-        if (app.close) {
-          return app.close(done)
-        }
-        server.close(done)
+        db.close(function (err) {
+          if (err) {
+            return done(err)
+          }
+
+          if (app.close) {
+            return app.close(done)
+          }
+
+          server.close(done)
+        })
       })
 
       describe('can be located in the middle of the url', function () {
@@ -1828,30 +1989,42 @@ module.exports = function (createFn) {
         idProperty: 'name'
       }
       var app = createFn()
-      setup()
 
       before(function (done) {
-        erm.defaults({
-          restify: app.isRestify,
-          outputFn: app.outputFn,
-          lean: false
-        })
-        erm.serve(app, setup.CustomerModel, options)
+        setup(function (err) {
+          if (err) {
+            return done(err)
+          }
 
-        setup.CustomerModel.create({
-          name: 'A', address: 'addy1'
-        }, function (err, good1) {
-          assert.ok(!err)
-          goodCustomerId = good1.name
-          server = app.listen(testPort, done)
+          erm.defaults({
+            restify: app.isRestify,
+            outputFn: app.outputFn,
+            lean: false
+          })
+          erm.serve(app, db.models.Customer, options)
+
+          db.models.Customer.create({
+            name: 'A', address: 'addy1'
+          }, function (err, good1) {
+            assert.ok(!err)
+            goodCustomerId = good1.name
+            server = app.listen(testPort, done)
+          })
         })
       })
 
       after(function (done) {
-        if (app.close) {
-          return app.close(done)
-        }
-        server.close(done)
+        db.close(function (err) {
+          if (err) {
+            return done(err)
+          }
+
+          if (app.close) {
+            return app.close(done)
+          }
+
+          server.close(done)
+        })
       })
 
       describe('can be located in the middle of the url', function () {
