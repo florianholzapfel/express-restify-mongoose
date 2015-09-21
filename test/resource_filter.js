@@ -8,23 +8,17 @@ var OID = require('mongoose').Types.ObjectId
 describe('Filter', function () {
   setup()
 
-  var customerFilter = new Filter(setup.CustomerModel, [
-    'comment',
-    'address',
-    'purchases.number',
-    'purchases.item.price'
-  ])
+  var customerFilter = new Filter(setup.CustomerModel, {
+    private: ['comment', 'address', 'purchases.number', 'purchases.item.price']
+  })
 
-  var invoiceFilter = new Filter(setup.InvoiceModel, [
-    'amount',
-    'customer.address',
-    'products.price'
-  ])
+  var invoiceFilter = new Filter(setup.InvoiceModel, {
+    private: ['amount', 'customer.address', 'products.price']
+  })
 
-  var productFilter = new Filter(setup.ProductModel, [
-    'price',
-    'department.code'
-  ])
+  var productFilter = new Filter(setup.ProductModel, {
+    private: ['price', 'department.code']
+  })
 
   describe('lean', function () {
     it('excludes items in the excluded string', function () {
@@ -332,7 +326,10 @@ describe('Filter', function () {
 
   describe('protected fields', function () {
     it('defaults to not including any', function () {
-      invoiceFilter = new Filter(setup.InvoiceModel, ['amount'], ['products'])
+      invoiceFilter = new Filter(setup.InvoiceModel, {
+        private: ['amount'],
+        protected: ['products']
+      })
 
       var invoice = {
         customer: 'objectid',
@@ -347,7 +344,10 @@ describe('Filter', function () {
     })
 
     it('returns protected fields', function () {
-      invoiceFilter = new Filter(setup.InvoiceModel, ['amount'], ['products'])
+      invoiceFilter = new Filter(setup.InvoiceModel, {
+        private: ['amount'],
+        protected: ['products']
+      })
 
       var invoice = {
         customer: 'objectid',
@@ -368,7 +368,9 @@ describe('Filter', function () {
   describe('descriminated schemas', function () {
     // we need the accountFilter to be defined since its creation adds
     // an entry in resource_filter's excludedMap
-    var accountFilter = new Filter(setup.AccountModel, ['accountNumber']) // eslint-disable-line no-unused-vars
+    var accountFilter = new Filter(setup.AccountModel, { // eslint-disable-line no-unused-vars
+      private: ['accountNumber']
+    })
     var repeatCustFilter = new Filter(setup.RepeatCustomerModel, [])
 
     before(function (done) {

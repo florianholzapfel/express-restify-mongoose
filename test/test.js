@@ -730,7 +730,7 @@ module.exports = function (createFn) {
         })
 
         erm.serve(app, setup.CustomerModel, {
-          'private': ['comment'],
+          private: ['comment'],
           lean: false
         })
         erm.serve(app, setup.InvoiceModel)
@@ -1027,8 +1027,8 @@ module.exports = function (createFn) {
 
       before(function (done) {
         erm.defaults({
-          'private': ['address'],
-          'protected': ['comment']
+          private: ['address'],
+          protected: ['comment']
         })
 
         app = createFn()
