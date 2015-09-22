@@ -1,51 +1,59 @@
-'use strict'
-
-var ensureContentType = require('../../lib/middleware/ensureContentType')
 var assert = require('assert')
+var sinon = require('sinon')
 
 describe('ensureContentType', function () {
-  it('calls next with an error (missing_content_type)', function (done) {
+  var ensureContentType = require('../../lib/middleware/ensureContentType')
+
+  var next = sinon.spy()
+
+  afterEach(function () {
+    next.reset()
+  })
+
+  it('calls next with an error (missing_content_type)', function () {
     var req = {
       headers: {}
     }
 
-    ensureContentType()(req, {}, function (err) {
-      assert.ok(err)
-      assert.equal(err.description, 'missing_content_type')
-      assert.equal(err.message, 'Bad Request')
-      assert.equal(err.statusCode, 400)
-      assert.equal(req.access, undefined)
-      done()
-    })
+    var err = new Error('Bad Request')
+    err.description = 'missing_content_type'
+    err.statusCode = 400
+
+    ensureContentType()(req, {}, next)
+
+    sinon.assert.calledOnce(next)
+    sinon.assert.calledWithExactly(next, err)
+    assert.equal(req.access, undefined)
   })
 
-  it('calls next with an error (invalid_content_type)', function (done) {
+  it('calls next with an error (invalid_content_type)', function () {
     var req = {
       headers: {
         'content-type': 'invalid/type'
       }
     }
 
-    ensureContentType()(req, {}, function (err) {
-      assert.ok(err)
-      assert.equal(err.description, 'invalid_content_type')
-      assert.equal(err.message, 'Bad Request')
-      assert.equal(err.statusCode, 400)
-      assert.equal(req.access, undefined)
-      done()
-    })
+    var err = new Error('Bad Request')
+    err.description = 'invalid_content_type'
+    err.statusCode = 400
+
+    ensureContentType()(req, {}, next)
+
+    sinon.assert.calledOnce(next)
+    sinon.assert.calledWithExactly(next, err)
+    assert.equal(req.access, undefined)
   })
 
-  it('calls next', function (done) {
+  it('calls next', function () {
     var req = {
       headers: {
         'content-type': 'application/json'
       }
     }
 
-    ensureContentType()(req, {}, function (err) {
-      assert.ifError(err)
-      done()
-    })
+    ensureContentType()(req, {}, next)
+
+    sinon.assert.calledOnce(next)
+    sinon.assert.calledWithExactly(next)
   })
 })

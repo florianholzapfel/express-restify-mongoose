@@ -1,9 +1,8 @@
-'use strict'
-
 var sinon = require('sinon')
-var prepareOutput = require('../../lib/middleware/prepareOutput')
 
 describe('prepareOutput', function () {
+  var prepareOutput = require('../../lib/middleware/prepareOutput')
+
   var onError = sinon.spy()
   var outputFn = sinon.spy()
   var next = sinon.spy()

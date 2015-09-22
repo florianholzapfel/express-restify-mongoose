@@ -1,9 +1,8 @@
-'use strict'
-
 var sinon = require('sinon')
-var outputFn = require('../../lib/middleware/outputFn')
 
 describe('outputFn', function () {
+  var outputFn = require('../../lib/middleware/outputFn')
+
   var res = {
     sendStatus: function () {},
     status: function () {

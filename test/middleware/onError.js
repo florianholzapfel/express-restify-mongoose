@@ -1,9 +1,8 @@
-'use strict'
-
 var sinon = require('sinon')
-var onError = require('../../lib/middleware/onError')
 
 describe('onError', function () {
+  var onError = require('../../lib/middleware/onError')
+
   var res = {
     setHeader: function () {},
     status: function () {
