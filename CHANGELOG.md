@@ -10,6 +10,7 @@ Changelog
 * removed `prereq`, use `preMiddleware` as a drop in replacement
 * removed `postCreate`, `postUpdate`, and `postDelete`, use `postMiddleware`
 * removed `postProcess`, use `postMiddleware` or hook into `outputFn`
+* `serve` no longer returns an Express 4 router, now returns the resource's base path (ie.: `/api/v1/Customer`) 
 
 ### 1.1.0
 
