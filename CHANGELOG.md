@@ -12,10 +12,6 @@ Changelog
 * removed `postProcess`, use `postMiddleware` or hook into `outputFn`
 * `serve` no longer returns an Express 4 router, now returns the resource's base path (ie.: `/api/v1/Customer`) 
 
-### 1.1.0
-
-* added a `postUpdate` hook
-
 ### 1.0.0
 
 > **This release requires mongoose ~4**
