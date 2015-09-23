@@ -1,11 +1,15 @@
 var assert = require('assert')
+var sinon = require('sinon')
 
 describe('resourceFilter', function () {
   var ResourceFilter = require('../lib/resource_filter')
 
   describe('lean', function () {
     var productModel = {
-      modelName: 'Product'
+      modelName: 'Product',
+      schema: {
+        path: sinon.stub().returnsThis()
+      }
     }
 
     var product
@@ -236,6 +240,57 @@ describe('resourceFilter', function () {
 
         var filteredProduct = productFilter.filterObject(product, {
           access: 'private'
+        })
+
+        assert.ok(filteredProduct.name, 'name should be included')
+        assert.ok(filteredProduct.price, 'price should be included')
+        assert.ok(filteredProduct.department, 'department should be included')
+        filteredProduct.purchases.forEach(function (purchase) {
+          assert.ok(purchase.quantity, 'purchased quantity should be included')
+          assert.ok(purchase.customer, 'purchased customer should be included')
+        })
+        filteredProduct.related.forEach(function (relatedProduct) {
+          assert.ok(relatedProduct.name, 'related name should be included')
+          assert.ok(relatedProduct.product, 'related product should be included')
+        })
+      })
+    })
+
+    describe('with populated documents', function () {
+      it.skip('excludes private and protected fields from a populated object', function () {
+        var productFilter = new ResourceFilter(productModel, {
+          private: ['department.name'],
+          protected: ['department.code']
+        })
+
+        var filteredProduct = productFilter.filterObject(product, {
+          populate: [{
+            path: 'department'
+          }]
+        })
+
+        assert.ok(filteredProduct.name, 'name should be included')
+        assert.ok(filteredProduct.price, 'price should be included')
+        assert.ok(filteredProduct.department, 'department should be included')
+        assert.ok(filteredProduct.department.manager, 'manager should be included')
+        assert.ok(!filteredProduct.department.name, 'department name should be excluded')
+        assert.ok(!filteredProduct.department.code, 'department code should be excluded')
+        assert.ok(filteredProduct.purchases, 'purchases should be included')
+        assert.ok(filteredProduct.related, 'related should be included')
+      })
+
+      it.skip('excludes private and protected fields from arrays of populated objects', function () {
+        var productFilter = new ResourceFilter(productModel, {
+          private: ['purchases.customer'],
+          protected: ['related.product']
+        })
+
+        var filteredProduct = productFilter.filterObject(product, {
+          populate: [{
+            path: 'purchases'
+          }, {
+            path: 'related'
+          }]
         })
 
         assert.ok(filteredProduct.name, 'name should be included')
