@@ -37,53 +37,6 @@ describe('Resource filter', function () {
   })
 
   describe('lean', function () {
-    it('excludes items in the excluded string', function () {
-      var customer = {
-        name: 'John',
-        address: '123 Drury Lane',
-        comment: 'Has a big nose'
-      }
-
-      customer = customerFilter.filterObject(customer)
-      assert.equal(customer.name, 'John', 'Customer name should be John')
-      assert.ok(customer.address === undefined, 'Customer address should be excluded')
-      assert.ok(customer.comment === undefined, 'Customer comment should be excluded')
-    })
-
-    it('excludes fields from embedded documents', function () {
-      var product = {
-        name: 'Garden Hose',
-        department: {
-          name: 'Gardening',
-          code: 435
-        }
-      }
-
-      product = productFilter.filterObject(product)
-      assert.equal(product.name, 'Garden Hose', 'Product name should be included')
-      assert.equal(product.department.name, 'Gardening', 'Deparment name should be included')
-      assert.ok(product.department.code === undefined, 'Deparment code should be excluded')
-    })
-
-    it('excludes fields from embedded arrays', function () {
-      var customer = {
-        name: 'John',
-        purchases: [{
-          item: 'oid', number: 2
-        }, {
-          item: 'oid', number: 100
-        }, {
-          item: 'oid', number: 1
-        }]
-      }
-
-      customer = customerFilter.filterObject(customer)
-      customer.purchases.forEach(function (purchase) {
-        assert.equal(purchase.item, 'oid', 'item should be included')
-        assert.ok(purchase.number === undefined, 'number should be excluded')
-      })
-    })
-
     describe('with populated docs', function () {
       it('excludes fields from populated items', function () {
         var invoice = {
