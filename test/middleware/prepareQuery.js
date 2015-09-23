@@ -226,41 +226,6 @@ describe('prepareQuery', function () {
     sinon.assert.notCalled(next)
   })
 
-  it('calls next when projection key is valid json', function () {
-    var req = {
-      query: {
-        projection: '{"foo":"bar"}'
-      }
-    }
-
-    prepareQuery(options)(req, {}, next)
-
-    assert.deepEqual(req._ermQueryOptions, {
-      projection: JSON.parse(req.query.projection)
-    })
-    sinon.assert.calledOnce(next)
-    sinon.assert.calledWithExactly(next)
-    sinon.assert.notCalled(options.onError)
-  })
-
-  it('calls onError when projection key is invalid json', function () {
-    var req = {
-      query: {
-        projection: 'not json'
-      }
-    }
-
-    var err = new Error('projection must be a valid JSON string')
-    err.description = 'invalid_json'
-    err.statusCode = 400
-
-    prepareQuery(options)(req, {}, next)
-
-    sinon.assert.calledOnce(options.onError)
-    sinon.assert.calledWithExactly(options.onError, err, req, {}, next)
-    sinon.assert.notCalled(next)
-  })
-
   it('calls next when sort key is valid json', function () {
     var req = {
       query: {
@@ -348,6 +313,23 @@ describe('prepareQuery', function () {
     prepareQuery(options)(req, {}, next)
 
     assert.deepEqual(req._ermQueryOptions, req.query)
+    sinon.assert.calledOnce(next)
+    sinon.assert.calledWithExactly(next)
+    sinon.assert.notCalled(options.onError)
+  })
+
+  it('calls next when select key is valid json', function () {
+    var req = {
+      query: {
+        select: '{"foo":"bar"}'
+      }
+    }
+
+    prepareQuery(options)(req, {}, next)
+
+    assert.deepEqual(req._ermQueryOptions, {
+      select: JSON.parse(req.query.select)
+    })
     sinon.assert.calledOnce(next)
     sinon.assert.calledWithExactly(next)
     sinon.assert.notCalled(options.onError)
