@@ -650,6 +650,17 @@ module.exports = function (createFn) {
         })
       })
 
+      it('404 GET Customers/:id/shallow (deleted)', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers/%s/shallow', testUrl, savedCustomer._id),
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 404, 'Wrong status code')
+          done()
+        })
+      })
+
       it.skip('200 GET Customers/ should strip the trailing slash', function (done) {
         request.get({
           url: util.format('%s/api/v1/Customers/', testUrl),
