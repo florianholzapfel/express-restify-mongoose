@@ -6,12 +6,15 @@ var db = require('./setup')()
 
 var assert = require('assertmessage')
 var async = require('async')
+var mongoose = require('mongoose')
 var request = require('request')
 var sinon = require('sinon')
 var util = require('util')
 
 var testPort = 30023
 var testUrl = 'http://localhost:' + testPort
+var invalidId = 'invalid-id'
+var randomId = mongoose.Types.ObjectId().toHexString()
 
 module.exports = function (createFn) {
   function setup (callback) {
@@ -21,6 +24,20 @@ module.exports = function (createFn) {
       }
 
       db.reset(callback)
+    })
+  }
+
+  function dismantle (app, server, callback) {
+    db.close(function (err) {
+      if (err) {
+        return callback(err)
+      }
+
+      if (app.close) {
+        return app.close(callback)
+      }
+
+      server.close(callback)
     })
   }
 
@@ -921,6 +938,350 @@ module.exports = function (createFn) {
           })
         })
       }
+    })
+
+    describe('Update documents with findById and doc.save', function () {
+      var app = createFn()
+      var server
+      var customer
+
+      before(function (done) {
+        setup(function (err) {
+          if (err) {
+            return done(err)
+          }
+
+          erm.serve(app, db.models.Customer, {
+            outputFn: app.outputFn,
+            restify: app.isRestify,
+            findOneAndUpdate: false
+          })
+
+          db.models.Customer.create({
+            name: 'Bob'
+          }, function (err, createdCustomer) {
+            if (err) {
+              return done(err)
+            }
+
+            customer = createdCustomer
+            server = app.listen(testPort, done)
+          })
+        })
+      })
+
+      after(function (done) {
+        dismantle(app, server, done)
+      })
+
+      it('POST returns 200', function (done) {
+        request.post({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          json: {
+            name: 'John'
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.name, 'John')
+          done()
+        })
+      })
+
+      it('POST returns 400', function (done) {
+        request.post({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, invalidId),
+          json: {
+            name: 'John'
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 400)
+          done()
+        })
+      })
+
+      it('POST returns 404', function (done) {
+        request.post({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, randomId),
+          json: {
+            name: 'John'
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 404)
+          done()
+        })
+      })
+
+      it('PUT returns 200', function (done) {
+        request.put({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          json: {
+            name: 'Mike'
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.name, 'Mike')
+          done()
+        })
+      })
+
+      it('PUT returns 400', function (done) {
+        request.put({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, invalidId),
+          json: {
+            name: 'Mike'
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 400)
+          done()
+        })
+      })
+
+      it('PUT returns 404', function (done) {
+        request.put({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, randomId),
+          json: {
+            name: 'Mike'
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 404)
+          done()
+        })
+      })
+    })
+
+    describe('Update documents with findOneAndUpdate', function () {
+      var app = createFn()
+      var server
+      var customer
+
+      before(function (done) {
+        setup(function (err) {
+          if (err) {
+            return done(err)
+          }
+
+          erm.serve(app, db.models.Customer, {
+            outputFn: app.outputFn,
+            restify: app.isRestify,
+            findOneAndUpdate: true
+          })
+
+          db.models.Customer.create({
+            name: 'Bob'
+          }, function (err, createdCustomer) {
+            if (err) {
+              return done(err)
+            }
+
+            customer = createdCustomer
+            server = app.listen(testPort, done)
+          })
+        })
+      })
+
+      after(function (done) {
+        dismantle(app, server, done)
+      })
+
+      it('POST returns 200', function (done) {
+        request.post({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          json: {
+            name: 'John'
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.name, 'John')
+          done()
+        })
+      })
+
+      it('POST returns 400', function (done) {
+        request.post({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, invalidId),
+          json: {
+            name: 'John'
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 400)
+          done()
+        })
+      })
+
+      it('POST returns 404', function (done) {
+        request.post({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, randomId),
+          json: {
+            name: 'John'
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 404)
+          done()
+        })
+      })
+
+      it('PUT returns 200', function (done) {
+        request.put({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          json: {
+            name: 'Mike'
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.name, 'Mike')
+          done()
+        })
+      })
+
+      it('PUT returns 400', function (done) {
+        request.put({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, invalidId),
+          json: {
+            name: 'Mike'
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 400)
+          done()
+        })
+      })
+
+      it('PUT returns 404', function (done) {
+        request.put({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, randomId),
+          json: {
+            name: 'Mike'
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 404)
+          done()
+        })
+      })
+    })
+
+    describe('Remove documents with findById and doc.remove', function () {
+      var app = createFn()
+      var server
+      var customer
+
+      before(function (done) {
+        setup(function (err) {
+          if (err) {
+            return done(err)
+          }
+
+          erm.serve(app, db.models.Customer, {
+            outputFn: app.outputFn,
+            restify: app.isRestify,
+            findOneAndRemove: false
+          })
+
+          db.models.Customer.create({
+            name: 'Bob'
+          }, function (err, createdCustomer) {
+            if (err) {
+              return done(err)
+            }
+
+            customer = createdCustomer
+            server = app.listen(testPort, done)
+          })
+        })
+      })
+
+      after(function (done) {
+        dismantle(app, server, done)
+      })
+
+      it('DEL returns 204', function (done) {
+        request.del({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 204)
+          done()
+        })
+      })
+
+      it('DEL returns 404', function (done) {
+        request.del({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 404)
+          done()
+        })
+      })
+    })
+
+    describe('Remove documents with findOneAndRemove', function () {
+      var app = createFn()
+      var server
+      var customer
+
+      before(function (done) {
+        setup(function (err) {
+          if (err) {
+            return done(err)
+          }
+
+          erm.serve(app, db.models.Customer, {
+            outputFn: app.outputFn,
+            restify: app.isRestify,
+            findOneAndRemove: true
+          })
+
+          db.models.Customer.create({
+            name: 'Bob'
+          }, function (err, createdCustomer) {
+            if (err) {
+              return done(err)
+            }
+
+            customer = createdCustomer
+            server = app.listen(testPort, done)
+          })
+        })
+      })
+
+      after(function (done) {
+        dismantle(app, server, done)
+      })
+
+      it('DEL returns 204', function (done) {
+        request.del({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 204)
+          done()
+        })
+      })
+
+      it('DEL returns 404', function (done) {
+        request.del({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 404)
+          done()
+        })
+      })
     })
 
     describe('Return Validation Errors', function () {
