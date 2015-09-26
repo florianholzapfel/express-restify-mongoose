@@ -47,8 +47,9 @@
   },
   "scripts": {
     "pretest": "standard",
-    "test": "mocha -R spec ./test/unit.js && mocha -R spec ./test/express.js ./test/resource_filter.js --timeout 10s && mocha -R spec ./test/restify.js --timeout 10s",
-    "coverage": "istanbul cover node_modules/mocha/bin/_mocha -- -R spec ./test/unit.js"
+    "test": "mocha -R spec ./test/unit.js && mocha -R spec ./test/integration/express.js ./test/integration/resource_filter.js --timeout 10s && mocha -R spec ./test/integration/restify.js --timeout 10s",
+    "coverage-unit": "istanbul cover node_modules/mocha/bin/_mocha -- -R spec ./test/unit.js",
+    "coverage-integration": "istanbul cover node_modules/mocha/bin/_mocha -- -R spec ./test/integration/express.js ./test/integration/resource_filter.js --timeout 10s"
   },
   "standard": {
     "globals": [

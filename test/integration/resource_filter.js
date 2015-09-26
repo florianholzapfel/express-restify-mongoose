@@ -1,6 +1,6 @@
 'use strict'
 
-var Filter = require('../lib/resource_filter')
+var Filter = require('../../lib/resource_filter')
 var db = require('./setup')()
 var assert = require('assertmessage')
 var ObjectId = require('mongoose').Types.ObjectId

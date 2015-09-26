@@ -1,6 +1,6 @@
 'use strict'
 
-var erm = require('../lib/express-restify-mongoose')
+var erm = require('../../lib/express-restify-mongoose')
 
 var db = require('./setup')()
 
