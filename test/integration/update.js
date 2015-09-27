@@ -146,6 +146,21 @@ module.exports = function (createFn) {
         })
       })
 
+      it('PUT /Customers 404 (Express), 405 (Restify)', function (done) {
+        request.put({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          json: {}
+        }, function (err, res, body) {
+          assert.ok(!err)
+          if (app.isRestify) {
+            assert.equal(res.statusCode, 405)
+          } else {
+            assert.equal(res.statusCode, 404)
+          }
+          done()
+        })
+      })
+
       it('PUT /Customers/:id 200 - empty body', function (done) {
         request.put({
           url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
@@ -327,6 +342,21 @@ module.exports = function (createFn) {
         }, function (err, res, body) {
           assert.ok(!err)
           assert.equal(res.statusCode, 404)
+          done()
+        })
+      })
+
+      it('PUT /Customers 404 (Express), 405 (Restify)', function (done) {
+        request.put({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          json: {}
+        }, function (err, res, body) {
+          assert.ok(!err)
+          if (app.isRestify) {
+            assert.equal(res.statusCode, 405)
+          } else {
+            assert.equal(res.statusCode, 404)
+          }
           done()
         })
       })
