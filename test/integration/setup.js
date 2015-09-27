@@ -26,6 +26,7 @@ module.exports = function () {
       // friendlyId: { type: String, unique: true },
       comment: String,
       address: String,
+      age: Number,
       purchases: [{
         item: { type: Schema.Types.ObjectId, ref: 'Product' },
         number: Number
