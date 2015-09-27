@@ -4,9 +4,11 @@ var sinon = require('sinon')
 describe('ensureContentType', function () {
   var ensureContentType = require('../../lib/middleware/ensureContentType')
 
+  var onError = sinon.spy()
   var next = sinon.spy()
 
   afterEach(function () {
+    onError.reset()
     next.reset()
   })
 
@@ -19,10 +21,13 @@ describe('ensureContentType', function () {
     err.description = 'missing_content_type'
     err.statusCode = 400
 
-    ensureContentType()(req, {}, next)
+    ensureContentType({
+      onError: onError
+    })(req, {}, next)
 
-    sinon.assert.calledOnce(next)
-    sinon.assert.calledWithExactly(next, err)
+    sinon.assert.calledOnce(onError)
+    sinon.assert.calledWithExactly(onError, err, req, {}, next)
+    sinon.assert.notCalled(next)
     assert.equal(req.access, undefined)
   })
 
@@ -37,10 +42,13 @@ describe('ensureContentType', function () {
     err.description = 'invalid_content_type'
     err.statusCode = 400
 
-    ensureContentType()(req, {}, next)
+    ensureContentType({
+      onError: onError
+    })(req, {}, next)
 
-    sinon.assert.calledOnce(next)
-    sinon.assert.calledWithExactly(next, err)
+    sinon.assert.calledOnce(onError)
+    sinon.assert.calledWithExactly(onError, err, req, {}, next)
+    sinon.assert.notCalled(next)
     assert.equal(req.access, undefined)
   })
 
@@ -51,7 +59,9 @@ describe('ensureContentType', function () {
       }
     }
 
-    ensureContentType()(req, {}, next)
+    ensureContentType({
+      onError: onError
+    })(req, {}, next)
 
     sinon.assert.calledOnce(next)
     sinon.assert.calledWithExactly(next)
