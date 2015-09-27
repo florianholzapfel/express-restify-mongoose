@@ -270,7 +270,7 @@ module.exports = function (createFn) {
         })
       })
 
-      it('201 POST Invoice using pre-defined version', function (done) {
+      it.skip('201 POST Invoice using pre-defined version', function (done) {
         request.post({
           url: util.format('%s/api/v1/Invoices', testUrl),
           json: {
