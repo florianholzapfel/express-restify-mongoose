@@ -48,17 +48,19 @@ module.exports = function (createFn) {
         }
 
         erm.serve(app, db.models.Customer, {
-          outputFn: app.outputFn,
           restify: app.isRestify,
           findOneAndUpdate: false
         })
 
         db.models.Customer.create([{
-          name: 'Bob'
+          name: 'Bob',
+          age: 12
         }, {
-          name: 'John'
+          name: 'John',
+          age: 24
         }, {
-          name: 'Mike'
+          name: 'Mike',
+          age: 36
         }], function (err, createdCustomers) {
           if (err) {
             return done(err)
@@ -120,6 +122,493 @@ module.exports = function (createFn) {
         assert.ok(!err)
         assert.equal(res.statusCode, 404)
         done()
+      })
+    })
+
+    describe('ignore unknown parameters', function () {
+      it('GET /Customers?foo=bar 200', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          qs: {
+            foo: 'bar'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 3)
+          done()
+        })
+      })
+    })
+
+    describe('limit', function () {
+      it('GET /Customers?limit=1 200', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          qs: {
+            limit: 1
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 1)
+          done()
+        })
+      })
+    })
+
+    describe('skip', function () {
+      it('GET /Customers?skip=1 200', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          qs: {
+            skip: 1
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 2)
+          done()
+        })
+      })
+    })
+
+    describe('sort', function () {
+      it('GET /Customers?sort=name 200', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          qs: {
+            sort: 'name'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 3)
+          assert.equal(body[0].name, 'Bob')
+          assert.equal(body[1].name, 'John')
+          assert.equal(body[2].name, 'Mike')
+          done()
+        })
+      })
+
+      it('GET /Customers?sort=-name 200', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          qs: {
+            sort: '-name'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 3)
+          assert.equal(body[0].name, 'Mike')
+          assert.equal(body[1].name, 'John')
+          assert.equal(body[2].name, 'Bob')
+          done()
+        })
+      })
+
+      it('GET /Customers?sort={"name":1} 200', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          qs: {
+            sort: {
+              name: 1
+            }
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 3)
+          assert.equal(body[0].name, 'Bob')
+          assert.equal(body[1].name, 'John')
+          assert.equal(body[2].name, 'Mike')
+          done()
+        })
+      })
+
+      it('GET /Customers?sort={"name":-1} 200', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          qs: {
+            sort: {
+              name: -1
+            }
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 3)
+          assert.equal(body[0].name, 'Mike')
+          assert.equal(body[1].name, 'John')
+          assert.equal(body[2].name, 'Bob')
+          done()
+        })
+      })
+    })
+
+    describe('query', function () {
+      it('GET /Customers?query={} 200 - empty object', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          qs: {
+            query: JSON.stringify({})
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 3)
+          done()
+        })
+      })
+
+      it('GET /Customers?query=invalidJson 400 - invalid json', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          qs: {
+            query: 'invalidJson'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 400)
+          done()
+        })
+      })
+
+      describe('string', function () {
+        it('GET /Customers?query={"name":"John"} 200 - exact match', function (done) {
+          request.get({
+            url: util.format('%s/api/v1/Customers', testUrl),
+            qs: {
+              query: JSON.stringify({
+                name: 'John'
+              })
+            },
+            json: true
+          }, function (err, res, body) {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 200)
+            assert.equal(body.length, 1)
+            assert.equal(body[0].name, 'John')
+            done()
+          })
+        })
+
+        it('GET /Customers?query={"name":"~^J"} 200 - name starting with', function (done) {
+          request.get({
+            url: util.format('%s/api/v1/Customers', testUrl),
+            qs: {
+              query: JSON.stringify({
+                name: '~^J'
+              })
+            },
+            json: true
+          }, function (err, res, body) {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 200)
+            assert.equal(body.length, 1)
+            assert.ok(body[0].name[0] === 'J')
+            done()
+          })
+        })
+
+        it('GET /Customers?query={"name":">=John"} 200 - greater than or equal', function (done) {
+          request.get({
+            url: util.format('%s/api/v1/Customers', testUrl),
+            qs: {
+              query: JSON.stringify({
+                name: '>=John'
+              })
+            },
+            json: true
+          }, function (err, res, body) {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 200)
+            assert.equal(body.length, 2)
+            assert.ok(body[0].name >= 'John')
+            assert.ok(body[1].name >= 'John')
+            done()
+          })
+        })
+
+        it('GET /Customers?query={"name":">John"} 200 - greater than', function (done) {
+          request.get({
+            url: util.format('%s/api/v1/Customers', testUrl),
+            qs: {
+              query: JSON.stringify({
+                name: '>John'
+              })
+            },
+            json: true
+          }, function (err, res, body) {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 200)
+            assert.equal(body.length, 1)
+            assert.ok(body[0].name > 'John')
+            done()
+          })
+        })
+
+        it('GET /Customers?query={"name":"<=John"} 200 - lower than or equal', function (done) {
+          request.get({
+            url: util.format('%s/api/v1/Customers', testUrl),
+            qs: {
+              query: JSON.stringify({
+                name: '<=John'
+              })
+            },
+            json: true
+          }, function (err, res, body) {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 200)
+            assert.equal(body.length, 2)
+            assert.ok(body[0].name[0] <= 'John')
+            assert.ok(body[1].name[0] <= 'John')
+            done()
+          })
+        })
+
+        it('GET /Customers?query={"name":"<John"} 200 - lower than', function (done) {
+          request.get({
+            url: util.format('%s/api/v1/Customers', testUrl),
+            qs: {
+              query: JSON.stringify({
+                name: '<John'
+              })
+            },
+            json: true
+          }, function (err, res, body) {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 200)
+            assert.equal(body.length, 1)
+            assert.ok(body[0].name[0] < 'John')
+            done()
+          })
+        })
+      })
+
+      describe('number', function () {
+        it('GET /Customers?query={"age":"24"} 200 - exact match', function (done) {
+          request.get({
+            url: util.format('%s/api/v1/Customers', testUrl),
+            qs: {
+              query: JSON.stringify({
+                age: 24
+              })
+            },
+            json: true
+          }, function (err, res, body) {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 200)
+            assert.equal(body.length, 1)
+            assert.equal(body[0].age, 24)
+            done()
+          })
+        })
+
+        it('GET /Customers?query={"age":"~2"} 400 - regex on number field', function (done) {
+          request.get({
+            url: util.format('%s/api/v1/Customers', testUrl),
+            qs: {
+              query: JSON.stringify({
+                age: '~2'
+              })
+            },
+            json: true
+          }, function (err, res, body) {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 400)
+            done()
+          })
+        })
+
+        it('GET /Customers?query={"age":">=24"} 200 - greater than or equal', function (done) {
+          request.get({
+            url: util.format('%s/api/v1/Customers', testUrl),
+            qs: {
+              query: JSON.stringify({
+                age: '>=24'
+              })
+            },
+            json: true
+          }, function (err, res, body) {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 200)
+            assert.equal(body.length, 2)
+            assert.ok(body[0].age >= 24)
+            assert.ok(body[1].age >= 24)
+            done()
+          })
+        })
+
+        it('GET /Customers?query={"age":">24"} 200 - greater than', function (done) {
+          request.get({
+            url: util.format('%s/api/v1/Customers', testUrl),
+            qs: {
+              query: JSON.stringify({
+                age: '>24'
+              })
+            },
+            json: true
+          }, function (err, res, body) {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 200)
+            assert.equal(body.length, 1)
+            assert.ok(body[0].age > 24)
+            done()
+          })
+        })
+
+        it('GET /Customers?query={"age":"<=24"} 200 - lower than or equal', function (done) {
+          request.get({
+            url: util.format('%s/api/v1/Customers', testUrl),
+            qs: {
+              query: JSON.stringify({
+                age: '<=24'
+              })
+            },
+            json: true
+          }, function (err, res, body) {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 200)
+            assert.equal(body.length, 2)
+            assert.ok(body[0].age <= 24)
+            assert.ok(body[1].age <= 24)
+            done()
+          })
+        })
+
+        it('GET /Customers?query={"age":"<24"} 200 - lower than', function (done) {
+          request.get({
+            url: util.format('%s/api/v1/Customers', testUrl),
+            qs: {
+              query: JSON.stringify({
+                age: '<24'
+              })
+            },
+            json: true
+          }, function (err, res, body) {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 200)
+            assert.equal(body.length, 1)
+            assert.equal(body[0].age, 12)
+            done()
+          })
+        })
+      })
+    })
+
+    describe('select', function () {
+      it('GET /Customers?select=name 200 - only include names', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          qs: {
+            select: 'name'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 3)
+          body.forEach(function (item) {
+            assert.equal(Object.keys(item).length, 2)
+            assert.ok(item._id)
+            assert.ok(item.name)
+          })
+          done()
+        })
+      })
+
+      it('GET /Customers?select=-name 200 - exclude names', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          qs: {
+            select: '-name'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 3)
+          body.forEach(function (item) {
+            assert.ok(item.name === undefined)
+          })
+          done()
+        })
+      })
+
+      it('GET /Customers?select={"name":1} 200 - only include names', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          qs: {
+            select: JSON.stringify({
+              name: 1
+            })
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 3)
+          body.forEach(function (item) {
+            assert.equal(Object.keys(item).length, 2)
+            assert.ok(item._id)
+            assert.ok(item.name)
+          })
+          done()
+        })
+      })
+
+      it('GET /Customers?select={"name":0} 200 - exclude names', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          qs: {
+            select: JSON.stringify({
+              name: 0
+            })
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 3)
+          body.forEach(function (item) {
+            assert.ok(item.name === undefined)
+          })
+          done()
+        })
+      })
+    })
+
+    describe('populate', function () {
+    })
+
+    describe('distinct', function () {
+      it('GET /Customers?distinct=name 200 - array of unique names', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          qs: {
+            distinct: 'name'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 3)
+          assert.equal(body[0], 'Bob')
+          assert.equal(body[1], 'John')
+          assert.equal(body[2], 'Mike')
+          done()
+        })
       })
     })
 
