@@ -1435,9 +1435,6 @@ module.exports = function (createFn) {
           }
         }, function (err, res, body) {
           assert.ok(!err)
-          if (typeof body === 'string') {
-            body = JSON.parse(body)
-          }
           assert.equal(res.statusCode, 400, 'Wrong status code')
           assert.strictEqual(body.errmsg.indexOf('duplicate key') >= 0, true, 'Duplicate key error not found')
           done()
@@ -1459,10 +1456,6 @@ module.exports = function (createFn) {
             }
           }, function (err, res, body) {
             assert.ok(!err)
-            if (typeof body === 'string') {
-              body = JSON.parse(body)
-            }
-
             assert.equal(res.statusCode, 400, 'Wrong status code')
             assert.strictEqual(body.errmsg.indexOf('duplicate key') >= 0, true, 'Duplicate key error not found')
             done()

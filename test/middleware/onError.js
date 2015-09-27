@@ -8,12 +8,14 @@ describe('onError', function () {
     status: function () {
       return this
     },
+    json: function () {},
     send: function () {}
   }
 
   var setHeader = sinon.spy(res, 'setHeader')
   var status = sinon.spy(res, 'status')
   var send = sinon.spy(res, 'send')
+  var json = sinon.spy(res, 'json')
   var next = sinon.spy()
 
   var err = new Error('An error occurred')
@@ -23,6 +25,7 @@ describe('onError', function () {
     setHeader.reset()
     status.reset()
     send.reset()
+    json.reset()
     next.reset()
   })
 
@@ -33,8 +36,8 @@ describe('onError', function () {
     sinon.assert.calledWithExactly(setHeader, 'Content-Type', 'application/json')
     sinon.assert.calledOnce(status)
     sinon.assert.calledWithExactly(status, err.statusCode)
-    sinon.assert.calledOnce(send)
-    sinon.assert.calledWithExactly(send, JSON.stringify(err))
+    sinon.assert.calledOnce(json)
+    sinon.assert.calledWithExactly(json, err)
     sinon.assert.notCalled(next)
   })
 
@@ -45,7 +48,7 @@ describe('onError', function () {
     sinon.assert.calledWithExactly(setHeader, 'Content-Type', 'application/json')
     sinon.assert.notCalled(status)
     sinon.assert.calledOnce(send)
-    sinon.assert.calledWithExactly(send, err.statusCode, JSON.stringify(err))
+    sinon.assert.calledWithExactly(send, err.statusCode, JSON.parse(JSON.stringify(err)))
     sinon.assert.notCalled(next)
   })
 })
