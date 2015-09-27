@@ -2,7 +2,7 @@ var assert = require('assert')
 var sinon = require('sinon')
 
 describe('prepareQuery', function () {
-  var prepareQuery = require('../../lib/middleware/prepareQuery')
+  var prepareQuery = require('../../../lib/middleware/prepareQuery')
 
   var options = {
     onError: sinon.spy()

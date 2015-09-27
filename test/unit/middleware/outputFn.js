@@ -1,7 +1,7 @@
 var sinon = require('sinon')
 
 describe('outputFn', function () {
-  var outputFn = require('../../lib/middleware/outputFn')
+  var outputFn = require('../../../lib/middleware/outputFn')
 
   var res = {
     sendStatus: function () {},

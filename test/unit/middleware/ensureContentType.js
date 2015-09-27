@@ -2,7 +2,7 @@ var assert = require('assert')
 var sinon = require('sinon')
 
 describe('ensureContentType', function () {
-  var ensureContentType = require('../../lib/middleware/ensureContentType')
+  var ensureContentType = require('../../../lib/middleware/ensureContentType')
 
   var onError = sinon.spy()
   var next = sinon.spy()

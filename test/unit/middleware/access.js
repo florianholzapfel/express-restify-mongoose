@@ -2,7 +2,7 @@ var assert = require('assert')
 var sinon = require('sinon')
 
 describe('access', function () {
-  var access = require('../../lib/middleware/access')
+  var access = require('../../../lib/middleware/access')
 
   var next = sinon.spy()
 

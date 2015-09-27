@@ -1,7 +1,7 @@
 var sinon = require('sinon')
 
 describe('prepareOutput', function () {
-  var prepareOutput = require('../../lib/middleware/prepareOutput')
+  var prepareOutput = require('../../../lib/middleware/prepareOutput')
 
   var onError = sinon.spy()
   var outputFn = sinon.spy()

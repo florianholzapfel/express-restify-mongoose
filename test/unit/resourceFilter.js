@@ -2,7 +2,7 @@ var assert = require('assert')
 var sinon = require('sinon')
 
 describe('resourceFilter', function () {
-  var ResourceFilter = require('../lib/resource_filter')
+  var ResourceFilter = require('../../lib/resource_filter')
 
   describe('lean', function () {
     var returnFieldRef = function (field) {

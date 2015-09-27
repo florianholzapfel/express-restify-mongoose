@@ -1,7 +1,7 @@
 var sinon = require('sinon')
 
 describe('onError', function () {
-  var onError = require('../../lib/middleware/onError')
+  var onError = require('../../../lib/middleware/onError')
 
   var res = {
     setHeader: function () {},
