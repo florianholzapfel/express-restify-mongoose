@@ -3,7 +3,7 @@ var mongoose = require('mongoose')
 var request = require('request')
 var util = require('util')
 
-module.exports = function (createFn) {
+module.exports = function (createFn, setup, dismantle) {
   var erm = require('../../lib/express-restify-mongoose')
   var db = require('./setup')()
 
@@ -11,30 +11,6 @@ module.exports = function (createFn) {
   var testUrl = 'http://localhost:' + testPort
   var invalidId = 'invalid-id'
   var randomId = mongoose.Types.ObjectId().toHexString()
-
-  function setup (callback) {
-    db.initialize(function (err) {
-      if (err) {
-        return callback(err)
-      }
-
-      db.reset(callback)
-    })
-  }
-
-  function dismantle (app, server, callback) {
-    db.close(function (err) {
-      if (err) {
-        return callback(err)
-      }
-
-      if (app.close) {
-        return app.close(callback)
-      }
-
-      server.close(callback)
-    })
-  }
 
   describe('Update documents', function () {
     describe('findOneAndUpdate: true', function () {
