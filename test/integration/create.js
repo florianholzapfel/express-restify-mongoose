@@ -36,12 +36,12 @@ module.exports = function (createFn, setup, dismantle) {
         })
 
         db.models.Customer.create({
-          name: 'William'
+          name: 'Bob'
         }).then(function (createdCustomer) {
           customer = createdCustomer
 
           return db.models.Product.create({
-            name: 'William'
+            name: 'Bobsleigh'
           })
         }).then(function (createdProduct) {
           product = createdProduct
@@ -126,13 +126,57 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customers 400 - empty body', function (done) {
+    it('POST /Customers 400 - validation error', function (done) {
       request.post({
         url: util.format('%s/api/v1/Customers', testUrl),
-        json: true
+        json: {}
       }, function (err, res, body) {
         assert.ok(!err)
         assert.equal(res.statusCode, 400)
+        assert.equal(body.name, 'ValidationError')
+        assert.equal(Object.keys(body.errors).length, 1)
+        assert.ok(body.errors['name'])
+        done()
+      })
+    })
+
+    it('POST /Customers 400 - missing content type', function (done) {
+      request.post({
+        url: util.format('%s/api/v1/Customers', testUrl)
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 400)
+        assert.equal(JSON.parse(body).description, 'missing_content_type')
+        done()
+      })
+    })
+
+    it('POST /Customers 400 - invalid content type', function (done) {
+      request.post({
+        url: util.format('%s/api/v1/Customers', testUrl),
+        formData: {}
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 400)
+        assert.equal(JSON.parse(body).description, 'invalid_content_type')
+        done()
+      })
+    })
+
+    it('POST /Invoices 201 - referencing customer and product ids', function (done) {
+      request.post({
+        url: util.format('%s/api/v1/Invoices', testUrl),
+        json: {
+          customer: customer._id,
+          products: product._id,
+          amount: 42
+        }
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 201)
+        assert.ok(body._id)
+        assert.equal(body.customer, customer._id)
+        assert.equal(body.amount, 42)
         done()
       })
     })
@@ -143,6 +187,24 @@ module.exports = function (createFn, setup, dismantle) {
         json: {
           customer: customer._id,
           products: [product._id, product._id],
+          amount: 42
+        }
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 201)
+        assert.ok(body._id)
+        assert.equal(body.customer, customer._id)
+        assert.equal(body.amount, 42)
+        done()
+      })
+    })
+
+    it('POST /Invoices 201 - referencing customer and product', function (done) {
+      request.post({
+        url: util.format('%s/api/v1/Invoices', testUrl),
+        json: {
+          customer: customer,
+          products: product,
           amount: 42
         }
       }, function (err, res, body) {
@@ -185,6 +247,9 @@ module.exports = function (createFn, setup, dismantle) {
         assert.ok(!err)
         assert.equal(res.statusCode, 400)
         assert.equal(body.name, 'ValidationError')
+        assert.equal(Object.keys(body.errors).length, 2)
+        assert.ok(body.errors['customer'])
+        assert.ok(body.errors['products'])
         done()
       })
     })

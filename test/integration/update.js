@@ -16,7 +16,7 @@ module.exports = function (createFn, setup, dismantle) {
     describe('findOneAndUpdate: true', function () {
       var app = createFn()
       var server
-      var customer
+      var customers
       var invoice
 
       beforeEach(function (done) {
@@ -30,13 +30,15 @@ module.exports = function (createFn, setup, dismantle) {
             restify: app.isRestify
           })
 
-          db.models.Customer.create({
+          db.models.Customer.create([{
             name: 'Bob'
-          }).then(function (createdCustomer) {
-            customer = createdCustomer
+          }, {
+            name: 'John'
+          }]).then(function (createdCustomers) {
+            customers = createdCustomers
 
             return db.models.Invoice.create({
-              customer: customer._id,
+              customer: customers[0]._id,
               amount: 100
             })
           }).then(function (createdInvoice) {
@@ -54,7 +56,7 @@ module.exports = function (createFn, setup, dismantle) {
 
       it('POST /Customers/:id 200 - empty body', function (done) {
         request.post({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id),
           json: {}
         }, function (err, res, body) {
           assert.ok(!err)
@@ -66,37 +68,67 @@ module.exports = function (createFn, setup, dismantle) {
 
       it('POST /Customers/:id 200 - created id', function (done) {
         request.post({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id),
+          json: {
+            name: 'Mike'
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.name, 'Mike')
+          done()
+        })
+      })
+
+      it('POST /Customers/:id 400 - cast error', function (done) {
+        request.post({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id),
+          json: {
+            age: 'not a number'
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 400)
+          assert.equal(body.name, 'CastError')
+          assert.equal(body.path, 'age')
+          done()
+        })
+      })
+
+      it('POST /Customers/:id 400 - mongo error', function (done) {
+        request.post({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id),
           json: {
             name: 'John'
           }
         }, function (err, res, body) {
           assert.ok(!err)
-          assert.equal(res.statusCode, 200)
-          assert.equal(body.name, 'John')
+          assert.equal(res.statusCode, 400)
+          assert.equal(body.name, 'MongoError')
+          assert.equal(body.code, 11000)
           done()
         })
       })
 
       it('POST /Customers/:id 400 - missing content type', function (done) {
         request.post({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id)
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id)
         }, function (err, res, body) {
           assert.ok(!err)
           assert.equal(res.statusCode, 400)
+          assert.equal(JSON.parse(body).description, 'missing_content_type')
           done()
         })
       })
 
       it('POST /Customers/:id 400 - invalid content type', function (done) {
         request.post({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
-          formData: {
-            name: 'John'
-          }
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id),
+          formData: {}
         }, function (err, res, body) {
           assert.ok(!err)
           assert.equal(res.statusCode, 400)
+        assert.equal(JSON.parse(body).description, 'invalid_content_type')
           done()
         })
       })
@@ -105,7 +137,7 @@ module.exports = function (createFn, setup, dismantle) {
         request.post({
           url: util.format('%s/api/v1/Customers/%s', testUrl, invalidId),
           json: {
-            name: 'John'
+            name: 'Mike'
           }
         }, function (err, res, body) {
           assert.ok(!err)
@@ -118,7 +150,7 @@ module.exports = function (createFn, setup, dismantle) {
         request.post({
           url: util.format('%s/api/v1/Customers/%s', testUrl, randomId),
           json: {
-            name: 'John'
+            name: 'Mike'
           }
         }, function (err, res, body) {
           assert.ok(!err)
@@ -144,7 +176,7 @@ module.exports = function (createFn, setup, dismantle) {
 
       it('PUT /Customers/:id 200 - empty body', function (done) {
         request.put({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id),
           json: {}
         }, function (err, res, body) {
           assert.ok(!err)
@@ -156,7 +188,7 @@ module.exports = function (createFn, setup, dismantle) {
 
       it('PUT /Customers/:id 200 - created id', function (done) {
         request.put({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id),
           json: {
             name: 'Mike'
           }
@@ -168,9 +200,39 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
+      it('PUT /Customers/:id 400 - cast error', function (done) {
+        request.put({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id),
+          json: {
+            age: 'not a number'
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 400)
+          assert.equal(body.name, 'CastError')
+          assert.equal(body.path, 'age')
+          done()
+        })
+      })
+
+      it('PUT /Customers/:id 400 - mongo error', function (done) {
+        request.put({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id),
+          json: {
+            name: 'John'
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 400)
+          assert.equal(body.name, 'MongoError')
+          assert.equal(body.code, 11000)
+          done()
+        })
+      })
+
       it('PUT /Customers/:id 400 - missing content type', function (done) {
         request.put({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id)
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id)
         }, function (err, res, body) {
           assert.ok(!err)
           assert.equal(res.statusCode, 400)
@@ -180,9 +242,9 @@ module.exports = function (createFn, setup, dismantle) {
 
       it('PUT /Customers/:id 400 - invalid content type', function (done) {
         request.put({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id),
           formData: {
-            name: 'John'
+            name: 'Mike'
           }
         }, function (err, res, body) {
           assert.ok(!err)
@@ -235,7 +297,7 @@ module.exports = function (createFn, setup, dismantle) {
     describe('findOneAndUpdate: false', function () {
       var app = createFn()
       var server
-      var customer
+      var customers
 
       beforeEach(function (done) {
         setup(function (err) {
@@ -248,10 +310,12 @@ module.exports = function (createFn, setup, dismantle) {
             restify: app.isRestify
           })
 
-          db.models.Customer.create({
+          db.models.Customer.create([{
             name: 'Bob'
-          }).then(function (createdCustomer) {
-            customer = createdCustomer
+          }, {
+            name: 'John'
+          }]).then(function (createdCustomers) {
+            customers = createdCustomers
             server = app.listen(testPort, done)
           }, function (err) {
             done(err)
@@ -265,7 +329,7 @@ module.exports = function (createFn, setup, dismantle) {
 
       it('POST /Customers/:id 200 - empty body', function (done) {
         request.post({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id),
           json: {}
         }, function (err, res, body) {
           assert.ok(!err)
@@ -277,21 +341,52 @@ module.exports = function (createFn, setup, dismantle) {
 
       it('POST /Customers/:id 200 - created id', function (done) {
         request.post({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id),
+          json: {
+            name: 'Mike'
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.name, 'Mike')
+          done()
+        })
+      })
+
+      it('POST /Customers/:id 400 - validation error', function (done) {
+        request.post({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id),
+          json: {
+            age: 'not a number'
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 400)
+          assert.equal(body.name, 'ValidationError')
+          assert.equal(Object.keys(body.errors).length, 1)
+          assert.ok(body.errors['age'])
+          done()
+        })
+      })
+
+      it('POST /Customers/:id 400 - mongo error', function (done) {
+        request.post({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id),
           json: {
             name: 'John'
           }
         }, function (err, res, body) {
           assert.ok(!err)
-          assert.equal(res.statusCode, 200)
-          assert.equal(body.name, 'John')
+          assert.equal(res.statusCode, 400)
+          assert.equal(body.name, 'MongoError')
+          assert.equal(body.code, 11000)
           done()
         })
       })
 
       it('POST /Customers/:id 400 - missing content type', function (done) {
         request.post({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id)
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id)
         }, function (err, res, body) {
           assert.ok(!err)
           assert.equal(res.statusCode, 400)
@@ -301,9 +396,9 @@ module.exports = function (createFn, setup, dismantle) {
 
       it('POST /Customers/:id 400 - invalid content type', function (done) {
         request.post({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id),
           formData: {
-            name: 'John'
+            name: 'Mike'
           }
         }, function (err, res, body) {
           assert.ok(!err)
@@ -316,7 +411,7 @@ module.exports = function (createFn, setup, dismantle) {
         request.post({
           url: util.format('%s/api/v1/Customers/%s', testUrl, invalidId),
           json: {
-            name: 'John'
+            name: 'Mike'
           }
         }, function (err, res, body) {
           assert.ok(!err)
@@ -329,7 +424,7 @@ module.exports = function (createFn, setup, dismantle) {
         request.post({
           url: util.format('%s/api/v1/Customers/%s', testUrl, randomId),
           json: {
-            name: 'John'
+            name: 'Mike'
           }
         }, function (err, res, body) {
           assert.ok(!err)
@@ -355,7 +450,7 @@ module.exports = function (createFn, setup, dismantle) {
 
       it('PUT /Customers/:id 200 - empty body', function (done) {
         request.put({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id),
           json: {}
         }, function (err, res, body) {
           assert.ok(!err)
@@ -367,7 +462,7 @@ module.exports = function (createFn, setup, dismantle) {
 
       it('PUT /Customers/:id 200 - created id', function (done) {
         request.put({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id),
           json: {
             name: 'Mike'
           }
@@ -379,9 +474,40 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
+      it('PUT /Customers/:id 400 - validation error', function (done) {
+        request.put({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id),
+          json: {
+            age: 'not a number'
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 400)
+          assert.equal(body.name, 'ValidationError')
+          assert.equal(Object.keys(body.errors).length, 1)
+          assert.ok(body.errors['age'])
+          done()
+        })
+      })
+
+      it('PUT /Customers/:id 400 - mongo error', function (done) {
+        request.put({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id),
+          json: {
+            name: 'John'
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 400)
+          assert.equal(body.name, 'MongoError')
+          assert.equal(body.code, 11000)
+          done()
+        })
+      })
+
       it('PUT /Customers/:id 400 - missing content type', function (done) {
         request.put({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id)
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id)
         }, function (err, res, body) {
           assert.ok(!err)
           assert.equal(res.statusCode, 400)
@@ -391,9 +517,9 @@ module.exports = function (createFn, setup, dismantle) {
 
       it('PUT /Customers/:id 400 - invalid content type', function (done) {
         request.put({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id),
           formData: {
-            name: 'John'
+            name: 'Mike'
           }
         }, function (err, res, body) {
           assert.ok(!err)
