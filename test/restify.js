@@ -48,9 +48,9 @@ function runTests (createFn) {
     readTests(createFn, setup, dismantle)
     updateTests(createFn, setup, dismantle)
     deleteTests(createFn, setup, dismantle)
-    accessTests(createFn)
-    lowercaseTests(createFn)
-    virtualsTests(createFn)
+    accessTests(createFn, setup, dismantle)
+    lowercaseTests(createFn, setup, dismantle)
+    virtualsTests(createFn, setup, dismantle)
   })
 }
 

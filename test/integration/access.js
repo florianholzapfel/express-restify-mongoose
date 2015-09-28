@@ -2,36 +2,12 @@ var assert = require('assert')
 var request = require('request')
 var util = require('util')
 
-module.exports = function (createFn) {
+module.exports = function (createFn, setup, dismantle) {
   var erm = require('../../lib/express-restify-mongoose')
   var db = require('./setup')()
 
   var testPort = 30023
   var testUrl = 'http://localhost:' + testPort
-
-  function setup (callback) {
-    db.initialize(function (err) {
-      if (err) {
-        return callback(err)
-      }
-
-      db.reset(callback)
-    })
-  }
-
-  function dismantle (app, server, callback) {
-    db.close(function (err) {
-      if (err) {
-        return callback(err)
-      }
-
-      if (app.close) {
-        return app.close(callback)
-      }
-
-      server.close(callback)
-    })
-  }
 
   describe('access', function () {
     describe('private - include private and protected fields', function () {
