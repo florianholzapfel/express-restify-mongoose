@@ -17,6 +17,7 @@ module.exports = function (createFn, setup, dismantle) {
       var app = createFn()
       var server
       var customer
+      var invoice
 
       beforeEach(function (done) {
         setup(function (err) {
@@ -25,20 +26,24 @@ module.exports = function (createFn, setup, dismantle) {
           }
 
           erm.serve(app, db.models.Customer, {
-            outputFn: app.outputFn,
-            restify: app.isRestify,
-            findOneAndUpdate: true
+            findOneAndUpdate: true,
+            restify: app.isRestify
           })
 
           db.models.Customer.create({
             name: 'Bob'
-          }, function (err, createdCustomer) {
-            if (err) {
-              return done(err)
-            }
-
+          }).then(function (createdCustomer) {
             customer = createdCustomer
+
+            return db.models.Invoice.create({
+              customer: customer._id,
+              amount: 100
+            })
+          }).then(function (createdInvoice) {
+            invoice = createdInvoice
             server = app.listen(testPort, done)
+          }, function (err) {
+            done(err)
           })
         })
       })
@@ -211,6 +216,20 @@ module.exports = function (createFn, setup, dismantle) {
           done()
         })
       })
+
+      describe('populated subdocument', function () {
+        it.skip('PUT /Invoices/id 200 - update populated invoice', function (done) {
+          request.put({
+            url: util.format('%s/api/v1/Invoices/%s', testUrl, invoice._id),
+            json: invoice
+          }, function (err, res, body) {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 200)
+            assert.equal(body.amount, 200)
+            done()
+          })
+        })
+      })
     })
 
     describe('findOneAndUpdate: false', function () {
@@ -225,20 +244,17 @@ module.exports = function (createFn, setup, dismantle) {
           }
 
           erm.serve(app, db.models.Customer, {
-            outputFn: app.outputFn,
-            restify: app.isRestify,
-            findOneAndUpdate: false
+            findOneAndUpdate: false,
+            restify: app.isRestify
           })
 
           db.models.Customer.create({
             name: 'Bob'
-          }, function (err, createdCustomer) {
-            if (err) {
-              return done(err)
-            }
-
+          }).then(function (createdCustomer) {
             customer = createdCustomer
             server = app.listen(testPort, done)
+          }, function (err) {
+            done(err)
           })
         })
       })

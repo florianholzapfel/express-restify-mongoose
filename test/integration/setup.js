@@ -27,6 +27,10 @@ module.exports = function () {
       comment: String,
       address: String,
       age: Number,
+      favorites: {
+        animal: String,
+        color: String
+      },
       purchases: [{
         item: { type: Schema.Types.ObjectId, ref: 'Product' },
         number: Number
@@ -60,6 +64,7 @@ module.exports = function () {
   var Invoice = new Schema({
     customer: { type: Schema.Types.ObjectId, ref: 'Customer' },
     amount: Number,
+    receipt: String,
     products: [{ type: Schema.Types.ObjectId, ref: 'Product' }]
   }, invoiceOpts)
 
