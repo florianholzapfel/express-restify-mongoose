@@ -16,7 +16,6 @@ module.exports = function (createFn, setup, dismantle) {
     var app = createFn()
     var server
     var customers
-    var invoices
 
     beforeEach(function (done) {
       setup(function (err) {
@@ -58,7 +57,6 @@ module.exports = function (createFn, setup, dismantle) {
             receipt: 'C'
           }])
         }).then(function (createdInvoices) {
-          invoices = createdInvoices
           server = app.listen(testPort, done)
         }, function (err) {
           done(err)
@@ -614,7 +612,7 @@ module.exports = function (createFn, setup, dismantle) {
     })
 
     describe('select', function () {
-      it('GET /Customers?select=name 200 - only include names', function (done) {
+      it('GET /Customers?select=name 200 - only include ', function (done) {
         request.get({
           url: util.format('%s/api/v1/Customers', testUrl),
           qs: {
@@ -634,7 +632,7 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers?select=-name 200 - exclude names', function (done) {
+      it('GET /Customers?select=-name 200 - exclude name', function (done) {
         request.get({
           url: util.format('%s/api/v1/Customers', testUrl),
           qs: {
@@ -652,7 +650,7 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers?select={"name":1} 200 - only include names', function (done) {
+      it('GET /Customers?select={"name":1} 200 - only include name', function (done) {
         request.get({
           url: util.format('%s/api/v1/Customers', testUrl),
           qs: {
@@ -674,7 +672,7 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers?select={"name":0} 200 - exclude names', function (done) {
+      it('GET /Customers?select={"name":0} 200 - exclude name', function (done) {
         request.get({
           url: util.format('%s/api/v1/Customers', testUrl),
           qs: {
@@ -812,14 +810,31 @@ module.exports = function (createFn, setup, dismantle) {
           })
         })
 
-        it('GET Invoices?populate=customer&select=-customer.name 200 - only include customer and exclude customer name', function (done) {
-          /* db.models.Invoice.find({}, {
-           *   customer: 1
-           * }).populate([{
-           *   path: 'customer',
-           *   select: '-name'
-           * }])
-           */
+        it('GET Invoices?populate=customer&select=customer.name 200 - include all invoice fields, but only include customer name', function (done) {
+          request.get({
+            url: util.format('%s/api/v1/Invoices', testUrl),
+            qs: {
+              populate: 'customer',
+              select: 'customer.name'
+            },
+            json: true
+          }, function (err, res, body) {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 200)
+            assert.equal(body.length, 3)
+            body.forEach(function (invoice) {
+              assert.ok(invoice.amount)
+              assert.ok(invoice.receipt)
+              assert.ok(invoice.customer)
+              assert.ok(invoice.customer._id)
+              assert.ok(invoice.customer.name)
+              assert.equal(invoice.customer.age, undefined)
+            })
+            done()
+          })
+        })
+
+        it('GET Invoices?populate=customer&select=-customer.name 200 - include all invoice and fields, but exclude customer name', function (done) {
           request.get({
             url: util.format('%s/api/v1/Invoices', testUrl),
             qs: {
@@ -832,11 +847,11 @@ module.exports = function (createFn, setup, dismantle) {
             assert.equal(res.statusCode, 200)
             assert.equal(body.length, 3)
             body.forEach(function (invoice) {
+              assert.ok(invoice.amount)
+              assert.ok(invoice.receipt)
               assert.ok(invoice.customer)
               assert.ok(invoice.customer._id)
               assert.ok(invoice.customer.age)
-              assert.equal(invoice.amount, undefined)
-              assert.equal(invoice.receipt, undefined)
               assert.equal(invoice.customer.name, undefined)
             })
             done()
@@ -880,42 +895,13 @@ module.exports = function (createFn, setup, dismantle) {
             assert.equal(res.statusCode, 200)
             assert.equal(body.length, 3)
             body.forEach(function (invoice) {
+              assert.ok(invoice.amount)
+              assert.ok(invoice.receipt)
               assert.ok(invoice.customer)
               assert.ok(invoice.customer._id)
               assert.ok(invoice.customer.name)
               assert.ok(invoice.customer.age)
-              assert.equal(invoice.amount, undefined)
-              assert.equal(invoice.receipt, undefined)
             })
-            done()
-          })
-        })
-
-        it.skip('GET /Invoices/:id?populate=customer&select=customer.name 200 - should not suppress invoice fields', function (done) {
-          request.get({
-            url: util.format('%s/api/v1/Invoices/%s?populate=customer&select=customer.name', testUrl, invoices[0]._id),
-            json: true
-          }, function (err, res, body) {
-            assert.ok(!err)
-            assert.equal(res.statusCode, 200, 'Wrong status code')
-            assert.equal(undefined, body.amount)
-            assert.equal(undefined, body.customer.comment)
-            assert.equal('Test', body.customer.name)
-            done()
-          })
-        })
-
-        it.skip('GET /Invoices/:id?populate=customer&select=customer.name,amount 200 - should not fetch invoice.products fields', function (done) {
-          request.get({
-            url: util.format('%s/api/v1/Invoices/%s?populate=customer&select=customer.name,amount', testUrl, invoices[0]._id),
-            json: true
-          }, function (err, res, body) {
-            assert.ok(!err)
-            assert.equal(res.statusCode, 200, 'Wrong status code')
-            assert.equal(9.5, body.amount)
-            assert.equal(undefined, body.products)
-            assert.equal(undefined, body.customer.comment)
-            assert.equal('Test', body.customer.name)
             done()
           })
         })

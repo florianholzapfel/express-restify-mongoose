@@ -409,13 +409,10 @@ describe('buildQuery', function () {
         path: 'foo',
         select: 'bar baz'
       }])
-      sinon.assert.calledOnce(query.select)
-      sinon.assert.calledWithExactly(query.select, {
-        foo: 1
-      })
       sinon.assert.notCalled(query.where)
       sinon.assert.notCalled(query.skip)
       sinon.assert.notCalled(query.limit)
+      sinon.assert.notCalled(query.select)
       sinon.assert.notCalled(query.sort)
       sinon.assert.notCalled(query.distinct)
       assert.equal(result, query)

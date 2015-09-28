@@ -128,7 +128,7 @@ module.exports = function (createFn, setup, dismantle) {
         }, function (err, res, body) {
           assert.ok(!err)
           assert.equal(res.statusCode, 400)
-        assert.equal(JSON.parse(body).description, 'invalid_content_type')
+          assert.equal(JSON.parse(body).description, 'invalid_content_type')
           done()
         })
       })

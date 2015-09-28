@@ -627,7 +627,7 @@ module.exports = function (createFn) {
         }, function (err, res, body) {
           assert.ok(!err)
           assert.equal(res.statusCode, 200, 'Wrong status code')
-          assert.equal(undefined, body.amount)
+          assert.equal(9.5, body.amount)
           assert.equal(undefined, body.customer.comment)
           assert.equal('Test', body.customer.name)
           done()
