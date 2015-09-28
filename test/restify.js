@@ -4,6 +4,9 @@ var createTests = require('./integration/create')
 var readTests = require('./integration/read')
 var updateTests = require('./integration/update')
 var deleteTests = require('./integration/delete')
+var accessTests = require('./integration/access')
+var lowercaseTests = require('./integration/lowercase')
+var virtualsTests = require('./integration/virtuals')
 
 function Restify () {
   var app = restify.createServer()
@@ -19,6 +22,9 @@ function runTests (createFn) {
     readTests(createFn)
     updateTests(createFn)
     deleteTests(createFn)
+    accessTests(createFn)
+    lowercaseTests(createFn)
+    virtualsTests(createFn)
   })
 }
 

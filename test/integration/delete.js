@@ -49,9 +49,8 @@ module.exports = function (createFn) {
           }
 
           erm.serve(app, db.models.Customer, {
-            outputFn: app.outputFn,
-            restify: app.isRestify,
-            findOneAndRemove: true
+            findOneAndRemove: true,
+            restify: app.isRestify
           })
 
           db.models.Customer.create({
@@ -124,20 +123,17 @@ module.exports = function (createFn) {
           }
 
           erm.serve(app, db.models.Customer, {
-            outputFn: app.outputFn,
-            restify: app.isRestify,
-            findOneAndRemove: false
+            findOneAndRemove: false,
+            restify: app.isRestify
           })
 
           db.models.Customer.create({
             name: 'Bob'
-          }, function (err, createdCustomer) {
-            if (err) {
-              return done(err)
-            }
-
+          }).then(function (createdCustomer) {
             customer = createdCustomer
             server = app.listen(testPort, done)
+          }, function (err) {
+            done(err)
           })
         })
       })
