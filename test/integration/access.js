@@ -115,6 +115,7 @@ module.exports = function (createFn, setup, dismantle) {
           json: true
         }, function (err, res, body) {
           assert.ok(!err)
+          assert.equal(res.statusCode, 200)
           assert.equal(body.length, 1)
           assert.ok(body[0].customer)
           assert.equal(body[0].amount, 100)
@@ -130,7 +131,7 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Invoices?populate=customer 200', function (done) {
+      it('GET /Invoices/:id?populate=customer 200', function (done) {
         request.get({
           url: util.format('%s/api/v1/Invoices/%s', testUrl, invoice._id),
           qs: {
@@ -139,6 +140,7 @@ module.exports = function (createFn, setup, dismantle) {
           json: true
         }, function (err, res, body) {
           assert.ok(!err)
+          assert.equal(res.statusCode, 200)
           assert.ok(body.customer)
           assert.equal(body.amount, 100)
           assert.equal(body.receipt, 'A')
@@ -148,6 +150,32 @@ module.exports = function (createFn, setup, dismantle) {
           assert.deepEqual(body.customer.favorites, {
             animal: 'Boar',
             color: 'Black'
+          })
+          done()
+        })
+      })
+
+      it('PUT /Customers/:id - saves all fields', function (done) {
+        request.put({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          json: {
+            name: 'John',
+            age: 24,
+            comment: 'Jumbo',
+            favorites: {
+              animal: 'Jaguar',
+              color: 'Jade'
+            }
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.name, 'John')
+          assert.equal(body.age, 24)
+          assert.equal(body.comment, 'Jumbo')
+          assert.deepEqual(body.favorites, {
+            animal: 'Jaguar',
+            color: 'Jade'
           })
           done()
         })
@@ -257,6 +285,7 @@ module.exports = function (createFn, setup, dismantle) {
           json: true
         }, function (err, res, body) {
           assert.ok(!err)
+          assert.equal(res.statusCode, 200)
           assert.equal(body.length, 1)
           assert.ok(body[0].customer)
           assert.equal(body[0].amount, undefined)
@@ -271,7 +300,7 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Invoices?populate=customer 200', function (done) {
+      it('GET /Invoices/:id?populate=customer 200', function (done) {
         request.get({
           url: util.format('%s/api/v1/Invoices/%s', testUrl, invoice._id),
           qs: {
@@ -280,6 +309,7 @@ module.exports = function (createFn, setup, dismantle) {
           json: true
         }, function (err, res, body) {
           assert.ok(!err)
+          assert.equal(res.statusCode, 200)
           assert.ok(body.customer)
           assert.equal(body.amount, undefined)
           assert.equal(body.receipt, 'A')
@@ -290,6 +320,40 @@ module.exports = function (createFn, setup, dismantle) {
             color: 'Black'
           })
           done()
+        })
+      })
+
+      it('PUT /Customers/:id - saves protected and public fields', function (done) {
+        request.put({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          json: {
+            name: 'John',
+            age: 24,
+            comment: 'Jumbo',
+            favorites: {
+              animal: 'Jaguar',
+              color: 'Jade'
+            }
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.name, 'John')
+          assert.equal(body.age, undefined)
+          assert.equal(body.comment, 'Jumbo')
+          assert.deepEqual(body.favorites, {
+            color: 'Jade'
+          })
+
+          db.models.Customer.findById(customer._id, function (err, customer) {
+            if (err) {
+              return done(err)
+            }
+
+            assert.equal(customer.age, 12)
+            assert.equal(customer.favorites.animal, 'Boar')
+            done()
+          })
         })
       })
     })
@@ -387,6 +451,7 @@ module.exports = function (createFn, setup, dismantle) {
           json: true
         }, function (err, res, body) {
           assert.ok(!err)
+          assert.equal(res.statusCode, 200)
           assert.equal(body.length, 1)
           assert.ok(body[0].customer)
           assert.equal(body[0].amount, undefined)
@@ -399,7 +464,7 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Invoices?populate=customer 200', function (done) {
+      it('GET /Invoices/:id?populate=customer 200', function (done) {
         request.get({
           url: util.format('%s/api/v1/Invoices/%s', testUrl, invoice._id),
           qs: {
@@ -408,6 +473,7 @@ module.exports = function (createFn, setup, dismantle) {
           json: true
         }, function (err, res, body) {
           assert.ok(!err)
+          assert.equal(res.statusCode, 200)
           assert.ok(body.customer)
           assert.equal(body.amount, undefined)
           assert.equal(body.receipt, undefined)
@@ -415,6 +481,81 @@ module.exports = function (createFn, setup, dismantle) {
           assert.equal(body.customer.age, undefined)
           assert.equal(body.customer.comment, undefined)
           assert.deepEqual(body.customer.favorites, {})
+          done()
+        })
+      })
+
+      it('PUT /Customers/:id - saves public fields', function (done) {
+        request.put({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          json: {
+            name: 'John',
+            age: 24,
+            comment: 'Jumbo',
+            favorites: {
+              animal: 'Jaguar',
+              color: 'Jade'
+            }
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.name, 'John')
+          assert.equal(body.age, undefined)
+          assert.equal(body.comment, undefined)
+          assert.deepEqual(body.favorites, {})
+
+          db.models.Customer.findById(customer._id, function (err, customer) {
+            if (err) {
+              return done(err)
+            }
+
+            assert.equal(customer.age, 12)
+            assert.equal(customer.comment, 'Boo')
+            assert.deepEqual(body.favorites, {
+              animal: 'Boar',
+              color: 'Black'
+            })
+            done()
+          })
+        })
+      })
+    })
+
+    describe('errors', function () {
+      var app = createFn()
+      var server
+
+      beforeEach(function (done) {
+        setup(function (err) {
+          if (err) {
+            return done(err)
+          }
+
+          erm.serve(app, db.models.Customer, {
+            access: function (req, cb) {
+              cb(new Error('Something went wrong'))
+            },
+            restify: app.isRestify
+          })
+
+          server = app.listen(testPort, done)
+        })
+      })
+
+      afterEach(function (done) {
+        dismantle(app, server, done)
+      })
+
+      it.skip('GET /Customers 500 - yields an error', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          json: true
+        }, function (err, res, body) {
+          console.log(body)
+          assert.ok(!err)
+          assert.equal(res.statusCode, 500)
+          assert.equal(body.message, 'Something went wrong')
           done()
         })
       })
