@@ -30,6 +30,11 @@ module.exports = function (createFn, setup, dismantle) {
             restify: app.isRestify
           })
 
+          erm.serve(app, db.models.Invoice, {
+            findOneAndUpdate: true,
+            restify: app.isRestify
+          })
+
           db.models.Customer.create([{
             name: 'Bob'
           }, {
@@ -37,8 +42,15 @@ module.exports = function (createFn, setup, dismantle) {
           }]).then(function (createdCustomers) {
             customers = createdCustomers
 
+            return db.models.Product.create([{
+              name: 'Bobsleigh'
+            }, {
+              name: 'Jacket'
+            }])
+          }).then(function (createdProducts) {
             return db.models.Invoice.create({
               customer: customers[0]._id,
+              products: createdProducts,
               amount: 100
             })
           }).then(function (createdInvoice) {
@@ -280,15 +292,43 @@ module.exports = function (createFn, setup, dismantle) {
       })
 
       describe('populated subdocument', function () {
-        it.skip('PUT /Invoices/id 200 - update populated invoice', function (done) {
-          request.put({
-            url: util.format('%s/api/v1/Invoices/%s', testUrl, invoice._id),
-            json: invoice
-          }, function (err, res, body) {
-            assert.ok(!err)
-            assert.equal(res.statusCode, 200)
-            assert.equal(body.amount, 200)
-            done()
+        it('PUT /Invoices/:id 200 - update with populated customer', function (done) {
+          db.models.Invoice.findById(invoice._id).populate('customer').exec().then(function (invoice) {
+            assert.notEqual(invoice.amount, 200)
+            invoice.amount = 200
+
+            request.put({
+              url: util.format('%s/api/v1/Invoices/%s', testUrl, invoice._id),
+              json: invoice
+            }, function (err, res, body) {
+              assert.ok(!err)
+              assert.equal(res.statusCode, 200)
+              assert.equal(body.amount, 200)
+              assert.equal(body.customer, invoice.customer._id)
+              done()
+            })
+          }, function (err) {
+            done(err)
+          })
+        })
+
+        it('PUT /Invoices/:id 200 - update with populated products', function (done) {
+          db.models.Invoice.findById(invoice._id).populate('products').exec().then(function (invoice) {
+            assert.notEqual(invoice.amount, 200)
+            invoice.amount = 200
+
+            request.put({
+              url: util.format('%s/api/v1/Invoices/%s', testUrl, invoice._id),
+              json: invoice
+            }, function (err, res, body) {
+              assert.ok(!err)
+              assert.equal(res.statusCode, 200)
+              assert.equal(body.amount, 200)
+              assert.deepEqual(body.products, [invoice.products[0]._id.toHexString(), invoice.products[1]._id.toHexString()])
+              done()
+            })
+          }, function (err) {
+            done(err)
           })
         })
       })
@@ -298,6 +338,7 @@ module.exports = function (createFn, setup, dismantle) {
       var app = createFn()
       var server
       var customers
+      var invoice
 
       beforeEach(function (done) {
         setup(function (err) {
@@ -310,12 +351,31 @@ module.exports = function (createFn, setup, dismantle) {
             restify: app.isRestify
           })
 
+          erm.serve(app, db.models.Invoice, {
+            findOneAndUpdate: false,
+            restify: app.isRestify
+          })
+
           db.models.Customer.create([{
             name: 'Bob'
           }, {
             name: 'John'
           }]).then(function (createdCustomers) {
             customers = createdCustomers
+
+            return db.models.Product.create([{
+              name: 'Bobsleigh'
+            }, {
+              name: 'Jacket'
+            }])
+          }).then(function (createdProducts) {
+            return db.models.Invoice.create({
+              customer: customers[0]._id,
+              products: createdProducts,
+              amount: 100
+            })
+          }).then(function (createdInvoice) {
+            invoice = createdInvoice
             server = app.listen(testPort, done)
           }, function (err) {
             done(err)
@@ -551,6 +611,48 @@ module.exports = function (createFn, setup, dismantle) {
           assert.ok(!err)
           assert.equal(res.statusCode, 404)
           done()
+        })
+      })
+
+      describe('populated subdocument', function () {
+        it('PUT /Invoices/:id 200 - update with populated customer', function (done) {
+          db.models.Invoice.findById(invoice._id).populate('customer').exec().then(function (invoice) {
+            assert.notEqual(invoice.amount, 200)
+            invoice.amount = 200
+
+            request.put({
+              url: util.format('%s/api/v1/Invoices/%s', testUrl, invoice._id),
+              json: invoice
+            }, function (err, res, body) {
+              assert.ok(!err)
+              assert.equal(res.statusCode, 200)
+              assert.equal(body.amount, 200)
+              assert.equal(body.customer, invoice.customer._id)
+              done()
+            })
+          }, function (err) {
+            done(err)
+          })
+        })
+
+        it('PUT /Invoices/:id 200 - update with populated products', function (done) {
+          db.models.Invoice.findById(invoice._id).populate('products').exec().then(function (invoice) {
+            assert.notEqual(invoice.amount, 200)
+            invoice.amount = 200
+
+            request.put({
+              url: util.format('%s/api/v1/Invoices/%s', testUrl, invoice._id),
+              json: invoice
+            }, function (err, res, body) {
+              assert.ok(!err)
+              assert.equal(res.statusCode, 200)
+              assert.equal(body.amount, 200)
+              assert.deepEqual(body.products, [invoice.products[0]._id.toHexString(), invoice.products[1]._id.toHexString()])
+              done()
+            })
+          }, function (err) {
+            done(err)
+          })
         })
       })
     })

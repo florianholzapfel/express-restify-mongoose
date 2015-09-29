@@ -512,7 +512,7 @@ module.exports = function (createFn, setup, dismantle) {
 
             assert.equal(customer.age, 12)
             assert.equal(customer.comment, 'Boo')
-            assert.deepEqual(body.favorites, {
+            assert.deepEqual(customer.favorites.toObject(), {
               animal: 'Boar',
               color: 'Black'
             })
