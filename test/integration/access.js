@@ -552,7 +552,6 @@ module.exports = function (createFn, setup, dismantle) {
           url: util.format('%s/api/v1/Customers', testUrl),
           json: true
         }, function (err, res, body) {
-          console.log(body)
           assert.ok(!err)
           assert.equal(res.statusCode, 500)
           assert.equal(body.message, 'Something went wrong')
