@@ -13,11 +13,12 @@ describe('access', function () {
   describe('returns (sync)', function () {
     it('adds access field to req', function () {
       var req = {}
-      var accessFn = function () {
-        return 'private'
-      }
 
-      access(accessFn)(req, {}, next)
+      access({
+        access: function () {
+          return 'private'
+        }
+      })(req, {}, next)
 
       sinon.assert.calledOnce(next)
       sinon.assert.calledWithExactly(next)
@@ -26,58 +27,66 @@ describe('access', function () {
 
     it('throws an exception with unsupported parameter', function () {
       var req = {}
-      var accessFn = function () {
-        return 'foo'
-      }
 
       assert.throws(function () {
-        access(accessFn)(req, {}, next)
+        access({
+          access: function () {
+            return 'foo'
+          }
+        })(req, {}, next)
       }, 'Unsupported access, must be "public", "private" or "protected"')
 
       sinon.assert.notCalled(next)
+      assert.equal(req.access, undefined)
     })
   })
 
   describe('yields (async)', function () {
     it('adds access field to req', function () {
       var req = {}
-      var accessFn = function (req, cb) {
-        return cb(null, 'private')
-      }
 
-      access(accessFn)(req, {}, next)
+      access({
+        access: function (req, cb) {
+          return cb(null, 'private')
+        }
+      })(req, {}, next)
 
       sinon.assert.calledOnce(next)
       sinon.assert.calledWithExactly(next)
       assert.equal(req.access, 'private')
     })
 
-    it('calls next with an error', function () {
+    it('calls onError', function () {
       var req = {}
+      var onError = sinon.spy()
       var err = new Error('Something bad happened')
-      var accessFn = function (req, cb) {
-        return cb(err, 'private')
-      }
 
-      access(accessFn)(req, {}, next)
+      access({
+        access: function (req, cb) {
+          return cb(err, 'private')
+        },
+        onError: onError
+      })(req, {}, next)
 
-      sinon.assert.calledOnce(next)
-      sinon.assert.calledWithExactly(next, err)
+      sinon.assert.calledOnce(onError)
+      sinon.assert.calledWithExactly(onError, err, req, {}, next)
+      sinon.assert.notCalled(next)
       assert.equal(req.access, undefined)
     })
 
     it('throws an exception with unsupported parameter', function () {
       var req = {}
-      var next = sinon.spy()
-      var accessFn = function (req, cb) {
-        return cb(null, 'foo')
-      }
 
       assert.throws(function () {
-        access(accessFn)(req, {}, next)
+        access({
+          access: function (req, cb) {
+            return cb(null, 'foo')
+          }
+        })(req, {}, next)
       }, 'Unsupported access, must be "public", "private" or "protected"')
 
       sinon.assert.notCalled(next)
+      assert.equal(req.access, undefined)
     })
   })
 })
