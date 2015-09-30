@@ -222,12 +222,57 @@ module.exports = function (createFn, setup, dismantle) {
     })
   })
 
-  describe('postMiddleware', function () {
+  describe('postCreate', function () {
+    var app = createFn()
+    var server
+    var options = {
+      postCreate: sinon.spy(function (req, res, next) {
+        next()
+      }),
+      restify: app.isRestify
+    }
+
+    beforeEach(function (done) {
+      setup(function (err) {
+        if (err) {
+          return done(err)
+        }
+
+        erm.serve(app, db.models.Customer, options)
+
+        server = app.listen(testPort, done)
+      })
+    })
+
+    afterEach(function (done) {
+      options.postCreate.reset()
+      dismantle(app, server, done)
+    })
+
+    it('POST /Customers 201', function (done) {
+      request.post({
+        url: util.format('%s/api/v1/Customers', testUrl),
+        json: {
+          name: 'Bob'
+        }
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 201)
+        sinon.assert.calledOnce(options.postCreate)
+        var args = options.postCreate.args[0]
+        assert.equal(args.length, 4)
+        assert.equal(typeof args[2], 'function')
+        done()
+      })
+    })
+  })
+
+  describe('postRead', function () {
     var app = createFn()
     var server
     var customer
     var options = {
-      postMiddleware: sinon.spy(function (req, res, next) {
+      postRead: sinon.spy(function (req, res, next) {
         next()
       }),
       restify: app.isRestify
@@ -253,7 +298,7 @@ module.exports = function (createFn, setup, dismantle) {
     })
 
     afterEach(function (done) {
-      options.postMiddleware.reset()
+      options.postRead.reset()
       dismantle(app, server, done)
     })
 
@@ -264,8 +309,23 @@ module.exports = function (createFn, setup, dismantle) {
       }, function (err, res, body) {
         assert.ok(!err)
         assert.equal(res.statusCode, 200)
-        sinon.assert.calledOnce(options.postMiddleware)
-        var args = options.postMiddleware.args[0]
+        sinon.assert.calledOnce(options.postRead)
+        var args = options.postRead.args[0]
+        assert.equal(args.length, 4)
+        assert.equal(typeof args[2], 'function')
+        done()
+      })
+    })
+
+    it('GET /Customers/count 200', function (done) {
+      request.get({
+        url: util.format('%s/api/v1/Customers/count', testUrl),
+        json: true
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 200)
+        sinon.assert.calledOnce(options.postRead)
+        var args = options.postRead.args[0]
         assert.equal(args.length, 4)
         assert.equal(typeof args[2], 'function')
         done()
@@ -274,34 +334,68 @@ module.exports = function (createFn, setup, dismantle) {
 
     it('GET /Customers/:id 200', function (done) {
       request.get({
-        url: util.format('%s/api/v1/Customers', testUrl),
+        url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
         json: true
       }, function (err, res, body) {
         assert.ok(!err)
         assert.equal(res.statusCode, 200)
-        sinon.assert.calledOnce(options.postMiddleware)
-        var args = options.postMiddleware.args[0]
+        sinon.assert.calledOnce(options.postRead)
+        var args = options.postRead.args[0]
         assert.equal(args.length, 4)
         assert.equal(typeof args[2], 'function')
         done()
       })
     })
 
-    it('POST /Customers 201', function (done) {
-      request.post({
-        url: util.format('%s/api/v1/Customers', testUrl),
-        json: {
-          name: 'Post'
-        }
+    it('GET /Customers/:id/shallow 200', function (done) {
+      request.get({
+        url: util.format('%s/api/v1/Customers/%s/shallow', testUrl, customer._id),
+        json: true
       }, function (err, res, body) {
         assert.ok(!err)
-        assert.equal(res.statusCode, 201)
-        sinon.assert.calledOnce(options.postMiddleware)
-        var args = options.postMiddleware.args[0]
+        assert.equal(res.statusCode, 200)
+        sinon.assert.calledOnce(options.postRead)
+        var args = options.postRead.args[0]
         assert.equal(args.length, 4)
         assert.equal(typeof args[2], 'function')
         done()
       })
+    })
+  })
+
+  describe('postUpdate', function () {
+    var app = createFn()
+    var server
+    var customer
+    var options = {
+      postUpdate: sinon.spy(function (req, res, next) {
+        next()
+      }),
+      restify: app.isRestify
+    }
+
+    beforeEach(function (done) {
+      setup(function (err) {
+        if (err) {
+          return done(err)
+        }
+
+        erm.serve(app, db.models.Customer, options)
+
+        db.models.Customer.create({
+          name: 'Bob'
+        }).then(function (createdCustomer) {
+          customer = createdCustomer
+          server = app.listen(testPort, done)
+        }, function (err) {
+          done(err)
+        })
+      })
+    })
+
+    afterEach(function (done) {
+      options.postUpdate.reset()
+      dismantle(app, server, done)
     })
 
     it('POST /Customers/:id 200', function (done) {
@@ -311,8 +405,8 @@ module.exports = function (createFn, setup, dismantle) {
       }, function (err, res, body) {
         assert.ok(!err)
         assert.equal(res.statusCode, 200)
-        sinon.assert.calledOnce(options.postMiddleware)
-        var args = options.postMiddleware.args[0]
+        sinon.assert.calledOnce(options.postUpdate)
+        var args = options.postUpdate.args[0]
         assert.equal(args.length, 4)
         assert.equal(typeof args[2], 'function')
         done()
@@ -325,7 +419,7 @@ module.exports = function (createFn, setup, dismantle) {
       }, function (err, res, body) {
         assert.ok(!err)
         assert.equal(res.statusCode, 400)
-        sinon.assert.notCalled(options.postMiddleware)
+        sinon.assert.notCalled(options.postUpdate)
         done()
       })
     })
@@ -337,7 +431,7 @@ module.exports = function (createFn, setup, dismantle) {
       }, function (err, res, body) {
         assert.ok(!err)
         assert.equal(res.statusCode, 400)
-        sinon.assert.notCalled(options.postMiddleware)
+        sinon.assert.notCalled(options.postUpdate)
         done()
       })
     })
@@ -349,8 +443,8 @@ module.exports = function (createFn, setup, dismantle) {
       }, function (err, res, body) {
         assert.ok(!err)
         assert.equal(res.statusCode, 200)
-        sinon.assert.calledOnce(options.postMiddleware)
-        var args = options.postMiddleware.args[0]
+        sinon.assert.calledOnce(options.postUpdate)
+        var args = options.postUpdate.args[0]
         assert.equal(args.length, 4)
         assert.equal(typeof args[2], 'function')
         done()
@@ -363,7 +457,7 @@ module.exports = function (createFn, setup, dismantle) {
       }, function (err, res, body) {
         assert.ok(!err)
         assert.equal(res.statusCode, 400)
-        sinon.assert.notCalled(options.postMiddleware)
+        sinon.assert.notCalled(options.postUpdate)
         done()
       })
     })
@@ -375,7 +469,58 @@ module.exports = function (createFn, setup, dismantle) {
       }, function (err, res, body) {
         assert.ok(!err)
         assert.equal(res.statusCode, 400)
-        sinon.assert.notCalled(options.postMiddleware)
+        sinon.assert.notCalled(options.postUpdate)
+        done()
+      })
+    })
+  })
+
+  describe('postDelete', function () {
+    var app = createFn()
+    var server
+    var customer
+    var options = {
+      postDelete: sinon.spy(function (req, res, next) {
+        next()
+      }),
+      restify: app.isRestify
+    }
+
+    beforeEach(function (done) {
+      setup(function (err) {
+        if (err) {
+          return done(err)
+        }
+
+        erm.serve(app, db.models.Customer, options)
+
+        db.models.Customer.create({
+          name: 'Bob'
+        }).then(function (createdCustomer) {
+          customer = createdCustomer
+          server = app.listen(testPort, done)
+        }, function (err) {
+          done(err)
+        })
+      })
+    })
+
+    afterEach(function (done) {
+      options.postDelete.reset()
+      dismantle(app, server, done)
+    })
+
+    it('DELETE /Customers 204', function (done) {
+      request.del({
+        url: util.format('%s/api/v1/Customers', testUrl),
+        json: true
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 204)
+        sinon.assert.calledOnce(options.postDelete)
+        var args = options.postDelete.args[0]
+        assert.equal(args.length, 4)
+        assert.equal(typeof args[2], 'function')
         done()
       })
     })
@@ -387,23 +532,8 @@ module.exports = function (createFn, setup, dismantle) {
       }, function (err, res, body) {
         assert.ok(!err)
         assert.equal(res.statusCode, 204)
-        sinon.assert.calledOnce(options.postMiddleware)
-        var args = options.postMiddleware.args[0]
-        assert.equal(args.length, 4)
-        assert.equal(typeof args[2], 'function')
-        done()
-      })
-    })
-
-    it('DELETE /Customers 204', function (done) {
-      request.del({
-        url: util.format('%s/api/v1/Customers', testUrl),
-        json: true
-      }, function (err, res, body) {
-        assert.ok(!err)
-        assert.equal(res.statusCode, 204)
-        sinon.assert.calledOnce(options.postMiddleware)
-        var args = options.postMiddleware.args[0]
+        sinon.assert.calledOnce(options.postDelete)
+        var args = options.postDelete.args[0]
         assert.equal(args.length, 4)
         assert.equal(typeof args[2], 'function')
         done()
