@@ -370,4 +370,230 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
   })
+
+  describe('prefix', function () {
+    var app = createFn()
+    var server
+
+    before(function (done) {
+      setup(function (err) {
+        if (err) {
+          return done(err)
+        }
+
+        erm.serve(app, db.models.Customer, {
+          prefix: '/applepie',
+          restify: app.isRestify
+        })
+
+        server = app.listen(testPort, done)
+      })
+    })
+
+    after(function (done) {
+      dismantle(app, server, done)
+    })
+
+    it('GET /applepie/v1/Customers 200', function (done) {
+      request.get({
+        url: util.format('%s/applepie/v1/Customers', testUrl)
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 200)
+        done()
+      })
+    })
+  })
+
+  describe('version', function () {
+    describe('v8', function () {
+      var app = createFn()
+      var server
+
+      before(function (done) {
+        setup(function (err) {
+          if (err) {
+            return done(err)
+          }
+
+          erm.serve(app, db.models.Customer, {
+            version: '/v8',
+            restify: app.isRestify
+          })
+
+          server = app.listen(testPort, done)
+        })
+      })
+
+      after(function (done) {
+        dismantle(app, server, done)
+      })
+
+      it('GET /v8/Customers 200', function (done) {
+        request.get({
+          url: util.format('%s/api/v8/Customers', testUrl)
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          done()
+        })
+      })
+    })
+
+    describe('custom id location', function () {
+      var app = createFn()
+      var server
+      var customer
+
+      before(function (done) {
+        setup(function (err) {
+          if (err) {
+            return done(err)
+          }
+
+          erm.serve(app, db.models.Customer, {
+            version: '/v8/Entities/:id',
+            restify: app.isRestify
+          })
+
+          db.models.Customer.create({
+            name: 'Bob'
+          }).then(function (createdCustomer) {
+            customer = createdCustomer
+            server = app.listen(testPort, done)
+          }, function (err) {
+            done(err)
+          })
+        })
+      })
+
+      after(function (done) {
+        dismantle(app, server, done)
+      })
+
+      it('GET /v8/Entities/Customers 200', function (done) {
+        request.get({
+          url: util.format('%s/api/v8/Entities/Customers', testUrl)
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          done()
+        })
+      })
+
+      it('GET /v8/Entities/:id/Customers 200', function (done) {
+        request.get({
+          url: util.format('%s/api/v8/Entities/%s/Customers', testUrl, customer._id)
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          done()
+        })
+      })
+
+      it('GET /v8/Entities/:id/Customers/shallow 200', function (done) {
+        request.get({
+          url: util.format('%s/api/v8/Entities/%s/Customers/shallow', testUrl, customer._id)
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          done()
+        })
+      })
+
+      it('GET /v8/Entities/Customers/count 200', function (done) {
+        request.get({
+          url: util.format('%s/api/v8/Entities/Customers/count', testUrl)
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          done()
+        })
+      })
+    })
+  })
+
+  describe('idProperty', function () {
+    var app = createFn()
+    var server
+    var customer
+
+    before(function (done) {
+      setup(function (err) {
+        if (err) {
+          return done(err)
+        }
+
+        erm.serve(app, db.models.Customer, {
+          idProperty: 'name',
+          restify: app.isRestify
+        })
+
+        db.models.Customer.create({
+          name: 'Bob'
+        }).then(function (createdCustomer) {
+          customer = createdCustomer
+          server = app.listen(testPort, done)
+        }, function (err) {
+          done(err)
+        })
+      })
+    })
+
+    after(function (done) {
+      dismantle(app, server, done)
+    })
+
+    it('GET /Customers/:name 200', function (done) {
+      request.get({
+        url: util.format('%s/api/v1/Customers/%s', testUrl, customer.name),
+        json: true
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 200)
+        assert.equal(body.name, 'Bob')
+        done()
+      })
+    })
+
+    it('POST /Customers/:name 200', function (done) {
+      request.post({
+        url: util.format('%s/api/v1/Customers/%s', testUrl, customer.name),
+        json: {
+          age: 12
+        }
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 200)
+        assert.equal(body.name, 'Bob')
+        assert.equal(body.age, 12)
+        done()
+      })
+    })
+
+    it('PUT /Customers/:name 200', function (done) {
+      request.put({
+        url: util.format('%s/api/v1/Customers/%s', testUrl, customer.name),
+        json: {
+          age: 12
+        }
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 200)
+        assert.equal(body.name, 'Bob')
+        assert.equal(body.age, 12)
+        done()
+      })
+    })
+
+    it('DELETE /Customers/:name 204', function (done) {
+      request.del({
+        url: util.format('%s/api/v1/Customers/%s', testUrl, customer.name)
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 204)
+        done()
+      })
+    })
+  })
 }
