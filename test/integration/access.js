@@ -346,10 +346,7 @@ module.exports = function (createFn, setup, dismantle) {
           })
 
           db.models.Customer.findById(customer._id, function (err, customer) {
-            if (err) {
-              return done(err)
-            }
-
+            assert.ok(!err)
             assert.equal(customer.age, 12)
             assert.equal(customer.favorites.animal, 'Boar')
             done()
@@ -506,10 +503,7 @@ module.exports = function (createFn, setup, dismantle) {
           assert.deepEqual(body.favorites, {})
 
           db.models.Customer.findById(customer._id, function (err, customer) {
-            if (err) {
-              return done(err)
-            }
-
+            assert.ok(!err)
             assert.equal(customer.age, 12)
             assert.equal(customer.comment, 'Boo')
             assert.deepEqual(customer.favorites.toObject(), {

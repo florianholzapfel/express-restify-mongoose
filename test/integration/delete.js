@@ -31,13 +31,11 @@ module.exports = function (createFn, setup, dismantle) {
 
           db.models.Customer.create({
             name: 'Bob'
-          }, function (err, createdCustomer) {
-            if (err) {
-              return done(err)
-            }
-
+          }).then(function (createdCustomer) {
             customer = createdCustomer
             server = app.listen(testPort, done)
+          }, function (err) {
+            done(err)
           })
         })
       })
