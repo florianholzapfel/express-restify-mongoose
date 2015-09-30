@@ -5,7 +5,7 @@ var readTests = require('./integration/read')
 var updateTests = require('./integration/update')
 var deleteTests = require('./integration/delete')
 var accessTests = require('./integration/access')
-var urlTests = require('./integration/url')
+var optionsTests = require('./integration/options')
 var virtualsTests = require('./integration/virtuals')
 
 var db = require('./integration/setup')()
@@ -49,7 +49,7 @@ function runTests (createFn) {
     updateTests(createFn, setup, dismantle)
     deleteTests(createFn, setup, dismantle)
     accessTests(createFn, setup, dismantle)
-    urlTests(createFn, setup, dismantle)
+    optionsTests(createFn, setup, dismantle)
     virtualsTests(createFn, setup, dismantle)
   })
 }
