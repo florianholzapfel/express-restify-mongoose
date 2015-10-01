@@ -17,7 +17,7 @@ npm install express-restify-mongoose --save
 
 ## Documentation
 
-[http://florianholzapfel.github.io/express-restify-mongoose/](http://florianholzapfel.github.io/express-restify-mongoose/)
+[https://florianholzapfel.github.io/express-restify-mongoose/](https://florianholzapfel.github.io/express-restify-mongoose/)
 
 ## Contributing
 
