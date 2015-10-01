@@ -3,14 +3,14 @@ Changelog
 
 ### 2.0.0
 
-* `options.private` and `options.protected` no longer accept comma separated fields, pass an array instead
+* changed `serve` to no longer returns an Express 4 router, now returns the resource's base path (ie.: `/api/v1/Customer`)
+* changed `options.private` and `options.protected` to no longer accept comma separated fields, pass an array instead
 * removed `options.excluded`, use `options.private`
-* removed support for querying with parameters, use `url?query={"name":"hello"}`
-* removed $and and $or passed as parameters, use `url?query={"$or":[...]}`
-* removed `prereq`, use `preMiddleware` as a drop in replacement
-* removed `postCreate`, `postUpdate`, and `postDelete`, use `postMiddleware`
-* removed `postProcess`, use `postMiddleware` or hook into `outputFn`
-* `serve` no longer returns an Express 4 router, now returns the resource's base path (ie.: `/api/v1/Customer`) 
+* removed support for querying directly with query parameters, use `url?query={"name":"hello"}`
+* removed $and and $or query parameters, use `url?query={"$or":[...]}`
+* removed `prereq`, use `preMiddleware` instead
+* changed `postCreate`, `postUpdate`, and `postDelete` signatures to `(req, res, next)`
+* deprecated `outputFn`'s `data` parameter, data now available on `req.erm.result` and `req.erm.statusCode`
 
 ### 1.0.0
 
