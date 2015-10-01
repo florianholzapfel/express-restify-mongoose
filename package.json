@@ -88,8 +88,7 @@
     ],
     "dependencies": {
         "inflection": "~1.7.0",
-        "lodash": "~3.10.0",
-        "mongoose": "^4.0.0"
+        "lodash": "~3.10.0"
     },
     "description": "Easily restify mongoose database",
     "devDependencies": {
@@ -103,6 +102,9 @@
         "restify": "~3.0",
         "sinon": "~1",
         "standard": "^4.0.0"
+    },
+    "peerDependencies": {
+        "mongoose": "^4.0.0"
     },
     "engines": {
         "node": ">=0.10"
