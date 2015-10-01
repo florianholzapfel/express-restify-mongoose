@@ -1,4 +1,6 @@
 language: node_js
+before_script:
+  - npm i mongoose@^4.0.0
 node_js:
   - "0.10"
   - "0.12"
