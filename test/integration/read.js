@@ -33,13 +33,25 @@ module.exports = function (createFn, setup, dismantle) {
 
         db.models.Customer.create([{
           name: 'Bob',
-          age: 12
+          age: 12,
+          favorites: {
+            animal: 'Boar',
+            color: 'Black'
+          }
         }, {
           name: 'John',
-          age: 24
+          age: 24,
+          favorites: {
+            animal: 'Jaguar',
+            color: 'Jade'
+          }
         }, {
           name: 'Mike',
-          age: 36
+          age: 36,
+          favorites: {
+            animal: 'Medusa',
+            color: 'Maroon'
+          }
         }]).then(function (createdCustomers) {
           customers = createdCustomers
 
@@ -614,7 +626,7 @@ module.exports = function (createFn, setup, dismantle) {
     })
 
     describe('select', function () {
-      it('GET /Customers?select=name 200 - only include ', function (done) {
+      it('GET /Customers?select=name 200 - only include', function (done) {
         request.get({
           url: util.format('%s/api/v1/Customers', testUrl),
           qs: {
@@ -629,6 +641,28 @@ module.exports = function (createFn, setup, dismantle) {
             assert.equal(Object.keys(item).length, 2)
             assert.ok(item._id)
             assert.ok(item.name)
+          })
+          done()
+        })
+      })
+
+      it('GET /Customers?select=favorites.animal 200 - only include (nested field)', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          qs: {
+            select: 'favorites.animal'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 3)
+          body.forEach(function (item) {
+            assert.equal(Object.keys(item).length, 2)
+            assert.ok(item._id)
+            assert.ok(item.favorites)
+            assert.ok(item.favorites.animal)
+            assert.ok(item.favorites.color === undefined)
           })
           done()
         })
