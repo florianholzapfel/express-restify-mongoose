@@ -6,8 +6,7 @@
   "dependencies": {
     "async": "~1.4.0",
     "inflection": "~1.7.0",
-    "lodash": "~3.10.0",
-    "mongoose": "^4.0.0"
+    "lodash": "~3.10.0"
   },
   "peerDependencies": {
       "mongoose": "^4.0.0"
