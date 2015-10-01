@@ -1,6 +1,10 @@
 Changelog
 =========
 
+### 1.1.0
+
+* added a `postUpdate` hook
+
 ### 1.0.0
 
 > **This release requires mongoose ~4**
