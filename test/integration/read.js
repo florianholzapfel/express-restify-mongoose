@@ -437,13 +437,14 @@ module.exports = function (createFn, setup, dismantle) {
           })
         })
 
-        it('GET /Customers?query={"name":["Bob","John"]} 200 - in', function (done) {
+        it('GET /Customers?query={"name":["Bob","John"]}&sort=name 200 - in', function (done) {
           request.get({
             url: util.format('%s/api/v1/Customers', testUrl),
             qs: {
               query: JSON.stringify({
                 name: ['Bob', 'John']
-              })
+              }),
+              sort: 'name'
             },
             json: true
           }, function (err, res, body) {
@@ -604,13 +605,14 @@ module.exports = function (createFn, setup, dismantle) {
           })
         })
 
-        it('GET /Customers?query={"age":["12","24"]} 200 - in', function (done) {
+        it('GET /Customers?query={"age":["12","24"]}&sort=age 200 - in', function (done) {
           request.get({
             url: util.format('%s/api/v1/Customers', testUrl),
             qs: {
               query: JSON.stringify({
                 age: ['12', '24']
-              })
+              }),
+              sort: 'age'
             },
             json: true
           }, function (err, res, body) {
