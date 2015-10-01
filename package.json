@@ -9,6 +9,9 @@
     "lodash": "~3.10.0",
     "mongoose": "^4.0.0"
   },
+  "peerDependencies": {
+      "mongoose": "^4.0.0"
+  },
   "description": "Easily create a flexible REST interface for mongoose models",
   "devDependencies": {
     "assertmessage": "0.0.2",
