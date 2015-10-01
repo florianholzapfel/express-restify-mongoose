@@ -617,7 +617,6 @@ module.exports = function (createFn, setup, dismantle) {
   describe('postProcess', function () {
     var app = createFn()
     var server
-    var customer
     var options = {
       postProcess: sinon.spy(function (req, res, next) {
         next()
