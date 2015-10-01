@@ -260,7 +260,9 @@ module.exports = function (createFn, setup, dismantle) {
         assert.equal(res.statusCode, 201)
         sinon.assert.calledOnce(options.postCreate)
         var args = options.postCreate.args[0]
-        assert.equal(args.length, 4)
+        assert.equal(args.length, 3)
+        assert.equal(args[0].erm.result.name, 'Bob')
+        assert.equal(args[0].erm.statusCode, 201)
         assert.equal(typeof args[2], 'function')
         done()
       })
@@ -311,7 +313,9 @@ module.exports = function (createFn, setup, dismantle) {
         assert.equal(res.statusCode, 200)
         sinon.assert.calledOnce(options.postRead)
         var args = options.postRead.args[0]
-        assert.equal(args.length, 4)
+        assert.equal(args.length, 3)
+        assert.equal(args[0].erm.result[0].name, 'Bob')
+        assert.equal(args[0].erm.statusCode, 200)
         assert.equal(typeof args[2], 'function')
         done()
       })
@@ -326,7 +330,9 @@ module.exports = function (createFn, setup, dismantle) {
         assert.equal(res.statusCode, 200)
         sinon.assert.calledOnce(options.postRead)
         var args = options.postRead.args[0]
-        assert.equal(args.length, 4)
+        assert.equal(args.length, 3)
+        assert.equal(args[0].erm.result.count, 1)
+        assert.equal(args[0].erm.statusCode, 200)
         assert.equal(typeof args[2], 'function')
         done()
       })
@@ -341,7 +347,9 @@ module.exports = function (createFn, setup, dismantle) {
         assert.equal(res.statusCode, 200)
         sinon.assert.calledOnce(options.postRead)
         var args = options.postRead.args[0]
-        assert.equal(args.length, 4)
+        assert.equal(args.length, 3)
+        assert.equal(args[0].erm.result.name, 'Bob')
+        assert.equal(args[0].erm.statusCode, 200)
         assert.equal(typeof args[2], 'function')
         done()
       })
@@ -356,7 +364,9 @@ module.exports = function (createFn, setup, dismantle) {
         assert.equal(res.statusCode, 200)
         sinon.assert.calledOnce(options.postRead)
         var args = options.postRead.args[0]
-        assert.equal(args.length, 4)
+        assert.equal(args.length, 3)
+        assert.equal(args[0].erm.result.name, 'Bob')
+        assert.equal(args[0].erm.statusCode, 200)
         assert.equal(typeof args[2], 'function')
         done()
       })
@@ -401,13 +411,17 @@ module.exports = function (createFn, setup, dismantle) {
     it('POST /Customers/:id 200', function (done) {
       request.post({
         url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
-        json: {}
+        json: {
+          name: 'Bobby'
+        }
       }, function (err, res, body) {
         assert.ok(!err)
         assert.equal(res.statusCode, 200)
         sinon.assert.calledOnce(options.postUpdate)
         var args = options.postUpdate.args[0]
-        assert.equal(args.length, 4)
+        assert.equal(args.length, 3)
+        assert.equal(args[0].erm.result.name, 'Bobby')
+        assert.equal(args[0].erm.statusCode, 200)
         assert.equal(typeof args[2], 'function')
         done()
       })
@@ -439,13 +453,17 @@ module.exports = function (createFn, setup, dismantle) {
     it('PUT /Customers/:id 200', function (done) {
       request.put({
         url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
-        json: {}
+        json: {
+          name: 'Bobby'
+        }
       }, function (err, res, body) {
         assert.ok(!err)
         assert.equal(res.statusCode, 200)
         sinon.assert.calledOnce(options.postUpdate)
         var args = options.postUpdate.args[0]
-        assert.equal(args.length, 4)
+        assert.equal(args.length, 3)
+        assert.equal(args[0].erm.result.name, 'Bobby')
+        assert.equal(args[0].erm.statusCode, 200)
         assert.equal(typeof args[2], 'function')
         done()
       })
@@ -519,7 +537,9 @@ module.exports = function (createFn, setup, dismantle) {
         assert.equal(res.statusCode, 204)
         sinon.assert.calledOnce(options.postDelete)
         var args = options.postDelete.args[0]
-        assert.equal(args.length, 4)
+        assert.equal(args.length, 3)
+        assert.equal(args[0].erm.result, undefined)
+        assert.equal(args[0].erm.statusCode, 204)
         assert.equal(typeof args[2], 'function')
         done()
       })
@@ -534,7 +554,9 @@ module.exports = function (createFn, setup, dismantle) {
         assert.equal(res.statusCode, 204)
         sinon.assert.calledOnce(options.postDelete)
         var args = options.postDelete.args[0]
-        assert.equal(args.length, 4)
+        assert.equal(args.length, 3)
+        assert.equal(args[0].erm.result, undefined)
+        assert.equal(args[0].erm.statusCode, 204)
         assert.equal(typeof args[2], 'function')
         done()
       })

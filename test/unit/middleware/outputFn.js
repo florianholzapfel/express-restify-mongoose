@@ -25,8 +25,12 @@ describe('outputFn', function () {
   })
 
   describe('express', function () {
-    it('sends no data defaults to sending 200', function () {
-      outputFn(true)({}, res)
+    it('sends status code and message', function () {
+      outputFn(true)({
+        erm: {
+          statusCode: 200
+        }
+      }, res)
 
       sinon.assert.calledOnce(sendStatus)
       sinon.assert.calledWithExactly(sendStatus, 200)
@@ -35,45 +39,36 @@ describe('outputFn', function () {
       sinon.assert.notCalled(send)
     })
 
-    it('sends data and defaults to status code 200', function () {
-      var data = {
-        result: {
-          foo: 'bar'
-        }
-      }
-
-      outputFn(true)({}, res, data)
-
-      sinon.assert.calledOnce(status)
-      sinon.assert.calledWithExactly(status, 200)
-      sinon.assert.calledOnce(json)
-      sinon.assert.calledWithExactly(json, data.result)
-      sinon.assert.notCalled(sendStatus)
-      sinon.assert.notCalled(send)
-    })
-
     it('sends data and status code', function () {
-      var data = {
-        statusCode: 201,
-        result: {
-          foo: 'bar'
+      var req = {
+        erm: {
+          statusCode: 201,
+          result: {
+            name: 'Bob'
+          }
         }
       }
 
-      outputFn(true)({}, res, data)
+      outputFn(true)(req, res)
 
       sinon.assert.calledOnce(status)
-      sinon.assert.calledWithExactly(status, data.statusCode)
+      sinon.assert.calledWithExactly(status, 201)
       sinon.assert.calledOnce(json)
-      sinon.assert.calledWithExactly(json, data.result)
+      sinon.assert.calledWithExactly(json, {
+        name: 'Bob'
+      })
       sinon.assert.notCalled(sendStatus)
       sinon.assert.notCalled(send)
     })
   })
 
   describe('restify', function () {
-    it('sends no data defaults to sending 200', function () {
-      outputFn(false)({}, res)
+    it('sends status code', function () {
+      outputFn(false)({
+        erm: {
+          statusCode: 200
+        }
+      }, res)
 
       sinon.assert.calledOnce(send)
       sinon.assert.calledWithExactly(send, 200, undefined)
@@ -82,34 +77,22 @@ describe('outputFn', function () {
       sinon.assert.notCalled(json)
     })
 
-    it('sends data and defaults to status code 200', function () {
-      var data = {
-        result: {
-          foo: 'bar'
-        }
-      }
-
-      outputFn(false)({}, res, data)
-
-      sinon.assert.calledOnce(send)
-      sinon.assert.calledWithExactly(send, 200, data.result)
-      sinon.assert.notCalled(sendStatus)
-      sinon.assert.notCalled(status)
-      sinon.assert.notCalled(json)
-    })
-
     it('sends data and status code', function () {
-      var data = {
-        statusCode: 201,
-        result: {
-          foo: 'bar'
+      var req = {
+        erm: {
+          statusCode: 201,
+          result: {
+            name: 'Bob'
+          }
         }
       }
 
-      outputFn(false)({}, res, data)
+      outputFn(false)(req, res)
 
       sinon.assert.calledOnce(send)
-      sinon.assert.calledWithExactly(send, data.statusCode, data.result)
+      sinon.assert.calledWithExactly(send, 201, {
+        name: 'Bob'
+      })
       sinon.assert.notCalled(sendStatus)
       sinon.assert.notCalled(status)
       sinon.assert.notCalled(json)

@@ -15,7 +15,8 @@ describe('prepareOutput', function () {
 
   it('calls outputFn with default options and no post* middleware', function () {
     var req = {
-      method: 'GET'
+      method: 'GET',
+      erm: {}
     }
 
     var options = {
@@ -36,10 +37,12 @@ describe('prepareOutput', function () {
 
   it('calls outputFn with default options and postCreate middleware', function () {
     var req = {
-      _ermResult: {
-        foo: 'bar'
+      erm: {
+        result: {
+          name: 'Bob'
+        },
+        statusCode: 201
       },
-      _ermStatusCode: 201,
       method: 'POST'
     }
 
@@ -56,8 +59,10 @@ describe('prepareOutput', function () {
     sinon.assert.calledOnce(postCreate)
     sinon.assert.calledOnce(outputFn)
     sinon.assert.calledWithExactly(outputFn, req, {}, {
-      result: req._ermResult,
-      statusCode: req._ermStatusCode
+      result: {
+        name: 'Bob'
+      },
+      statusCode: 201
     })
     sinon.assert.notCalled(onError)
     sinon.assert.notCalled(next)
@@ -65,10 +70,12 @@ describe('prepareOutput', function () {
 
   it('calls outputFn with default options and postRead middleware', function () {
     var req = {
-      _ermResult: {
-        foo: 'bar'
+      erm: {
+        result: {
+          name: 'Bob'
+        },
+        statusCode: 200
       },
-      _ermStatusCode: 200,
       method: 'GET'
     }
 
@@ -85,8 +92,10 @@ describe('prepareOutput', function () {
     sinon.assert.calledOnce(postRead)
     sinon.assert.calledOnce(outputFn)
     sinon.assert.calledWithExactly(outputFn, req, {}, {
-      result: req._ermResult,
-      statusCode: req._ermStatusCode
+      result: {
+        name: 'Bob'
+      },
+      statusCode: 200
     })
     sinon.assert.notCalled(onError)
     sinon.assert.notCalled(next)
@@ -94,10 +103,12 @@ describe('prepareOutput', function () {
 
   it('calls outputFn with default options and postUpdate middleware', function () {
     var req = {
-      _ermResult: {
-        foo: 'bar'
+      erm: {
+        result: {
+          name: 'Bob'
+        },
+        statusCode: 200
       },
-      _ermStatusCode: 200,
       method: 'POST'
     }
 
@@ -114,8 +125,10 @@ describe('prepareOutput', function () {
     sinon.assert.calledOnce(postUpdate)
     sinon.assert.calledOnce(outputFn)
     sinon.assert.calledWithExactly(outputFn, req, {}, {
-      result: req._ermResult,
-      statusCode: req._ermStatusCode
+      result: {
+        name: 'Bob'
+      },
+      statusCode: 200
     })
     sinon.assert.notCalled(onError)
     sinon.assert.notCalled(next)
@@ -123,10 +136,12 @@ describe('prepareOutput', function () {
 
   it('calls outputFn with default options and postUpdate middleware', function () {
     var req = {
-      _ermResult: {
-        foo: 'bar'
+      erm: {
+        result: {
+          name: 'Bob'
+        },
+        statusCode: 200
       },
-      _ermStatusCode: 200,
       method: 'PUT'
     }
 
@@ -143,8 +158,10 @@ describe('prepareOutput', function () {
     sinon.assert.calledOnce(postUpdate)
     sinon.assert.calledOnce(outputFn)
     sinon.assert.calledWithExactly(outputFn, req, {}, {
-      result: req._ermResult,
-      statusCode: req._ermStatusCode
+      result: {
+        name: 'Bob'
+      },
+      statusCode: 200
     })
     sinon.assert.notCalled(onError)
     sinon.assert.notCalled(next)
@@ -152,10 +169,12 @@ describe('prepareOutput', function () {
 
   it('calls outputFn with default options and postDelete middleware', function () {
     var req = {
-      _ermResult: {
-        foo: 'bar'
+      erm: {
+        result: {
+          name: 'Bob'
+        },
+        statusCode: 204
       },
-      _ermStatusCode: 204,
       method: 'DELETE'
     }
 
@@ -172,8 +191,10 @@ describe('prepareOutput', function () {
     sinon.assert.calledOnce(postDelete)
     sinon.assert.calledOnce(outputFn)
     sinon.assert.calledWithExactly(outputFn, req, {}, {
-      result: req._ermResult,
-      statusCode: req._ermStatusCode
+      result: {
+        name: 'Bob'
+      },
+      statusCode: 204
     })
     sinon.assert.notCalled(onError)
     sinon.assert.notCalled(next)
@@ -181,6 +202,7 @@ describe('prepareOutput', function () {
 
   it('calls onError with default options and bad postRead middleware', function () {
     var req = {
+      erm: {},
       method: 'GET'
     }
 
