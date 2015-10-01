@@ -562,4 +562,101 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
   })
+
+  describe('postCreate yields an error', function () {
+    var app = createFn()
+    var server
+    var options = {
+      postCreate: sinon.spy(function (req, res, next) {
+        var err = new Error('Something went wrong')
+        err.statusCode = 400
+        next(err)
+      }),
+      postProcess: sinon.spy(),
+      restify: app.isRestify
+    }
+
+    beforeEach(function (done) {
+      setup(function (err) {
+        if (err) {
+          return done(err)
+        }
+
+        erm.serve(app, db.models.Customer, options)
+
+        server = app.listen(testPort, done)
+      })
+    })
+
+    afterEach(function (done) {
+      options.postCreate.reset()
+      dismantle(app, server, done)
+    })
+
+    it('POST /Customers 201', function (done) {
+      request.post({
+        url: util.format('%s/api/v1/Customers', testUrl),
+        json: {
+          name: 'Bob'
+        }
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 400)
+        sinon.assert.calledOnce(options.postCreate)
+        var args = options.postCreate.args[0]
+        assert.equal(args.length, 3)
+        assert.equal(args[0].erm.result.name, 'Bob')
+        assert.equal(args[0].erm.statusCode, 201)
+        assert.equal(typeof args[2], 'function')
+        sinon.assert.notCalled(options.postProcess)
+        done()
+      })
+    })
+  })
+
+  describe('postProcess', function () {
+    var app = createFn()
+    var server
+    var customer
+    var options = {
+      postProcess: sinon.spy(function (req, res, next) {
+        next()
+      }),
+      restify: app.isRestify
+    }
+
+    beforeEach(function (done) {
+      setup(function (err) {
+        if (err) {
+          return done(err)
+        }
+
+        erm.serve(app, db.models.Customer, options)
+
+        server = app.listen(testPort, done)
+      })
+    })
+
+    afterEach(function (done) {
+      options.postProcess.reset()
+      dismantle(app, server, done)
+    })
+
+    it('GET /Customers 200', function (done) {
+      request.get({
+        url: util.format('%s/api/v1/Customers', testUrl),
+        json: true
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 200)
+        sinon.assert.calledOnce(options.postProcess)
+        var args = options.postProcess.args[0]
+        assert.equal(args.length, 3)
+        assert.deepEqual(args[0].erm.result, [])
+        assert.equal(args[0].erm.statusCode, 200)
+        assert.equal(typeof args[2], 'function')
+        done()
+      })
+    })
+  })
 }
