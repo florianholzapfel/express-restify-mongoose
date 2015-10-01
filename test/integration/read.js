@@ -406,7 +406,7 @@ module.exports = function (createFn, setup, dismantle) {
           })
         })
 
-        it('GET /Customers?query={"name":"=John"} 200 - not equal', function (done) {
+        it('GET /Customers?query={"name":"=John"} 200 - equal', function (done) {
           request.get({
             url: util.format('%s/api/v1/Customers', testUrl),
             qs: {
