@@ -406,7 +406,8 @@ module.exports = function (createFn, setup, dismantle) {
           })
         })
 
-        it('GET /Customers?query={"name":"=John"} 200 - equal', function (done) {
+        // This feature was disabled because it requires MongoDB 3
+        it.skip('GET /Customers?query={"name":"=John"} 200 - equal', function (done) {
           request.get({
             url: util.format('%s/api/v1/Customers', testUrl),
             qs: {
@@ -572,7 +573,8 @@ module.exports = function (createFn, setup, dismantle) {
           })
         })
 
-        it('GET /Customers?query={"age":"=24"} 200 - equal', function (done) {
+        // This feature was disabled because it requires MongoDB 3
+        it.skip('GET /Customers?query={"age":"=24"} 200 - equal', function (done) {
           request.get({
             url: util.format('%s/api/v1/Customers', testUrl),
             qs: {

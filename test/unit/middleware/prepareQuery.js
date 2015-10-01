@@ -130,7 +130,8 @@ describe('prepareQuery', function () {
       sinon.assert.notCalled(options.onError)
     })
 
-    it('converts != to $eq', function () {
+    // This feature was disabled because it requires MongoDB 3
+    it.skip('converts = to $eq', function () {
       var req = {
         query: {
           query: '{"foo":"=bar"}'
