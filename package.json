@@ -1,136 +1,64 @@
 {
-    "author": {
-        "email": "flo.holzapfel@gmail.com",
-        "name": "Florian Holzapfel"
-    },
-    "contributors": [
-        {
-            "name": "Enric Le\u00f3n"
-        },
-        {
-            "name": "David Higginbotham"
-        },
-        {
-            "name": "Jonathan Greenemeier"
-        },
-        {
-            "name": "Alan Levicki"
-        },
-        {
-            "name": "Michael"
-        },
-        {
-            "name": "Matt Roman"
-        },
-        {
-            "name": "Fetrarijaona R."
-        },
-        {
-            "name": "Jan Paul Erkelens"
-        },
-        {
-            "name": "Christoph Herbst"
-        },
-        {
-            "name": "doobinay"
-        },
-        {
-            "name": "Hareesh"
-        },
-        {
-            "name": "09setht"
-        },
-		{
-			"name": "Ph3n1x"
-		},
-		{
-			"name": "Zertz"
-		},
-		{
-			"name": "Emre Efendioğlu"
-		},
-		{
-			"name": "Tim Mckenzie"
-		},
-		{
-			"name": "Emil Janitzek"
-		},
-		{
-			"name": "Daniel Henrique"
-		},
-		{
-			"name": "Caleb Meredith"
-		},
-		{
-			"name": "David Souther"
-		},
-        {
-            "name": "Marco Cameriero"
-        },
-        {
-            "name": "Jan Melcher"
-        },
-        {
-            "name": "Urs Wolfer"
-        },
-        {
-            "name": "Thomas Forrer"
-        },
-        {
-            "name": "Stefan Kleeschulte"
-        },
-        {
-            "name": "Reimund Trost"
-        },
-        {
-            "name": "Elliott Garcea"
-        }
-    ],
-    "dependencies": {
-        "inflection": "~1.7.0",
-        "lodash": "~3.10.0"
-    },
-    "description": "Easily restify mongoose database",
-    "devDependencies": {
-        "assertmessage": "0.0.2",
-        "async": "~0.9.0",
-        "mocha": "~2.2",
-        "request": "~2",
-        "express": "~4",
-		"body-parser": "*",
-		"method-override": "*",
-        "restify": "~3.0",
-        "sinon": "~1",
-        "standard": "^4.0.0"
-    },
-    "peerDependencies": {
-        "mongoose": "^4.0.0"
-    },
-    "engines": {
-        "node": ">=0.10"
-    },
-    "homepage": "http://florianholzapfel.github.io/express-restify-mongoose/",
-    "keywords": [
-        "ReST",
-        "express",
-        "restify",
-        "mongodb",
-        "mongoose"
-    ],
-    "license" : "MIT",
-    "main": "./lib/express-restify-mongoose",
-    "name": "express-restify-mongoose",
-    "readmeFilename": "README.md",
-    "repository": {
-        "type": "git",
-        "url": "git://github.com/florianholzapfel/express-restify-mongoose.git"
-    },
-    "bugs": {
-        "url": "https://github.com/florianholzapfel/express-restify-mongoose/issues"
-    },
-    "scripts": {
-        "pretest": "./node_modules/standard/bin/cmd.js",
-        "test": "./node_modules/.bin/mocha -R spec ./test/express.js ./test/permissions.js ./test/resource_filter.js --timeout 5s && ./node_modules/.bin/mocha -R spec ./test/restify.js --timeout 5s"
-    },
-    "version": "1.1.1"
+  "author": {
+    "email": "flo.holzapfel@gmail.com",
+    "name": "Florian Holzapfel"
+  },
+  "dependencies": {
+    "async": "~1.4.0",
+    "inflection": "~1.7.0",
+    "lodash": "~3.10.0"
+  },
+  "peerDependencies": {
+      "mongoose": "^4.0.0"
+  },
+  "description": "Easily create a flexible REST interface for mongoose models",
+  "devDependencies": {
+    "assertmessage": "0.0.2",
+    "body-parser": "~1",
+    "express": "~4",
+    "istanbul": "~0.3",
+    "method-override": "~2",
+    "mocha": "~2",
+    "request": "~2",
+    "restify": "~3",
+    "sinon": "~1",
+    "standard": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=0.10"
+  },
+  "homepage": "http://florianholzapfel.github.io/express-restify-mongoose/",
+  "keywords": [
+    "ReST",
+    "express",
+    "restify",
+    "mongodb",
+    "mongoose",
+    "model"
+  ],
+  "license": "MIT",
+  "main": "./lib/express-restify-mongoose",
+  "name": "express-restify-mongoose",
+  "readmeFilename": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/florianholzapfel/express-restify-mongoose.git"
+  },
+  "bugs": {
+    "url": "https://github.com/florianholzapfel/express-restify-mongoose/issues"
+  },
+  "scripts": {
+    "pretest": "standard",
+    "test": "mocha -R spec ./test/unit.js && mocha -R spec ./test/integration/resource_filter.js --timeout 10s && mocha -R spec ./test/express.js --timeout 10s && mocha -R spec ./test/restify.js --timeout 10s",
+    "test-ci": "mocha -R spec ./test/unit.js && mocha -R spec ./test/integration/resource_filter.js --timeout 10s && istanbul cover node_modules/mocha/bin/_mocha -- -R spec ./test/express.js --timeout 10s && mocha -R spec ./test/restify.js --timeout 10s",
+    "test-cov-unit": "istanbul cover node_modules/mocha/bin/_mocha -- -R spec ./test/unit.js",
+    "test-cov-express": "istanbul cover node_modules/mocha/bin/_mocha -- -R spec ./test/express.js --timeout 10s",
+    "test-cov-restify": "istanbul cover node_modules/mocha/bin/_mocha -- -R spec ./test/restify.js --timeout 10s"
+  },
+  "standard": {
+    "globals": [
+      "describe", "before", "beforeEach", "after", "afterEach", "it"
+    ]
+  },
+  "version": "1.1.0"
 }

@@ -1,6 +1,4 @@
 language: node_js
-before_script:
-  - npm i mongoose@^4.0.0
 node_js:
   - "0.10"
   - "0.12"
@@ -9,3 +7,9 @@ node_js:
 services:
   - "mongodb"
 sudo: false
+before_script:
+  - npm i mongoose@^4.0.0
+script:
+  - npm run test-ci
+after_script:
+  - npm install coveralls@~2.11.0 && cat ./coverage/lcov.info | coveralls

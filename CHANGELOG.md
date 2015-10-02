@@ -1,9 +1,16 @@
 Changelog
 =========
 
-### 1.1.0
+### 2.0.0
 
-* added a `postUpdate` hook
+* changed `serve` to no longer returns an Express 4 router, now returns the resource's base path (ie.: `/api/v1/Customer`)
+* changed `options.private` and `options.protected` to no longer accept comma separated fields, pass an array instead
+* removed `options.excluded`, use `options.private`
+* removed support for querying directly with query parameters, use `url?query={"name":"hello"}`
+* removed $and and $or query parameters, use `url?query={"$or":[...]}`
+* removed `prereq`, use `preMiddleware` instead
+* changed `postCreate`, `postUpdate`, and `postDelete` signatures to `(req, res, next)`
+* deprecated `outputFn`'s `data` parameter, data now available on `req.erm.result` and `req.erm.statusCode`
 
 ### 1.0.0
 
