@@ -1,0 +1,11 @@
+# Site settings
+title: express-restify-mongoose
+description: >
+  Easily create a flexible REST interface for mongoose models
+baseurl: "/express-restify-mongoose/"
+url: "https://florianholzapfel.github.io"
+github_username: florianholzapfel
+
+# Build settings
+highlighter: rouge
+markdown: kramdown

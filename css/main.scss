@@ -1,0 +1,58 @@
+---
+# Only the main Sass file needs front matter (the dashes are enough)
+---
+@charset "utf-8";
+
+// Our variables
+$base-font-family: Helvetica, Arial, sans-serif;
+$base-font-size:   16px;
+$small-font-size:  $base-font-size * 0.875;
+$base-line-height: 1.5;
+
+$spacing-unit:     30px;
+
+$text-color:       #111;
+$background-color: #fdfdfd;
+$brand-color:      #2a7ae2;
+
+$grey-color:       #828282;
+$grey-color-light: lighten($grey-color, 40%);
+$grey-color-dark:  darken($grey-color, 25%);
+
+// Import partials from `sass_dir` (defaults to `_sass`)
+@import
+        "base",
+        "layout",
+        "syntax-highlighting"
+;
+
+.section-anchor {
+  display: none;
+  font-size: 0.5em;
+  margin-left: -1.2em;
+}
+
+.section-header:hover > .section-anchor {
+  display: inline;
+  text-decoration: none;
+}
+
+.nav > li > .nav {
+  margin-left: 10px;
+}
+
+.nav > li > a.active {
+  background-color: #e6e6e6;
+}
+
+.affix {
+  top: 0;
+}
+
+.affix-bottom {
+  position: absolute;
+}
+
+h4 > * {
+  margin-left: 10px;
+}
