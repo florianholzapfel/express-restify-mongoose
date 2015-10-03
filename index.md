@@ -110,11 +110,11 @@ request({
 ## Query
 --------
 
+All the following parameters (sort, skip, limit, query, populate, select and distinct) support the entire mongoose feature set.
+
 > When passing values as objects or arrays in URLs, they must be valid JSON.
 
 ### Sort
-
-Supports a list of fields or an object.
 
 {% highlight apache %}
 GET /Customers?sort=name
@@ -139,15 +139,25 @@ GET /Customers?limit=10
 
 ### Query
 
-Supports an object.
+Supports all operators ($regex, $gt, $gte, $lt, $lte, $ne, etc.) as well as shorthands: ~, >, >=, <, <=, !=
 
 {% highlight apache %}
-GET /Invoices?query={"name":"Bob"}
+GET /Customers?query={"name":"Bob"}
+GET /Customers?query={"name":{"$regex":"^(Bob)"}}
+GET /Customers?query={"name":"~^(Bob)"}
+GET /Customers?query={"age":{"$gt":12}}
+GET /Customers?query={"age":">12"}
+GET /Customers?query={"age":{"$gte":12}}
+GET /Customers?query={"age":">=12"}
+GET /Customers?query={"age":{"$lt":12}}
+GET /Customers?query={"age":"<12"}
+GET /Customers?query={"age":{"$lte":12}}
+GET /Customers?query={"age":"<=12"}
+GET /Customers?query={"age":{"$ne":12}}
+GET /Customers?query={"age":"!=12"}
 {% endhighlight %}
 
 ### Populate
-
-Supports a list of fields, an object or an array.
 
 {% highlight apache %}
 GET /Invoices?populate=customer
@@ -157,18 +167,16 @@ GET /Invoices?populate=[{"path":"customer"},{"path":"products"}]
 
 ### Select
 
-Supports a list of fields or an object.
+<code>_id</code> is always returned unless explicitely excluded.
 
 {% highlight apache %}
 GET /Customers?select=name
 GET /Customers?select=-name
-GET /Customers?select={"name":1}
+GET /Customers?select={"name":0}
 GET /Customers?select={"name":0}
 {% endhighlight %}
 
 ### Distinct
-
-Supports a single field and returns an array.
 
 {% highlight apache %}
 GET /Customers?distinct=name
