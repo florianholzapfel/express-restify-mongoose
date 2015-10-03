@@ -1,9 +1,23 @@
 ---
 layout: default
+version: 2
 ---
 
 ## Getting started
 ------------------
+
+**package.json**
+
+{% highlight javascript %}
+{
+  "dependencies": {
+    "express-restify-mongoose": "^2.0.0",
+    "mongoose": "^4.0.0"
+  }
+}
+{% endhighlight %}
+
+**From the command line**
 
 {% highlight javascript %}
 npm install express-restify-mongoose --save
@@ -96,24 +110,68 @@ request({
 ## Query
 --------
 
-### Sort, skip and limit
+> When passing values as objects or arrays in URLs, they must be valid JSON.
+
+### Sort
+
+Supports a list of fields or an object.
 
 {% highlight apache %}
-GET http://localhost/api/v1/Customers?sort=name
-GET http://localhost/api/v1/Customers?sort=-name
-GET http://localhost/api/v1/Customers?skip=10&amp;limit=10
+GET /Customers?sort=name
+GET /Customers?sort=-name
+GET /Customers?sort={"name":1}
+GET /Customers?sort={"name":0}
+{% endhighlight %}
+
+### Skip
+
+{% highlight apache %}
+GET /Customers?skip=10
+{% endhighlight %}
+
+### Limit
+
+Only overrides <code>options.limit</code> if the queried limit is lower.
+
+{% highlight apache %}
+GET /Customers?limit=10
+{% endhighlight %}
+
+### Query
+
+Supports an object.
+
+{% highlight apache %}
+GET /Invoices?query={"name":"Bob"}
 {% endhighlight %}
 
 ### Populate
 
-Populated fields will not have any effect on select fields as supported by Mongoose, they will be fetched along with select fields.
+Supports a list of fields, an object or an array.
 
 {% highlight apache %}
-GET http://localhost/api/v1/Invoices?populate=customer
-GET http://localhost/api/v1/Invoices?populate=customer&amp;select=amount
-GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name
-GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer,amount
-GET http://localhost/api/v1/Invoices?populate=customer&amp;select=customer.name,amount
+GET /Invoices?populate=customer
+GET /Invoices?populate={"path":"customer"}
+GET /Invoices?populate=[{"path":"customer"},{"path":"products"}]
+{% endhighlight %}
+
+### Select
+
+Supports a list of fields or an object.
+
+{% highlight apache %}
+GET /Customers?select=name
+GET /Customers?select=-name
+GET /Customers?select={"name":1}
+GET /Customers?select={"name":0}
+{% endhighlight %}
+
+### Distinct
+
+Supports a single field and returns an array.
+
+{% highlight apache %}
+GET /Customers?distinct=name
 {% endhighlight %}
 
 ## Reference
