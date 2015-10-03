@@ -50,3 +50,25 @@ pre {
         }
     }
 }
+
+/**
+ * Footer
+ */
+.list-footer {
+    margin: 0;
+    padding: 0;
+}
+
+.list-footer > li {
+    float: left;
+    list-style-type: none;
+    margin: 0 20px;
+}
+
+.list-footer > li:first-child {
+    margin-left: 0;
+}
+
+.list-footer > li:last-child {
+    margin-right: 0;
+}
