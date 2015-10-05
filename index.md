@@ -107,8 +107,8 @@ request({
 })
 {% endhighlight %}
 
-## Query
---------
+## Querying
+-----------
 
 All the following parameters (sort, skip, limit, query, populate, select and distinct) support the entire mongoose feature set.
 
