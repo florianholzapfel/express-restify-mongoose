@@ -23,7 +23,7 @@ version: 2
 npm install express-restify-mongoose --save
 {% endhighlight %}
 
-### Upgrading from v1
+### Changelog
 
 * changed `serve` to no longer returns an Express 4 router, now returns the resource's base path (ie.: `/api/v1/Customer`)
 * changed `options.private` and `options.protected` to no longer accept comma separated fields, pass an array instead
@@ -112,7 +112,7 @@ request({
 
 All the following parameters (sort, skip, limit, query, populate, select and distinct) support the entire mongoose feature set.
 
-> When passing values as objects or arrays in URLs, they must be valid JSON.
+> When passing values as objects or arrays in URLs, they must be valid JSON
 
 ### Sort
 
@@ -131,7 +131,7 @@ GET /Customers?skip=10
 
 ### Limit
 
-Only overrides <code>options.limit</code> if the queried limit is lower.
+Only overrides `options.limit` if the queried limit is lower
 
 {% highlight apache %}
 GET /Customers?limit=10
@@ -167,12 +167,12 @@ GET /Invoices?populate=[{"path":"customer"},{"path":"products"}]
 
 ### Select
 
-<code>_id</code> is always returned unless explicitely excluded.
+`_id` is always returned unless explicitely excluded
 
 {% highlight apache %}
 GET /Customers?select=name
 GET /Customers?select=-name
-GET /Customers?select={"name":0}
+GET /Customers?select={"name":1}
 GET /Customers?select={"name":0}
 {% endhighlight %}
 
@@ -197,41 +197,127 @@ restify.serve(router, model[, options])
 
 **options**: object <span class="label label-primary">type</span><span class="label label-success">default</span><span class="label label-info">version</span>
 
-#### prefix <span class="label label-primary" title="type">string</span><span class="label label-success" title="default">/api</span>
+#### prefix
+<span class="label label-primary" title="type">string</span><span class="label label-success" title="default">/api</span>
 
-Path to prefix to the REST endpoint.
+Path to prefix to the REST endpoint
 
-#### version <span class="label label-primary" title="type">string</span><span class="label label-success" title="default">/v1</span>
+#### version
+<span class="label label-primary" title="type">string</span><span class="label label-success" title="default">/v1</span>
 
-API version that will be prefixed to the rest path. If prefix or version contains <code>/:id</code>, then that will be used as the location to search for the id.
+API version that will be prefixed to the rest path. If prefix or version contains `/:id`, then that will be used as the location to search for the id
 
 ##### Example
 
-Generate <code>/api/v1/Entities/:id/Model</code> and <code>/api/v1/Entities/Model</code> for all pertinent methods:
+Generates `/api/v1/Entities/:id/Model` and `/api/v1/Entities/Model` for all pertinent methods
 
 {% highlight javascript %}
 version: '/v1/Entities/:id'
 {% endhighlight %}
 
-#### idProperty <span class="label label-primary" title="type">string</span><span class="label label-success" title="default">_id</span>
+#### idProperty
+<span class="label label-primary" title="type">string</span><span class="label label-success" title="default">_id</span>
 
-findById will query on the given property.
+`findById` will query on the given property
 
-#### preMiddleware <span class="label label-primary" title="type">function | array</span>
+#### restify
+<span class="label label-primary" title="type">boolean</span><span class="label label-success" title="default">false</span>
 
-An Express middleware or an array of Express middlewares that will be called after <a>prereq</a> and before <a>access</a>.
+Enable support for [restify](https://www.npmjs.com/package/restify) instead of [express](https://www.npmjs.com/package/express)
+
+#### plural
+<span class="label label-primary" title="type">boolean</span><span class="label label-success" title="default">false</span>
+
+Automatically pluralize model names using [inflection](https://www.npmjs.com/package/inflection)
+
+#### lowercase
+<span class="label label-primary" title="type">boolean</span><span class="label label-success" title="default">false</span>
+
+Whether to call `.toLowerCase()` on model names before generating the routes
+
+#### name
+<span class="label label-primary" title="type">string</span><span class="label label-success" title="default">model name</span>
+
+Endpoint name
+
+#### private
+<span class="label label-primary" title="type">array</span>
+
+Array of fields which are only to be returned by queries that have private access
+
+##### Example
+
+Defined in options
+
+{% highlight javascript %}
+private: ['topSecret', 'fields']
+{% endhighlight %}
+
+Defined in mongoose schema
+
+{% highlight javascript %}
+new Schema({
+  topSecret: { type: String, access: 'protected' },
+  fields: { type: String, access: 'protected' }
+})
+{% endhighlight %}
+
+#### protected
+<span class="label label-primary" title="type">array</span>
+
+Array of fields which are only to be returned by queries that have private or protected access
+
+##### Examples
+
+Defined in options
+
+{% highlight javascript %}
+protected: ['somewhatSecret', 'keys']
+{% endhighlight %}
+
+Defined in mongoose schema
+
+{% highlight javascript %}
+new Schema({
+  somewhatSecret: { type: String, access: 'protected' },
+  keys: { type: String, access: 'protected' }
+})
+{% endhighlight %}
+
+#### lean
+<span class="label label-primary" title="type">boolean</span><span class="label label-success" title="default">true</span>
+
+Whether or not mongoose should use `.lean()` to convert results to plain old JavaScript objects. This is bad for performance, but allows returning virtuals, getters and setters.
+
+#### findOneAndUpdate
+<span class="label label-primary" title="type">boolean</span><span class="label label-success" title="default">true</span>
+
+Whether to use findOneAndUpdate or first findById and then save, allowing document middleware to be called. For more information regarding mongoose middleware, [read the docs](http://mongoosejs.com/docs/middleware.html).
+
+#### findOneAndRemove
+<span class="label label-primary" title="type">boolean</span><span class="label label-success" title="default">true</span>
+
+Whether to use findOneAndRemove or first findById and then remove, allowing document middleware to be called. For more information regarding mongoose middleware, [read the docs](http://mongoosejs.com/docs/middleware.html).
+
+#### preMiddleware
+<span class="label label-primary" title="type">function (req, res, next)</span>
+
+Middleware that runs before [access](#access)
 
 ##### Example
 
 {% highlight javascript %}
 preMiddleware: function (req, res, next) {
-  console.log('Incoming %s request', req.method)
+  performAsyncLogic(function (err) {
+    next(err)
+  }
 }
 {% endhighlight %}
 
-#### access <span class="label label-primary" title="type">function</span>
+#### access
+<span class="label label-primary" title="type">function (req[, done])</span>
 
-Returns or yields 'private', 'protected' or 'public'. It is called on GET, POST and PUT requests and filters out the fields defined in <a>private</a> and <a>protected</a>.
+Returns or yields 'private', 'protected' or 'public'. It is called on GET, POST and PUT requests and filters out the fields defined in [private](#private) and [protected](#protected)
 
 ##### Examples
 
@@ -250,104 +336,30 @@ access: function (req) {
 Async
 
 {% highlight javascript %}
-access: function (req, cb) {
+access: function (req, done) {
   performAsyncLogic(function (err, result) {
-    cb(err, result ? 'public' : 'private')
+    done(err, result ? 'public' : 'private')
   })
 }
 {% endhighlight %}
 
-#### restify <span class="label label-primary" title="type">boolean</span><span class="label label-success" title="default">false</span>
-
-Enable support for restify instead of Express.
-
-#### plural <span class="label label-primary" title="type">boolean</span><span class="label label-success" title="default">false</span>
-
-Automatically pluralize the model's name using [inflection](https://www.npmjs.com/package/inflection).
-
-#### lowercase <span class="label label-primary" title="type">boolean</span><span class="label label-success" title="default">false</span>
-
-Whether to call <code>.toLowerCase()</code> on the model's name before generating the routes.
-
-#### name <span class="label label-primary" title="type">string</span><span class="label label-success" title="default">the model's name</span>
-
-The endpoint's name.
-
-#### onError <span class="label label-primary" title="type">function (err, req, res, next)</span><span class="label label-success" title="default">send the entire mongoose error</span>
-
-<div class="alert alert-warning">
-  <i class="glyphicon glyphicon-alert"></i> Leaving this as default may leak information about your database.
-</div>
-
-Function used to output an error.
-
-##### Example
-
-{% highlight javascript %}
-onError: function (err, req, res, next) {
-  next(err)
-}
-{% endhighlight %}
-
-#### outputFn <span class="label label-primary" title="type">function (req, res)</span>
-
-Function used to output the result.
-
-##### Example
-
-{% highlight javascript %}
-outputFn: function (req, res) {
-  res.status(req.erm.statusCode).json(req.erm.result)
-}
-{% endhighlight %}
-
-#### private <span class="label label-primary" title="type">array</span>
-
-Array of fields which are only to be returned by queries that have private access.
-
-##### Example
-
-{% highlight javascript %}
-private: ['topSecret', 'fields']
-{% endhighlight %}
-
-#### protected <span class="label label-primary" title="type">array</span>
-
-Array of fields which are only to be returned by queries that have private or protected access.
-
-##### Example
-
-{% highlight javascript %}
-protected: ['somewhatSecret', 'keys']
-{% endhighlight %}
-
-#### lean <span class="label label-primary" title="type">boolean</span><span class="label label-success" title="default">true</span>
-
-Whether or not mongoose should use <code>.lean()</code> to convert results to plain old JavaScript objects. This is bad for performance, but allows returning virtuals, getters and setters.
-
-#### findOneAndUpdate <span class="label label-primary" title="type">boolean</span><span class="label label-success" title="default">true</span>
-
-Whether to use findOneAndUpdate or first findById and then save, allowing document middleware to be called. For more information regarding mongoose middleware, [read the docs](http://mongoosejs.com/docs/middleware.html).
-
-#### findOneAndRemove <span class="label label-primary" title="type">boolean</span><span class="label label-success" title="default">true</span>
-
-Whether to use findOneAndRemove or first findById and then remove, allowing document middleware to be called. For more information regarding mongoose middleware, [read the docs](http://mongoosejs.com/docs/middleware.html).
-
-#### contextFilter <span class="label label-primary" title="type">function (model, req, cb)</span>
+#### contextFilter
+<span class="label label-primary" title="type">function (model, req, done)</span>
 
 Allows request specific filtering
 
 ##### Example
 
 {% highlight javascript %}
-contextFilter: function (model, req, cb) {
-  cb(model.find({
+contextFilter: function (model, req, done) {
+  done(model.find({
     user: req.user._id
   }))
 }
 {% endhighlight %}
 
-#### postCreate <span class="label label-primary" title="type">function (req, res, next)</span><span class="label label-info">2.0</span>
+#### postCreate
+<span class="label label-primary" title="type">function (req, res, next)</span><span class="label label-info">2.0</span>
 
 Middleware that runs after successfully creating a resource
 
@@ -362,7 +374,8 @@ postCreate: function (req, res, next) {
 }
 {% endhighlight %}
 
-#### postRead <span class="label label-primary" title="type">function (req, res, next)</span><span class="label label-info">2.0</span>
+#### postRead
+<span class="label label-primary" title="type">function (req, res, next)</span><span class="label label-info">2.0</span>
 
 Middleware that runs after successfully reading a resource
 
@@ -377,7 +390,8 @@ postRead: function (req, res, next) {
 }
 {% endhighlight %}
 
-#### postUpdate <span class="label label-primary" title="type">function (req, res, next)</span><span class="label label-info">2.0</span>
+#### postUpdate
+<span class="label label-primary" title="type">function (req, res, next)</span><span class="label label-info">2.0</span>
 
 Middleware that runs after successfully updating a resource
 
@@ -392,7 +406,8 @@ postUpdate: function (req, res, next) {
 }
 {% endhighlight %}
 
-#### postDelete <span class="label label-primary" title="type">function (req, res, next)</span><span class="label label-info">2.0</span>
+#### postDelete
+<span class="label label-primary" title="type">function (req, res, next)</span><span class="label label-info">2.0</span>
 
 Middleware that runs after successfully deleting a resource
 
@@ -404,6 +419,36 @@ postDelete: function (req, res, next) {
   performAsyncLogic(function (err) {
     next(err)
   }
+}
+{% endhighlight %}
+
+#### outputFn
+<span class="label label-primary" title="type">function (req, res)</span>
+
+Function used to output the result
+
+##### Example
+
+{% highlight javascript %}
+outputFn: function (req, res) {
+  res.status(req.erm.statusCode).json(req.erm.result)
+}
+{% endhighlight %}
+
+#### onError
+<span class="label label-primary" title="type">function (err, req, res, next)</span><span class="label label-success" title="default">send the entire mongoose error</span>
+
+<div class="alert alert-warning">
+  <i class="glyphicon glyphicon-alert"></i> Leaving this as default may leak information about your database
+</div>
+
+Function used to output an error
+
+##### Example
+
+{% highlight javascript %}
+onError: function (err, req, res, next) {
+  next(err)
 }
 {% endhighlight %}
 

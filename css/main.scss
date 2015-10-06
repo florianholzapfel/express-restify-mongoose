@@ -53,6 +53,8 @@ $grey-color-dark:  darken($grey-color, 25%);
   position: absolute;
 }
 
-h4 > * {
-  margin-left: 10px;
+h4 {
+  border-top: 1px dotted $text-color;
+  font-weight: bold;
+  padding-top: 10px;
 }
