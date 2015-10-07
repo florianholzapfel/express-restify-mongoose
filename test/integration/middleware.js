@@ -222,6 +222,347 @@ module.exports = function (createFn, setup, dismantle) {
     })
   })
 
+  describe('preCreate', function () {
+    var app = createFn()
+    var server
+    var options = {
+      preCreate: sinon.spy(function (req, res, next) {
+        next()
+      }),
+      restify: app.isRestify
+    }
+
+    beforeEach(function (done) {
+      setup(function (err) {
+        if (err) {
+          return done(err)
+        }
+
+        erm.serve(app, db.models.Customer, options)
+
+        server = app.listen(testPort, done)
+      })
+    })
+
+    afterEach(function (done) {
+      options.preCreate.reset()
+      dismantle(app, server, done)
+    })
+
+    it('POST /Customers 201', function (done) {
+      request.post({
+        url: util.format('%s/api/v1/Customers', testUrl),
+        json: {
+          name: 'Bob'
+        }
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 201)
+        sinon.assert.calledOnce(options.preCreate)
+        var args = options.preCreate.args[0]
+        assert.equal(args.length, 3)
+        assert.equal(args[0].erm.result.name, 'Bob')
+        assert.equal(args[0].erm.statusCode, 201)
+        assert.equal(typeof args[2], 'function')
+        done()
+      })
+    })
+  })
+
+  describe('preRead', function () {
+    var app = createFn()
+    var server
+    var customer
+    var options = {
+      preRead: sinon.spy(function (req, res, next) {
+        next()
+      }),
+      restify: app.isRestify
+    }
+
+    beforeEach(function (done) {
+      setup(function (err) {
+        if (err) {
+          return done(err)
+        }
+
+        erm.serve(app, db.models.Customer, options)
+
+        db.models.Customer.create({
+          name: 'Bob'
+        }).then(function (createdCustomer) {
+          customer = createdCustomer
+          server = app.listen(testPort, done)
+        }, function (err) {
+          done(err)
+        })
+      })
+    })
+
+    afterEach(function (done) {
+      options.preRead.reset()
+      dismantle(app, server, done)
+    })
+
+    it('GET /Customers 200', function (done) {
+      request.get({
+        url: util.format('%s/api/v1/Customers', testUrl),
+        json: true
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 200)
+        sinon.assert.calledOnce(options.preRead)
+        var args = options.preRead.args[0]
+        assert.equal(args.length, 3)
+        assert.equal(args[0].erm.result[0].name, 'Bob')
+        assert.equal(args[0].erm.statusCode, 200)
+        assert.equal(typeof args[2], 'function')
+        done()
+      })
+    })
+
+    it('GET /Customers/count 200', function (done) {
+      request.get({
+        url: util.format('%s/api/v1/Customers/count', testUrl),
+        json: true
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 200)
+        sinon.assert.calledOnce(options.preRead)
+        var args = options.preRead.args[0]
+        assert.equal(args.length, 3)
+        assert.equal(args[0].erm.result.count, 1)
+        assert.equal(args[0].erm.statusCode, 200)
+        assert.equal(typeof args[2], 'function')
+        done()
+      })
+    })
+
+    it('GET /Customers/:id 200', function (done) {
+      request.get({
+        url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+        json: true
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 200)
+        sinon.assert.calledOnce(options.preRead)
+        var args = options.preRead.args[0]
+        assert.equal(args.length, 3)
+        assert.equal(args[0].erm.result.name, 'Bob')
+        assert.equal(args[0].erm.statusCode, 200)
+        assert.equal(typeof args[2], 'function')
+        done()
+      })
+    })
+
+    it('GET /Customers/:id/shallow 200', function (done) {
+      request.get({
+        url: util.format('%s/api/v1/Customers/%s/shallow', testUrl, customer._id),
+        json: true
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 200)
+        sinon.assert.calledOnce(options.preRead)
+        var args = options.preRead.args[0]
+        assert.equal(args.length, 3)
+        assert.equal(args[0].erm.result.name, 'Bob')
+        assert.equal(args[0].erm.statusCode, 200)
+        assert.equal(typeof args[2], 'function')
+        done()
+      })
+    })
+  })
+
+  describe('preUpdate', function () {
+    var app = createFn()
+    var server
+    var customer
+    var options = {
+      preUpdate: sinon.spy(function (req, res, next) {
+        next()
+      }),
+      restify: app.isRestify
+    }
+
+    beforeEach(function (done) {
+      setup(function (err) {
+        if (err) {
+          return done(err)
+        }
+
+        erm.serve(app, db.models.Customer, options)
+
+        db.models.Customer.create({
+          name: 'Bob'
+        }).then(function (createdCustomer) {
+          customer = createdCustomer
+          server = app.listen(testPort, done)
+        }, function (err) {
+          done(err)
+        })
+      })
+    })
+
+    afterEach(function (done) {
+      options.preUpdate.reset()
+      dismantle(app, server, done)
+    })
+
+    it('POST /Customers/:id 200', function (done) {
+      request.post({
+        url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+        json: {
+          name: 'Bobby'
+        }
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 200)
+        sinon.assert.calledOnce(options.preUpdate)
+        var args = options.preUpdate.args[0]
+        assert.equal(args.length, 3)
+        assert.equal(args[0].erm.result.name, 'Bobby')
+        assert.equal(args[0].erm.statusCode, 200)
+        assert.equal(typeof args[2], 'function')
+        done()
+      })
+    })
+
+    it('POST /Customers/:id 400 - not called (missing content type)', function (done) {
+      request.post({
+        url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id)
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 400)
+        sinon.assert.notCalled(options.preUpdate)
+        done()
+      })
+    })
+
+    it('POST /Customers/:id 400 - not called (invalid content type)', function (done) {
+      request.post({
+        url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+        formData: {}
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 400)
+        sinon.assert.notCalled(options.preUpdate)
+        done()
+      })
+    })
+
+    it('PUT /Customers/:id 200', function (done) {
+      request.put({
+        url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+        json: {
+          name: 'Bobby'
+        }
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 200)
+        sinon.assert.calledOnce(options.preUpdate)
+        var args = options.preUpdate.args[0]
+        assert.equal(args.length, 3)
+        assert.equal(args[0].erm.result.name, 'Bobby')
+        assert.equal(args[0].erm.statusCode, 200)
+        assert.equal(typeof args[2], 'function')
+        done()
+      })
+    })
+
+    it('PUT /Customers/:id 400 - not called (missing content type)', function (done) {
+      request.put({
+        url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id)
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 400)
+        sinon.assert.notCalled(options.preUpdate)
+        done()
+      })
+    })
+
+    it('PUT /Customers/:id 400 - not called (invalid content type)', function (done) {
+      request.put({
+        url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+        formData: {}
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 400)
+        sinon.assert.notCalled(options.preUpdate)
+        done()
+      })
+    })
+  })
+
+  describe('preDelete', function () {
+    var app = createFn()
+    var server
+    var customer
+    var options = {
+      preDelete: sinon.spy(function (req, res, next) {
+        next()
+      }),
+      restify: app.isRestify
+    }
+
+    beforeEach(function (done) {
+      setup(function (err) {
+        if (err) {
+          return done(err)
+        }
+
+        erm.serve(app, db.models.Customer, options)
+
+        db.models.Customer.create({
+          name: 'Bob'
+        }).then(function (createdCustomer) {
+          customer = createdCustomer
+          server = app.listen(testPort, done)
+        }, function (err) {
+          done(err)
+        })
+      })
+    })
+
+    afterEach(function (done) {
+      options.preDelete.reset()
+      dismantle(app, server, done)
+    })
+
+    it('DELETE /Customers 204', function (done) {
+      request.del({
+        url: util.format('%s/api/v1/Customers', testUrl),
+        json: true
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 204)
+        sinon.assert.calledOnce(options.preDelete)
+        var args = options.preDelete.args[0]
+        assert.equal(args.length, 3)
+        assert.equal(args[0].erm.result, undefined)
+        assert.equal(args[0].erm.statusCode, 204)
+        assert.equal(typeof args[2], 'function')
+        done()
+      })
+    })
+
+    it('DELETE /Customers/:id 204', function (done) {
+      request.del({
+        url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+        json: true
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 204)
+        sinon.assert.calledOnce(options.preDelete)
+        var args = options.preDelete.args[0]
+        assert.equal(args.length, 3)
+        assert.equal(args[0].erm.result, undefined)
+        assert.equal(args[0].erm.statusCode, 204)
+        assert.equal(typeof args[2], 'function')
+        done()
+      })
+    })
+  })
+
   describe('postCreate', function () {
     var app = createFn()
     var server
