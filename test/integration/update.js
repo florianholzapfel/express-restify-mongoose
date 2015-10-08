@@ -331,6 +331,32 @@ module.exports = function (createFn, setup, dismantle) {
             done(err)
           })
         })
+
+        it('PUT /Invoices/:id?populate=customer,products 200 - update with populated customer', function (done) {
+          db.models.Invoice.findById(invoice._id).populate('customer products').exec().then(function (invoice) {
+            request.put({
+              url: util.format('%s/api/v1/Invoices/%s', testUrl, invoice._id),
+              qs: {
+                populate: 'customer,products'
+              },
+              json: invoice
+            }, function (err, res, body) {
+              assert.ok(!err)
+              assert.equal(res.statusCode, 200)
+              assert.ok(body.customer)
+              assert.equal(body.customer._id, invoice.customer._id)
+              assert.equal(body.customer.name, invoice.customer.name)
+              assert.ok(body.products)
+              assert.equal(body.products[0]._id, invoice.products[0]._id.toHexString())
+              assert.equal(body.products[0].name, invoice.products[0].name)
+              assert.equal(body.products[1]._id, invoice.products[1]._id.toHexString())
+              assert.equal(body.products[1].name, invoice.products[1].name)
+              done()
+            })
+          }, function (err) {
+            done(err)
+          })
+        })
       })
     })
 
@@ -648,6 +674,32 @@ module.exports = function (createFn, setup, dismantle) {
               assert.equal(res.statusCode, 200)
               assert.equal(body.amount, 200)
               assert.deepEqual(body.products, [invoice.products[0]._id.toHexString(), invoice.products[1]._id.toHexString()])
+              done()
+            })
+          }, function (err) {
+            done(err)
+          })
+        })
+
+        it('PUT /Invoices/:id?populate=customer,products 200 - update with populated customer', function (done) {
+          db.models.Invoice.findById(invoice._id).populate('customer products').exec().then(function (invoice) {
+            request.put({
+              url: util.format('%s/api/v1/Invoices/%s', testUrl, invoice._id),
+              qs: {
+                populate: 'customer,products'
+              },
+              json: invoice
+            }, function (err, res, body) {
+              assert.ok(!err)
+              assert.equal(res.statusCode, 200)
+              assert.ok(body.customer)
+              assert.equal(body.customer._id, invoice.customer._id)
+              assert.equal(body.customer.name, invoice.customer.name)
+              assert.ok(body.products)
+              assert.equal(body.products[0]._id, invoice.products[0]._id.toHexString())
+              assert.equal(body.products[0].name, invoice.products[0].name)
+              assert.equal(body.products[1]._id, invoice.products[1]._id.toHexString())
+              assert.equal(body.products[1].name, invoice.products[1].name)
               done()
             })
           }, function (err) {

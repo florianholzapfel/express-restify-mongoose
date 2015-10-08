@@ -313,41 +313,203 @@ describe('prepareQuery', function () {
 
     prepareQuery(options)(req, {}, next)
 
-    assert.deepEqual(req._ermQueryOptions, req.query)
-    sinon.assert.calledOnce(next)
-    sinon.assert.calledWithExactly(next)
-    sinon.assert.notCalled(options.onError)
-  })
-
-  it('calls next when select key is valid json', function () {
-    var req = {
-      query: {
-        select: '{"foo":"bar"}'
-      }
-    }
-
-    prepareQuery(options)(req, {}, next)
-
     assert.deepEqual(req._ermQueryOptions, {
-      select: JSON.parse(req.query.select)
+      populate: [{
+        path: 'foo'
+      }]
     })
     sinon.assert.calledOnce(next)
     sinon.assert.calledWithExactly(next)
     sinon.assert.notCalled(options.onError)
   })
 
-  it('calls next when select key is a string', function () {
-    var req = {
-      query: {
-        select: 'foo'
+  describe('select', function () {
+    it('parses a string to include fields', function () {
+      var req = {
+        query: {
+          select: 'foo'
+        }
       }
-    }
 
-    prepareQuery(options)(req, {}, next)
+      prepareQuery(options)(req, {}, next)
 
-    assert.deepEqual(req._ermQueryOptions, req.query)
-    sinon.assert.calledOnce(next)
-    sinon.assert.calledWithExactly(next)
-    sinon.assert.notCalled(options.onError)
+      assert.deepEqual(req._ermQueryOptions, {
+        select: {
+          foo: 1
+        }
+      })
+      sinon.assert.calledOnce(next)
+      sinon.assert.calledWithExactly(next)
+      sinon.assert.notCalled(options.onError)
+    })
+
+    it('parses a string to exclude fields', function () {
+      var req = {
+        query: {
+          select: '-foo'
+        }
+      }
+
+      prepareQuery(options)(req, {}, next)
+
+      assert.deepEqual(req._ermQueryOptions, {
+        select: {
+          foo: 0
+        }
+      })
+      sinon.assert.calledOnce(next)
+      sinon.assert.calledWithExactly(next)
+      sinon.assert.notCalled(options.onError)
+    })
+
+    it('parses a comma separated list of fields to include', function () {
+      var req = {
+        query: {
+          select: 'foo,bar'
+        }
+      }
+
+      prepareQuery(options)(req, {}, next)
+
+      assert.deepEqual(req._ermQueryOptions, {
+        select: {
+          foo: 1,
+          bar: 1
+        }
+      })
+      sinon.assert.calledOnce(next)
+      sinon.assert.calledWithExactly(next)
+      sinon.assert.notCalled(options.onError)
+    })
+
+    it('parses a comma separated list of fields to exclude', function () {
+      var req = {
+        query: {
+          select: '-foo,-bar'
+        }
+      }
+
+      prepareQuery(options)(req, {}, next)
+
+      assert.deepEqual(req._ermQueryOptions, {
+        select: {
+          foo: 0,
+          bar: 0
+        }
+      })
+      sinon.assert.calledOnce(next)
+      sinon.assert.calledWithExactly(next)
+      sinon.assert.notCalled(options.onError)
+    })
+
+    it('parses a comma separated list of nested fields', function () {
+      var req = {
+        query: {
+          select: 'foo.bar,baz.qux.quux'
+        }
+      }
+
+      prepareQuery(options)(req, {}, next)
+
+      assert.deepEqual(req._ermQueryOptions, {
+        select: {
+          'foo.bar': 1,
+          'baz.qux.quux': 1
+        }
+      })
+      sinon.assert.calledOnce(next)
+      sinon.assert.calledWithExactly(next)
+      sinon.assert.notCalled(options.onError)
+    })
+  })
+
+  describe('populate', function () {
+    it('parses a string to populate a path', function () {
+      var req = {
+        query: {
+          populate: 'foo'
+        }
+      }
+
+      prepareQuery(options)(req, {}, next)
+
+      assert.deepEqual(req._ermQueryOptions, {
+        populate: [{
+          path: 'foo'
+        }]
+      })
+      sinon.assert.calledOnce(next)
+      sinon.assert.calledWithExactly(next)
+      sinon.assert.notCalled(options.onError)
+    })
+
+    it('parses a string to populate multiple paths', function () {
+      var req = {
+        query: {
+          populate: 'foo,bar'
+        }
+      }
+
+      prepareQuery(options)(req, {}, next)
+
+      assert.deepEqual(req._ermQueryOptions, {
+        populate: [{
+          path: 'foo'
+        }, {
+          path: 'bar'
+        }]
+      })
+      sinon.assert.calledOnce(next)
+      sinon.assert.calledWithExactly(next)
+      sinon.assert.notCalled(options.onError)
+    })
+
+    it('accepts an object to populate a path', function () {
+      var req = {
+        query: {
+          populate: {
+            path: 'foo.bar',
+            select: 'baz',
+            match: { 'qux': 'quux' },
+            options: { sort: 'baz' }
+          }
+        }
+      }
+
+      prepareQuery(options)(req, {}, next)
+
+      assert.deepEqual(req._ermQueryOptions, {
+        populate: [{
+          path: 'foo.bar',
+          select: 'baz',
+          match: { 'qux': 'quux' },
+          options: { sort: 'baz' }
+        }]
+      })
+      sinon.assert.calledOnce(next)
+      sinon.assert.calledWithExactly(next)
+      sinon.assert.notCalled(options.onError)
+    })
+
+    it('parses a string to populate and select fields', function () {
+      var req = {
+        query: {
+          populate: 'foo',
+          select: 'foo.bar,foo.baz'
+        }
+      }
+
+      prepareQuery(options)(req, {}, next)
+
+      assert.deepEqual(req._ermQueryOptions, {
+        populate: [{
+          path: 'foo',
+          select: 'bar baz'
+        }]
+      })
+      sinon.assert.calledOnce(next)
+      sinon.assert.calledWithExactly(next)
+      sinon.assert.notCalled(options.onError)
+    })
   })
 })
