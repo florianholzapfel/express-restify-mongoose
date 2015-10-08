@@ -235,6 +235,32 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
+    it('POST /Invoices?populate=customer,products 201 - referencing customer and products', function (done) {
+      request.post({
+        url: util.format('%s/api/v1/Invoices', testUrl),
+        qs: {
+          populate: 'customer,products'
+        },
+        json: {
+          customer: customer,
+          products: [product, product],
+          amount: 42
+        }
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 201)
+        assert.ok(body._id)
+        assert.equal(body.amount, 42)
+        assert.equal(body.customer._id, customer._id)
+        assert.equal(body.customer.name, customer.name)
+        assert.equal(body.products[0]._id, product._id.toHexString())
+        assert.equal(body.products[0].name, product.name)
+        assert.equal(body.products[1]._id, product._id.toHexString())
+        assert.equal(body.products[1].name, product.name)
+        done()
+      })
+    })
+
     it('POST /Invoices 400 - referencing invalid customer and products ids', function (done) {
       request.post({
         url: util.format('%s/api/v1/Invoices', testUrl),
