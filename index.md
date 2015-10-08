@@ -159,10 +159,12 @@ GET /Customers?query={"age":"!=12"}
 
 ### Populate
 
+Works with create, read and update operations
+
 {% highlight apache %}
-GET /Invoices?populate=customer
-GET /Invoices?populate={"path":"customer"}
-GET /Invoices?populate=[{"path":"customer"},{"path":"products"}]
+GET/POST/PUT /Invoices?populate=customer
+GET/POST/PUT /Invoices?populate={"path":"customer"}
+GET/POST/PUT /Invoices?populate=[{"path":"customer"},{"path":"products"}]
 {% endhighlight %}
 
 ### Select
@@ -302,12 +304,64 @@ Whether to use findOneAndRemove or first findById and then remove, allowing docu
 #### preMiddleware
 <span class="label label-primary" title="type">function (req, res, next)</span>
 
-Middleware that runs before [access](#access)
+Middleware that runs before [preCreate](#preCreate), [preRead](#preRead), [preUpdate](#preUpdate) and [preDelete](#preDelete). 
 
 ##### Example
 
 {% highlight javascript %}
 preMiddleware: function (req, res, next) {
+  performAsyncLogic(function (err) {
+    next(err)
+  }
+}
+{% endhighlight %}
+
+#### preCreate
+<span class="label label-primary" title="type">function (req, res, next)</span><span class="label label-info">2.1</span>
+
+Middleware that runs before creating a resource
+
+{% highlight javascript %}
+preCreate: function (req, res, next) {
+  performAsyncLogic(function (err) {
+    next(err)
+  }
+}
+{% endhighlight %}
+
+#### preRead
+<span class="label label-primary" title="type">function (req, res, next)</span><span class="label label-info">2.1</span>
+
+Middleware that runs before reading a resource
+
+{% highlight javascript %}
+preRead: function (req, res, next) {
+  performAsyncLogic(function (err) {
+    next(err)
+  }
+}
+{% endhighlight %}
+
+#### preUpdate
+<span class="label label-primary" title="type">function (req, res, next)</span><span class="label label-info">2.1</span>
+
+Middleware that runs before updating a resource
+
+{% highlight javascript %}
+preUpdate: function (req, res, next) {
+  performAsyncLogic(function (err) {
+    next(err)
+  }
+}
+{% endhighlight %}
+
+#### preDelete
+<span class="label label-primary" title="type">function (req, res, next)</span><span class="label label-info">2.1</span>
+
+Middleware that runs before deleting a resource
+
+{% highlight javascript %}
+preDelete: function (req, res, next) {
   performAsyncLogic(function (err) {
     next(err)
   }
