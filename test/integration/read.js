@@ -796,6 +796,40 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
+      it('GET /Invoices?populate=customer.account 200 - ignore deep populate', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Invoices', testUrl),
+          qs: {
+            populate: 'customer.account'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 3)
+          body.forEach(function (invoice) {
+            assert.ok(invoice.customer)
+            assert.equal(typeof invoice.customer, 'string')
+          })
+          done()
+        })
+      })
+
+      it('GET /Invoices?populate=evilCustomer 200 - ignore unknown field', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Invoices', testUrl),
+          qs: {
+            populate: 'evilCustomer'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 3)
+          done()
+        })
+      })
+
       describe('with select', function () {
         it('GET Invoices?populate=customer&select=amount 200 - only include amount and customer document', function (done) {
           request.get({
