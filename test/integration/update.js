@@ -17,6 +17,7 @@ module.exports = function (createFn, setup, dismantle) {
       var app = createFn()
       var server
       var customers
+      var products
       var invoice
 
       beforeEach(function (done) {
@@ -48,6 +49,8 @@ module.exports = function (createFn, setup, dismantle) {
               name: 'Jacket'
             }])
           }).then(function (createdProducts) {
+            products = createdProducts
+
             return db.models.Invoice.create({
               customer: customers[0]._id,
               products: createdProducts,
@@ -212,6 +215,70 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
+      it('PUT /Invoices/:id 200 - referencing customer and product ids as strings', function (done) {
+        request.put({
+          url: util.format('%s/api/v1/Invoices/%s', testUrl, invoice._id),
+          json: {
+            customer: customers[1]._id.toHexString(),
+            products: products[1]._id.toHexString()
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.customer, customers[1]._id)
+          assert.equal(body.products[0], products[1]._id)
+          done()
+        })
+      })
+
+      it('PUT /Invoices/:id 200 - referencing customer and products ids as strings', function (done) {
+        request.put({
+          url: util.format('%s/api/v1/Invoices/%s', testUrl, invoice._id),
+          json: {
+            customer: customers[1]._id.toHexString(),
+            products: [products[1]._id.toHexString()]
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.customer, customers[1]._id)
+          assert.equal(body.products[0], products[1]._id)
+          done()
+        })
+      })
+
+      it('PUT /Invoices/:id 200 - referencing customer and product ids', function (done) {
+        request.put({
+          url: util.format('%s/api/v1/Invoices/%s', testUrl, invoice._id),
+          json: {
+            customer: customers[1]._id,
+            products: products[1]._id
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.customer, customers[1]._id)
+          assert.equal(body.products[0], products[1]._id)
+          done()
+        })
+      })
+
+      it('PUT /Invoices/:id 200 - referencing customer and products ids', function (done) {
+        request.put({
+          url: util.format('%s/api/v1/Invoices/%s', testUrl, invoice._id),
+          json: {
+            customer: customers[1]._id,
+            products: [products[1]._id]
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.customer, customers[1]._id)
+          assert.equal(body.products[0], products[1]._id)
+          done()
+        })
+      })
+
       it('PUT /Customers/:id 400 - cast error', function (done) {
         request.put({
           url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id),
@@ -364,6 +431,7 @@ module.exports = function (createFn, setup, dismantle) {
       var app = createFn()
       var server
       var customers
+      var products
       var invoice
 
       beforeEach(function (done) {
@@ -395,6 +463,8 @@ module.exports = function (createFn, setup, dismantle) {
               name: 'Jacket'
             }])
           }).then(function (createdProducts) {
+            products = createdProducts
+
             return db.models.Invoice.create({
               customer: customers[0]._id,
               products: createdProducts,
@@ -556,6 +626,70 @@ module.exports = function (createFn, setup, dismantle) {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.equal(body.name, 'Mike')
+          done()
+        })
+      })
+
+      it('PUT /Invoices/:id 200 - referencing customer and product ids as strings', function (done) {
+        request.put({
+          url: util.format('%s/api/v1/Invoices/%s', testUrl, invoice._id),
+          json: {
+            customer: customers[1]._id.toHexString(),
+            products: products[1]._id.toHexString()
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.customer, customers[1]._id)
+          assert.equal(body.products[0], products[1]._id)
+          done()
+        })
+      })
+
+      it('PUT /Invoices/:id 200 - referencing customer and products ids as strings', function (done) {
+        request.put({
+          url: util.format('%s/api/v1/Invoices/%s', testUrl, invoice._id),
+          json: {
+            customer: customers[1]._id.toHexString(),
+            products: [products[1]._id.toHexString()]
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.customer, customers[1]._id)
+          assert.equal(body.products[0], products[1]._id)
+          done()
+        })
+      })
+
+      it('PUT /Invoices/:id 200 - referencing customer and product ids', function (done) {
+        request.put({
+          url: util.format('%s/api/v1/Invoices/%s', testUrl, invoice._id),
+          json: {
+            customer: customers[1]._id,
+            products: products[1]._id
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.customer, customers[1]._id)
+          assert.equal(body.products[0], products[1]._id)
+          done()
+        })
+      })
+
+      it('PUT /Invoices/:id 200 - referencing customer and products ids', function (done) {
+        request.put({
+          url: util.format('%s/api/v1/Invoices/%s', testUrl, invoice._id),
+          json: {
+            customer: customers[1]._id,
+            products: [products[1]._id]
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.customer, customers[1]._id)
+          assert.equal(body.products[0], products[1]._id)
           done()
         })
       })

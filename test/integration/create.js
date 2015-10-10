@@ -163,6 +163,42 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
+    it('POST /Invoices 201 - referencing customer and product ids as strings', function (done) {
+      request.post({
+        url: util.format('%s/api/v1/Invoices', testUrl),
+        json: {
+          customer: customer._id.toHexString(),
+          products: product._id.toHexString(),
+          amount: 42
+        }
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 201)
+        assert.ok(body._id)
+        assert.equal(body.customer, customer._id)
+        assert.equal(body.amount, 42)
+        done()
+      })
+    })
+
+    it('POST /Invoices 201 - referencing customer and products ids as strings', function (done) {
+      request.post({
+        url: util.format('%s/api/v1/Invoices', testUrl),
+        json: {
+          customer: customer._id.toHexString(),
+          products: [product._id.toHexString(), product._id.toHexString()],
+          amount: 42
+        }
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 201)
+        assert.ok(body._id)
+        assert.equal(body.customer, customer._id)
+        assert.equal(body.amount, 42)
+        done()
+      })
+    })
+
     it('POST /Invoices 201 - referencing customer and product ids', function (done) {
       request.post({
         url: util.format('%s/api/v1/Invoices', testUrl),
