@@ -1,4 +1,5 @@
 var assert = require('assert')
+var mongoose = require('mongoose')
 var request = require('request')
 var sinon = require('sinon')
 var util = require('util')
@@ -9,6 +10,8 @@ module.exports = function (createFn, setup, dismantle) {
 
   var testPort = 30023
   var testUrl = 'http://localhost:' + testPort
+  var invalidId = 'invalid-id'
+  var randomId = mongoose.Types.ObjectId().toHexString()
 
   describe('preMiddleware', function () {
     var app = createFn()
@@ -608,6 +611,20 @@ module.exports = function (createFn, setup, dismantle) {
         done()
       })
     })
+
+    it('POST /Customers 400 - missing required field', function (done) {
+      request.post({
+        url: util.format('%s/api/v1/Customers', testUrl),
+        json: {
+          comment: 'Bar'
+        }
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 400)
+        sinon.assert.notCalled(options.postCreate)
+        done()
+      })
+    })
   })
 
   describe('postRead', function () {
@@ -696,6 +713,30 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
+    it('GET /Customers/:id 404', function (done) {
+      request.get({
+        url: util.format('%s/api/v1/Customers/%s', testUrl, randomId),
+        json: true
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 404)
+        sinon.assert.notCalled(options.postRead)
+        done()
+      })
+    })
+
+    it('GET /Customers/:id 400', function (done) {
+      request.get({
+        url: util.format('%s/api/v1/Customers/%s', testUrl, invalidId),
+        json: true
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 400)
+        sinon.assert.notCalled(options.postRead)
+        done()
+      })
+    })
+
     it('GET /Customers/:id/shallow 200', function (done) {
       request.get({
         url: util.format('%s/api/v1/Customers/%s/shallow', testUrl, customer._id),
@@ -768,6 +809,34 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
+    it('POST /Customers/:id 404 - random id', function (done) {
+      request.post({
+        url: util.format('%s/api/v1/Customers/%s', testUrl, randomId),
+        json: {
+          name: 'Bobby'
+        }
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 404)
+        sinon.assert.notCalled(options.postUpdate)
+        done()
+      })
+    })
+
+    it('POST /Customers/:id 400 - invalid id', function (done) {
+      request.post({
+        url: util.format('%s/api/v1/Customers/%s', testUrl, invalidId),
+        json: {
+          name: 'Bobby'
+        }
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 400)
+        sinon.assert.notCalled(options.postUpdate)
+        done()
+      })
+    })
+
     it('POST /Customers/:id 400 - not called (missing content type)', function (done) {
       request.post({
         url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id)
@@ -806,6 +875,34 @@ module.exports = function (createFn, setup, dismantle) {
         assert.equal(args[0].erm.result.name, 'Bobby')
         assert.equal(args[0].erm.statusCode, 200)
         assert.equal(typeof args[2], 'function')
+        done()
+      })
+    })
+
+    it('PUT /Customers/:id 404 - random id', function (done) {
+      request.put({
+        url: util.format('%s/api/v1/Customers/%s', testUrl, randomId),
+        json: {
+          name: 'Bobby'
+        }
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 404)
+        sinon.assert.notCalled(options.postUpdate)
+        done()
+      })
+    })
+
+    it('PUT /Customers/:id 400 - invalid id', function (done) {
+      request.put({
+        url: util.format('%s/api/v1/Customers/%s', testUrl, invalidId),
+        json: {
+          name: 'Bobby'
+        }
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 400)
+        sinon.assert.notCalled(options.postUpdate)
         done()
       })
     })
@@ -899,6 +996,30 @@ module.exports = function (createFn, setup, dismantle) {
         assert.equal(args[0].erm.result, undefined)
         assert.equal(args[0].erm.statusCode, 204)
         assert.equal(typeof args[2], 'function')
+        done()
+      })
+    })
+
+    it('DELETE /Customers/:id 404', function (done) {
+      request.del({
+        url: util.format('%s/api/v1/Customers/%s', testUrl, randomId),
+        json: true
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 404)
+        sinon.assert.notCalled(options.postDelete)
+        done()
+      })
+    })
+
+    it('DELETE /Customers/:id 400', function (done) {
+      request.del({
+        url: util.format('%s/api/v1/Customers/%s', testUrl, invalidId),
+        json: true
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 400)
+        sinon.assert.notCalled(options.postDelete)
         done()
       })
     })
