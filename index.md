@@ -355,6 +355,23 @@ preUpdate: function (req, res, next) {
 }
 {% endhighlight %}
 
+<span class="label label-info">new in 2.2</span>
+
+When `findOneAndUpdate` is disabled, the document is made available which is useful for authorization as well as setting values
+
+{% highlight javascript %}
+findOneAndUpdate: false,
+preUpdate: function (req, res, next) {
+  if (req.erm.document.user !== req.user._id) {
+    return res.sendStatus(401)
+  }
+
+  req.erm.document.set('lastRequestAt', new Date())
+
+  next()
+}
+{% endhighlight %}
+
 #### preDelete
 <span class="label label-primary" title="type">function (req, res, next)</span><span class="label label-info">2.1</span>
 
@@ -365,6 +382,26 @@ preDelete: function (req, res, next) {
   performAsyncLogic(function (err) {
     next(err)
   }
+}
+{% endhighlight %}
+
+<span class="label label-info">new in 2.2</span>
+
+When `findOneAndRemove` is disabled, the document is made available which is useful for authorization as well as performing non-destructive removals
+
+{% highlight javascript %}
+findOneAndRemove: false,
+preDelete: function (req, res, next) {
+  if (req.erm.document.user !== req.user._id) {
+    return res.sendStatus(401)
+  }
+
+  req.erm.document.deletedAt = new Date()
+  req.erm.document.save().then(function (doc) {
+    res.sendStatus(204)
+  }, function (err) {
+    options.onError(err, req, res, next)
+  })
 }
 {% endhighlight %}
 
