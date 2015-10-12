@@ -22,6 +22,7 @@ module.exports = function () {
     Schema.apply(this, arguments)
 
     this.add({
+      account: { type: Schema.Types.ObjectId, ref: 'Account' },
       name: { type: String, required: true, unique: true },
       // friendlyId: { type: String, unique: true },
       comment: String,
