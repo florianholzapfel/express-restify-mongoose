@@ -60,5 +60,5 @@
       "describe", "before", "beforeEach", "after", "afterEach", "it"
     ]
   },
-  "version": "2.1.2"
+  "version": "2.2.0"
 }
