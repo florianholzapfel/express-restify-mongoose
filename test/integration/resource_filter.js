@@ -113,6 +113,27 @@ describe('Resource filter', function () {
         })
       })
 
+      it('filters nested populated docs', function () {
+        var customer = {
+          name: 'John',
+          purchase: {
+            item: { name: 'Squirt Gun', price: 42 },
+            number: 2
+          }
+        }
+
+        customer = customerFilter.filterObject(customer, {
+          populate: [{
+            path: 'purchase.item'
+          }]
+        })
+
+        assert.ok(customer.purchase.item, 'Purchased item should be included')
+        assert.ok(customer.purchase.item.number === undefined, 'Purchased item number should be excluded')
+        assert.ok(customer.purchase.item.name !== undefined, 'Purchased item name should be included')
+        assert.ok(customer.purchase.item.price === undefined, 'Purchased item price should be excluded')
+      })
+
       it('filters embedded array of populated docs', function () {
         var customer = {
           name: 'John',
@@ -218,7 +239,10 @@ describe('Resource filter', function () {
               item: createdProducts[1]._id, number: 100
             }, {
               item: createdProducts[2]._id, number: 1
-            }]
+            }],
+            purchase: {
+              item: createdProducts[0]._id, number: 2
+            }
           }).save(function (err, res) {
             assert(!err, err)
             self.customerId = res._id
@@ -300,6 +324,24 @@ describe('Resource filter', function () {
             assert.ok(product.name !== undefined, 'product name should be populated')
             assert.ok(product.price === undefined, 'product price should be excluded')
           })
+
+          done()
+        })
+      })
+
+      it('filters nested populated docs', function (done) {
+        db.models.Customer.findById(this.customerId).populate('purchase.item').exec(function (err, customer) {
+          assert(!err, err)
+          customer = customerFilter.filterObject(customer, {
+            populate: [{
+              path: 'purchase.item'
+            }]
+          })
+
+          assert.ok(customer.purchase.item, 'Purchased item should be included')
+          assert.ok(customer.purchase.item.number === undefined, 'Purchased item number should be excluded')
+          assert.ok(customer.purchase.item.name !== undefined, 'Purchased item name should be included')
+          assert.ok(customer.purchase.item.price === undefined, 'Purchased item price should be excluded')
 
           done()
         })

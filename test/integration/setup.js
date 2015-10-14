@@ -36,6 +36,10 @@ module.exports = function () {
         item: { type: Schema.Types.ObjectId, ref: 'Product' },
         number: Number
       }],
+      purchase: {
+        item: { type: Schema.Types.ObjectId, ref: 'Product' },
+        number: Number
+      },
       creditCard: {
         type: String,
         access: 'protected'
