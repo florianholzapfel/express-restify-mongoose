@@ -13,7 +13,6 @@
   },
   "description": "Easily create a flexible REST interface for mongoose models",
   "devDependencies": {
-    "assertmessage": "0.0.2",
     "body-parser": "~1",
     "express": "~4",
     "istanbul": "~0.3",
