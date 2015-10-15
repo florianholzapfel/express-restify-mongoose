@@ -13,6 +13,103 @@ module.exports = function (createFn, setup, dismantle) {
   var invalidId = 'invalid-id'
   var randomId = mongoose.Types.ObjectId().toHexString()
 
+  describe('preMiddleware/Create/Read/Update/Delete - null', function () {
+    var app = createFn()
+    var server
+    var customer
+
+    beforeEach(function (done) {
+      setup(function (err) {
+        if (err) {
+          return done(err)
+        }
+
+        erm.serve(app, db.models.Customer, {
+          preMiddleware: null,
+          preCreate: null,
+          preRead: null,
+          preUpdate: null,
+          preDelete: null,
+          restify: app.isRestify
+        })
+
+        db.models.Customer.create({
+          name: 'Bob'
+        }).then(function (createdCustomer) {
+          customer = createdCustomer
+          server = app.listen(testPort, done)
+        }, function (err) {
+          done(err)
+        })
+      })
+    })
+
+    afterEach(function (done) {
+      dismantle(app, server, done)
+    })
+
+    it('POST /Customers 201', function (done) {
+      request.post({
+        url: util.format('%s/api/v1/Customers', testUrl),
+        json: {
+          name: 'John'
+        }
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 201)
+        done()
+      })
+    })
+
+    it('GET /Customers 200', function (done) {
+      request.get({
+        url: util.format('%s/api/v1/Customers', testUrl),
+        json: true
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 200)
+        done()
+      })
+    })
+
+    it('POST /Customers/:id 200', function (done) {
+      request.post({
+        url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+        json: {
+          name: 'Bobby'
+        }
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 200)
+        done()
+      })
+    })
+
+    it('PUT /Customers/:id 200', function (done) {
+      request.put({
+        url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+        json: {
+          name: 'Bobby'
+        }
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 200)
+        done()
+      })
+    })
+
+    it('DELETE /Customers/:id 204', function (done) {
+      request.del({
+        url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+        json: true
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 204)
+        done()
+      })
+    })
+  })
+
   describe('preMiddleware', function () {
     var app = createFn()
     var server
@@ -561,6 +658,102 @@ module.exports = function (createFn, setup, dismantle) {
         assert.equal(args[0].erm.result, undefined)
         assert.equal(args[0].erm.statusCode, 204)
         assert.equal(typeof args[2], 'function')
+        done()
+      })
+    })
+  })
+
+  describe('postCreate/Read/Update/Delete - null', function () {
+    var app = createFn()
+    var server
+    var customer
+
+    beforeEach(function (done) {
+      setup(function (err) {
+        if (err) {
+          return done(err)
+        }
+
+        erm.serve(app, db.models.Customer, {
+          postCreate: null,
+          postRead: null,
+          postUpdate: null,
+          postDelete: null,
+          restify: app.isRestify
+        })
+
+        db.models.Customer.create({
+          name: 'Bob'
+        }).then(function (createdCustomer) {
+          customer = createdCustomer
+          server = app.listen(testPort, done)
+        }, function (err) {
+          done(err)
+        })
+      })
+    })
+
+    afterEach(function (done) {
+      dismantle(app, server, done)
+    })
+
+    it('POST /Customers 201', function (done) {
+      request.post({
+        url: util.format('%s/api/v1/Customers', testUrl),
+        json: {
+          name: 'John'
+        }
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 201)
+        done()
+      })
+    })
+
+    it('GET /Customers 200', function (done) {
+      request.get({
+        url: util.format('%s/api/v1/Customers', testUrl),
+        json: true
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 200)
+        done()
+      })
+    })
+
+    it('POST /Customers/:id 200', function (done) {
+      request.post({
+        url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+        json: {
+          name: 'Bobby'
+        }
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 200)
+        done()
+      })
+    })
+
+    it('PUT /Customers/:id 200', function (done) {
+      request.put({
+        url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+        json: {
+          name: 'Bobby'
+        }
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 200)
+        done()
+      })
+    })
+
+    it('DELETE /Customers/:id 204', function (done) {
+      request.del({
+        url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+        json: true
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 204)
         done()
       })
     })
