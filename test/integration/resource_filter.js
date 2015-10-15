@@ -2,7 +2,7 @@
 
 var Filter = require('../../lib/resource_filter')
 var db = require('./setup')()
-var assert = require('assertmessage')
+var assert = require('assert')
 var ObjectId = require('mongoose').Types.ObjectId
 
 describe('Resource filter', function () {
