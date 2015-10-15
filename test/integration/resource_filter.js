@@ -221,11 +221,22 @@ describe('Resource filter', function () {
         var self = this
         var products = this.products = [{
           name: 'Squirt Gun',
+          department: {
+            code: 51
+          },
           price: 42
         }, {
-          name: 'Water Balloons', price: 1
+          name: 'Water Balloons',
+          department: {
+            code: 819
+          },
+          price: 1
         }, {
-          name: 'Garden Hose', price: 10
+          name: 'Garden Hose',
+          department: {
+            code: 555
+          },
+          price: 10
         }]
 
         this.invoiceId = null
@@ -366,6 +377,8 @@ describe('Resource filter', function () {
             assert.ok(p.number === undefined, 'Purchase number should be excluded')
             assert.equal(p.item.name, self.products[i].name, 'Item name should be populated')
             assert.ok(p.item.price === undefined, 'Item price should be excluded')
+            assert.ok(p.item.department)
+            assert.ok(p.item.department.code === undefined)
           })
 
           done()
@@ -435,7 +448,7 @@ describe('Resource filter', function () {
         assert(!err, err)
         db.models.RepeatCustomer.create({
           name: 'John Smith',
-          loyaltyProgram: account._id
+          account: account._id
         }, done)
       })
     })
@@ -447,33 +460,33 @@ describe('Resource filter', function () {
     })
 
     it('should filter populated from subschema', function (done) {
-      db.models.RepeatCustomer.findOne().populate('loyaltyProgram').exec(function (err, doc) {
+      db.models.RepeatCustomer.findOne().populate('account').exec(function (err, doc) {
         assert(!err, err)
         var customer = repeatCustFilter.filterObject(doc, {
           populate: [{
-            path: 'loyaltyProgram'
+            path: 'account'
           }]
         })
         assert.equal(customer.name, 'John Smith')
-        assert.equal(customer.loyaltyProgram.points, 244)
-        assert.ok(customer.loyaltyProgram.accountNumber === undefined, 'account number should be excluded')
+        assert.equal(customer.account.points, 244)
+        assert.ok(customer.account.accountNumber === undefined, 'account number should be excluded')
         done()
       })
     })
 
     it('should filter populated from base schema', function (done) {
-      db.models.Customer.findOne().exec(function (err, doc) {
+      db.models.Customer.findOne().populate('account').exec(function (err, doc) {
         assert(!err, err)
-        doc.populate('loyaltyProgram', function (err, doc) {
+        doc.populate('account', function (err, doc) {
           assert(!err, err)
           var customer = customerFilter.filterObject(doc, {
             populate: [{
-              path: 'loyaltyProgram'
+              path: 'account'
             }]
           })
           assert.equal(customer.name, 'John Smith')
-          assert.equal(customer.loyaltyProgram.points, 244)
-          assert.ok(customer.loyaltyProgram.accountNumber === undefined, 'account number should be excluded')
+          assert.equal(customer.account.points, 244)
+          assert.ok(customer.account.accountNumber === undefined, 'account number should be excluded')
           done()
         })
       })
