@@ -17,7 +17,7 @@ describe('Resource filter', function () {
       }
 
       customerFilter = new Filter(db.models.Customer, {
-        private: ['comment', 'address', 'purchases.number', 'purchases.item.price']
+        private: ['comment', 'address', 'favorites.purchase.number', 'purchases.number', 'purchases.item.price']
       })
 
       invoiceFilter = new Filter(db.models.Invoice, {
@@ -116,22 +116,24 @@ describe('Resource filter', function () {
       it('filters nested populated docs', function () {
         var customer = {
           name: 'John',
-          purchase: {
-            item: { name: 'Squirt Gun', price: 42 },
-            number: 2
+          favorites: {
+            purchase: {
+              item: { name: 'Squirt Gun', price: 42 },
+              number: 2
+            }
           }
         }
 
         customer = customerFilter.filterObject(customer, {
           populate: [{
-            path: 'purchase.item'
+            path: 'favorites.purchase.item'
           }]
         })
 
-        assert.ok(customer.purchase.item, 'Purchased item should be included')
-        assert.ok(customer.purchase.item.number === undefined, 'Purchased item number should be excluded')
-        assert.ok(customer.purchase.item.name !== undefined, 'Purchased item name should be included')
-        assert.ok(customer.purchase.item.price === undefined, 'Purchased item price should be excluded')
+        assert.ok(customer.favorites.purchase.item, 'Purchased item should be included')
+        assert.ok(customer.favorites.purchase.item.name !== undefined, 'Purchased item name should be included')
+        assert.ok(customer.favorites.purchase.item.price === undefined, 'Purchased item price should be excluded')
+        assert.ok(customer.favorites.purchase.number === undefined, 'Purchased item number should be excluded')
       })
 
       it('filters embedded array of populated docs', function () {
@@ -157,6 +159,7 @@ describe('Resource filter', function () {
 
         customer.purchases.forEach(function (p) {
           assert.ok(p.number === undefined, 'Purchase number should be excluded')
+          assert.ok(p.item, 'Item should be included')
           assert.ok(p.item.name !== undefined, 'Item name should be populated')
           assert.ok(p.item.price === undefined, 'Item price should be excluded')
         })
@@ -240,8 +243,10 @@ describe('Resource filter', function () {
             }, {
               item: createdProducts[2]._id, number: 1
             }],
-            purchase: {
-              item: createdProducts[0]._id, number: 2
+            favorites: {
+              purchase: {
+                item: createdProducts[0]._id, number: 2
+              }
             }
           }).save(function (err, res) {
             assert(!err, err)
@@ -330,18 +335,18 @@ describe('Resource filter', function () {
       })
 
       it('filters nested populated docs', function (done) {
-        db.models.Customer.findById(this.customerId).populate('purchase.item').exec(function (err, customer) {
+        db.models.Customer.findById(this.customerId).populate('favorites.purchase.item').exec(function (err, customer) {
           assert(!err, err)
           customer = customerFilter.filterObject(customer, {
             populate: [{
-              path: 'purchase.item'
+              path: 'favorites.purchase.item'
             }]
           })
 
-          assert.ok(customer.purchase.item, 'Purchased item should be included')
-          assert.ok(customer.purchase.item.number === undefined, 'Purchased item number should be excluded')
-          assert.ok(customer.purchase.item.name !== undefined, 'Purchased item name should be included')
-          assert.ok(customer.purchase.item.price === undefined, 'Purchased item price should be excluded')
+          assert.ok(customer.favorites.purchase.item, 'Purchased item should be included')
+          assert.ok(customer.favorites.purchase.item.number === undefined, 'Purchased item number should be excluded')
+          assert.ok(customer.favorites.purchase.item.name !== undefined, 'Purchased item name should be included')
+          assert.ok(customer.favorites.purchase.item.price === undefined, 'Purchased item price should be excluded')
 
           done()
         })

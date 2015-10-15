@@ -31,28 +31,44 @@ module.exports = function (createFn, setup, dismantle) {
           restify: app.isRestify
         })
 
-        db.models.Customer.create([{
-          name: 'Bob',
-          age: 12,
-          favorites: {
-            animal: 'Boar',
-            color: 'Black'
-          }
-        }, {
-          name: 'John',
-          age: 24,
-          favorites: {
-            animal: 'Jaguar',
-            color: 'Jade'
-          }
-        }, {
-          name: 'Mike',
-          age: 36,
-          favorites: {
-            animal: 'Medusa',
-            color: 'Maroon'
-          }
-        }]).then(function (createdCustomers) {
+        db.models.Product.create({
+          name: 'Bobsleigh'
+        }).then(function (createdProduct) {
+          return db.models.Customer.create([{
+            name: 'Bob',
+            age: 12,
+            favorites: {
+              animal: 'Boar',
+              color: 'Black',
+              purchase: {
+                item: createdProduct._id,
+                number: 1
+              }
+            }
+          }, {
+            name: 'John',
+            age: 24,
+            favorites: {
+              animal: 'Jaguar',
+              color: 'Jade',
+              purchase: {
+                item: createdProduct._id,
+                number: 2
+              }
+            }
+          }, {
+            name: 'Mike',
+            age: 36,
+            favorites: {
+              animal: 'Medusa',
+              color: 'Maroon',
+              purchase: {
+                item: createdProduct._id,
+                number: 3
+              }
+            }
+          }])
+        }).then(function (createdCustomers) {
           customers = createdCustomers
 
           return db.models.Invoice.create([{
@@ -791,6 +807,28 @@ module.exports = function (createFn, setup, dismantle) {
             assert.ok(invoice.customer._id)
             assert.ok(invoice.customer.name)
             assert.ok(invoice.customer.age)
+          })
+          done()
+        })
+      })
+
+      it('GET /Customers?populate=favorites.purchase.item 200 - nested field', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          qs: {
+            populate: 'favorites.purchase.item'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 3)
+          body.forEach(function (customer) {
+            assert.ok(customer.favorites.purchase)
+            assert.ok(customer.favorites.purchase.item)
+            assert.ok(customer.favorites.purchase.item._id)
+            assert.ok(customer.favorites.purchase.item.name)
+            assert.ok(customer.favorites.purchase.number)
           })
           done()
         })

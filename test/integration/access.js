@@ -348,7 +348,11 @@ module.exports = function (createFn, setup, dismantle) {
           db.models.Customer.findById(customer._id, function (err, customer) {
             assert.ok(!err)
             assert.equal(customer.age, 12)
-            assert.equal(customer.favorites.animal, 'Boar')
+            assert.deepEqual(customer.favorites.toObject(), {
+              animal: 'Boar',
+              color: 'Jade',
+              purchase: {}
+            })
             done()
           })
         })
@@ -508,7 +512,8 @@ module.exports = function (createFn, setup, dismantle) {
             assert.equal(customer.comment, 'Boo')
             assert.deepEqual(customer.favorites.toObject(), {
               animal: 'Boar',
-              color: 'Black'
+              color: 'Black',
+              purchase: {}
             })
             done()
           })
