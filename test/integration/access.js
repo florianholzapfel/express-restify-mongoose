@@ -13,6 +13,7 @@ module.exports = function (createFn, setup, dismantle) {
     describe('private - include private and protected fields', function () {
       var app = createFn()
       var server
+      var product
       var customer
       var invoice
 
@@ -23,7 +24,7 @@ module.exports = function (createFn, setup, dismantle) {
           }
 
           erm.serve(app, db.models.Customer, {
-            private: ['age', 'favorites.animal', 'privateDoes.notExist'],
+            private: ['age', 'favorites.animal', 'favorites.purchase.number', 'privateDoes.notExist'],
             protected: ['comment', 'favorites.color', 'protectedDoes.notExist'],
             access: function (req, done) {
               done(null, 'private')
@@ -40,14 +41,37 @@ module.exports = function (createFn, setup, dismantle) {
             restify: app.isRestify
           })
 
-          db.models.Customer.create({
-            name: 'Bob',
-            age: 12,
-            comment: 'Boo',
-            favorites: {
-              animal: 'Boar',
-              color: 'Black'
+          erm.serve(app, db.models.Product, {
+            private: ['department.code'],
+            protected: ['price'],
+            access: function () {
+              return 'private'
+            },
+            restify: app.isRestify
+          })
+
+          db.models.Product.create({
+            name: 'Bobsleigh',
+            price: 42,
+            department: {
+              code: 51
             }
+          }).then(function (createdProduct) {
+            product = createdProduct
+
+            return db.models.Customer.create({
+              name: 'Bob',
+              age: 12,
+              comment: 'Boo',
+              favorites: {
+                animal: 'Boar',
+                color: 'Black',
+                purchase: {
+                  item: product._id,
+                  number: 1
+                }
+              }
+            })
           }).then(function (createdCustomer) {
             customer = createdCustomer
 
@@ -82,7 +106,11 @@ module.exports = function (createFn, setup, dismantle) {
           assert.equal(body[0].comment, 'Boo')
           assert.deepEqual(body[0].favorites, {
             animal: 'Boar',
-            color: 'Black'
+            color: 'Black',
+            purchase: {
+              item: product._id.toHexString(),
+              number: 1
+            }
           })
           done()
         })
@@ -100,7 +128,78 @@ module.exports = function (createFn, setup, dismantle) {
           assert.equal(body.comment, 'Boo')
           assert.deepEqual(body.favorites, {
             animal: 'Boar',
-            color: 'Black'
+            color: 'Black',
+            purchase: {
+              item: product._id.toHexString(),
+              number: 1
+            }
+          })
+          done()
+        })
+      })
+
+      it('GET /Customers?populate=favorites.purchase.item 200', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          qs: {
+            populate: 'favorites.purchase.item'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 1)
+          assert.equal(body[0].name, 'Bob')
+          assert.equal(body[0].age, 12)
+          assert.equal(body[0].comment, 'Boo')
+          assert.deepEqual(body[0].favorites, {
+            animal: 'Boar',
+            color: 'Black',
+            purchase: {
+              item: {
+                __v: 0,
+                _id: product._id.toHexString(),
+                name: 'Bobsleigh',
+                price: 42,
+                department: {
+                  code: 51
+                }
+              },
+              number: 1
+            }
+          })
+          done()
+        })
+      })
+
+      it('GET /Customers/:id?populate=favorites.purchase.item 200', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          qs: {
+            populate: 'favorites.purchase.item'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.name, 'Bob')
+          assert.equal(body.age, 12)
+          assert.equal(body.comment, 'Boo')
+          assert.deepEqual(body.favorites, {
+            animal: 'Boar',
+            color: 'Black',
+            purchase: {
+              item: {
+                __v: 0,
+                _id: product._id.toHexString(),
+                name: 'Bobsleigh',
+                price: 42,
+                department: {
+                  code: 51
+                }
+              },
+              number: 1
+            }
           })
           done()
         })
@@ -125,7 +224,11 @@ module.exports = function (createFn, setup, dismantle) {
           assert.equal(body[0].customer.comment, 'Boo')
           assert.deepEqual(body[0].customer.favorites, {
             animal: 'Boar',
-            color: 'Black'
+            color: 'Black',
+            purchase: {
+              item: product._id.toHexString(),
+              number: 1
+            }
           })
           done()
         })
@@ -149,7 +252,11 @@ module.exports = function (createFn, setup, dismantle) {
           assert.equal(body.customer.comment, 'Boo')
           assert.deepEqual(body.customer.favorites, {
             animal: 'Boar',
-            color: 'Black'
+            color: 'Black',
+            purchase: {
+              item: product._id.toHexString(),
+              number: 1
+            }
           })
           done()
         })
@@ -164,7 +271,10 @@ module.exports = function (createFn, setup, dismantle) {
             comment: 'Jumbo',
             favorites: {
               animal: 'Jaguar',
-              color: 'Jade'
+              color: 'Jade',
+              purchase: {
+                number: 2
+              }
             }
           }
         }, function (err, res, body) {
@@ -175,7 +285,11 @@ module.exports = function (createFn, setup, dismantle) {
           assert.equal(body.comment, 'Jumbo')
           assert.deepEqual(body.favorites, {
             animal: 'Jaguar',
-            color: 'Jade'
+            color: 'Jade',
+            purchase: {
+              item: product._id.toHexString(),
+              number: 2
+            }
           })
           done()
         })
@@ -185,6 +299,7 @@ module.exports = function (createFn, setup, dismantle) {
     describe('protected - exclude private fields and include protected fields', function () {
       var app = createFn()
       var server
+      var product
       var customer
       var invoice
 
@@ -195,7 +310,7 @@ module.exports = function (createFn, setup, dismantle) {
           }
 
           erm.serve(app, db.models.Customer, {
-            private: ['age', 'favorites.animal', 'privateDoes.notExist'],
+            private: ['age', 'favorites.animal', 'favorites.purchase.number', 'privateDoes.notExist'],
             protected: ['comment', 'favorites.color', 'protectedDoes.notExist'],
             access: function (req, done) {
               done(null, 'protected')
@@ -212,14 +327,37 @@ module.exports = function (createFn, setup, dismantle) {
             restify: app.isRestify
           })
 
-          db.models.Customer.create({
-            name: 'Bob',
-            age: 12,
-            comment: 'Boo',
-            favorites: {
-              animal: 'Boar',
-              color: 'Black'
+          erm.serve(app, db.models.Product, {
+            private: ['department.code'],
+            protected: ['price'],
+            access: function () {
+              return 'protected'
+            },
+            restify: app.isRestify
+          })
+
+          db.models.Product.create({
+            name: 'Bobsleigh',
+            price: 42,
+            department: {
+              code: 51
             }
+          }).then(function (createdProduct) {
+            product = createdProduct
+
+            return db.models.Customer.create({
+              name: 'Bob',
+              age: 12,
+              comment: 'Boo',
+              favorites: {
+                animal: 'Boar',
+                color: 'Black',
+                purchase: {
+                  item: product._id,
+                  number: 1
+                }
+              }
+            })
           }).then(function (createdCustomer) {
             customer = createdCustomer
 
@@ -253,7 +391,10 @@ module.exports = function (createFn, setup, dismantle) {
           assert.equal(body[0].age, undefined)
           assert.equal(body[0].comment, 'Boo')
           assert.deepEqual(body[0].favorites, {
-            color: 'Black'
+            color: 'Black',
+            purchase: {
+              item: product._id.toHexString()
+            }
           })
           done()
         })
@@ -270,7 +411,69 @@ module.exports = function (createFn, setup, dismantle) {
           assert.equal(body.age, undefined)
           assert.equal(body.comment, 'Boo')
           assert.deepEqual(body.favorites, {
-            color: 'Black'
+            color: 'Black',
+            purchase: {
+              item: product._id.toHexString()
+            }
+          })
+          done()
+        })
+      })
+
+      it('GET /Customers?populate=favorites.purchase.item 200', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          qs: {
+            populate: 'favorites.purchase.item'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 1)
+          assert.equal(body[0].name, 'Bob')
+          assert.equal(body[0].age, undefined)
+          assert.equal(body[0].comment, 'Boo')
+          assert.deepEqual(body[0].favorites, {
+            color: 'Black',
+            purchase: {
+              item: {
+                __v: 0,
+                _id: product._id.toHexString(),
+                name: 'Bobsleigh',
+                price: 42,
+                department: {}
+              }
+            }
+          })
+          done()
+        })
+      })
+
+      it('GET /Customers/:id?populate=favorites.purchase.item 200', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          qs: {
+            populate: 'favorites.purchase.item'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.name, 'Bob')
+          assert.equal(body.age, undefined)
+          assert.equal(body.comment, 'Boo')
+          assert.deepEqual(body.favorites, {
+            color: 'Black',
+            purchase: {
+              item: {
+                __v: 0,
+                _id: product._id.toHexString(),
+                name: 'Bobsleigh',
+                price: 42,
+                department: {}
+              }
+            }
           })
           done()
         })
@@ -294,7 +497,10 @@ module.exports = function (createFn, setup, dismantle) {
           assert.equal(body[0].customer.age, undefined)
           assert.equal(body[0].customer.comment, 'Boo')
           assert.deepEqual(body[0].customer.favorites, {
-            color: 'Black'
+            color: 'Black',
+            purchase: {
+              item: product._id.toHexString()
+            }
           })
           done()
         })
@@ -317,7 +523,10 @@ module.exports = function (createFn, setup, dismantle) {
           assert.equal(body.customer.age, undefined)
           assert.equal(body.customer.comment, 'Boo')
           assert.deepEqual(body.customer.favorites, {
-            color: 'Black'
+            color: 'Black',
+            purchase: {
+              item: product._id.toHexString()
+            }
           })
           done()
         })
@@ -332,7 +541,10 @@ module.exports = function (createFn, setup, dismantle) {
             comment: 'Jumbo',
             favorites: {
               animal: 'Jaguar',
-              color: 'Jade'
+              color: 'Jade',
+              purchase: {
+                number: 2
+              }
             }
           }
         }, function (err, res, body) {
@@ -342,7 +554,10 @@ module.exports = function (createFn, setup, dismantle) {
           assert.equal(body.age, undefined)
           assert.equal(body.comment, 'Jumbo')
           assert.deepEqual(body.favorites, {
-            color: 'Jade'
+            color: 'Jade',
+            purchase: {
+              item: product._id.toHexString()
+            }
           })
 
           db.models.Customer.findById(customer._id, function (err, customer) {
@@ -351,7 +566,10 @@ module.exports = function (createFn, setup, dismantle) {
             assert.deepEqual(customer.favorites.toObject(), {
               animal: 'Boar',
               color: 'Jade',
-              purchase: {}
+              purchase: {
+                item: product._id,
+                number: 1
+              }
             })
             done()
           })
@@ -362,6 +580,7 @@ module.exports = function (createFn, setup, dismantle) {
     describe('public - exclude private and protected fields', function () {
       var app = createFn()
       var server
+      var product
       var customer
       var invoice
 
@@ -372,7 +591,7 @@ module.exports = function (createFn, setup, dismantle) {
           }
 
           erm.serve(app, db.models.Customer, {
-            private: ['age', 'favorites.animal', 'privateDoes.notExist'],
+            private: ['age', 'favorites.animal', 'favorites.purchase.number', 'privateDoes.notExist'],
             protected: ['comment', 'favorites.color', 'protectedDoes.notExist'],
             restify: app.isRestify
           })
@@ -383,14 +602,34 @@ module.exports = function (createFn, setup, dismantle) {
             restify: app.isRestify
           })
 
-          db.models.Customer.create({
-            name: 'Bob',
-            age: 12,
-            comment: 'Boo',
-            favorites: {
-              animal: 'Boar',
-              color: 'Black'
+          erm.serve(app, db.models.Product, {
+            private: ['department.code'],
+            protected: ['price'],
+            restify: app.isRestify
+          })
+
+          db.models.Product.create({
+            name: 'Bobsleigh',
+            price: 42,
+            department: {
+              code: 51
             }
+          }).then(function (createdProduct) {
+            product = createdProduct
+
+            return db.models.Customer.create({
+              name: 'Bob',
+              age: 12,
+              comment: 'Boo',
+              favorites: {
+                animal: 'Boar',
+                color: 'Black',
+                purchase: {
+                  item: product._id,
+                  number: 1
+                }
+              }
+            })
           }).then(function (createdCustomer) {
             customer = createdCustomer
 
@@ -423,7 +662,11 @@ module.exports = function (createFn, setup, dismantle) {
           assert.equal(body[0].name, 'Bob')
           assert.equal(body[0].age, undefined)
           assert.equal(body[0].comment, undefined)
-          assert.deepEqual(body[0].favorites, {})
+          assert.deepEqual(body[0].favorites, {
+            purchase: {
+              item: product._id.toHexString()
+            }
+          })
           done()
         })
       })
@@ -438,7 +681,66 @@ module.exports = function (createFn, setup, dismantle) {
           assert.equal(body.name, 'Bob')
           assert.equal(body.age, undefined)
           assert.equal(body.comment, undefined)
-          assert.deepEqual(body.favorites, {})
+          assert.deepEqual(body.favorites, {
+            purchase: {
+              item: product._id.toHexString()
+            }
+          })
+          done()
+        })
+      })
+
+      it('GET /Customers?populate=favorites.purchase.item 200', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          qs: {
+            populate: 'favorites.purchase.item'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 1)
+          assert.equal(body[0].name, 'Bob')
+          assert.equal(body[0].age, undefined)
+          assert.equal(body[0].comment, undefined)
+          assert.deepEqual(body[0].favorites, {
+            purchase: {
+              item: {
+                __v: 0,
+                _id: product._id.toHexString(),
+                name: 'Bobsleigh',
+                department: {}
+              }
+            }
+          })
+          done()
+        })
+      })
+
+      it('GET /Customers/:id?populate=favorites.purchase.item 200', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          qs: {
+            populate: 'favorites.purchase.item'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.name, 'Bob')
+          assert.equal(body.age, undefined)
+          assert.equal(body.comment, undefined)
+          assert.deepEqual(body.favorites, {
+            purchase: {
+              item: {
+                __v: 0,
+                _id: product._id.toHexString(),
+                name: 'Bobsleigh',
+                department: {}
+              }
+            }
+          })
           done()
         })
       })
@@ -460,7 +762,11 @@ module.exports = function (createFn, setup, dismantle) {
           assert.equal(body[0].customer.name, 'Bob')
           assert.equal(body[0].customer.age, undefined)
           assert.equal(body[0].customer.comment, undefined)
-          assert.deepEqual(body[0].customer.favorites, {})
+          assert.deepEqual(body[0].customer.favorites, {
+            purchase: {
+              item: product._id.toHexString()
+            }
+          })
           done()
         })
       })
@@ -481,7 +787,11 @@ module.exports = function (createFn, setup, dismantle) {
           assert.equal(body.customer.name, 'Bob')
           assert.equal(body.customer.age, undefined)
           assert.equal(body.customer.comment, undefined)
-          assert.deepEqual(body.customer.favorites, {})
+          assert.deepEqual(body.customer.favorites, {
+            purchase: {
+              item: product._id.toHexString()
+            }
+          })
           done()
         })
       })
@@ -495,7 +805,10 @@ module.exports = function (createFn, setup, dismantle) {
             comment: 'Jumbo',
             favorites: {
               animal: 'Jaguar',
-              color: 'Jade'
+              color: 'Jade',
+              purchase: {
+                number: 2
+              }
             }
           }
         }, function (err, res, body) {
@@ -504,7 +817,11 @@ module.exports = function (createFn, setup, dismantle) {
           assert.equal(body.name, 'John')
           assert.equal(body.age, undefined)
           assert.equal(body.comment, undefined)
-          assert.deepEqual(body.favorites, {})
+          assert.deepEqual(body.favorites, {
+            purchase: {
+              item: product._id.toHexString()
+            }
+          })
 
           db.models.Customer.findById(customer._id, function (err, customer) {
             assert.ok(!err)
@@ -513,7 +830,10 @@ module.exports = function (createFn, setup, dismantle) {
             assert.deepEqual(customer.favorites.toObject(), {
               animal: 'Boar',
               color: 'Black',
-              purchase: {}
+              purchase: {
+                item: product._id,
+                number: 1
+              }
             })
             done()
           })
