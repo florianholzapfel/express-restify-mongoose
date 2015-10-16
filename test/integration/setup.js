@@ -40,6 +40,7 @@ module.exports = function () {
         item: { type: Schema.Types.ObjectId, ref: 'Product' },
         number: Number
       }],
+      returns: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
       creditCard: {
         type: String,
         access: 'protected'

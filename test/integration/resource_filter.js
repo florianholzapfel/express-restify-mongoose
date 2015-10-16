@@ -221,11 +221,22 @@ describe('Resource filter', function () {
         var self = this
         var products = this.products = [{
           name: 'Squirt Gun',
+          department: {
+            code: 51
+          },
           price: 42
         }, {
-          name: 'Water Balloons', price: 1
+          name: 'Water Balloons',
+          department: {
+            code: 819
+          },
+          price: 1
         }, {
-          name: 'Garden Hose', price: 10
+          name: 'Garden Hose',
+          department: {
+            code: 555
+          },
+          price: 10
         }]
 
         this.invoiceId = null
@@ -366,6 +377,8 @@ describe('Resource filter', function () {
             assert.ok(p.number === undefined, 'Purchase number should be excluded')
             assert.equal(p.item.name, self.products[i].name, 'Item name should be populated')
             assert.ok(p.item.price === undefined, 'Item price should be excluded')
+            assert.ok(p.item.department)
+            assert.ok(p.item.department.code === undefined)
           })
 
           done()
