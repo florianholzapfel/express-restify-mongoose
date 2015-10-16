@@ -16,6 +16,8 @@ module.exports = function (createFn, setup, dismantle) {
       var product
       var customer
       var invoice
+      var repeatCustomer
+      var repeatCustomerInvoice
 
       beforeEach(function (done) {
         setup(function (err) {
@@ -28,6 +30,15 @@ module.exports = function (createFn, setup, dismantle) {
             protected: ['comment', 'favorites.color', 'protectedDoes.notExist'],
             access: function (req, done) {
               done(null, 'private')
+            },
+            restify: app.isRestify
+          })
+
+          erm.serve(app, db.models.RepeatCustomer, {
+            private: ['job'],
+            protected: ['status'],
+            access: function () {
+              return 'private'
             },
             restify: app.isRestify
           })
@@ -87,6 +98,23 @@ module.exports = function (createFn, setup, dismantle) {
             })
           }).then(function (createdInvoice) {
             invoice = createdInvoice
+
+            return db.models.RepeatCustomer.create({
+              name: 'Mike',
+              visits: 24,
+              status: 'Awesome',
+              job: 'Hunter'
+            })
+          }).then(function (createdRepeatCustomer) {
+            repeatCustomer = createdRepeatCustomer
+
+            return db.models.Invoice.create({
+              customer: repeatCustomer._id,
+              amount: 200,
+              receipt: 'B'
+            })
+          }).then(function (createdRepeatCustomerInvoice) {
+            repeatCustomerInvoice = createdRepeatCustomerInvoice
             server = app.listen(testPort, done)
           }, function (err) {
             done(err)
@@ -105,7 +133,7 @@ module.exports = function (createFn, setup, dismantle) {
         }, function (err, res, body) {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
-          assert.equal(body.length, 1)
+          assert.equal(body.length, 2)
           assert.equal(body[0].name, 'Bob')
           assert.equal(body[0].age, 12)
           assert.equal(body[0].comment, 'Boo')
@@ -155,7 +183,7 @@ module.exports = function (createFn, setup, dismantle) {
         }, function (err, res, body) {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
-          assert.equal(body.length, 1)
+          assert.equal(body.length, 2)
           assert.equal(body[0].name, 'Bob')
           assert.equal(body[0].age, 12)
           assert.equal(body[0].comment, 'Boo')
@@ -252,7 +280,7 @@ module.exports = function (createFn, setup, dismantle) {
         }, function (err, res, body) {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
-          assert.equal(body.length, 1)
+          assert.equal(body.length, 2)
           assert.ok(body[0].customer)
           assert.equal(body[0].amount, 100)
           assert.equal(body[0].receipt, 'A')
@@ -334,6 +362,42 @@ module.exports = function (createFn, setup, dismantle) {
           done()
         })
       })
+
+      it('GET /RepeatCustomers 200 - discriminator', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/RepeatCustomers', testUrl),
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body[0].name, 'Mike')
+          assert.equal(body[0].visits, 24)
+          assert.equal(body[0].status, 'Awesome')
+          assert.equal(body[0].job, 'Hunter')
+          done()
+        })
+      })
+
+      it('GET /Invoices/:id?populate=customer 200', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Invoices/%s', testUrl, repeatCustomerInvoice._id),
+          qs: {
+            populate: 'customer'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.ok(body.customer)
+          assert.equal(body.amount, 200)
+          assert.equal(body.receipt, 'B')
+          assert.equal(body.customer.name, 'Mike')
+          assert.equal(body.customer.visits, 24)
+          assert.equal(body.customer.status, 'Awesome')
+          assert.equal(body.customer.job, 'Hunter')
+          done()
+        })
+      })
     })
 
     describe('protected - exclude private fields and include protected fields', function () {
@@ -342,6 +406,8 @@ module.exports = function (createFn, setup, dismantle) {
       var product
       var customer
       var invoice
+      var repeatCustomer
+      var repeatCustomerInvoice
 
       beforeEach(function (done) {
         setup(function (err) {
@@ -354,6 +420,15 @@ module.exports = function (createFn, setup, dismantle) {
             protected: ['comment', 'favorites.color', 'protectedDoes.notExist'],
             access: function (req, done) {
               done(null, 'protected')
+            },
+            restify: app.isRestify
+          })
+
+          erm.serve(app, db.models.RepeatCustomer, {
+            private: ['job'],
+            protected: ['status'],
+            access: function () {
+              return 'protected'
             },
             restify: app.isRestify
           })
@@ -413,6 +488,23 @@ module.exports = function (createFn, setup, dismantle) {
             })
           }).then(function (createdInvoice) {
             invoice = createdInvoice
+
+            return db.models.RepeatCustomer.create({
+              name: 'Mike',
+              visits: 24,
+              status: 'Awesome',
+              job: 'Hunter'
+            })
+          }).then(function (createdRepeatCustomer) {
+            repeatCustomer = createdRepeatCustomer
+
+            return db.models.Invoice.create({
+              customer: repeatCustomer._id,
+              amount: 200,
+              receipt: 'B'
+            })
+          }).then(function (createdRepeatCustomerInvoice) {
+            repeatCustomerInvoice = createdRepeatCustomerInvoice
             server = app.listen(testPort, done)
           }, function (err) {
             done(err)
@@ -431,7 +523,7 @@ module.exports = function (createFn, setup, dismantle) {
         }, function (err, res, body) {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
-          assert.equal(body.length, 1)
+          assert.equal(body.length, 2)
           assert.equal(body[0].name, 'Bob')
           assert.equal(body[0].age, undefined)
           assert.equal(body[0].comment, 'Boo')
@@ -475,7 +567,7 @@ module.exports = function (createFn, setup, dismantle) {
         }, function (err, res, body) {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
-          assert.equal(body.length, 1)
+          assert.equal(body.length, 2)
           assert.equal(body[0].name, 'Bob')
           assert.equal(body[0].age, undefined)
           assert.equal(body[0].comment, 'Boo')
@@ -556,7 +648,7 @@ module.exports = function (createFn, setup, dismantle) {
         }, function (err, res, body) {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
-          assert.equal(body.length, 1)
+          assert.equal(body.length, 2)
           assert.ok(body[0].customer)
           assert.equal(body[0].amount, undefined)
           assert.equal(body[0].receipt, 'A')
@@ -642,6 +734,42 @@ module.exports = function (createFn, setup, dismantle) {
           })
         })
       })
+
+      it('GET /RepeatCustomers 200 - discriminator', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/RepeatCustomers', testUrl),
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body[0].name, 'Mike')
+          assert.equal(body[0].visits, 24)
+          assert.equal(body[0].status, 'Awesome')
+          assert.equal(body[0].job, undefined)
+          done()
+        })
+      })
+
+      it('GET /Invoices/:id?populate=customer 200', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Invoices/%s', testUrl, repeatCustomerInvoice._id),
+          qs: {
+            populate: 'customer'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.ok(body.customer)
+          assert.equal(body.amount, undefined)
+          assert.equal(body.receipt, 'B')
+          assert.equal(body.customer.name, 'Mike')
+          assert.equal(body.customer.visits, 24)
+          assert.equal(body.customer.status, 'Awesome')
+          assert.equal(body.customer.job, undefined)
+          done()
+        })
+      })
     })
 
     describe('public - exclude private and protected fields', function () {
@@ -650,6 +778,8 @@ module.exports = function (createFn, setup, dismantle) {
       var product
       var customer
       var invoice
+      var repeatCustomer
+      var repeatCustomerInvoice
 
       beforeEach(function (done) {
         setup(function (err) {
@@ -660,6 +790,12 @@ module.exports = function (createFn, setup, dismantle) {
           erm.serve(app, db.models.Customer, {
             private: ['age', 'favorites.animal', 'favorites.purchase.number', 'purchases.number', 'privateDoes.notExist'],
             protected: ['comment', 'favorites.color', 'protectedDoes.notExist'],
+            restify: app.isRestify
+          })
+
+          erm.serve(app, db.models.RepeatCustomer, {
+            private: ['job'],
+            protected: ['status'],
             restify: app.isRestify
           })
 
@@ -712,6 +848,23 @@ module.exports = function (createFn, setup, dismantle) {
             })
           }).then(function (createdInvoice) {
             invoice = createdInvoice
+
+            return db.models.RepeatCustomer.create({
+              name: 'Mike',
+              visits: 24,
+              status: 'Awesome',
+              job: 'Hunter'
+            })
+          }).then(function (createdRepeatCustomer) {
+            repeatCustomer = createdRepeatCustomer
+
+            return db.models.Invoice.create({
+              customer: repeatCustomer._id,
+              amount: 200,
+              receipt: 'B'
+            })
+          }).then(function (createdRepeatCustomerInvoice) {
+            repeatCustomerInvoice = createdRepeatCustomerInvoice
             server = app.listen(testPort, done)
           }, function (err) {
             done(err)
@@ -730,7 +883,7 @@ module.exports = function (createFn, setup, dismantle) {
         }, function (err, res, body) {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
-          assert.equal(body.length, 1)
+          assert.equal(body.length, 2)
           assert.equal(body[0].name, 'Bob')
           assert.equal(body[0].age, undefined)
           assert.equal(body[0].comment, undefined)
@@ -774,7 +927,7 @@ module.exports = function (createFn, setup, dismantle) {
         }, function (err, res, body) {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
-          assert.equal(body.length, 1)
+          assert.equal(body.length, 2)
           assert.equal(body[0].name, 'Bob')
           assert.equal(body[0].age, undefined)
           assert.equal(body[0].comment, undefined)
@@ -851,7 +1004,7 @@ module.exports = function (createFn, setup, dismantle) {
         }, function (err, res, body) {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
-          assert.equal(body.length, 1)
+          assert.equal(body.length, 2)
           assert.ok(body[0].customer)
           assert.equal(body[0].amount, undefined)
           assert.equal(body[0].receipt, undefined)
@@ -933,6 +1086,42 @@ module.exports = function (createFn, setup, dismantle) {
             })
             done()
           })
+        })
+      })
+
+      it('GET /RepeatCustomers 200 - discriminator', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/RepeatCustomers', testUrl),
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body[0].name, 'Mike')
+          assert.equal(body[0].visits, 24)
+          assert.equal(body[0].status, undefined)
+          assert.equal(body[0].job, undefined)
+          done()
+        })
+      })
+
+      it('GET /Invoices/:id?populate=customer 200', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Invoices/%s', testUrl, repeatCustomerInvoice._id),
+          qs: {
+            populate: 'customer'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.ok(body.customer)
+          assert.equal(body.amount, undefined)
+          assert.equal(body.receipt, undefined)
+          assert.equal(body.customer.name, 'Mike')
+          assert.equal(body.customer.visits, 24)
+          assert.equal(body.customer.status, undefined)
+          assert.equal(body.customer.job, undefined)
+          done()
         })
       })
     })

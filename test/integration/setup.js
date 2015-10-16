@@ -4,100 +4,88 @@ var Schema = mongoose.Schema
 var util = require('util')
 
 module.exports = function () {
-  var opts = {
-    toObject: { virtuals: true },
-    toJSON: { virtuals: true }
-  }
-
-  var Product = new Schema({
+  var ProductSchema = new Schema({
     name: { type: String, required: true },
     department: {
-      name: String,
-      code: Number
+      name: { type: String },
+      code: { type: Number }
     },
-    price: Number
+    price: { type: Number }
   })
 
-  var CustomerSchema = function () {
-    Schema.apply(this, arguments)
-
-    this.add({
-      account: { type: Schema.Types.ObjectId, ref: 'Account' },
-      name: { type: String, required: true, unique: true },
-      // friendlyId: { type: String, unique: true },
-      comment: String,
-      address: String,
-      age: Number,
-      favorites: {
-        animal: String,
-        color: String,
-        purchase: {
-          item: { type: Schema.Types.ObjectId, ref: 'Product' },
-          number: Number
-        }
-      },
-      purchases: [{
+  var CustomerSchema = new Schema({
+    account: { type: Schema.Types.ObjectId, ref: 'Account' },
+    name: { type: String, required: true, unique: true },
+    // friendlyId: { type: String, unique: true },
+    comment: { type: String },
+    address: { type: String },
+    age: { type: Number },
+    favorites: {
+      animal: { type: String },
+      color: { type: String },
+      purchase: {
         item: { type: Schema.Types.ObjectId, ref: 'Product' },
-        number: Number
-      }],
-      returns: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
-      creditCard: {
-        type: String,
-        access: 'protected'
-      },
-      ssn: {
-        type: String,
-        access: 'private'
+        number: { type: Number }
       }
-    })
-  }
+    },
+    purchases: [{
+      item: { type: Schema.Types.ObjectId, ref: 'Product' },
+      number: { type: Number }
+    }],
+    returns: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
+    creditCard: { type: String, access: 'protected' },
+    ssn: { type: String, access: 'private' }
+  }, {
+    toObject: { virtuals: true },
+    toJSON: { virtuals: true }
+  })
 
-  util.inherits(CustomerSchema, Schema)
-
-  var Customer = new CustomerSchema({}, opts)
-
-  Customer.virtual('info').get(function () {
+  CustomerSchema.virtual('info').get(function () {
     return this.name + ' is awesome'
   })
 
-  var RepeatCustomer = new CustomerSchema({
-    loyaltyProgram: { type: Schema.Types.ObjectId, ref: 'Account' }
+  var InvoiceSchema = new Schema({
+    customer: { type: Schema.Types.ObjectId, ref: 'Customer' },
+    amount: { type: Number },
+    receipt: { type: String },
+    products: [{ type: Schema.Types.ObjectId, ref: 'Product' }]
+  }, {
+    toObject: { virtuals: true },
+    toJSON: { virtuals: true },
+    versionKey: '__version'
   })
 
-  var invoiceOpts = JSON.parse(JSON.stringify(opts))
-  invoiceOpts.versionKey = '__version'
+  var RepeatCustomerSchema = new Schema({
+    loyaltyProgram: { type: Schema.Types.ObjectId, ref: 'Account' },
+    visits: { type: Number },
+    status: { type: String },
+    job: { type: String }
+  })
 
-  var Invoice = new Schema({
-    customer: { type: Schema.Types.ObjectId, ref: 'Customer' },
-    amount: Number,
-    receipt: String,
-    products: [{ type: Schema.Types.ObjectId, ref: 'Product' }]
-  }, invoiceOpts)
-
-  var Account = new Schema({
+  var AccountSchema = new Schema({
     accountNumber: String,
     points: Number
   })
 
   function initialize (callback) {
     if (!mongoose.models.Customer) {
-      mongoose.model('Customer', Customer)
+      mongoose.model('Customer', CustomerSchema)
     }
 
     if (!mongoose.models.Invoice) {
-      mongoose.model('Invoice', Invoice)
+      mongoose.model('Invoice', InvoiceSchema)
     }
 
     if (!mongoose.models.Product) {
-      mongoose.model('Product', Product)
+      mongoose.model('Product', ProductSchema)
     }
 
     if (!mongoose.models.RepeatCustomer) {
-      mongoose.models.Customer.discriminator('RepeatCustomer', RepeatCustomer)
+      mongoose.models.Customer.discriminator('RepeatCustomer', RepeatCustomerSchema)
     }
 
     if (!mongoose.models.Account) {
-      mongoose.model('Account', Account)
+      mongoose.model('Account', AccountSchema)
     }
 
     mongoose.connect('mongodb://localhost/database', callback)
