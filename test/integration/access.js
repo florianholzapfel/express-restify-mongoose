@@ -16,6 +16,7 @@ module.exports = function (createFn, setup, dismantle) {
       var product
       var customer
       var invoice
+      var account
       var repeatCustomer
       var repeatCustomerInvoice
 
@@ -25,20 +26,20 @@ module.exports = function (createFn, setup, dismantle) {
             return done(err)
           }
 
-          erm.serve(app, db.models.Customer, {
-            private: ['age', 'favorites.animal', 'favorites.purchase.number', 'purchases.number', 'privateDoes.notExist'],
-            protected: ['comment', 'favorites.color', 'protectedDoes.notExist'],
-            access: function (req, done) {
-              done(null, 'private')
-            },
-            restify: app.isRestify
-          })
-
           erm.serve(app, db.models.RepeatCustomer, {
             private: ['job'],
             protected: ['status'],
             access: function () {
               return 'private'
+            },
+            restify: app.isRestify
+          })
+
+          erm.serve(app, db.models.Customer, {
+            private: ['age', 'favorites.animal', 'favorites.purchase.number', 'purchases.number', 'privateDoes.notExist'],
+            protected: ['comment', 'favorites.color', 'protectedDoes.notExist'],
+            access: function (req, done) {
+              done(null, 'private')
             },
             restify: app.isRestify
           })
@@ -55,6 +56,15 @@ module.exports = function (createFn, setup, dismantle) {
           erm.serve(app, db.models.Product, {
             private: ['department.code'],
             protected: ['price'],
+            access: function () {
+              return 'private'
+            },
+            restify: app.isRestify
+          })
+
+          erm.serve(app, db.models.Account, {
+            private: ['accountNumber'],
+            protected: ['points'],
             access: function () {
               return 'private'
             },
@@ -99,7 +109,15 @@ module.exports = function (createFn, setup, dismantle) {
           }).then(function (createdInvoice) {
             invoice = createdInvoice
 
+            return db.models.Account.create({
+              accountNumber: '123XYZ',
+              points: 244
+            })
+          }).then(function (createdAccount) {
+            account = createdAccount
+
             return db.models.RepeatCustomer.create({
+              account: account._id,
               name: 'Mike',
               visits: 24,
               status: 'Awesome',
@@ -370,6 +388,8 @@ module.exports = function (createFn, setup, dismantle) {
         }, function (err, res, body) {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 1)
+          assert.equal(body[0].account, account._id.toHexString())
           assert.equal(body[0].name, 'Mike')
           assert.equal(body[0].visits, 24)
           assert.equal(body[0].status, 'Awesome')
@@ -378,7 +398,29 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Invoices/:id?populate=customer 200', function (done) {
+      it('GET /Customers/:id?populate=account 200 - populate discriminator field from base schema', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, repeatCustomer._id),
+          qs: {
+            populate: 'account'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.ok(body.account)
+          assert.equal(body.account._id, account._id.toHexString())
+          assert.equal(body.account.accountNumber, '123XYZ')
+          assert.equal(body.account.points, 244)
+          assert.equal(body.name, 'Mike')
+          assert.equal(body.visits, 24)
+          assert.equal(body.status, 'Awesome')
+          assert.equal(body.job, 'Hunter')
+          done()
+        })
+      })
+
+      it('GET /Invoices/:id?populate=customer 200 - populated discriminator', function (done) {
         request.get({
           url: util.format('%s/api/v1/Invoices/%s', testUrl, repeatCustomerInvoice._id),
           qs: {
@@ -406,6 +448,7 @@ module.exports = function (createFn, setup, dismantle) {
       var product
       var customer
       var invoice
+      var account
       var repeatCustomer
       var repeatCustomerInvoice
 
@@ -415,20 +458,20 @@ module.exports = function (createFn, setup, dismantle) {
             return done(err)
           }
 
-          erm.serve(app, db.models.Customer, {
-            private: ['age', 'favorites.animal', 'favorites.purchase.number', 'purchases.number', 'privateDoes.notExist'],
-            protected: ['comment', 'favorites.color', 'protectedDoes.notExist'],
-            access: function (req, done) {
-              done(null, 'protected')
-            },
-            restify: app.isRestify
-          })
-
           erm.serve(app, db.models.RepeatCustomer, {
             private: ['job'],
             protected: ['status'],
             access: function () {
               return 'protected'
+            },
+            restify: app.isRestify
+          })
+
+          erm.serve(app, db.models.Customer, {
+            private: ['age', 'favorites.animal', 'favorites.purchase.number', 'purchases.number', 'privateDoes.notExist'],
+            protected: ['comment', 'favorites.color', 'protectedDoes.notExist'],
+            access: function (req, done) {
+              done(null, 'protected')
             },
             restify: app.isRestify
           })
@@ -445,6 +488,15 @@ module.exports = function (createFn, setup, dismantle) {
           erm.serve(app, db.models.Product, {
             private: ['department.code'],
             protected: ['price'],
+            access: function () {
+              return 'protected'
+            },
+            restify: app.isRestify
+          })
+
+          erm.serve(app, db.models.Account, {
+            private: ['accountNumber'],
+            protected: ['points'],
             access: function () {
               return 'protected'
             },
@@ -489,7 +541,15 @@ module.exports = function (createFn, setup, dismantle) {
           }).then(function (createdInvoice) {
             invoice = createdInvoice
 
+            return db.models.Account.create({
+              accountNumber: '123XYZ',
+              points: 244
+            })
+          }).then(function (createdAccount) {
+            account = createdAccount
+
             return db.models.RepeatCustomer.create({
+              account: account._id,
               name: 'Mike',
               visits: 24,
               status: 'Awesome',
@@ -750,7 +810,29 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Invoices/:id?populate=customer 200', function (done) {
+      it('GET /Customers/:id?populate=account 200 - populate discriminator field from base schema', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, repeatCustomer._id),
+          qs: {
+            populate: 'account'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.ok(body.account)
+          assert.equal(body.account._id, account._id.toHexString())
+          assert.equal(body.account.accountNumber, undefined)
+          assert.equal(body.account.points, 244)
+          assert.equal(body.name, 'Mike')
+          assert.equal(body.visits, 24)
+          assert.equal(body.status, 'Awesome')
+          assert.equal(body.job, undefined)
+          done()
+        })
+      })
+
+      it('GET /Invoices/:id?populate=customer 200 - populated discriminator', function (done) {
         request.get({
           url: util.format('%s/api/v1/Invoices/%s', testUrl, repeatCustomerInvoice._id),
           qs: {
@@ -778,6 +860,7 @@ module.exports = function (createFn, setup, dismantle) {
       var product
       var customer
       var invoice
+      var account
       var repeatCustomer
       var repeatCustomerInvoice
 
@@ -787,15 +870,15 @@ module.exports = function (createFn, setup, dismantle) {
             return done(err)
           }
 
-          erm.serve(app, db.models.Customer, {
-            private: ['age', 'favorites.animal', 'favorites.purchase.number', 'purchases.number', 'privateDoes.notExist'],
-            protected: ['comment', 'favorites.color', 'protectedDoes.notExist'],
-            restify: app.isRestify
-          })
-
           erm.serve(app, db.models.RepeatCustomer, {
             private: ['job'],
             protected: ['status'],
+            restify: app.isRestify
+          })
+
+          erm.serve(app, db.models.Customer, {
+            private: ['age', 'favorites.animal', 'favorites.purchase.number', 'purchases.number', 'privateDoes.notExist'],
+            protected: ['comment', 'favorites.color', 'protectedDoes.notExist'],
             restify: app.isRestify
           })
 
@@ -808,6 +891,12 @@ module.exports = function (createFn, setup, dismantle) {
           erm.serve(app, db.models.Product, {
             private: ['department.code'],
             protected: ['price'],
+            restify: app.isRestify
+          })
+
+          erm.serve(app, db.models.Account, {
+            private: ['accountNumber'],
+            protected: ['points'],
             restify: app.isRestify
           })
 
@@ -849,7 +938,15 @@ module.exports = function (createFn, setup, dismantle) {
           }).then(function (createdInvoice) {
             invoice = createdInvoice
 
+            return db.models.Account.create({
+              accountNumber: '123XYZ',
+              points: 244
+            })
+          }).then(function (createdAccount) {
+            account = createdAccount
+
             return db.models.RepeatCustomer.create({
+              account: account._id,
               name: 'Mike',
               visits: 24,
               status: 'Awesome',
@@ -1104,7 +1201,29 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Invoices/:id?populate=customer 200', function (done) {
+      it('GET /Customers/:id?populate=account 200 - populate discriminator field from base schema', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, repeatCustomer._id),
+          qs: {
+            populate: 'account'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.ok(body.account)
+          assert.equal(body.account._id, account._id.toHexString())
+          assert.equal(body.account.accountNumber, undefined)
+          assert.equal(body.account.points, undefined)
+          assert.equal(body.name, 'Mike')
+          assert.equal(body.visits, 24)
+          assert.equal(body.status, undefined)
+          assert.equal(body.job, undefined)
+          done()
+        })
+      })
+
+      it('GET /Invoices/:id?populate=customer 200 - populated discriminator', function (done) {
         request.get({
           url: util.format('%s/api/v1/Invoices/%s', testUrl, repeatCustomerInvoice._id),
           qs: {

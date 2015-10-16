@@ -13,29 +13,36 @@ module.exports = function () {
     price: { type: Number }
   })
 
-  var CustomerSchema = new Schema({
-    account: { type: Schema.Types.ObjectId, ref: 'Account' },
-    name: { type: String, required: true, unique: true },
-    // friendlyId: { type: String, unique: true },
-    comment: { type: String },
-    address: { type: String },
-    age: { type: Number },
-    favorites: {
-      animal: { type: String },
-      color: { type: String },
-      purchase: {
+  var BaseCustomerSchema = function () {
+    Schema.apply(this, arguments)
+
+    this.add({
+      account: { type: Schema.Types.ObjectId, ref: 'Account' },
+      name: { type: String, required: true, unique: true },
+      comment: { type: String },
+      address: { type: String },
+      age: { type: Number },
+      favorites: {
+        animal: { type: String },
+        color: { type: String },
+        purchase: {
+          item: { type: Schema.Types.ObjectId, ref: 'Product' },
+          number: { type: Number }
+        }
+      },
+      purchases: [{
         item: { type: Schema.Types.ObjectId, ref: 'Product' },
         number: { type: Number }
-      }
-    },
-    purchases: [{
-      item: { type: Schema.Types.ObjectId, ref: 'Product' },
-      number: { type: Number }
-    }],
-    returns: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
-    creditCard: { type: String, access: 'protected' },
-    ssn: { type: String, access: 'private' }
-  }, {
+      }],
+      returns: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
+      creditCard: { type: String, access: 'protected' },
+      ssn: { type: String, access: 'private' }
+    })
+  }
+
+  util.inherits(BaseCustomerSchema, Schema)
+
+  var CustomerSchema = new BaseCustomerSchema({}, {
     toObject: { virtuals: true },
     toJSON: { virtuals: true }
   })
@@ -55,8 +62,8 @@ module.exports = function () {
     versionKey: '__version'
   })
 
-  var RepeatCustomerSchema = new Schema({
-    loyaltyProgram: { type: Schema.Types.ObjectId, ref: 'Account' },
+  var RepeatCustomerSchema = new BaseCustomerSchema({
+    account: { type: Schema.Types.ObjectId, ref: 'Account' },
     visits: { type: Number },
     status: { type: String },
     job: { type: String }
