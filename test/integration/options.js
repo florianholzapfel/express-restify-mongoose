@@ -1,6 +1,7 @@
 var assert = require('assert')
 var request = require('request')
 var util = require('util')
+var sinon = require('sinon')
 
 module.exports = function (createFn, setup, dismantle) {
   var erm = require('../../lib/express-restify-mongoose')
@@ -509,6 +510,137 @@ module.exports = function (createFn, setup, dismantle) {
           assert.equal(res.statusCode, 200)
           done()
         })
+      })
+    })
+  })
+
+  describe('defaults - preUpdate with falsy findOneAndUpdate', function () {
+    var app = createFn()
+    var server
+    var customer
+    var options = {
+      findOneAndUpdate: false,
+      preUpdate: [
+        sinon.spy(function (req, res, next) {
+          next()
+        }),
+        sinon.spy(function (req, res, next) {
+          next()
+        })
+      ]
+    }
+
+    before(function (done) {
+      setup(function (err) {
+        if (err) {
+          return done(err)
+        }
+
+        erm.defaults(options)
+
+        erm.serve(app, db.models.Product, {
+          restify: app.isRestify
+        })
+
+        // order is important, test the second attached model to potentially reproduce the error.
+        erm.serve(app, db.models.Customer, {
+          restify: app.isRestify
+        })
+
+        db.models.Customer.create({
+          name: 'Bob'
+        }).then(function (createdCustomer) {
+          customer = createdCustomer
+          server = app.listen(testPort, done)
+        }, function (err) {
+          done(err)
+        })
+      })
+    })
+
+    after(function (done) {
+      erm.defaults(null)
+      dismantle(app, server, done)
+    })
+
+    it('PUT /Customers/:id 200', function (done) {
+      request.put({
+        url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+        json: {
+          age: 12
+        }
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 200)
+        assert.equal(body.name, 'Bob')
+        assert.equal(body.age, 12)
+        assert.equal(options.preUpdate.length, 2)
+        sinon.assert.calledOnce(options.preUpdate[0])
+        sinon.assert.calledOnce(options.preUpdate[1])
+        done()
+      })
+    })
+  })
+
+  describe('defaults - preDelete with falsy findOneAndRemove', function () {
+    var app = createFn()
+    var server
+    var customer
+    var options = {
+      findOneAndRemove: false,
+      preDelete: [
+        sinon.spy(function (req, res, next) {
+          next()
+        }),
+        sinon.spy(function (req, res, next) {
+          next()
+        })
+      ]
+    }
+
+    before(function (done) {
+      setup(function (err) {
+        if (err) {
+          return done(err)
+        }
+
+        erm.defaults(options)
+
+        erm.serve(app, db.models.Product, {
+          restify: app.isRestify
+        })
+
+        // order is important, test the second attached model to potentially reproduce the error.
+        erm.serve(app, db.models.Customer, {
+          restify: app.isRestify
+        })
+
+        db.models.Customer.create({
+          name: 'Bob'
+        }).then(function (createdCustomer) {
+          customer = createdCustomer
+          server = app.listen(testPort, done)
+        }, function (err) {
+          done(err)
+        })
+      })
+    })
+
+    after(function (done) {
+      erm.defaults(null)
+      dismantle(app, server, done)
+    })
+
+    it('DELETE /Customers/:id 204', function (done) {
+      request.del({
+        url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id)
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 204)
+        assert.equal(options.preDelete.length, 2)
+        sinon.assert.calledOnce(options.preDelete[0])
+        sinon.assert.calledOnce(options.preDelete[1])
+        done()
       })
     })
   })
