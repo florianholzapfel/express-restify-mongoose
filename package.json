@@ -9,7 +9,7 @@
     "lodash": "~3.10.0"
   },
   "peerDependencies": {
-      "mongoose": "^4.0.0"
+    "mongoose": "^4.0.0"
   },
   "description": "Easily create a flexible REST interface for mongoose models",
   "devDependencies": {
@@ -56,8 +56,13 @@
   },
   "standard": {
     "globals": [
-      "describe", "before", "beforeEach", "after", "afterEach", "it"
+      "describe",
+      "before",
+      "beforeEach",
+      "after",
+      "afterEach",
+      "it"
     ]
   },
-  "version": "2.2.0"
+  "version": "2.3.0-rc.1"
 }
