@@ -320,6 +320,24 @@ module.exports = function (createFn, setup, dismantle) {
           })
         })
 
+        it('GET /Customers?query={"favorites.animal":"Jaguar"} 200 - exact match (nested property)', function (done) {
+          request.get({
+            url: util.format('%s/api/v1/Customers', testUrl),
+            qs: {
+              query: JSON.stringify({
+                'favorites.animal': 'Jaguar'
+              })
+            },
+            json: true
+          }, function (err, res, body) {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 200)
+            assert.equal(body.length, 1)
+            assert.equal(body[0].favorites.animal, 'Jaguar')
+            done()
+          })
+        })
+
         it('GET /Customers?query={"name":"~^J"} 200 - name starting with', function (done) {
           request.get({
             url: util.format('%s/api/v1/Customers', testUrl),
