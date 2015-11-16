@@ -174,6 +174,111 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
+      it('PATCH /Customers/:id 200 - empty body', function (done) {
+        request.patch({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id),
+          json: {}
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.name, 'Bob')
+          done()
+        })
+      })
+
+      it('PATCH /Customers/:id 200 - created id', function (done) {
+        request.patch({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id),
+          json: {
+            name: 'Mike'
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.name, 'Mike')
+          done()
+        })
+      })
+
+      it('PATCH /Customers/:id 400 - cast error', function (done) {
+        request.patch({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id),
+          json: {
+            age: 'not a number'
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 400)
+          assert.equal(body.name, 'CastError')
+          assert.equal(body.path, 'age')
+          done()
+        })
+      })
+
+      it('PATCH /Customers/:id 400 - mongo error', function (done) {
+        request.patch({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id),
+          json: {
+            name: 'John'
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 400)
+          assert.equal(body.name, 'MongoError')
+          assert.ok(body.code === 11000 || body.code === 11001)
+          done()
+        })
+      })
+
+      it('PATCH /Customers/:id 400 - missing content type', function (done) {
+        request.patch({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id)
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 400)
+          assert.equal(JSON.parse(body).description, 'missing_content_type')
+          done()
+        })
+      })
+
+      it('PATCH /Customers/:id 400 - invalid content type', function (done) {
+        request.patch({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id),
+          formData: {}
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 400)
+          assert.equal(JSON.parse(body).description, 'invalid_content_type')
+          done()
+        })
+      })
+
+      it('PATCH /Customers/:id 400 - invalid id', function (done) {
+        request.patch({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, invalidId),
+          json: {
+            name: 'Mike'
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 400)
+          done()
+        })
+      })
+
+      it('PATCH /Customers/:id 404 - random id', function (done) {
+        request.patch({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, randomId),
+          json: {
+            name: 'Mike'
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 404)
+          done()
+        })
+      })
+
       it('PUT /Customers 404 (Express), 405 (Restify)', function (done) {
         request.put({
           url: util.format('%s/api/v1/Customers', testUrl),
@@ -578,6 +683,112 @@ module.exports = function (createFn, setup, dismantle) {
 
       it('POST /Customers/:id 404 - random id', function (done) {
         request.post({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, randomId),
+          json: {
+            name: 'Mike'
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 404)
+          done()
+        })
+      })
+
+      it('PATCH /Customers/:id 200 - empty body', function (done) {
+        request.patch({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id),
+          json: {}
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.name, 'Bob')
+          done()
+        })
+      })
+
+      it('PATCH /Customers/:id 200 - created id', function (done) {
+        request.patch({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id),
+          json: {
+            name: 'Mike'
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.name, 'Mike')
+          done()
+        })
+      })
+
+      it('PATCH /Customers/:id 400 - validation error', function (done) {
+        request.patch({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id),
+          json: {
+            age: 'not a number'
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 400)
+          assert.equal(body.name, 'ValidationError')
+          assert.equal(Object.keys(body.errors).length, 1)
+          assert.ok(body.errors['age'])
+          done()
+        })
+      })
+
+      it('PATCH /Customers/:id 400 - mongo error', function (done) {
+        request.patch({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id),
+          json: {
+            name: 'John'
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 400)
+          assert.equal(body.name, 'MongoError')
+          assert.ok(body.code === 11000 || body.code === 11001)
+          done()
+        })
+      })
+
+      it('PATCH /Customers/:id 400 - missing content type', function (done) {
+        request.patch({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id)
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 400)
+          done()
+        })
+      })
+
+      it('PATCH /Customers/:id 400 - invalid content type', function (done) {
+        request.patch({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id),
+          formData: {
+            name: 'Mike'
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 400)
+          done()
+        })
+      })
+
+      it('PATCH /Customers/:id 400 - invalid id', function (done) {
+        request.patch({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, invalidId),
+          json: {
+            name: 'Mike'
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 400)
+          done()
+        })
+      })
+
+      it('PATCH /Customers/:id 404 - random id', function (done) {
+        request.patch({
           url: util.format('%s/api/v1/Customers/%s', testUrl, randomId),
           json: {
             name: 'Mike'
