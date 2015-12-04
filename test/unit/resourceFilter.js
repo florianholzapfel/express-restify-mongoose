@@ -406,5 +406,43 @@ describe('resourceFilter', function () {
         })
       })
     })
+
+    describe('when blacklisting keys', function () {
+      it('they get removed', function () {
+        var productFilter = new ResourceFilter(productModel)
+
+        var filteredProduct = productFilter.filterObject(product, {
+          blacklist: ['name']
+        })
+
+        assert.ok(typeof filteredProduct.name === 'undefined', 'name should be excluded')
+        assert.ok(filteredProduct.price, 'price should be included')
+        assert.ok(filteredProduct.department, 'department should be included')
+        assert.ok(filteredProduct.purchases, 'purchases should be included')
+        assert.ok(filteredProduct.related, 'related should be included')
+      })
+
+      it('they get removed deeply', function () {
+        var productFilter = new ResourceFilter(productModel)
+
+        var filteredProduct = productFilter.filterObject(product, {
+          blacklist: ['name', 'purchases.quantity', 'department.code']
+        })
+
+        assert.ok(!filteredProduct.hasOwnProperty('name'), 'name should be excluded')
+        assert.ok(filteredProduct.price, 'price should be included')
+        assert.ok(filteredProduct.department, 'department should be included')
+        assert.ok(filteredProduct.department.name, 'department.name should be included')
+        assert.ok(filteredProduct.department.manager, 'department.manager should be included')
+        assert.ok(!filteredProduct.hasOwnProperty('code'), 'department.code should be excluded')
+        assert.ok(filteredProduct.purchases, 'purchases should be included')
+        assert.ok(filteredProduct.related, 'related should be included')
+
+        filteredProduct.purchases.forEach(function (purchase) {
+          assert.ok(!purchase.hasOwnProperty('quantity'), 'purchase quantity should be excluded')
+          assert.ok(purchase.customer, 'purchase customer should be included')
+        })
+      })
+    })
   })
 })

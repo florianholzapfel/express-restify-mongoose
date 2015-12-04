@@ -28,7 +28,8 @@ module.exports = function (createFn, setup, dismantle) {
 
           erm.serve(app, db.models.Customer, {
             findOneAndUpdate: true,
-            restify: app.isRestify
+            restify: app.isRestify,
+            readonly: ['foo']
           })
 
           erm.serve(app, db.models.Invoice, {
@@ -91,6 +92,22 @@ module.exports = function (createFn, setup, dismantle) {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.equal(body.name, 'Mike')
+          done()
+        })
+      })
+
+      it('POST /Customers/:id 200 - created id, update readonly `foo`', function (done) {
+        request.post({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id),
+          json: {
+            name: 'Mikey',
+            foo: 'not-bar'
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.name, 'Mikey')
+          assert.notEqual(body.foo, 'not-bar')
           done()
         })
       })
@@ -196,6 +213,22 @@ module.exports = function (createFn, setup, dismantle) {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.equal(body.name, 'Mike')
+          done()
+        })
+      })
+
+      it('PATCH /Customers/:id 200 - created id, update readonly `foo`', function (done) {
+        request.patch({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id),
+          json: {
+            name: 'Mikey',
+            foo: 'not-bar'
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.name, 'Mikey')
+          assert.notEqual(body.foo, 'not-bar')
           done()
         })
       })
@@ -316,6 +349,22 @@ module.exports = function (createFn, setup, dismantle) {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.equal(body.name, 'Mike')
+          done()
+        })
+      })
+
+      it('PUT /Customers/:id 200 - created id, update readonly `foo`', function (done) {
+        request.put({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id),
+          json: {
+            name: 'Mikey',
+            foo: 'not-bar'
+          }
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.name, 'Mikey')
+          assert.notEqual(body.foo, 'not-bar')
           done()
         })
       })
