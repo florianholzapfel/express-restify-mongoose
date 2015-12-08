@@ -29,10 +29,14 @@ module.exports = function (createFn, setup, dismantle) {
             restify: app.isRestify
           })
 
-          db.models.Customer.create({
+          db.models.Customer.create([{
             name: 'Bob'
-          }).then(function (createdCustomer) {
-            customer = createdCustomer
+          }, {
+            name: 'John'
+          }, {
+            name: 'Mike'
+          }]).then(function (createdCustomers) {
+            customer = createdCustomers[0]
             server = app.listen(testPort, done)
           }, function (err) {
             done(err)
@@ -81,6 +85,28 @@ module.exports = function (createFn, setup, dismantle) {
           assert.ok(!err)
           assert.equal(res.statusCode, 404)
           done()
+        })
+      })
+
+      it('DELETE /Customers?query={"name":"John"} 200 - exact match', function (done) {
+        request.del({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          qs: {
+            query: JSON.stringify({
+              name: 'John'
+            })
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 204)
+
+          db.models.Customer.find({}, function (err, customers) {
+            assert.equal(customers.length, 2)
+            assert.ok(customers[0].name !== 'John')
+            assert.ok(customers[1].name !== 'John')
+            done(err)
+          })
         })
       })
     })
@@ -101,10 +127,14 @@ module.exports = function (createFn, setup, dismantle) {
             restify: app.isRestify
           })
 
-          db.models.Customer.create({
+          db.models.Customer.create([{
             name: 'Bob'
-          }).then(function (createdCustomer) {
-            customer = createdCustomer
+          }, {
+            name: 'John'
+          }, {
+            name: 'Mike'
+          }]).then(function (createdCustomers) {
+            customer = createdCustomers[0]
             server = app.listen(testPort, done)
           }, function (err) {
             done(err)
@@ -153,6 +183,28 @@ module.exports = function (createFn, setup, dismantle) {
           assert.ok(!err)
           assert.equal(res.statusCode, 404)
           done()
+        })
+      })
+
+      it('DELETE /Customers?query={"name":"John"} 200 - exact match', function (done) {
+        request.del({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          qs: {
+            query: JSON.stringify({
+              name: 'John'
+            })
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 204)
+
+          db.models.Customer.find({}, function (err, customers) {
+            assert.equal(customers.length, 2)
+            assert.ok(customers[0].name !== 'John')
+            assert.ok(customers[1].name !== 'John')
+            done(err)
+          })
         })
       })
     })
