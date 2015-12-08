@@ -103,9 +103,9 @@ module.exports = function (createFn, setup, dismantle) {
 
           db.models.Customer.find({}, function (err, customers) {
             assert.equal(customers.length, 2)
-            assert.ok(customers[0].name !== 'John')
-            assert.ok(customers[1].name !== 'John')
-            done(err)
+            customers.forEach(function (customer) {
+              assert.ok(customer.name !== 'John')
+            })
           })
         })
       })
@@ -201,9 +201,9 @@ module.exports = function (createFn, setup, dismantle) {
 
           db.models.Customer.find({}, function (err, customers) {
             assert.equal(customers.length, 2)
-            assert.ok(customers[0].name !== 'John')
-            assert.ok(customers[1].name !== 'John')
-            done(err)
+            customers.forEach(function (customer) {
+              assert.ok(customer.name !== 'John')
+            })
           })
         })
       })
