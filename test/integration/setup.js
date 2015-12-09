@@ -36,7 +36,8 @@ module.exports = function () {
       }],
       returns: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
       creditCard: { type: String, access: 'protected' },
-      ssn: { type: String, access: 'private' }
+      ssn: { type: String, access: 'private' },
+      foo: { type: String, default: 'bar' }
     })
   }
 

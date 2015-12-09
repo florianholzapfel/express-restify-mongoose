@@ -24,7 +24,8 @@ module.exports = function (createFn, setup, dismantle) {
         }
 
         erm.serve(app, db.models.Customer, {
-          restify: app.isRestify
+          restify: app.isRestify,
+          readonly: ['foo']
         })
 
         erm.serve(app, db.models.Invoice, {
@@ -84,6 +85,22 @@ module.exports = function (createFn, setup, dismantle) {
         assert.ok(body._id)
         assert.ok(body._id !== randomId)
         assert.equal(body.name, 'John')
+        done()
+      })
+    })
+
+    it('POST /Customers 201 - ignore foo', function (done) {
+      request.post({
+        url: util.format('%s/api/v1/Customers', testUrl),
+        json: {
+          foo: 'not-bar',
+          name: 'John'
+        }
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 201)
+        assert.equal(body.name, 'John')
+        assert.notEqual(body.foo, 'not-bar')
         done()
       })
     })
