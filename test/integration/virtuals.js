@@ -95,5 +95,46 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
     })
+
+    describe('readPreference: secondary', function () {
+      var app = createFn()
+      var server
+
+      beforeEach(function (done) {
+        setup(function (err) {
+          if (err) {
+            return done(err)
+          }
+
+          erm.serve(app, db.models.Customer, {
+            readPreference: 'secondary',
+            restify: app.isRestify
+          })
+
+          db.models.Customer.create({
+            name: 'Bob'
+          }).then(function (createdCustomers) {
+            server = app.listen(testPort, done)
+          }, function (err) {
+            done(err)
+          })
+        })
+      })
+
+      afterEach(function (done) {
+        dismantle(app, server, done)
+      })
+
+      it('GET /Customers 200 - available', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          done()
+        })
+      })
+    })
   })
 }
