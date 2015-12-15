@@ -1,7 +1,9 @@
 var assert = require('assert')
 var mongoose = require('mongoose')
 var request = require('request')
+var requestPromise = require('request-promise')
 var util = require('util')
+var _ = require('lodash')
 
 module.exports = function (createFn, setup, dismantle) {
   var erm = require('../../lib/express-restify-mongoose')
@@ -749,6 +751,49 @@ module.exports = function (createFn, setup, dismantle) {
           assert.ok(body.code === 11000 || body.code === 11001)
           done()
         })
+      })
+
+      it('PATCH /Customers/:id 200 - update subdocument `favorites.purchase`', function (done) {
+        var url = util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id)
+
+        Promise.resolve().then(function() {
+          return requestPromise({
+            url: url,
+            body: {
+              favorites: {
+                purchase: {
+                  item: products[0]._id,
+                  number: 1
+                }
+              }
+            },
+            method: 'PATCH',
+            json: true,
+            resolveWithFullResponse: true
+          })
+        }).then(function(res) {
+          assert.equal(res.statusCode, 200)
+          assert.deepEqual(_.omit(res.body.favorites, '_id'), {purchase: {item: products[0]._id.toString(), number: 1}})
+          return requestPromise({
+            url: url,
+            body: {
+              favorites: {
+                purchase: {
+                  item: products[1]._id,
+                  number: 2
+                }
+              }
+            },
+            method: 'PUT',
+            json: true,
+            resolveWithFullResponse: true
+          })
+        }).then(function(res) {
+          assert.equal(res.statusCode, 200)
+          assert.deepEqual(_.omit(res.body.favorites, '_id'), {purchase: {item: products[1]._id.toString(), number: 2}})
+        })
+        .then(done)
+        .catch(done)
       })
 
       it('PATCH /Customers/:id 400 - missing content type', function (done) {

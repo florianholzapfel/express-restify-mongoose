@@ -6,7 +6,8 @@
   "dependencies": {
     "async": "~1.5.0",
     "inflection": "~1.8.0",
-    "lodash": "~3.10.0"
+    "lodash": "~3.10.0",
+    "mongoose": "^4.3.1"
   },
   "peerDependencies": {
     "mongoose": "^4.0.0"
@@ -19,6 +20,7 @@
     "method-override": "~2",
     "mocha": "~2",
     "request": "~2",
+    "request-promise": "^1.0.2",
     "restify": "~3",
     "sinon": "~1",
     "standard": "^5.0.0"
