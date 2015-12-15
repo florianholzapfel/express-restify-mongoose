@@ -1,6 +1,7 @@
 var assert = require('assert')
 var mongoose = require('mongoose')
 var request = require('request')
+var requestPromise = require('request-promise')
 var util = require('util')
 
 module.exports = function (createFn, setup, dismantle) {
@@ -108,6 +109,45 @@ module.exports = function (createFn, setup, dismantle) {
           assert.equal(body.path, 'age')
           done()
         })
+      })
+
+      it('PUT /Customers/:id 200 - update subdocument `favorites`', function (done) {
+        var url = util.format('%s/api/v1/Customers/%s', testUrl, customers[0]._id)
+
+        Promise.resolve().then(function() {
+          return requestPromise({
+            url: url,
+            body: {
+              favorites: {
+                animal: 'Cat'
+              }
+            },
+            method: 'PUT',
+            json: true,
+            resolveWithFullResponse: true,
+          })
+        }).then(function(res) {
+          assert.equal(res.statusCode, 200)
+          assert.deepEqual(res.body.favorites, {animal: 'Cat'})
+
+          return requestPromise({
+            url: url,
+            body: {
+              favorites: {
+                color: 'blue'
+              }
+            },
+            method: 'PUT',
+            json: true,
+            resolveWithFullResponse: true,
+          })
+        })
+        .then(function(res) {
+          assert.equal(res.statusCode, 200)
+          assert.deepEqual(res.body.favorites, {color: 'blue'})
+        })
+        .then(done)
+        .catch(done)
       })
 
       it('POST /Customers/:id 400 - mongo error', function (done) {
