@@ -102,6 +102,7 @@ module.exports = function (createFn, setup, dismantle) {
           assert.equal(res.statusCode, 204)
 
           db.models.Customer.find({}, function (err, customers) {
+            assert.ok(!err)
             assert.equal(customers.length, 2)
             customers.forEach(function (customer) {
               assert.ok(customer.name !== 'John')
@@ -201,6 +202,7 @@ module.exports = function (createFn, setup, dismantle) {
           assert.equal(res.statusCode, 204)
 
           db.models.Customer.find({}, function (err, customers) {
+            assert.ok(!err)
             assert.equal(customers.length, 2)
             customers.forEach(function (customer) {
               assert.ok(customer.name !== 'John')
