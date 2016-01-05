@@ -174,6 +174,21 @@ module.exports = function (createFn, setup, dismantle) {
           done()
         })
       })
+
+      it('GET /Customers?limit=foo 200 - evaluates to NaN', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          qs: {
+            limit: 'foo'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 3)
+          done()
+        })
+      })
     })
 
     describe('skip', function () {
@@ -188,6 +203,21 @@ module.exports = function (createFn, setup, dismantle) {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.equal(body.length, 2)
+          done()
+        })
+      })
+
+      it('GET /Customers?skip=foo 200 - evaluates to NaN', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          qs: {
+            skip: 'foo'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 3)
           done()
         })
       })
