@@ -231,6 +231,11 @@ Whether to call `.toLowerCase()` on model names before generating the routes
 
 Endpoint name
 
+#### readPreference
+<span class="label label-primary" title="type">string</span><span class="label label-success" title="default">primary</span>
+
+Determines the MongoDB nodes from which to read. [Read more](http://mongoosejs.com/docs/api.html#query_Query-read)
+
 #### private
 <span class="label label-primary" title="type">array</span>
 
