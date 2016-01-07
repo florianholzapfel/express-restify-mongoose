@@ -1,3 +1,4 @@
+var _ = require('lodash')
 var async = require('async')
 var mongoose = require('mongoose')
 var Schema = mongoose.Schema
@@ -74,7 +75,16 @@ module.exports = function () {
     points: Number
   })
 
-  function initialize (callback) {
+  function initialize (opts, callback) {
+    if (_.isFunction(opts)) {
+      callback = opts
+      opts = {}
+    }
+
+    _.defaults(opts, {
+      connect: true
+    })
+
     if (!mongoose.models.Customer) {
       mongoose.model('Customer', CustomerSchema)
     }
@@ -95,7 +105,11 @@ module.exports = function () {
       mongoose.model('Account', AccountSchema)
     }
 
-    mongoose.connect('mongodb://localhost/database', callback)
+    if (opts.connect) {
+      mongoose.connect('mongodb://localhost/database', callback)
+    } else if (_.isFunction(callback)) {
+      callback()
+    }
   }
 
   function reset (callback) {
