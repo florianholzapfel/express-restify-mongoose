@@ -1,461 +1,350 @@
 var assert = require('assert')
-var sinon = require('sinon')
 
 describe('resourceFilter', function () {
   var Filter = require('../../lib/resource_filter')
 
-  describe('lean', function () {
-    var returnFieldRef = function (field) {
-      return {
-        options: {
-          ref: field.charAt(0).toUpperCase() + field.slice(1)
-        },
-        schema: (function () {
-          switch (field) {
-            case 'purchases':
-              return customerModel.schema
-            case 'related':
-              return productModel.schema
-            default:
-              return
+  describe('removeValueAtPath', function () {
+    var filter = new Filter({})
+
+    it('removes root keys', function () {
+      var src = {
+        foo: 'bar'
+      }
+
+      filter.removeValueAtPath(src, 'foo')
+
+      assert.equal(src.foo, undefined)
+    })
+
+    it('ignores undefined root keys', function () {
+      var src = {
+        foo: 'bar'
+      }
+
+      filter.removeValueAtPath(src, 'bar')
+
+      assert.deepEqual(src, {
+        foo: 'bar'
+      })
+    })
+
+    it('removes nested keys', function () {
+      var src = {
+        foo: {
+          bar: {
+            baz: '42'
           }
-        })()
+        }
       }
-    }
 
-    var customerModel = {
-      modelName: 'Customer',
-      schema: {
-        path: sinon.spy(returnFieldRef)
+      filter.removeValueAtPath(src, 'foo.bar.baz')
+
+      assert.deepEqual(src.foo.bar, {})
+    })
+
+    it('ignores undefined nested keys', function () {
+      var src = {
+        foo: {
+          bar: {
+            baz: '42'
+          }
+        }
       }
-    }
 
-    var invoiceModel = {
-      modelName: 'Invoice',
-      schema: {
-        path: sinon.spy(returnFieldRef)
-      }
-    }
+      filter.removeValueAtPath(src, 'baz.bar.foo')
 
-    var productModel = {
-      modelName: 'Product',
-      schema: {
-        path: sinon.spy(returnFieldRef)
-      }
-    }
+      assert.deepEqual(src, {
+        foo: {
+          bar: {
+            baz: '42'
+          }
+        }
+      })
+    })
 
-    var customer, invoice, product
-
-    beforeEach(function () {
-      customerModel.schema.path.reset()
-      invoiceModel.schema.path.reset()
-      productModel.schema.path.reset()
-
-      customer = {
-        firstname: 'John',
-        lastname: 'Smith',
-        purchases: [{
-          item: { name: 'Squirt Gun', price: 42 },
-          quantity: 2
+    it('removes keys inside object arrays', function () {
+      var src = {
+        foo: [{
+          bar: {
+            baz: '3.14'
+          }
         }, {
-          item: { name: 'Water Balloons', price: 1 },
-          quantity: 200
-        }, {
-          item: { name: 'Garden Hose', price: 10 },
-          quantity: 1
+          bar: {
+            baz: 'pi'
+          }
         }]
       }
 
-      invoice = {
-        customer: 'oid',
-        product: ['oid', 'oid'],
-        price: 100
-      }
+      filter.removeValueAtPath(src, 'foo.bar.baz')
 
-      product = {
-        name: 'Garden Hose',
-        price: 50,
-        department: {
-          name: 'Gardening',
-          code: 435,
-          manager: 'Florian'
-        },
-        purchases: [{
-          customer: 'oid', quantity: 2
+      src.foo.forEach(function (foo) {
+        assert.deepEqual(foo.bar, {})
+      })
+    })
+
+    it('removes keys inside object arrays inside object arrays', function () {
+      var src = {
+        foo: [{
+          bar: [{
+            baz: 'to'
+          }, {
+            baz: 'be'
+          }]
         }, {
-          customer: 'oid', quantity: 100
-        }],
-        related: [{
-          product: 'oid', name: 'Flowers'
-        }, {
-          product: 'oid', name: 'Bird'
+          bar: [{
+            baz: 'or'
+          }, {
+            baz: 'not'
+          }]
         }]
       }
-    })
 
-    describe('public access', function () {
-      it('includes all fields', function () {
-        var productFilter = new Filter({
-          model: productModel
-        })
+      filter.removeValueAtPath(src, 'foo.bar.baz')
 
-        var filteredProduct = productFilter.filterObject(product)
-
-        assert.ok(filteredProduct.name, 'name should be included')
-        assert.ok(filteredProduct.price, 'price should be included')
-        assert.ok(filteredProduct.department, 'department should be included')
-        assert.ok(filteredProduct.purchases, 'purchases should be included')
-        assert.ok(filteredProduct.related, 'related should be included')
-      })
-
-      it('excludes private and protected fields', function () {
-        var productFilter = new Filter({
-          model: productModel,
-          filteredKeys: {
-            private: ['department', 'purchases'],
-            protected: ['related']
-          }
-        })
-
-        var filteredProduct = productFilter.filterObject(product)
-
-        assert.ok(filteredProduct.name, 'name should be included')
-        assert.ok(filteredProduct.price, 'price should be included')
-        assert.ok(!filteredProduct.department, 'department should be excluded')
-        assert.ok(!filteredProduct.purchases, 'purchases should be excluded')
-        assert.ok(!filteredProduct.related, 'related should be excluded')
-      })
-
-      it('excludes private and protected fields from embedded documents', function () {
-        var productFilter = new Filter({
-          model: productModel,
-          filteredKeys: {
-            private: ['department.name'],
-            protected: ['department.code']
-          }
-        })
-
-        var filteredProduct = productFilter.filterObject(product)
-
-        assert.ok(filteredProduct.name, 'name should be included')
-        assert.ok(filteredProduct.price, 'price should be included')
-        assert.ok(filteredProduct.department, 'department should be included')
-        assert.ok(filteredProduct.department.manager, 'manager should be included')
-        assert.ok(!filteredProduct.department.name, 'department name should be excluded')
-        assert.ok(!filteredProduct.department.code, 'department code should be excluded')
-        assert.ok(filteredProduct.purchases, 'purchases should be included')
-        assert.ok(filteredProduct.related, 'related should be included')
-      })
-
-      it('excludes private and protected fields from embedded arrays', function () {
-        var productFilter = new Filter({
-          model: productModel,
-          filteredKeys: {
-            private: ['purchases.customer'],
-            protected: ['related.product']
-          }
-        })
-
-        var filteredProduct = productFilter.filterObject(product)
-
-        assert.ok(filteredProduct.name, 'name should be included')
-        assert.ok(filteredProduct.price, 'price should be included')
-        assert.ok(filteredProduct.department, 'department should be included')
-        filteredProduct.purchases.forEach(function (purchase) {
-          assert.ok(purchase.quantity, 'purchased quantity should be included')
-          assert.ok(!purchase.customer, 'purchased customer should be excluded')
-        })
-        filteredProduct.related.forEach(function (relatedProduct) {
-          assert.ok(relatedProduct.name, 'related name should be included')
-          assert.ok(!relatedProduct.product, 'related product should be excluded')
+      src.foo.forEach(function (foo) {
+        foo.bar.forEach(function (bar) {
+          assert.deepEqual(bar, {})
         })
       })
     })
+  })
 
-    describe('protected access', function () {
-      it('includes all fields', function () {
-        var productFilter = new Filter({
-          model: productModel
+  describe('getExcluded', function () {
+    var filter = new Filter({})
+
+    describe('private', function () {
+      it('returns empty array', function () {
+        var excluded = filter.getExcluded({
+          access: 'private'
         })
 
-        var filteredProduct = productFilter.filterObject(product, {
-          access: 'protected'
-        })
-
-        assert.ok(filteredProduct.name, 'name should be included')
-        assert.ok(filteredProduct.price, 'price should be included')
-        assert.ok(filteredProduct.department, 'department should be included')
-        assert.ok(filteredProduct.purchases, 'purchases should be included')
-        assert.ok(filteredProduct.related, 'related should be included')
-      })
-
-      it('excludes private and includes protected fields', function () {
-        var productFilter = new Filter({
-          model: productModel,
-          filteredKeys: {
-            private: ['department', 'purchases'],
-            protected: ['related']
-          }
-        })
-
-        var filteredProduct = productFilter.filterObject(product, {
-          access: 'protected'
-        })
-
-        assert.ok(filteredProduct.name, 'name should be included')
-        assert.ok(filteredProduct.price, 'price should be included')
-        assert.ok(!filteredProduct.department, 'department should be excluded')
-        assert.ok(!filteredProduct.purchases, 'purchases should be excluded')
-        assert.ok(filteredProduct.related, 'related should be included')
-      })
-
-      it('excludes private and includes protected fields from embedded documents', function () {
-        var productFilter = new Filter({
-          model: productModel,
-          filteredKeys: {
-            private: ['department.name'],
-            protected: ['department.code']
-          }
-        })
-
-        var filteredProduct = productFilter.filterObject(product, {
-          access: 'protected'
-        })
-
-        assert.ok(filteredProduct.name, 'name should be included')
-        assert.ok(filteredProduct.price, 'price should be included')
-        assert.ok(filteredProduct.department, 'department should be included')
-        assert.ok(filteredProduct.department.manager, 'manager should be included')
-        assert.ok(!filteredProduct.department.name, 'department name should be excluded')
-        assert.ok(filteredProduct.department.code, 'department code should be included')
-        assert.ok(filteredProduct.purchases, 'purchases should be included')
-        assert.ok(filteredProduct.related, 'related should be included')
-      })
-
-      it('excludes private and includes protected fields from embedded arrays', function () {
-        var productFilter = new Filter({
-          model: productModel,
-          filteredKeys: {
-            private: ['purchases.customer'],
-            protected: ['related.product']
-          }
-        })
-
-        var filteredProduct = productFilter.filterObject(product, {
-          access: 'protected'
-        })
-
-        assert.ok(filteredProduct.name, 'name should be included')
-        assert.ok(filteredProduct.price, 'price should be included')
-        assert.ok(filteredProduct.department, 'department should be included')
-        filteredProduct.purchases.forEach(function (purchase) {
-          assert.ok(purchase.quantity, 'purchased quantity should be included')
-          assert.ok(!purchase.customer, 'purchased customer should be excluded')
-        })
-        filteredProduct.related.forEach(function (relatedProduct) {
-          assert.ok(relatedProduct.name, 'related name should be included')
-          assert.ok(relatedProduct.product, 'related product should be included')
-        })
+        assert.equal(Array.isArray(excluded), true)
+        assert.equal(excluded.length, 0)
       })
     })
 
-    describe('private access', function () {
-      it('includes all fields', function () {
-        var productFilter = new Filter({
-          model: productModel
+    describe('protected', function () {
+      it('returns empty array', function () {
+        var excluded = filter.getExcluded({
+          access: 'protected',
+          filteredKeys: {}
         })
 
-        var filteredProduct = productFilter.filterObject(product, {
-          access: 'private'
-        })
-
-        assert.ok(filteredProduct.name, 'name should be included')
-        assert.ok(filteredProduct.price, 'price should be included')
-        assert.ok(filteredProduct.department, 'department should be included')
-        assert.ok(filteredProduct.purchases, 'purchases should be included')
-        assert.ok(filteredProduct.related, 'related should be included')
+        assert.equal(Array.isArray(excluded), true)
+        assert.equal(excluded.length, 0)
       })
 
-      it('includes private and protected fields', function () {
-        var productFilter = new Filter({
-          model: productModel,
+      it('returns empty array', function () {
+        var excluded = filter.getExcluded({
+          access: 'protected'
+        })
+
+        assert.equal(Array.isArray(excluded), true)
+        assert.equal(excluded.length, 0)
+      })
+
+      it('returns array of private fields', function () {
+        var excluded = filter.getExcluded({
+          access: 'protected',
           filteredKeys: {
-            private: ['department', 'purchases'],
-            protected: ['related']
+            private: ['foo'],
+            protected: ['bar']
           }
         })
 
-        var filteredProduct = productFilter.filterObject(product, {
-          access: 'private'
-        })
-
-        assert.ok(filteredProduct.name, 'name should be included')
-        assert.ok(filteredProduct.price, 'price should be included')
-        assert.ok(filteredProduct.department, 'department should be included')
-        assert.ok(filteredProduct.purchases, 'purchases should be included')
-        assert.ok(filteredProduct.related, 'related should be included')
+        assert.equal(Array.isArray(excluded), true)
+        assert.equal(excluded.length, 1)
+        assert.deepEqual(excluded, ['foo'])
       })
 
-      it('includes private and protected fields from embedded documents', function () {
-        var productFilter = new Filter({
-          model: productModel,
-          filteredKeys: {
-            private: ['department.name'],
-            protected: ['department.code']
+      it('returns array of private fields', function () {
+        var excluded = filter.getExcluded({
+          access: 'protected',
+          modelName: 'FooModel',
+          excludedMap: {
+            FooModel: {
+              private: ['foo'],
+              protected: ['bar']
+            }
           }
         })
 
-        var filteredProduct = productFilter.filterObject(product, {
-          access: 'private'
-        })
-
-        assert.ok(filteredProduct.name, 'name should be included')
-        assert.ok(filteredProduct.price, 'price should be included')
-        assert.ok(filteredProduct.department, 'department should be included')
-        assert.ok(filteredProduct.department.manager, 'manager should be included')
-        assert.ok(filteredProduct.department.name, 'department name should be included')
-        assert.ok(filteredProduct.department.code, 'department code should be included')
-        assert.ok(filteredProduct.purchases, 'purchases should be included')
-        assert.ok(filteredProduct.related, 'related should be included')
-      })
-
-      it('includes private and protected fields from embedded arrays', function () {
-        var productFilter = new Filter({
-          model: productModel,
-          filteredKeys: {
-            private: ['purchases.customer'],
-            protected: ['related.product']
-          }
-        })
-
-        var filteredProduct = productFilter.filterObject(product, {
-          access: 'private'
-        })
-
-        assert.ok(filteredProduct.name, 'name should be included')
-        assert.ok(filteredProduct.price, 'price should be included')
-        assert.ok(filteredProduct.department, 'department should be included')
-        filteredProduct.purchases.forEach(function (purchase) {
-          assert.ok(purchase.quantity, 'purchased quantity should be included')
-          assert.ok(purchase.customer, 'purchased customer should be included')
-        })
-        filteredProduct.related.forEach(function (relatedProduct) {
-          assert.ok(relatedProduct.name, 'related name should be included')
-          assert.ok(relatedProduct.product, 'related product should be included')
-        })
+        assert.equal(Array.isArray(excluded), true)
+        assert.equal(excluded.length, 1)
+        assert.deepEqual(excluded, ['foo'])
       })
     })
 
-    describe('with populated documents', function () {
-      it.skip('excludes private and protected fields from a populated object', function () {
-        // Evil side effect
-        var customerFilter = new Filter({ // eslint-disable-line no-unused-vars
-          model: customerModel,
-          filteredKeys: {
-            private: ['purchases'],
-            protected: ['firstname']
-          }
+    describe('public', function () {
+      it('returns empty array', function () {
+        var excluded = filter.getExcluded({
+          access: 'public',
+          filteredKeys: {}
         })
 
-        var invoiceFilter = new Filter({
-          model: invoiceModel,
-          filteredKeys: {
-            private: ['product']
-          }
-        })
-
-        invoice.customer = customer
-
-        var filteredInvoice = invoiceFilter.filterObject(invoice, {
-          populate: [{
-            path: 'customer'
-          }]
-        })
-
-        assert.ok(filteredInvoice.price, 'price should be included')
-        assert.ok(filteredInvoice.customer, 'customer should be included')
-        assert.ok(filteredInvoice.customer.lastname, "customer's lastname should be included")
-        assert.ok(!filteredInvoice.product, 'product should be excluded')
-        assert.ok(!filteredInvoice.customer.firstname, "customer's firstname should be excluded")
-        assert.ok(!filteredInvoice.customer.purchases, "customer's purchases should be excluded")
+        assert.equal(Array.isArray(excluded), true)
+        assert.equal(excluded.length, 0)
       })
 
-      it.skip('excludes private and protected fields from arrays of populated object', function () {
-        // Evil side effect
-        var productFilter = new Filter({ // eslint-disable-line no-unused-vars
-          model: productModel,
-          filteredKeys: {
-            private: ['purchases'],
-            protected: ['related']
-          }
+      it('returns empty array', function () {
+        var excluded = filter.getExcluded({
+          access: 'public'
         })
 
-        var invoiceFilter = new Filter({
-          model: invoiceModel,
-          filteredKeys: {
-            private: ['customer']
-          }
-        })
-
-        invoice.product = [product, product]
-
-        var filteredInvoice = invoiceFilter.filterObject(invoice, {
-          populate: [{
-            path: 'product'
-          }]
-        })
-
-        assert.ok(filteredInvoice.price, 'price should be included')
-        assert.ok(filteredInvoice.product, 'product should be included')
-        assert.ok(!filteredInvoice.customer, 'customer should be excluded')
-        filteredInvoice.product.forEach(function (product) {
-          assert.ok(product.name, "product's name should be included")
-          assert.ok(product.price, "product's price should be included")
-          assert.ok(product.department, "product's department should be included")
-          assert.ok(!product.purchases, "product's purchases should be excluded")
-          assert.ok(!product.related, "product's related should be excluded")
-        })
+        assert.equal(Array.isArray(excluded), true)
+        assert.equal(excluded.length, 0)
       })
 
-      it.skip('excludes private and protected fields from arrays of nested populated objects', function () {
-        // Evil side effect
-        var customerFilter = new Filter({ // eslint-disable-line no-unused-vars
-          model: customerModel,
+      it('returns array of private and protected fields', function () {
+        var excluded = filter.getExcluded({
+          access: 'public',
           filteredKeys: {
-            private: ['purchases'],
-            protected: ['firstname']
+            private: ['foo'],
+            protected: ['bar']
           }
         })
 
-        var productFilter = new Filter({
-          model: productModel,
-          filteredKeys: {
-            private: ['related']
-          }
-        })
-
-        product.purchases.forEach(function (purchase) {
-          purchase.customer = customer
-        })
-
-        var filteredProduct = productFilter.filterObject(product, {
-          populate: [{
-            path: 'purchases.customer'
-          }]
-        })
-
-        assert.ok(filteredProduct.name, 'name should be included')
-        assert.ok(filteredProduct.price, 'price should be included')
-        assert.ok(filteredProduct.department, 'department should be included')
-        assert.ok(!filteredProduct.related, 'related should be excluded')
-        filteredProduct.purchases.forEach(function (purchase) {
-          assert.ok(purchase.quantity, 'purchase quantity should be included')
-          assert.ok(purchase.customer, 'purchase customer should be included')
-          assert.ok(purchase.customer.lastname, 'purchase customer should be included')
-          assert.ok(!purchase.customer.firstname, "purchase customer's firstname should be excluded")
-          assert.ok(!purchase.customer.purchases, "purchase customer's purchases should be excluded")
-        })
+        assert.equal(Array.isArray(excluded), true)
+        assert.equal(excluded.length, 2)
+        assert.deepEqual(excluded, ['foo', 'bar'])
       })
+
+      it('returns array of private and protected fields', function () {
+        var excluded = filter.getExcluded({
+          access: 'public',
+          modelName: 'FooModel',
+          excludedMap: {
+            FooModel: {
+              private: ['foo'],
+              protected: ['bar']
+            }
+          }
+        })
+
+        assert.equal(Array.isArray(excluded), true)
+        assert.equal(excluded.length, 2)
+        assert.deepEqual(excluded, ['foo', 'bar'])
+      })
+
+      it('returns array of private and protected fields', () => {
+        var excluded = filter.getExcluded({
+          access: 'public',
+          modelName: 'FooModel',
+          excludedMap: {
+            FooModel: {
+              private: ['foo'],
+              protected: ['bar']
+            }
+          }
+        })
+
+        assert.equal(Array.isArray(excluded), true)
+        assert.equal(excluded.length, 2)
+        assert.deepEqual(excluded, ['foo', 'bar'])
+      })
+    })
+  })
+
+  describe('getModelAtPath', function () {
+    var db = require('../integration/setup')()
+    var filter = new Filter({})
+
+    db.initialize({
+      connect: false
+    })
+
+    it('returns nothing', function () {
+      var modelName = filter.getModelAtPath(db.models.Invoice.schema, 'foo.bar')
+
+      assert.equal(modelName, undefined)
+    })
+
+    it('returns Customer', function () {
+      var modelName = filter.getModelAtPath(db.models.Invoice.schema, 'customer')
+
+      assert.equal(modelName, 'Customer')
+    })
+
+    it('returns Product', function () {
+      var modelName = filter.getModelAtPath(db.models.Invoice.schema, 'products')
+
+      assert.equal(modelName, 'Product')
+    })
+
+    it('returns Product', function () {
+      var modelName = filter.getModelAtPath(db.models.Customer.schema, 'favorites.purchase.item')
+
+      assert.equal(modelName, 'Product')
+    })
+  })
+
+  describe('filterItem', function () {
+    var filter = new Filter({})
+
+    it('does nothing', function () {
+      var item = filter.filterItem()
+
+      assert.equal(item, undefined)
+    })
+
+    it('removes excluded keys from a document', function () {
+      var doc = {
+        foo: {
+          bar: {
+            baz: '3.14'
+          }
+        }
+      }
+
+      filter.filterItem(doc, ['foo'])
+
+      assert.deepEqual(doc, {})
+    })
+
+    it('removes excluded keys from a document', function () {
+      var doc = {
+        foo: {
+          bar: {
+            baz: '3.14'
+          }
+        }
+      }
+
+      filter.filterItem(doc, ['foo.bar.baz'])
+
+      assert.deepEqual(doc, {
+        foo: {
+          bar: {}
+        }
+      })
+    })
+
+    it('removes excluded keys from an array of document', function () {
+      var docs = [{
+        foo: {
+          bar: {
+            baz: '3.14'
+          }
+        }
+      }, {
+        foo: {
+          bar: {
+            baz: 'pi'
+          }
+        }
+      }]
+
+      filter.filterItem(docs, ['foo.bar.baz'])
+
+      assert.deepEqual(docs, [{
+        foo: {
+          bar: {}
+        }
+      }, {
+        foo: {
+          bar: {}
+        }
+      }])
     })
   })
 })
