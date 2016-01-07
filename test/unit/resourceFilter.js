@@ -225,23 +225,6 @@ describe('resourceFilter', function () {
         assert.equal(excluded.length, 2)
         assert.deepEqual(excluded, ['foo', 'bar'])
       })
-
-      it('returns array of private and protected fields', () => {
-        var excluded = filter.getExcluded({
-          access: 'public',
-          modelName: 'FooModel',
-          excludedMap: {
-            FooModel: {
-              private: ['foo'],
-              protected: ['bar']
-            }
-          }
-        })
-
-        assert.equal(Array.isArray(excluded), true)
-        assert.equal(excluded.length, 2)
-        assert.deepEqual(excluded, ['foo', 'bar'])
-      })
     })
   })
 
