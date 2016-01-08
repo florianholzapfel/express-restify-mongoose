@@ -330,4 +330,186 @@ describe('resourceFilter', function () {
       }])
     })
   })
+
+  describe('filterPopulatedItem', function () {
+    var db = require('../integration/setup')()
+
+    db.initialize({
+      connect: false
+    })
+
+    var invoiceFilter = new Filter({
+      model: db.models.Invoice
+    })
+
+    var customerFilter = new Filter({
+      model: db.models.Customer,
+      filteredKeys: {
+        private: ['name']
+      }
+    })
+
+    var productFilter = new Filter({
+      model: db.models.Product,
+      filteredKeys: {
+        private: ['name']
+      }
+    })
+
+    it('does nothing', function () {
+      var item = invoiceFilter.filterPopulatedItem(null, {
+        populate: []
+      })
+
+      assert.equal(item, null)
+    })
+
+    it('removes keys in populated document', function () {
+      var invoice = {
+        customer: {
+          name: 'John'
+        },
+        amount: '42'
+      }
+
+      invoiceFilter.filterPopulatedItem(invoice, {
+        populate: [{
+          path: 'customer'
+        }],
+        excludedMap: {
+          Customer: customerFilter.filteredKeys
+        }
+      })
+
+      assert.deepEqual(invoice, {
+        customer: {},
+        amount: '42'
+      })
+    })
+
+    it('removes keys in array with populated document', function () {
+      var invoices = [{
+        customer: {
+          name: 'John'
+        },
+        amount: '42'
+      }, {
+        customer: {
+          name: 'Bob'
+        },
+        amount: '3.14'
+      }]
+
+      invoiceFilter.filterPopulatedItem(invoices, {
+        populate: [{
+          path: 'customer'
+        }],
+        excludedMap: {
+          Customer: customerFilter.filteredKeys
+        }
+      })
+
+      assert.deepEqual(invoices, [{
+        customer: {},
+        amount: '42'
+      }, {
+        customer: {},
+        amount: '3.14'
+      }])
+    })
+
+    it('ignores undefined path', function () {
+      var invoice = {
+        amount: '42'
+      }
+
+      invoiceFilter.filterPopulatedItem(invoice, {
+        populate: [{
+          path: 'customer'
+        }],
+        excludedMap: {
+          Customer: customerFilter.filteredKeys
+        }
+      })
+
+      assert.deepEqual(invoice, {
+        amount: '42'
+      })
+    })
+
+    it('skip when populate path is undefined', function () {
+      var invoice = {
+        customer: {
+          name: 'John'
+        },
+        amount: '42'
+      }
+
+      invoiceFilter.filterPopulatedItem(invoice, {
+        populate: [{}],
+        excludedMap: {
+          Customer: customerFilter.filteredKeys
+        }
+      })
+
+      assert.deepEqual(invoice, {
+        customer: {
+          name: 'John'
+        },
+        amount: '42'
+      })
+    })
+
+    it('removes keys in populated document array', function () {
+      var invoice = {
+        products: [{
+          name: 'Squirt Gun'
+        }, {
+          name: 'Water Balloons'
+        }],
+        amount: '42'
+      }
+
+      invoiceFilter.filterPopulatedItem(invoice, {
+        populate: [{
+          path: 'products'
+        }],
+        excludedMap: {
+          Product: productFilter.filteredKeys
+        }
+      })
+
+      assert.deepEqual(invoice, {
+        products: [{}, {}],
+        amount: '42'
+      })
+    })
+
+    it('removes keys in populated document in array', function () {
+      var customer = {
+        name: 'John',
+        purchases: [{
+          item: {
+            name: 'Squirt Gun'
+          }
+        }]
+      }
+
+      customerFilter.filterPopulatedItem(customer, {
+        populate: [{
+          path: 'purchases.item'
+        }],
+        excludedMap: {
+          Product: productFilter.filteredKeys
+        }
+      })
+
+      assert.deepEqual(customer, {
+        name: 'John',
+        purchases: [{
+          item: {}
+        }]
+      })
+    })
+  })
 })
