@@ -101,6 +101,139 @@ module.exports = function (createFn, setup, dismantle) {
     })
   })
 
+  describe('totalCountHeader - boolean (default header)', function () {
+    var app = createFn()
+    var server
+
+    before(function (done) {
+      setup(function (err) {
+        if (err) {
+          return done(err)
+        }
+
+        erm.serve(app, db.models.Customer, {
+          totalCountHeader: true,
+          restify: app.isRestify
+        })
+
+        db.models.Customer.create([{
+          name: 'Bob'
+        }, {
+          name: 'John'
+        }, {
+          name: 'Mike'
+        }]).then(function (createdCustomers) {
+          server = app.listen(testPort, done)
+        }, function (err) {
+          done(err)
+        })
+      })
+    })
+
+    after(function (done) {
+      dismantle(app, server, done)
+    })
+
+    it('GET /Customers?limit=1 200', function (done) {
+      request.get({
+        url: util.format('%s/api/v1/Customers', testUrl),
+        qs: {
+          limit: 1
+        },
+        json: true
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 200)
+        assert.equal(res.headers['x-total-count'], 3)
+        assert.equal(body.length, 1)
+        done()
+      })
+    })
+
+    it('GET /Customers?skip=1 200', function (done) {
+      request.get({
+        url: util.format('%s/api/v1/Customers', testUrl),
+        qs: {
+          skip: 1
+        },
+        json: true
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 200)
+        assert.equal(res.headers['x-total-count'], 3)
+        assert.equal(body.length, 2)
+        done()
+      })
+    })
+
+    it('GET /Customers?limit=1&skip=1 200', function (done) {
+      request.get({
+        url: util.format('%s/api/v1/Customers', testUrl),
+        qs: {
+          limit: 1,
+          skip: 1
+        },
+        json: true
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 200)
+        assert.equal(res.headers['x-total-count'], 3)
+        assert.equal(body.length, 1)
+        done()
+      })
+    })
+  })
+
+  describe('totalCountHeader - string (custom header)', function () {
+    var app = createFn()
+    var server
+
+    before(function (done) {
+      setup(function (err) {
+        if (err) {
+          return done(err)
+        }
+
+        erm.serve(app, db.models.Customer, {
+          totalCountHeader: 'X-Custom-Count',
+          restify: app.isRestify
+        })
+
+        db.models.Customer.create([{
+          name: 'Bob'
+        }, {
+          name: 'John'
+        }, {
+          name: 'Mike'
+        }]).then(function (createdCustomers) {
+          server = app.listen(testPort, done)
+        }, function (err) {
+          done(err)
+        })
+      })
+    })
+
+    after(function (done) {
+      dismantle(app, server, done)
+    })
+
+    it('GET /Customers?limit=1 200', function (done) {
+      request.get({
+        url: util.format('%s/api/v1/Customers', testUrl),
+        qs: {
+          limit: 1
+        },
+        json: true
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 200)
+        assert.equal(res.headers['x-custom-count'], 3)
+        assert.equal(body.length, 1)
+        done()
+      })
+    })
+  })
+
   describe('limit', function () {
     var app = createFn()
     var server
