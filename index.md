@@ -232,12 +232,12 @@ Whether to call `.toLowerCase()` on model names before generating the routes
 Endpoint name
 
 #### readPreference
-<span class="label label-primary" title="type">string</span><span class="label label-success" title="default">primary</span>
+<span class="label label-primary" title="type">string</span><span class="label label-success" title="default">primary</span><span class="label label-info">2.3</span>
 
 Determines the MongoDB nodes from which to read. [Read more](http://mongoosejs.com/docs/api.html#query_Query-read)
 
 #### totalCountHeader
-<span class="label label-primary" title="type">boolean|string</span><span class="label label-success" title="default">false</span>
+<span class="label label-primary" title="type">boolean|string</span><span class="label label-success" title="default">false</span><span class="label label-info">2.4</span>
 
 When set to `true`, executes a count query on `GET /Model` requests that sets limit and skip to 0 and sets the result in the
 `X-Total-Count` header. It can also be set to a string to allow for a custom header.
@@ -332,7 +332,7 @@ Whether to use findOneAndUpdate or first findById and then save, allowing docume
 Whether to use findOneAndRemove or first findById and then remove, allowing document middleware to be called. For more information regarding mongoose middleware, [read the docs](http://mongoosejs.com/docs/middleware.html).
 
 #### preMiddleware
-<span class="label label-primary" title="type">function (req, res, next)</span>
+<span class="label label-primary" title="type">function (req, res, next)</span><span class="label label-info">2.0</span>
 
 Middleware that runs before [preCreate](#preCreate), [preRead](#preRead), [preUpdate](#preUpdate) and [preDelete](#preDelete). 
 
