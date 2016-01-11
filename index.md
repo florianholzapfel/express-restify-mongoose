@@ -556,6 +556,21 @@ outputFn: function (req, res) {
 }
 {% endhighlight %}
 
+#### postProcess
+<span class="label label-primary" title="type">function (req, res, next)</span><span class="label label-info">2.0</span>
+
+Middleware that is called after output, useful for logging
+
+<div class="alert alert-warning">
+  <i class="glyphicon glyphicon-alert"></i> Not guaranteed to execute after output if async operations are performed inside `outputFn`
+</div>
+
+{% highlight javascript %}
+postProcess: function (req, res, next) {
+  console.log(`${req.method} ${req.path} request completed with response code ${req.erm.statusCode}`)
+}
+{% endhighlight %}
+
 #### onError
 <span class="label label-primary" title="type">function (err, req, res, next)</span><span class="label label-success" title="default">send the entire mongoose error</span>
 
