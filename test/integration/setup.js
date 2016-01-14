@@ -13,6 +13,17 @@ module.exports = function () {
     price: { type: Number }
   })
 
+  var PurchaseSchema = new Schema({
+    item: { type: Schema.Types.ObjectId, ref: 'Product' },
+    number: { type: Number }
+  })
+
+  var FavoritesSchema = new Schema({
+    animal: { type: String },
+    color: { type: String },
+    purchase: PurchaseSchema
+  })
+
   var BaseCustomerSchema = function () {
     Schema.apply(this, arguments)
 
@@ -22,14 +33,7 @@ module.exports = function () {
       comment: { type: String },
       address: { type: String },
       age: { type: Number },
-      favorites: {
-        animal: { type: String },
-        color: { type: String },
-        purchase: {
-          item: { type: Schema.Types.ObjectId, ref: 'Product' },
-          number: { type: Number }
-        }
-      },
+      favorites: FavoritesSchema,
       purchases: [{
         item: { type: Schema.Types.ObjectId, ref: 'Product' },
         number: { type: Number }
