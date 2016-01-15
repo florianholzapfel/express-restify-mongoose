@@ -67,6 +67,7 @@ module.exports = function (createFn, setup, dismantle) {
         assert.equal(res.statusCode, 201)
         assert.ok(body._id)
         assert.equal(body.name, 'John')
+        assert.equal(body.postSave, undefined)
         done()
       })
     })
@@ -312,6 +313,46 @@ module.exports = function (createFn, setup, dismantle) {
         assert.equal(Object.keys(body.errors).length, 2)
         assert.ok(body.errors['customer'])
         assert.ok(body.errors['products'])
+        done()
+      })
+    })
+  })
+
+  describe('Create documents (createWithSave)', function () {
+    var app = createFn()
+    var server
+
+    beforeEach(function (done) {
+      setup(function (err) {
+        if (err) {
+          return done(err)
+        }
+
+        erm.serve(app, db.models.Product, {
+          restify: app.isRestify,
+          createWithSave: true
+        })
+
+        server = app.listen(testPort, done)
+      })
+    })
+
+    afterEach(function (done) {
+      dismantle(app, server, done)
+    })
+
+    it('POST /Products 201', function (done) {
+      request.post({
+        url: util.format('%s/api/v1/Products', testUrl),
+        json: {
+          name: 'John'
+        }
+      }, function (err, res, body) {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 201)
+        assert.ok(body._id)
+        assert.equal(body.name, 'John')
+        assert.equal(body.postSave, 'postSave')
         done()
       })
     })

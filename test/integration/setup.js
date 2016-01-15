@@ -10,7 +10,12 @@ module.exports = function () {
       name: { type: String },
       code: { type: Number }
     },
-    price: { type: Number }
+    price: { type: Number },
+    postSave: { type: String }
+  })
+
+  ProductSchema.post('save', function () {
+    this.postSave = 'postSave'
   })
 
   var BaseCustomerSchema = function () {
