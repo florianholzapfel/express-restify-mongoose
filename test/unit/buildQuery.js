@@ -146,6 +146,26 @@ describe('buildQuery', function () {
 
       assert.equal(result, query)
     })
+
+    it('does not call limit on queries that have a distinct option set and returns the query object', function () {
+      var options = {
+        limit: 1
+      }
+
+      var queryOptions = {
+        distinct: 'name'
+      }
+
+      var result = buildQuery(options)(query, queryOptions)
+
+      for (var key in query) {
+        if (key === 'distinct') continue
+        sinon.assert.notCalled(query[key])
+      }
+      sinon.assert.called(query.distinct)
+
+      assert.equal(result, query)
+    })
   })
 
   describe('sort', function () {
