@@ -122,39 +122,6 @@ describe('resourceFilter', function () {
     })
   })
 
-  describe('getModelAtPath', function () {
-    var db = require('../integration/setup')()
-    var filter = new Filter({})
-
-    db.initialize({
-      connect: false
-    })
-
-    it('returns nothing', function () {
-      var modelName = filter.getModelAtPath(db.models.Invoice.schema, 'foo.bar')
-
-      assert.equal(modelName, undefined)
-    })
-
-    it('returns Customer', function () {
-      var modelName = filter.getModelAtPath(db.models.Invoice.schema, 'customer')
-
-      assert.equal(modelName, 'Customer')
-    })
-
-    it('returns Product', function () {
-      var modelName = filter.getModelAtPath(db.models.Invoice.schema, 'products')
-
-      assert.equal(modelName, 'Product')
-    })
-
-    it('returns Product', function () {
-      var modelName = filter.getModelAtPath(db.models.Customer.schema, 'favorites.purchase.item')
-
-      assert.equal(modelName, 'Product')
-    })
-  })
-
   describe('filterItem', function () {
     var filter = new Filter({})
 
