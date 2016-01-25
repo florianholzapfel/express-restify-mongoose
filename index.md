@@ -342,7 +342,7 @@ Middleware that runs before [preCreate](#preCreate), [preRead](#preRead), [preUp
 preMiddleware: function (req, res, next) {
   performAsyncLogic(function (err) {
     next(err)
-  }
+  })
 }
 {% endhighlight %}
 
@@ -355,7 +355,7 @@ Middleware that runs before creating a resource
 preCreate: function (req, res, next) {
   performAsyncLogic(function (err) {
     next(err)
-  }
+  })
 }
 {% endhighlight %}
 
@@ -368,7 +368,7 @@ Middleware that runs before reading a resource
 preRead: function (req, res, next) {
   performAsyncLogic(function (err) {
     next(err)
-  }
+  })
 }
 {% endhighlight %}
 
@@ -381,7 +381,7 @@ Middleware that runs before updating a resource
 preUpdate: function (req, res, next) {
   performAsyncLogic(function (err) {
     next(err)
-  }
+  })
 }
 {% endhighlight %}
 
@@ -411,7 +411,7 @@ Middleware that runs before deleting a resource
 preDelete: function (req, res, next) {
   performAsyncLogic(function (err) {
     next(err)
-  }
+  })
 }
 {% endhighlight %}
 
@@ -491,7 +491,7 @@ postCreate: function (req, res, next) {
 
   performAsyncLogic(function (err) {
     next(err)
-  }
+  })
 }
 {% endhighlight %}
 
@@ -507,7 +507,7 @@ postRead: function (req, res, next) {
 
   performAsyncLogic(function (err) {
     next(err)
-  }
+  })
 }
 {% endhighlight %}
 
@@ -523,7 +523,7 @@ postUpdate: function (req, res, next) {
 
   performAsyncLogic(function (err) {
     next(err)
-  }
+  })
 }
 {% endhighlight %}
 
@@ -539,7 +539,7 @@ postDelete: function (req, res, next) {
 
   performAsyncLogic(function (err) {
     next(err)
-  }
+  })
 }
 {% endhighlight %}
 
