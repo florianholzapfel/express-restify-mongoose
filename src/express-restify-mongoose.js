@@ -1,11 +1,9 @@
-'use strict'
-
-var util = require('util')
-var _ = require('lodash')
-var inflection = require('inflection')
-var Filter = require('./resource_filter')
-var customDefaults = null
-var excludedMap = {}
+const util = require('util')
+const _ = require('lodash')
+const inflection = require('inflection')
+const Filter = require('./resource_filter')
+let customDefaults = null
+let excludedMap = {}
 
 function getDefaults () {
   return _.defaults(customDefaults || {}, {
@@ -24,17 +22,17 @@ function getDefaults () {
   })
 }
 
-var restify = function (app, model, opts) {
-  var options = {}
-  _.assign(options, getDefaults(), opts || {})
+const restify = function (app, model, opts = {}) {
+  let options = {}
+  _.assign(options, getDefaults(), opts)
 
-  var access = require('./middleware/access')
-  var ensureContentType = require('./middleware/ensureContentType')(options)
-  var filterAndFindById = require('./middleware/filterAndFindById')(model, options)
-  var onError = require('./middleware/onError')
-  var outputFn = require('./middleware/outputFn')
-  var prepareQuery = require('./middleware/prepareQuery')(options)
-  var prepareOutput = require('./middleware/prepareOutput')(options, excludedMap)
+  const access = require('./middleware/access')
+  const ensureContentType = require('./middleware/ensureContentType')(options)
+  const filterAndFindById = require('./middleware/filterAndFindById')(model, options)
+  const onError = require('./middleware/onError')
+  const outputFn = require('./middleware/outputFn')
+  const prepareQuery = require('./middleware/prepareQuery')(options)
+  const prepareOutput = require('./middleware/prepareOutput')(options, excludedMap)
 
   if (!_.isArray(options.private)) {
     throw new Error('"options.private" must be an array of fields')
@@ -44,7 +42,7 @@ var restify = function (app, model, opts) {
     throw new Error('"options.protected" must be an array of fields')
   }
 
-  model.schema.eachPath(function (name, path) {
+  model.schema.eachPath((name, path) => {
     if (path.options.access) {
       switch (path.options.access.toLowerCase()) {
         case 'private':
@@ -58,9 +56,7 @@ var restify = function (app, model, opts) {
   })
 
   options.filter = new Filter({
-    model: model,
-    excludedMap: excludedMap,
-    filteredKeys: {
+    model, excludedMap, filteredKeys: {
       private: options.private,
       protected: options.protected
     }
@@ -89,9 +85,7 @@ var restify = function (app, model, opts) {
   }
 
   if (!options.contextFilter) {
-    options.contextFilter = function (model, req, done) {
-      done(model)
-    }
+    options.contextFilter = (model, req, done) => done(model)
   }
 
   if (!_.isArray(options.postCreate)) {
@@ -128,29 +122,27 @@ var restify = function (app, model, opts) {
     options.name = options.name.toLowerCase()
   }
 
-  var ops = require('./operations')(model, options)
+  const ops = require('./operations')(model, options)
 
-  var uri_item = util.format('%s%s/%s', options.prefix, options.version, options.name)
+  let uri_item = `${options.prefix}${options.version}/${options.name}`
   if (uri_item.indexOf('/:id') === -1) {
     uri_item += '/:id'
   }
 
-  var uri_items = uri_item.replace('/:id', '')
-  var uri_count = uri_items + '/count'
-  var uri_shallow = uri_item + '/shallow'
+  const uri_items = uri_item.replace('/:id', '')
+  const uri_count = uri_items + '/count'
+  const uri_shallow = uri_item + '/shallow'
 
-  if (undefined === app.delete) {
+  if (_.isUndefined(app.delete)) {
     app.delete = app.del
   }
 
-  app.use(function (req, res, next) {
-    req.erm = {
-      model: model
-    }
+  app.use((req, res, next) => {
+    req.erm = { model }
     next()
   })
 
-  var accessMiddleware = options.access ? access(options) : []
+  const accessMiddleware = options.access ? access(options) : []
 
   app.get(uri_items, prepareQuery, options.preMiddleware, options.preRead, accessMiddleware, ops.getItems, prepareOutput)
   app.get(uri_count, prepareQuery, options.preMiddleware, options.preRead, accessMiddleware, ops.getCount, prepareOutput)

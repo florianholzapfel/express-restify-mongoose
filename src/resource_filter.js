@@ -1,6 +1,6 @@
-var _ = require('lodash')
-var detective = require('mongoose-detective')
-var weedout = require('weedout')
+const _ = require('lodash')
+const detective = require('mongoose-detective')
+const weedout = require('weedout')
 
 /**
  * Represents a filter.
@@ -22,7 +22,7 @@ function Filter (opts) {
   }
 
   if (this.model && this.model.discriminators && _.isPlainObject(opts.excludedMap)) {
-    for (var modelName in this.model.discriminators) {
+    for (let modelName in this.model.discriminators) {
       if (opts.excludedMap[modelName]) {
         this.filteredKeys.private = this.filteredKeys.private.concat(opts.excludedMap[modelName].private)
         this.filteredKeys.protected = this.filteredKeys.protected.concat(opts.excludedMap[modelName].protected)
@@ -45,7 +45,7 @@ Filter.prototype.getExcluded = function (opts) {
     return []
   }
 
-  var entry = opts.excludedMap && opts.modelName ? opts.excludedMap[opts.modelName] : null
+  let entry = opts.excludedMap && opts.modelName ? opts.excludedMap[opts.modelName] : null
 
   if (!entry) {
     entry = _.isPlainObject(opts.filteredKeys) ? {
@@ -68,20 +68,16 @@ Filter.prototype.getExcluded = function (opts) {
  * @returns {Object} - Filtered document.
  */
 Filter.prototype.filterItem = function (item, excluded) {
-  var self = this
-
-  if (item instanceof Array) {
-    return item.map(function (i) {
-      return self.filterItem(i, excluded)
-    })
+  if (_.isArray(item)) {
+    return item.map(i => this.filterItem(i, excluded))
   }
 
   if (item && excluded) {
-    if (typeof item.toObject === 'function') {
+    if (_.isFunction(item.toObject)) {
       item = item.toObject()
     }
 
-    for (var i = 0, length = excluded.length; i < length; i++) {
+    for (let i = 0, length = excluded.length; i < length; i++) {
       if (excluded[i].indexOf('.') > 0) {
         weedout(item, excluded[i])
       } else {
@@ -104,36 +100,31 @@ Filter.prototype.filterItem = function (item, excluded) {
  * @returns {Object} - Filtered document.
  */
 Filter.prototype.filterPopulatedItem = function (item, opts) {
-  var self = this
-
-  if (item instanceof Array) {
-    return item.map(function (i) {
-      return self.filterPopulatedItem(i, opts)
-    })
+  if (_.isArray(item)) {
+    return item.map(i => this.filterPopulatedItem(i, opts))
   }
 
-  var excluded
-
-  for (var i = 0; i < opts.populate.length; i++) {
+  for (let i = 0; i < opts.populate.length; i++) {
     if (!opts.populate[i].path) {
       continue
     }
 
-    excluded = self.getExcluded({
+    const excluded = this.getExcluded({
       access: opts.access,
       excludedMap: opts.excludedMap,
-      modelName: detective(self.model, opts.populate[i].path)
+      modelName: detective(this.model, opts.populate[i].path)
     })
 
     if (_.has(item, opts.populate[i].path)) {
-      self.filterItem(_.get(item, opts.populate[i].path), excluded)
+      this.filterItem(_.get(item, opts.populate[i].path), excluded)
     } else {
-      var pathToArray = opts.populate[i].path.split('.').slice(0, -1).join('.')
-      var pathToObject = opts.populate[i].path.split('.').slice(-1).join('.')
+      const pathToArray = opts.populate[i].path.split('.').slice(0, -1).join('.')
 
       if (_.has(item, pathToArray)) {
-        var array = _.get(item, pathToArray)
-        self.filterItem(_.map(array, pathToObject), excluded)
+        const array = _.get(item, pathToArray)
+        const pathToObject = opts.populate[i].path.split('.').slice(-1).join('.')
+
+        this.filterItem(_.map(array, pathToObject), excluded)
       }
     }
   }
@@ -152,20 +143,18 @@ Filter.prototype.filterPopulatedItem = function (item, opts) {
  * @param {Array} opts.populate - Paths to populated subdocuments.
  * @returns {Object} - Filtered document.
  */
-Filter.prototype.filterObject = function (resource, opts) {
-  var self = this
-
-  opts = _.defaults(opts || {}, {
+Filter.prototype.filterObject = function (resource, opts = {}) {
+  opts = _.defaults(opts, {
     access: 'public',
     excludedMap: {},
-    filteredKeys: self.filteredKeys,
-    modelName: self.model.modelName
+    filteredKeys: this.filteredKeys,
+    modelName: this.model.modelName
   })
 
-  var filtered = self.filterItem(resource, self.getExcluded(opts))
+  let filtered = this.filterItem(resource, this.getExcluded(opts))
 
   if (opts.populate) {
-    self.filterPopulatedItem(filtered, opts)
+    this.filterPopulatedItem(filtered, opts)
   }
 
   return filtered

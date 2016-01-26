@@ -1,4 +1,4 @@
-var _ = require('lodash')
+const _ = require('lodash')
 
 module.exports = function (options) {
   function jsonQueryParser (key, value) {
@@ -31,34 +31,30 @@ module.exports = function (options) {
   }
 
   function parseQueryOptions (queryOptions) {
-    var i, length, populate, select
+    if (queryOptions.select && _.isString(queryOptions.select)) {
+      let select = queryOptions.select.split(',')
+      queryOptions.select = {}
 
-    if (queryOptions.select) {
-      if (_.isString(queryOptions.select)) {
-        select = queryOptions.select.split(',')
-        queryOptions.select = {}
-
-        for (i = 0, length = select.length; i < length; i++) {
-          if (select[i][0] === '-') {
-            queryOptions.select[select[i].substring(1)] = 0
-          } else {
-            queryOptions.select[select[i]] = 1
-          }
+      for (let i = 0, length = select.length; i < length; i++) {
+        if (select[i][0] === '-') {
+          queryOptions.select[select[i].substring(1)] = 0
+        } else {
+          queryOptions.select[select[i]] = 1
         }
       }
     }
 
     if (queryOptions.populate) {
       if (_.isString(queryOptions.populate)) {
-        populate = queryOptions.populate.split(',')
+        let populate = queryOptions.populate.split(',')
         queryOptions.populate = []
 
-        for (i = 0, length = populate.length; i < length; i++) {
+        for (let i = 0, length = populate.length; i < length; i++) {
           queryOptions.populate.push({
             path: populate[i]
           })
 
-          for (var key in queryOptions.select) {
+          for (let key in queryOptions.select) {
             if (key.indexOf(populate[i] + '.') === 0) {
               if (queryOptions.populate[i].select) {
                 queryOptions.populate[i].select += ' '
@@ -79,9 +75,7 @@ module.exports = function (options) {
           if (queryOptions.select) {
             if (Object.keys(queryOptions.select).length > 0 && !queryOptions.select[populate[i]]) {
               queryOptions.select[populate[i]] = 1
-            }
-
-            if (Object.keys(queryOptions.select).length === 0) {
+            } else if (Object.keys(queryOptions.select).length === 0) {
               delete queryOptions.select
             }
           }
@@ -95,11 +89,11 @@ module.exports = function (options) {
   }
 
   return function (req, res, next) {
-    var whitelist = ['distinct', 'limit', 'populate', 'query', 'select', 'skip', 'sort']
+    const whitelist = ['distinct', 'limit', 'populate', 'query', 'select', 'skip', 'sort']
 
     req._ermQueryOptions = {}
 
-    for (var key in req.query) {
+    for (let key in req.query) {
       if (whitelist.indexOf(key) === -1) {
         continue
       }
@@ -108,7 +102,7 @@ module.exports = function (options) {
         try {
           req._ermQueryOptions[key] = JSON.parse(req.query[key], jsonQueryParser)
         } catch (e) {
-          var err = new Error('%s must be a valid JSON string')
+          let err = new Error('%s must be a valid JSON string')
           err.description = 'invalid_json'
           err.statusCode = 400
           return options.onError(err, req, res, next)
