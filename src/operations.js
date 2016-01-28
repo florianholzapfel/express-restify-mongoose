@@ -1,5 +1,6 @@
 const _ = require('lodash')
 const http = require('http')
+const moredots = require('moredots')
 
 module.exports = function (model, options) {
   const buildQuery = require('./buildQuery')(options)
@@ -207,32 +208,7 @@ module.exports = function (model, options) {
       return dst
     }
 
-    /* Recursively converts objects to dot notation
-     * {
-     *   favorites: {
-     *     animal: 'Boar',
-     *     color: 'Black'
-     *   }
-     * }
-     * ...becomes:
-     * {
-     *   'favorites.animal': 'Boar',
-     *   'favorites.color': 'Black',
-     * }
-     */
-    function flatten (src, dst = {}, prefix = '') {
-      for (let key in src) {
-        if (_.isPlainObject(src[key])) {
-          flatten(src[key], dst, prefix + key + '.')
-        } else {
-          dst[prefix + key] = src[key]
-        }
-      }
-
-      return dst
-    }
-
-    const cleanBody = flatten(depopulate(req.body))
+    const cleanBody = moredots(depopulate(req.body))
 
     if (options.findOneAndUpdate) {
       options.contextFilter(model, req, filteredContext => {
