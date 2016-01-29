@@ -1,27 +1,26 @@
-var assert = require('assert')
-var request = require('request')
-var util = require('util')
+const assert = require('assert')
+const request = require('request')
 
 module.exports = function (createFn, setup, dismantle) {
-  var erm = require('../../lib/express-restify-mongoose')
-  var db = require('./setup')()
+  const erm = require('../../lib/express-restify-mongoose')
+  const db = require('./setup')()
 
-  var testPort = 30023
-  var testUrl = 'http://localhost:' + testPort
+  const testPort = 30023
+  const testUrl = `http://localhost:${testPort}`
 
-  describe('access', function () {
-    describe('private - include private and protected fields', function () {
-      var app = createFn()
-      var server
-      var product
-      var customer
-      var invoice
-      var account
-      var repeatCustomer
-      var repeatCustomerInvoice
+  describe('access', () => {
+    describe('private - include private and protected fields', () => {
+      let app = createFn()
+      let server
+      let product
+      let customer
+      let invoice
+      let account
+      let repeatCustomer
+      let repeatCustomerInvoice
 
-      beforeEach(function (done) {
-        setup(function (err) {
+      beforeEach(done => {
+        setup(err => {
           if (err) {
             return done(err)
           }
@@ -29,7 +28,7 @@ module.exports = function (createFn, setup, dismantle) {
           erm.serve(app, db.models.RepeatCustomer, {
             private: ['job'],
             protected: ['status'],
-            access: function () {
+            access: () => {
               return 'private'
             },
             restify: app.isRestify
@@ -38,7 +37,7 @@ module.exports = function (createFn, setup, dismantle) {
           erm.serve(app, db.models.Customer, {
             private: ['age', 'favorites.animal', 'favorites.purchase.number', 'purchases.number', 'privateDoes.notExist'],
             protected: ['comment', 'favorites.color', 'protectedDoes.notExist'],
-            access: function (req, done) {
+            access: (req, done) => {
               done(null, 'private')
             },
             restify: app.isRestify
@@ -47,7 +46,7 @@ module.exports = function (createFn, setup, dismantle) {
           erm.serve(app, db.models.Invoice, {
             private: ['amount'],
             protected: ['receipt'],
-            access: function () {
+            access: () => {
               return 'private'
             },
             restify: app.isRestify
@@ -56,7 +55,7 @@ module.exports = function (createFn, setup, dismantle) {
           erm.serve(app, db.models.Product, {
             private: ['department.code'],
             protected: ['price'],
-            access: function () {
+            access: () => {
               return 'private'
             },
             restify: app.isRestify
@@ -65,7 +64,7 @@ module.exports = function (createFn, setup, dismantle) {
           erm.serve(app, db.models.Account, {
             private: ['accountNumber'],
             protected: ['points'],
-            access: function () {
+            access: () => {
               return 'private'
             },
             restify: app.isRestify
@@ -77,7 +76,7 @@ module.exports = function (createFn, setup, dismantle) {
             department: {
               code: 51
             }
-          }).then(function (createdProduct) {
+          }).then(createdProduct => {
             product = createdProduct
 
             return db.models.Customer.create({
@@ -98,7 +97,7 @@ module.exports = function (createFn, setup, dismantle) {
               }],
               returns: [product._id]
             })
-          }).then(function (createdCustomer) {
+          }).then(createdCustomer => {
             customer = createdCustomer
 
             return db.models.Invoice.create({
@@ -106,14 +105,14 @@ module.exports = function (createFn, setup, dismantle) {
               amount: 100,
               receipt: 'A'
             })
-          }).then(function (createdInvoice) {
+          }).then(createdInvoice => {
             invoice = createdInvoice
 
             return db.models.Account.create({
               accountNumber: '123XYZ',
               points: 244
             })
-          }).then(function (createdAccount) {
+          }).then(createdAccount => {
             account = createdAccount
 
             return db.models.RepeatCustomer.create({
@@ -123,7 +122,7 @@ module.exports = function (createFn, setup, dismantle) {
               status: 'Awesome',
               job: 'Hunter'
             })
-          }).then(function (createdRepeatCustomer) {
+          }).then(createdRepeatCustomer => {
             repeatCustomer = createdRepeatCustomer
 
             return db.models.Invoice.create({
@@ -131,24 +130,24 @@ module.exports = function (createFn, setup, dismantle) {
               amount: 200,
               receipt: 'B'
             })
-          }).then(function (createdRepeatCustomerInvoice) {
+          }).then(createdRepeatCustomerInvoice => {
             repeatCustomerInvoice = createdRepeatCustomerInvoice
             server = app.listen(testPort, done)
-          }, function (err) {
+          }, err => {
             done(err)
           })
         })
       })
 
-      afterEach(function (done) {
+      afterEach(done => {
         dismantle(app, server, done)
       })
 
-      it('GET /Customers 200', function (done) {
+      it('GET /Customers 200', done => {
         request.get({
-          url: util.format('%s/api/v1/Customers', testUrl),
+          url: `${testUrl}/api/v1/Customers`,
           json: true
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.equal(body.length, 2)
@@ -168,11 +167,11 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers/:id 200', function (done) {
+      it('GET /Customers/:id 200', done => {
         request.get({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          url: `${testUrl}/api/v1/Customers/${customer._id}`,
           json: true
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.equal(body.name, 'Bob')
@@ -191,14 +190,14 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers?populate=favorites.purchase.item,purchases.item,returns 200', function (done) {
+      it('GET /Customers?populate=favorites.purchase.item,purchases.item,returns 200', done => {
         request.get({
-          url: util.format('%s/api/v1/Customers', testUrl),
+          url: `${testUrl}/api/v1/Customers`,
           qs: {
             populate: 'favorites.purchase.item,purchases.item,returns'
           },
           json: true
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.equal(body.length, 2)
@@ -240,14 +239,14 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers/:id?populate=favorites.purchase.item,purchases.item,returns 200', function (done) {
+      it('GET /Customers/:id?populate=favorites.purchase.item,purchases.item,returns 200', done => {
         request.get({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          url: `${testUrl}/api/v1/Customers/${customer._id}`,
           qs: {
             populate: 'favorites.purchase.item,purchases.item,returns'
           },
           json: true
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.equal(body.name, 'Bob')
@@ -288,14 +287,14 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Invoices?populate=customer 200', function (done) {
+      it('GET /Invoices?populate=customer 200', done => {
         request.get({
-          url: util.format('%s/api/v1/Invoices', testUrl),
+          url: `${testUrl}/api/v1/Invoices`,
           qs: {
             populate: 'customer'
           },
           json: true
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.equal(body.length, 2)
@@ -318,14 +317,14 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Invoices/:id?populate=customer 200', function (done) {
+      it('GET /Invoices/:id?populate=customer 200', done => {
         request.get({
-          url: util.format('%s/api/v1/Invoices/%s', testUrl, invoice._id),
+          url: `${testUrl}/api/v1/Invoices/${invoice._id}`,
           qs: {
             populate: 'customer'
           },
           json: true
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.ok(body.customer)
@@ -347,9 +346,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Customers/:id - saves all fields', function (done) {
+      it('PUT /Customers/:id - saves all fields', done => {
         request.put({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          url: `${testUrl}/api/v1/Customers/${customer._id}`,
           json: {
             name: 'John',
             age: 24,
@@ -362,7 +361,7 @@ module.exports = function (createFn, setup, dismantle) {
               }
             }
           }
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.equal(body.name, 'John')
@@ -381,9 +380,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Customers/:id - saves all fields (falsy values)', function (done) {
+      it('PUT /Customers/:id - saves all fields (falsy values)', done => {
         request.put({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          url: `${testUrl}/api/v1/Customers/${customer._id}`,
           json: {
             age: 0,
             comment: '',
@@ -395,7 +394,7 @@ module.exports = function (createFn, setup, dismantle) {
               }
             }
           }
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.equal(body.name, 'Bob')
@@ -414,11 +413,11 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /RepeatCustomers 200 - discriminator', function (done) {
+      it('GET /RepeatCustomers 200 - discriminator', done => {
         request.get({
-          url: util.format('%s/api/v1/RepeatCustomers', testUrl),
+          url: `${testUrl}/api/v1/RepeatCustomers`,
           json: true
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.equal(body.length, 1)
@@ -431,14 +430,14 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers/:id?populate=account 200 - populate discriminator field from base schema', function (done) {
+      it('GET /Customers/:id?populate=account 200 - populate discriminator field from base schema', done => {
         request.get({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, repeatCustomer._id),
+          url: `${testUrl}/api/v1/RepeatCustomers/${repeatCustomer._id}`,
           qs: {
             populate: 'account'
           },
           json: true
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.ok(body.account)
@@ -453,14 +452,14 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Invoices/:id?populate=customer 200 - populated discriminator', function (done) {
+      it('GET /Invoices/:id?populate=customer 200 - populated discriminator', done => {
         request.get({
-          url: util.format('%s/api/v1/Invoices/%s', testUrl, repeatCustomerInvoice._id),
+          url: `${testUrl}/api/v1/Invoices/${repeatCustomerInvoice._id}`,
           qs: {
             populate: 'customer'
           },
           json: true
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.ok(body.customer)
@@ -475,18 +474,18 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    describe('protected - exclude private fields and include protected fields', function () {
-      var app = createFn()
-      var server
-      var product
-      var customer
-      var invoice
-      var account
-      var repeatCustomer
-      var repeatCustomerInvoice
+    describe('protected - exclude private fields and include protected fields', () => {
+      let app = createFn()
+      let server
+      let product
+      let customer
+      let invoice
+      let account
+      let repeatCustomer
+      let repeatCustomerInvoice
 
-      beforeEach(function (done) {
-        setup(function (err) {
+      beforeEach(done => {
+        setup(err => {
           if (err) {
             return done(err)
           }
@@ -494,7 +493,7 @@ module.exports = function (createFn, setup, dismantle) {
           erm.serve(app, db.models.RepeatCustomer, {
             private: ['job'],
             protected: ['status'],
-            access: function () {
+            access: () => {
               return 'protected'
             },
             restify: app.isRestify
@@ -503,7 +502,7 @@ module.exports = function (createFn, setup, dismantle) {
           erm.serve(app, db.models.Customer, {
             private: ['age', 'favorites.animal', 'favorites.purchase.number', 'purchases.number', 'privateDoes.notExist'],
             protected: ['comment', 'favorites.color', 'protectedDoes.notExist'],
-            access: function (req, done) {
+            access: (req, done) => {
               done(null, 'protected')
             },
             restify: app.isRestify
@@ -512,7 +511,7 @@ module.exports = function (createFn, setup, dismantle) {
           erm.serve(app, db.models.Invoice, {
             private: ['amount'],
             protected: ['receipt'],
-            access: function () {
+            access: () => {
               return 'protected'
             },
             restify: app.isRestify
@@ -521,7 +520,7 @@ module.exports = function (createFn, setup, dismantle) {
           erm.serve(app, db.models.Product, {
             private: ['department.code'],
             protected: ['price'],
-            access: function () {
+            access: () => {
               return 'protected'
             },
             restify: app.isRestify
@@ -530,7 +529,7 @@ module.exports = function (createFn, setup, dismantle) {
           erm.serve(app, db.models.Account, {
             private: ['accountNumber'],
             protected: ['points'],
-            access: function () {
+            access: () => {
               return 'protected'
             },
             restify: app.isRestify
@@ -542,7 +541,7 @@ module.exports = function (createFn, setup, dismantle) {
             department: {
               code: 51
             }
-          }).then(function (createdProduct) {
+          }).then(createdProduct => {
             product = createdProduct
 
             return db.models.Customer.create({
@@ -563,7 +562,7 @@ module.exports = function (createFn, setup, dismantle) {
               }],
               returns: [product._id]
             })
-          }).then(function (createdCustomer) {
+          }).then(createdCustomer => {
             customer = createdCustomer
 
             return db.models.Invoice.create({
@@ -571,14 +570,14 @@ module.exports = function (createFn, setup, dismantle) {
               amount: 100,
               receipt: 'A'
             })
-          }).then(function (createdInvoice) {
+          }).then(createdInvoice => {
             invoice = createdInvoice
 
             return db.models.Account.create({
               accountNumber: '123XYZ',
               points: 244
             })
-          }).then(function (createdAccount) {
+          }).then(createdAccount => {
             account = createdAccount
 
             return db.models.RepeatCustomer.create({
@@ -588,7 +587,7 @@ module.exports = function (createFn, setup, dismantle) {
               status: 'Awesome',
               job: 'Hunter'
             })
-          }).then(function (createdRepeatCustomer) {
+          }).then(createdRepeatCustomer => {
             repeatCustomer = createdRepeatCustomer
 
             return db.models.Invoice.create({
@@ -596,24 +595,24 @@ module.exports = function (createFn, setup, dismantle) {
               amount: 200,
               receipt: 'B'
             })
-          }).then(function (createdRepeatCustomerInvoice) {
+          }).then(createdRepeatCustomerInvoice => {
             repeatCustomerInvoice = createdRepeatCustomerInvoice
             server = app.listen(testPort, done)
-          }, function (err) {
+          }, err => {
             done(err)
           })
         })
       })
 
-      afterEach(function (done) {
+      afterEach(done => {
         dismantle(app, server, done)
       })
 
-      it('GET /Customers 200', function (done) {
+      it('GET /Customers 200', done => {
         request.get({
-          url: util.format('%s/api/v1/Customers', testUrl),
+          url: `${testUrl}/api/v1/Customers`,
           json: true
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.equal(body.length, 2)
@@ -630,11 +629,11 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers/:id 200', function (done) {
+      it('GET /Customers/:id 200', done => {
         request.get({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          url: `${testUrl}/api/v1/Customers/${customer._id}`,
           json: true
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.equal(body.name, 'Bob')
@@ -650,14 +649,14 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers?populate=favorites.purchase.item,purchases.item,returns 200', function (done) {
+      it('GET /Customers?populate=favorites.purchase.item,purchases.item,returns 200', done => {
         request.get({
-          url: util.format('%s/api/v1/Customers', testUrl),
+          url: `${testUrl}/api/v1/Customers`,
           qs: {
             populate: 'favorites.purchase.item,purchases.item,returns'
           },
           json: true
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.equal(body.length, 2)
@@ -691,14 +690,14 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers/:id?populate=favorites.purchase.item,purchases.item,returns 200', function (done) {
+      it('GET /Customers/:id?populate=favorites.purchase.item,purchases.item,returns 200', done => {
         request.get({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          url: `${testUrl}/api/v1/Customers/${customer._id}`,
           qs: {
             populate: 'favorites.purchase.item,purchases.item,returns'
           },
           json: true
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.equal(body.name, 'Bob')
@@ -731,14 +730,14 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Invoices?populate=customer 200', function (done) {
+      it('GET /Invoices?populate=customer 200', done => {
         request.get({
-          url: util.format('%s/api/v1/Invoices', testUrl),
+          url: `${testUrl}/api/v1/Invoices`,
           qs: {
             populate: 'customer'
           },
           json: true
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.equal(body.length, 2)
@@ -758,14 +757,14 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Invoices/:id?populate=customer 200', function (done) {
+      it('GET /Invoices/:id?populate=customer 200', done => {
         request.get({
-          url: util.format('%s/api/v1/Invoices/%s', testUrl, invoice._id),
+          url: `${testUrl}/api/v1/Invoices/${invoice._id}`,
           qs: {
             populate: 'customer'
           },
           json: true
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.ok(body.customer)
@@ -784,9 +783,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Customers/:id - saves protected and public fields', function (done) {
+      it('PUT /Customers/:id - saves protected and public fields', done => {
         request.put({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          url: `${testUrl}/api/v1/Customers/${customer._id}`,
           json: {
             name: 'John',
             age: 24,
@@ -799,7 +798,7 @@ module.exports = function (createFn, setup, dismantle) {
               }
             }
           }
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.equal(body.name, 'John')
@@ -812,7 +811,7 @@ module.exports = function (createFn, setup, dismantle) {
             }
           })
 
-          db.models.Customer.findById(customer._id, function (err, customer) {
+          db.models.Customer.findById(customer._id, (err, customer) => {
             assert.ok(!err)
             assert.equal(customer.age, 12)
             assert.deepEqual(customer.favorites.toObject(), {
@@ -828,9 +827,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Customers/:id - saves protected and public fields (falsy values)', function (done) {
+      it('PUT /Customers/:id - saves protected and public fields (falsy values)', done => {
         request.put({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          url: `${testUrl}/api/v1/Customers/${customer._id}`,
           json: {
             age: 0,
             comment: '',
@@ -842,7 +841,7 @@ module.exports = function (createFn, setup, dismantle) {
               }
             }
           }
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.equal(body.name, 'Bob')
@@ -855,7 +854,7 @@ module.exports = function (createFn, setup, dismantle) {
             }
           })
 
-          db.models.Customer.findById(customer._id, function (err, customer) {
+          db.models.Customer.findById(customer._id, (err, customer) => {
             assert.ok(!err)
             assert.equal(customer.age, 12)
             assert.deepEqual(customer.favorites.toObject(), {
@@ -871,11 +870,11 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /RepeatCustomers 200 - discriminator', function (done) {
+      it('GET /RepeatCustomers 200 - discriminator', done => {
         request.get({
-          url: util.format('%s/api/v1/RepeatCustomers', testUrl),
+          url: `${testUrl}/api/v1/RepeatCustomers`,
           json: true
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.equal(body[0].name, 'Mike')
@@ -886,14 +885,14 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers/:id?populate=account 200 - populate discriminator field from base schema', function (done) {
+      it('GET /Customers/:id?populate=account 200 - populate discriminator field from base schema', done => {
         request.get({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, repeatCustomer._id),
+          url: `${testUrl}/api/v1/RepeatCustomers/${repeatCustomer._id}`,
           qs: {
             populate: 'account'
           },
           json: true
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.ok(body.account)
@@ -908,14 +907,14 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Invoices/:id?populate=customer 200 - populated discriminator', function (done) {
+      it('GET /Invoices/:id?populate=customer 200 - populated discriminator', done => {
         request.get({
-          url: util.format('%s/api/v1/Invoices/%s', testUrl, repeatCustomerInvoice._id),
+          url: `${testUrl}/api/v1/Invoices/${repeatCustomerInvoice._id}`,
           qs: {
             populate: 'customer'
           },
           json: true
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.ok(body.customer)
@@ -930,18 +929,18 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    describe('public - exclude private and protected fields', function () {
-      var app = createFn()
-      var server
-      var product
-      var customer
-      var invoice
-      var account
-      var repeatCustomer
-      var repeatCustomerInvoice
+    describe('public - exclude private and protected fields', () => {
+      let app = createFn()
+      let server
+      let product
+      let customer
+      let invoice
+      let account
+      let repeatCustomer
+      let repeatCustomerInvoice
 
-      beforeEach(function (done) {
-        setup(function (err) {
+      beforeEach(done => {
+        setup(err => {
           if (err) {
             return done(err)
           }
@@ -982,7 +981,7 @@ module.exports = function (createFn, setup, dismantle) {
             department: {
               code: 51
             }
-          }).then(function (createdProduct) {
+          }).then(createdProduct => {
             product = createdProduct
 
             return db.models.Customer.create({
@@ -1003,7 +1002,7 @@ module.exports = function (createFn, setup, dismantle) {
               }],
               returns: [product._id]
             })
-          }).then(function (createdCustomer) {
+          }).then(createdCustomer => {
             customer = createdCustomer
 
             return db.models.Invoice.create({
@@ -1011,14 +1010,14 @@ module.exports = function (createFn, setup, dismantle) {
               amount: 100,
               receipt: 'A'
             })
-          }).then(function (createdInvoice) {
+          }).then(createdInvoice => {
             invoice = createdInvoice
 
             return db.models.Account.create({
               accountNumber: '123XYZ',
               points: 244
             })
-          }).then(function (createdAccount) {
+          }).then(createdAccount => {
             account = createdAccount
 
             return db.models.RepeatCustomer.create({
@@ -1028,7 +1027,7 @@ module.exports = function (createFn, setup, dismantle) {
               status: 'Awesome',
               job: 'Hunter'
             })
-          }).then(function (createdRepeatCustomer) {
+          }).then(createdRepeatCustomer => {
             repeatCustomer = createdRepeatCustomer
 
             return db.models.Invoice.create({
@@ -1036,24 +1035,24 @@ module.exports = function (createFn, setup, dismantle) {
               amount: 200,
               receipt: 'B'
             })
-          }).then(function (createdRepeatCustomerInvoice) {
+          }).then(createdRepeatCustomerInvoice => {
             repeatCustomerInvoice = createdRepeatCustomerInvoice
             server = app.listen(testPort, done)
-          }, function (err) {
+          }, err => {
             done(err)
           })
         })
       })
 
-      afterEach(function (done) {
+      afterEach(done => {
         dismantle(app, server, done)
       })
 
-      it('GET /Customers 200', function (done) {
+      it('GET /Customers 200', done => {
         request.get({
-          url: util.format('%s/api/v1/Customers', testUrl),
+          url: `${testUrl}/api/v1/Customers`,
           json: true
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.equal(body.length, 2)
@@ -1070,11 +1069,11 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers/:id 200', function (done) {
+      it('GET /Customers/:id 200', done => {
         request.get({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          url: `${testUrl}/api/v1/Customers/${customer._id}`,
           json: true
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.equal(body.name, 'Bob')
@@ -1090,14 +1089,14 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers?populate=favorites.purchase.item,purchases.item,returns 200', function (done) {
+      it('GET /Customers?populate=favorites.purchase.item,purchases.item,returns 200', done => {
         request.get({
-          url: util.format('%s/api/v1/Customers', testUrl),
+          url: `${testUrl}/api/v1/Customers`,
           qs: {
             populate: 'favorites.purchase.item,purchases.item,returns'
           },
           json: true
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.equal(body.length, 2)
@@ -1129,14 +1128,14 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers/:id?populate=favorites.purchase.item,purchases.item,returns 200', function (done) {
+      it('GET /Customers/:id?populate=favorites.purchase.item,purchases.item,returns 200', done => {
         request.get({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          url: `${testUrl}/api/v1/Customers/${customer._id}`,
           qs: {
             populate: 'favorites.purchase.item,purchases.item,returns'
           },
           json: true
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.equal(body.name, 'Bob')
@@ -1167,14 +1166,14 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Invoices?populate=customer 200', function (done) {
+      it('GET /Invoices?populate=customer 200', done => {
         request.get({
-          url: util.format('%s/api/v1/Invoices', testUrl),
+          url: `${testUrl}/api/v1/Invoices`,
           qs: {
             populate: 'customer'
           },
           json: true
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.equal(body.length, 2)
@@ -1193,14 +1192,14 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Invoices/:id?populate=customer 200', function (done) {
+      it('GET /Invoices/:id?populate=customer 200', done => {
         request.get({
-          url: util.format('%s/api/v1/Invoices/%s', testUrl, invoice._id),
+          url: `${testUrl}/api/v1/Invoices/${invoice._id}`,
           qs: {
             populate: 'customer'
           },
           json: true
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.ok(body.customer)
@@ -1218,9 +1217,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Customers/:id - saves public fields', function (done) {
+      it('PUT /Customers/:id - saves public fields', done => {
         request.put({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          url: `${testUrl}/api/v1/Customers/${customer._id}`,
           json: {
             name: 'John',
             age: 24,
@@ -1233,7 +1232,7 @@ module.exports = function (createFn, setup, dismantle) {
               }
             }
           }
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.equal(body.name, 'John')
@@ -1245,7 +1244,7 @@ module.exports = function (createFn, setup, dismantle) {
             }
           })
 
-          db.models.Customer.findById(customer._id, function (err, customer) {
+          db.models.Customer.findById(customer._id, (err, customer) => {
             assert.ok(!err)
             assert.equal(customer.age, 12)
             assert.equal(customer.comment, 'Boo')
@@ -1262,9 +1261,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Customers/:id - saves public fields (falsy values)', function (done) {
+      it('PUT /Customers/:id - saves public fields (falsy values)', done => {
         request.put({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          url: `${testUrl}/api/v1/Customers/${customer._id}`,
           json: {
             age: 0,
             comment: '',
@@ -1276,7 +1275,7 @@ module.exports = function (createFn, setup, dismantle) {
               }
             }
           }
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.equal(body.name, 'Bob')
@@ -1288,7 +1287,7 @@ module.exports = function (createFn, setup, dismantle) {
             }
           })
 
-          db.models.Customer.findById(customer._id, function (err, customer) {
+          db.models.Customer.findById(customer._id, (err, customer) => {
             assert.ok(!err)
             assert.equal(customer.age, 12)
             assert.equal(customer.comment, 'Boo')
@@ -1305,11 +1304,11 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /RepeatCustomers 200 - discriminator', function (done) {
+      it('GET /RepeatCustomers 200 - discriminator', done => {
         request.get({
-          url: util.format('%s/api/v1/RepeatCustomers', testUrl),
+          url: `${testUrl}/api/v1/RepeatCustomers`,
           json: true
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.equal(body[0].name, 'Mike')
@@ -1320,14 +1319,14 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers/:id?populate=account 200 - populate discriminator field from base schema', function (done) {
+      it('GET /Customers/:id?populate=account 200 - populate discriminator field from base schema', done => {
         request.get({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, repeatCustomer._id),
+          url: `${testUrl}/api/v1/RepeatCustomers/${repeatCustomer._id}`,
           qs: {
             populate: 'account'
           },
           json: true
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.ok(body.account)
@@ -1342,14 +1341,14 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Invoices/:id?populate=customer 200 - populated discriminator', function (done) {
+      it('GET /Invoices/:id?populate=customer 200 - populated discriminator', done => {
         request.get({
-          url: util.format('%s/api/v1/Invoices/%s', testUrl, repeatCustomerInvoice._id),
+          url: `${testUrl}/api/v1/Invoices/${repeatCustomerInvoice._id}`,
           qs: {
             populate: 'customer'
           },
           json: true
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.ok(body.customer)
@@ -1364,19 +1363,19 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    describe('yields an error', function () {
-      var app = createFn()
-      var server
+    describe('yields an error', () => {
+      let app = createFn()
+      let server
 
-      beforeEach(function (done) {
-        setup(function (err) {
+      beforeEach(done => {
+        setup(err => {
           if (err) {
             return done(err)
           }
 
           erm.serve(app, db.models.Customer, {
-            access: function (req, done) {
-              var err = new Error('Something went wrong')
+            access: (req, done) => {
+              let err = new Error('Something went wrong')
               done(err)
             },
             restify: app.isRestify
@@ -1386,15 +1385,15 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      afterEach(function (done) {
+      afterEach(done => {
         dismantle(app, server, done)
       })
 
-      it('GET /Customers 500', function (done) {
+      it('GET /Customers 500', done => {
         request.get({
-          url: util.format('%s/api/v1/Customers', testUrl),
+          url: `${testUrl}/api/v1/Customers`,
           json: true
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 500)
           // assert.equal(body.message, 'Something went wrong')

@@ -1,21 +1,21 @@
-var assert = require('assert')
-var sinon = require('sinon')
+const assert = require('assert')
+const sinon = require('sinon')
 
-describe('access', function () {
-  var access = require('../../../lib/middleware/access')
+describe('access', () => {
+  const access = require('../../../lib/middleware/access')
 
-  var next = sinon.spy()
+  let next = sinon.spy()
 
-  afterEach(function () {
+  afterEach(() => {
     next.reset()
   })
 
-  describe('returns (sync)', function () {
-    it('adds access field to req', function () {
-      var req = {}
+  describe('returns (sync)', () => {
+    it('adds access field to req', () => {
+      let req = {}
 
       access({
-        access: function () {
+        access: () => {
           return 'private'
         }
       })(req, {}, next)
@@ -25,12 +25,12 @@ describe('access', function () {
       assert.equal(req.access, 'private')
     })
 
-    it('throws an exception with unsupported parameter', function () {
-      var req = {}
+    it('throws an exception with unsupported parameter', () => {
+      let req = {}
 
-      assert.throws(function () {
+      assert.throws(() => {
         access({
-          access: function () {
+          access: () => {
             return 'foo'
           }
         })(req, {}, next)
@@ -41,12 +41,12 @@ describe('access', function () {
     })
   })
 
-  describe('yields (async)', function () {
-    it('adds access field to req', function () {
-      var req = {}
+  describe('yields (async)', () => {
+    it('adds access field to req', () => {
+      let req = {}
 
       access({
-        access: function (req, cb) {
+        access: (req, cb) => {
           return cb(null, 'private')
         }
       })(req, {}, next)
@@ -56,13 +56,13 @@ describe('access', function () {
       assert.equal(req.access, 'private')
     })
 
-    it('calls onError', function () {
-      var req = {}
-      var onError = sinon.spy()
-      var err = new Error('Something bad happened')
+    it('calls onError', () => {
+      let req = {}
+      let onError = sinon.spy()
+      let err = new Error('Something bad happened')
 
       access({
-        access: function (req, cb) {
+        access: (req, cb) => {
           return cb(err, 'private')
         },
         onError: onError
@@ -74,12 +74,12 @@ describe('access', function () {
       assert.equal(req.access, undefined)
     })
 
-    it('throws an exception with unsupported parameter', function () {
-      var req = {}
+    it('throws an exception with unsupported parameter', () => {
+      let req = {}
 
-      assert.throws(function () {
+      assert.throws(() => {
         access({
-          access: function (req, cb) {
+          access: (req, cb) => {
             return cb(null, 'foo')
           }
         })(req, {}, next)

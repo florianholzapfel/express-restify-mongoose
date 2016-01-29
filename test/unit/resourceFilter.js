@@ -1,14 +1,14 @@
-var assert = require('assert')
+const assert = require('assert')
 
-describe('resourceFilter', function () {
-  var Filter = require('../../lib/resource_filter')
+describe('resourceFilter', () => {
+  const Filter = require('../../lib/resource_filter')
 
-  describe('getExcluded', function () {
-    var filter = new Filter({})
+  describe('getExcluded', () => {
+    const filter = new Filter({})
 
-    describe('private', function () {
-      it('returns empty array', function () {
-        var excluded = filter.getExcluded({
+    describe('private', () => {
+      it('returns empty array', () => {
+        let excluded = filter.getExcluded({
           access: 'private'
         })
 
@@ -17,9 +17,9 @@ describe('resourceFilter', function () {
       })
     })
 
-    describe('protected', function () {
-      it('returns empty array', function () {
-        var excluded = filter.getExcluded({
+    describe('protected', () => {
+      it('returns empty array', () => {
+        let excluded = filter.getExcluded({
           access: 'protected',
           filteredKeys: {}
         })
@@ -28,8 +28,8 @@ describe('resourceFilter', function () {
         assert.equal(excluded.length, 0)
       })
 
-      it('returns empty array', function () {
-        var excluded = filter.getExcluded({
+      it('returns empty array', () => {
+        let excluded = filter.getExcluded({
           access: 'protected'
         })
 
@@ -37,8 +37,8 @@ describe('resourceFilter', function () {
         assert.equal(excluded.length, 0)
       })
 
-      it('returns array of private fields', function () {
-        var excluded = filter.getExcluded({
+      it('returns array of private fields', () => {
+        let excluded = filter.getExcluded({
           access: 'protected',
           filteredKeys: {
             private: ['foo'],
@@ -51,8 +51,8 @@ describe('resourceFilter', function () {
         assert.deepEqual(excluded, ['foo'])
       })
 
-      it('returns array of private fields', function () {
-        var excluded = filter.getExcluded({
+      it('returns array of private fields', () => {
+        let excluded = filter.getExcluded({
           access: 'protected',
           modelName: 'FooModel',
           excludedMap: {
@@ -69,9 +69,9 @@ describe('resourceFilter', function () {
       })
     })
 
-    describe('public', function () {
-      it('returns empty array', function () {
-        var excluded = filter.getExcluded({
+    describe('public', () => {
+      it('returns empty array', () => {
+        let excluded = filter.getExcluded({
           access: 'public',
           filteredKeys: {}
         })
@@ -80,8 +80,8 @@ describe('resourceFilter', function () {
         assert.equal(excluded.length, 0)
       })
 
-      it('returns empty array', function () {
-        var excluded = filter.getExcluded({
+      it('returns empty array', () => {
+        let excluded = filter.getExcluded({
           access: 'public'
         })
 
@@ -89,8 +89,8 @@ describe('resourceFilter', function () {
         assert.equal(excluded.length, 0)
       })
 
-      it('returns array of private and protected fields', function () {
-        var excluded = filter.getExcluded({
+      it('returns array of private and protected fields', () => {
+        let excluded = filter.getExcluded({
           access: 'public',
           filteredKeys: {
             private: ['foo'],
@@ -103,8 +103,8 @@ describe('resourceFilter', function () {
         assert.deepEqual(excluded, ['foo', 'bar'])
       })
 
-      it('returns array of private and protected fields', function () {
-        var excluded = filter.getExcluded({
+      it('returns array of private and protected fields', () => {
+        let excluded = filter.getExcluded({
           access: 'public',
           modelName: 'FooModel',
           excludedMap: {
@@ -122,17 +122,17 @@ describe('resourceFilter', function () {
     })
   })
 
-  describe('filterItem', function () {
-    var filter = new Filter({})
+  describe('filterItem', () => {
+    let filter = new Filter({})
 
-    it('does nothing', function () {
-      var item = filter.filterItem()
+    it('does nothing', () => {
+      let item = filter.filterItem()
 
       assert.equal(item, undefined)
     })
 
-    it('removes excluded keys from a document', function () {
-      var doc = {
+    it('removes excluded keys from a document', () => {
+      let doc = {
         foo: {
           bar: {
             baz: '3.14'
@@ -145,8 +145,8 @@ describe('resourceFilter', function () {
       assert.deepEqual(doc, {})
     })
 
-    it('removes excluded keys from a document', function () {
-      var doc = {
+    it('removes excluded keys from a document', () => {
+      let doc = {
         foo: {
           bar: {
             baz: '3.14'
@@ -163,8 +163,8 @@ describe('resourceFilter', function () {
       })
     })
 
-    it('removes excluded keys from an array of document', function () {
-      var docs = [{
+    it('removes excluded keys from an array of document', () => {
+      let docs = [{
         foo: {
           bar: {
             baz: '3.14'
@@ -192,41 +192,41 @@ describe('resourceFilter', function () {
     })
   })
 
-  describe('filterPopulatedItem', function () {
-    var db = require('../integration/setup')()
+  describe('filterPopulatedItem', () => {
+    const db = require('../integration/setup')()
 
     db.initialize({
       connect: false
     })
 
-    var invoiceFilter = new Filter({
+    let invoiceFilter = new Filter({
       model: db.models.Invoice
     })
 
-    var customerFilter = new Filter({
+    let customerFilter = new Filter({
       model: db.models.Customer,
       filteredKeys: {
         private: ['name']
       }
     })
 
-    var productFilter = new Filter({
+    let productFilter = new Filter({
       model: db.models.Product,
       filteredKeys: {
         private: ['name']
       }
     })
 
-    it('does nothing', function () {
-      var item = invoiceFilter.filterPopulatedItem(null, {
+    it('does nothing', () => {
+      let item = invoiceFilter.filterPopulatedItem(null, {
         populate: []
       })
 
       assert.equal(item, null)
     })
 
-    it('removes keys in populated document', function () {
-      var invoice = {
+    it('removes keys in populated document', () => {
+      let invoice = {
         customer: {
           name: 'John'
         },
@@ -248,8 +248,8 @@ describe('resourceFilter', function () {
       })
     })
 
-    it('removes keys in array with populated document', function () {
-      var invoices = [{
+    it('removes keys in array with populated document', () => {
+      let invoices = [{
         customer: {
           name: 'John'
         },
@@ -279,8 +279,8 @@ describe('resourceFilter', function () {
       }])
     })
 
-    it('ignores undefined path', function () {
-      var invoice = {
+    it('ignores undefined path', () => {
+      let invoice = {
         amount: '42'
       }
 
@@ -298,8 +298,8 @@ describe('resourceFilter', function () {
       })
     })
 
-    it('skip when populate path is undefined', function () {
-      var invoice = {
+    it('skip when populate path is undefined', () => {
+      let invoice = {
         customer: {
           name: 'John'
         },
@@ -321,8 +321,8 @@ describe('resourceFilter', function () {
       })
     })
 
-    it('removes keys in populated document array', function () {
-      var invoice = {
+    it('removes keys in populated document array', () => {
+      let invoice = {
         products: [{
           name: 'Squirt Gun'
         }, {
@@ -346,8 +346,8 @@ describe('resourceFilter', function () {
       })
     })
 
-    it('removes keys in populated document in array', function () {
-      var customer = {
+    it('removes keys in populated document in array', () => {
+      let customer = {
         name: 'John',
         purchases: [{
           item: {

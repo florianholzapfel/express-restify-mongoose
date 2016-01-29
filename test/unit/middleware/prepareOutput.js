@@ -1,25 +1,25 @@
-var sinon = require('sinon')
+const sinon = require('sinon')
 
-describe('prepareOutput', function () {
-  var prepareOutput = require('../../../lib/middleware/prepareOutput')
+describe('prepareOutput', () => {
+  const prepareOutput = require('../../../lib/middleware/prepareOutput')
 
-  var onError = sinon.spy()
-  var outputFn = sinon.spy()
-  var next = sinon.spy()
+  let onError = sinon.spy()
+  let outputFn = sinon.spy()
+  let next = sinon.spy()
 
-  afterEach(function () {
+  afterEach(() => {
     onError.reset()
     outputFn.reset()
     next.reset()
   })
 
-  it('calls outputFn with default options and no post* middleware', function () {
-    var req = {
+  it('calls outputFn with default options and no post* middleware', () => {
+    let req = {
       method: 'GET',
       erm: {}
     }
 
-    var options = {
+    let options = {
       onError: onError,
       outputFn: outputFn
     }
@@ -35,8 +35,8 @@ describe('prepareOutput', function () {
     sinon.assert.notCalled(next)
   })
 
-  it('calls outputFn with default options and postCreate middleware', function () {
-    var req = {
+  it('calls outputFn with default options and postCreate middleware', () => {
+    let req = {
       erm: {
         result: {
           name: 'Bob'
@@ -46,9 +46,9 @@ describe('prepareOutput', function () {
       method: 'POST'
     }
 
-    var postCreate = sinon.stub().yields()
+    let postCreate = sinon.stub().yields()
 
-    var options = {
+    let options = {
       onError: onError,
       outputFn: outputFn,
       postCreate: [postCreate]
@@ -68,8 +68,8 @@ describe('prepareOutput', function () {
     sinon.assert.notCalled(next)
   })
 
-  it('calls outputFn with default options and postRead middleware', function () {
-    var req = {
+  it('calls outputFn with default options and postRead middleware', () => {
+    let req = {
       erm: {
         result: {
           name: 'Bob'
@@ -79,9 +79,9 @@ describe('prepareOutput', function () {
       method: 'GET'
     }
 
-    var postRead = sinon.stub().yields()
+    let postRead = sinon.stub().yields()
 
-    var options = {
+    let options = {
       onError: onError,
       outputFn: outputFn,
       postRead: [postRead]
@@ -101,8 +101,8 @@ describe('prepareOutput', function () {
     sinon.assert.notCalled(next)
   })
 
-  it('calls outputFn with default options and postUpdate middleware', function () {
-    var req = {
+  it('calls outputFn with default options and postUpdate middleware', () => {
+    let req = {
       erm: {
         result: {
           name: 'Bob'
@@ -112,9 +112,9 @@ describe('prepareOutput', function () {
       method: 'POST'
     }
 
-    var postUpdate = sinon.stub().yields()
+    let postUpdate = sinon.stub().yields()
 
-    var options = {
+    let options = {
       onError: onError,
       outputFn: outputFn,
       postUpdate: [postUpdate]
@@ -134,8 +134,8 @@ describe('prepareOutput', function () {
     sinon.assert.notCalled(next)
   })
 
-  it('calls outputFn with default options and postUpdate middleware', function () {
-    var req = {
+  it('calls outputFn with default options and postUpdate middleware', () => {
+    let req = {
       erm: {
         result: {
           name: 'Bob'
@@ -145,9 +145,9 @@ describe('prepareOutput', function () {
       method: 'PUT'
     }
 
-    var postUpdate = sinon.stub().yields()
+    let postUpdate = sinon.stub().yields()
 
-    var options = {
+    let options = {
       onError: onError,
       outputFn: outputFn,
       postUpdate: [postUpdate]
@@ -167,8 +167,8 @@ describe('prepareOutput', function () {
     sinon.assert.notCalled(next)
   })
 
-  it('calls outputFn with default options and postDelete middleware', function () {
-    var req = {
+  it('calls outputFn with default options and postDelete middleware', () => {
+    let req = {
       erm: {
         result: {
           name: 'Bob'
@@ -178,9 +178,9 @@ describe('prepareOutput', function () {
       method: 'DELETE'
     }
 
-    var postDelete = sinon.stub().yields()
+    let postDelete = sinon.stub().yields()
 
-    var options = {
+    let options = {
       onError: onError,
       outputFn: outputFn,
       postDelete: [postDelete]
@@ -200,16 +200,16 @@ describe('prepareOutput', function () {
     sinon.assert.notCalled(next)
   })
 
-  it('calls onError with default options and bad postRead middleware', function () {
-    var req = {
+  it('calls onError with default options and bad postRead middleware', () => {
+    let req = {
       erm: {},
       method: 'GET'
     }
 
-    var err = new Error('An error occurred')
-    var postRead = sinon.stub().yields(err)
+    let err = new Error('An error occurred')
+    let postRead = sinon.stub().yields(err)
 
-    var options = {
+    let options = {
       onError: onError,
       outputFn: outputFn,
       postRead: [postRead]

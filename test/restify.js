@@ -1,19 +1,19 @@
-var restify = require('restify')
+const restify = require('restify')
 
-var createTests = require('./integration/create')
-var readTests = require('./integration/read')
-var updateTests = require('./integration/update')
-var deleteTests = require('./integration/delete')
-var accessTests = require('./integration/access')
-var contextFilterTests = require('./integration/contextFilter')
-var middlewareTests = require('./integration/middleware')
-var optionsTests = require('./integration/options')
-var virtualsTests = require('./integration/virtuals')
+const createTests = require('./integration/create')
+const readTests = require('./integration/read')
+const updateTests = require('./integration/update')
+const deleteTests = require('./integration/delete')
+const accessTests = require('./integration/access')
+const contextFilterTests = require('./integration/contextFilter')
+const middlewareTests = require('./integration/middleware')
+const optionsTests = require('./integration/options')
+const virtualsTests = require('./integration/virtuals')
 
-var db = require('./integration/setup')()
+const db = require('./integration/setup')()
 
 function Restify () {
-  var app = restify.createServer()
+  let app = restify.createServer()
   app.use(restify.queryParser())
   app.use(restify.bodyParser())
   app.isRestify = true
@@ -21,7 +21,7 @@ function Restify () {
 }
 
 function setup (callback) {
-  db.initialize(function (err) {
+  db.initialize(err => {
     if (err) {
       return callback(err)
     }
@@ -31,7 +31,7 @@ function setup (callback) {
 }
 
 function dismantle (app, server, callback) {
-  db.close(function (err) {
+  db.close(err => {
     if (err) {
       return callback(err)
     }
@@ -45,7 +45,7 @@ function dismantle (app, server, callback) {
 }
 
 function runTests (createFn) {
-  describe(createFn.name, function () {
+  describe(createFn.name, () => {
     createTests(createFn, setup, dismantle)
     readTests(createFn, setup, dismantle)
     updateTests(createFn, setup, dismantle)

@@ -1,24 +1,23 @@
-var assert = require('assert')
-var mongoose = require('mongoose')
-var request = require('request')
-var util = require('util')
+const assert = require('assert')
+const mongoose = require('mongoose')
+const request = require('request')
 
 module.exports = function (createFn, setup, dismantle) {
-  var erm = require('../../lib/express-restify-mongoose')
-  var db = require('./setup')()
+  const erm = require('../../lib/express-restify-mongoose')
+  const db = require('./setup')()
 
-  var testPort = 30023
-  var testUrl = 'http://localhost:' + testPort
-  var invalidId = 'invalid-id'
-  var randomId = mongoose.Types.ObjectId().toHexString()
+  let testPort = 30023
+  let testUrl = `http://localhost:${testPort}`
+  let invalidId = 'invalid-id'
+  let randomId = mongoose.Types.ObjectId().toHexString()
 
-  describe('Create documents', function () {
-    var app = createFn()
-    var server
-    var customer, product
+  describe('Create documents', () => {
+    let app = createFn()
+    let server
+    let customer, product
 
-    beforeEach(function (done) {
-      setup(function (err) {
+    beforeEach(done => {
+      setup(err => {
         if (err) {
           return done(err)
         }
@@ -37,32 +36,32 @@ module.exports = function (createFn, setup, dismantle) {
 
         db.models.Customer.create({
           name: 'Bob'
-        }).then(function (createdCustomer) {
+        }).then(createdCustomer => {
           customer = createdCustomer
 
           return db.models.Product.create({
             name: 'Bobsleigh'
           })
-        }).then(function (createdProduct) {
+        }).then(createdProduct => {
           product = createdProduct
           server = app.listen(testPort, done)
-        }, function (err) {
+        }, err => {
           done(err)
         })
       })
     })
 
-    afterEach(function (done) {
+    afterEach(done => {
       dismantle(app, server, done)
     })
 
-    it('POST /Customers 201', function (done) {
+    it('POST /Customers 201', done => {
       request.post({
-        url: util.format('%s/api/v1/Customers', testUrl),
+        url: `${testUrl}/api/v1/Customers`,
         json: {
           name: 'John'
         }
-      }, function (err, res, body) {
+      }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 201)
         assert.ok(body._id)
@@ -71,14 +70,14 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customers 201 - ignore _id', function (done) {
+    it('POST /Customers 201 - ignore _id', done => {
       request.post({
-        url: util.format('%s/api/v1/Customers', testUrl),
+        url: `${testUrl}/api/v1/Customers`,
         json: {
           _id: randomId,
           name: 'John'
         }
-      }, function (err, res, body) {
+      }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 201)
         assert.ok(body._id)
@@ -88,14 +87,14 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customers 201 - ignore __v', function (done) {
+    it('POST /Customers 201 - ignore __v', done => {
       request.post({
-        url: util.format('%s/api/v1/Customers', testUrl),
+        url: `${testUrl}/api/v1/Customers`,
         json: {
           __v: '1',
           name: 'John'
         }
-      }, function (err, res, body) {
+      }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 201)
         assert.ok(body._id)
@@ -105,15 +104,15 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customers 201 - array', function (done) {
+    it('POST /Customers 201 - array', done => {
       request.post({
-        url: util.format('%s/api/v1/Customers', testUrl),
+        url: `${testUrl}/api/v1/Customers`,
         json: [{
           name: 'John'
         }, {
           name: 'Mike'
         }]
-      }, function (err, res, body) {
+      }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 201)
         assert.ok(Array.isArray(body))
@@ -126,11 +125,11 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customers 400 - validation error', function (done) {
+    it('POST /Customers 400 - validation error', done => {
       request.post({
-        url: util.format('%s/api/v1/Customers', testUrl),
+        url: `${testUrl}/api/v1/Customers`,
         json: {}
-      }, function (err, res, body) {
+      }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 400)
         assert.equal(body.name, 'ValidationError')
@@ -140,10 +139,10 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customers 400 - missing content type', function (done) {
+    it('POST /Customers 400 - missing content type', done => {
       request.post({
-        url: util.format('%s/api/v1/Customers', testUrl)
-      }, function (err, res, body) {
+        url: `${testUrl}/api/v1/Customers`
+      }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 400)
         assert.equal(JSON.parse(body).description, 'missing_content_type')
@@ -151,11 +150,11 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customers 400 - invalid content type', function (done) {
+    it('POST /Customers 400 - invalid content type', done => {
       request.post({
-        url: util.format('%s/api/v1/Customers', testUrl),
+        url: `${testUrl}/api/v1/Customers`,
         formData: {}
-      }, function (err, res, body) {
+      }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 400)
         assert.equal(JSON.parse(body).description, 'invalid_content_type')
@@ -163,15 +162,15 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Invoices 201 - referencing customer and product ids as strings', function (done) {
+    it('POST /Invoices 201 - referencing customer and product ids as strings', done => {
       request.post({
-        url: util.format('%s/api/v1/Invoices', testUrl),
+        url: `${testUrl}/api/v1/Invoices`,
         json: {
           customer: customer._id.toHexString(),
           products: product._id.toHexString(),
           amount: 42
         }
-      }, function (err, res, body) {
+      }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 201)
         assert.ok(body._id)
@@ -181,15 +180,15 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Invoices 201 - referencing customer and products ids as strings', function (done) {
+    it('POST /Invoices 201 - referencing customer and products ids as strings', done => {
       request.post({
-        url: util.format('%s/api/v1/Invoices', testUrl),
+        url: `${testUrl}/api/v1/Invoices`,
         json: {
           customer: customer._id.toHexString(),
           products: [product._id.toHexString(), product._id.toHexString()],
           amount: 42
         }
-      }, function (err, res, body) {
+      }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 201)
         assert.ok(body._id)
@@ -199,15 +198,15 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Invoices 201 - referencing customer and product ids', function (done) {
+    it('POST /Invoices 201 - referencing customer and product ids', done => {
       request.post({
-        url: util.format('%s/api/v1/Invoices', testUrl),
+        url: `${testUrl}/api/v1/Invoices`,
         json: {
           customer: customer._id,
           products: product._id,
           amount: 42
         }
-      }, function (err, res, body) {
+      }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 201)
         assert.ok(body._id)
@@ -217,15 +216,15 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Invoices 201 - referencing customer and products ids', function (done) {
+    it('POST /Invoices 201 - referencing customer and products ids', done => {
       request.post({
-        url: util.format('%s/api/v1/Invoices', testUrl),
+        url: `${testUrl}/api/v1/Invoices`,
         json: {
           customer: customer._id,
           products: [product._id, product._id],
           amount: 42
         }
-      }, function (err, res, body) {
+      }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 201)
         assert.ok(body._id)
@@ -235,15 +234,15 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Invoices 201 - referencing customer and product', function (done) {
+    it('POST /Invoices 201 - referencing customer and product', done => {
       request.post({
-        url: util.format('%s/api/v1/Invoices', testUrl),
+        url: `${testUrl}/api/v1/Invoices`,
         json: {
           customer: customer,
           products: product,
           amount: 42
         }
-      }, function (err, res, body) {
+      }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 201)
         assert.ok(body._id)
@@ -253,15 +252,15 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Invoices 201 - referencing customer and products', function (done) {
+    it('POST /Invoices 201 - referencing customer and products', done => {
       request.post({
-        url: util.format('%s/api/v1/Invoices', testUrl),
+        url: `${testUrl}/api/v1/Invoices`,
         json: {
           customer: customer,
           products: [product, product],
           amount: 42
         }
-      }, function (err, res, body) {
+      }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 201)
         assert.ok(body._id)
@@ -271,9 +270,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Invoices?populate=customer,products 201 - referencing customer and products', function (done) {
+    it('POST /Invoices?populate=customer,products 201 - referencing customer and products', done => {
       request.post({
-        url: util.format('%s/api/v1/Invoices', testUrl),
+        url: `${testUrl}/api/v1/Invoices`,
         qs: {
           populate: 'customer,products'
         },
@@ -282,7 +281,7 @@ module.exports = function (createFn, setup, dismantle) {
           products: [product, product],
           amount: 42
         }
-      }, function (err, res, body) {
+      }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 201)
         assert.ok(body._id)
@@ -297,15 +296,15 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Invoices 400 - referencing invalid customer and products ids', function (done) {
+    it('POST /Invoices 400 - referencing invalid customer and products ids', done => {
       request.post({
-        url: util.format('%s/api/v1/Invoices', testUrl),
+        url: `${testUrl}/api/v1/Invoices`,
         json: {
           customer: invalidId,
           products: [invalidId, invalidId],
           amount: 42
         }
-      }, function (err, res, body) {
+      }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 400)
         assert.equal(body.name, 'ValidationError')

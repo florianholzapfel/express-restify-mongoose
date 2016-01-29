@@ -1,23 +1,23 @@
-var assert = require('assert')
-var sinon = require('sinon')
+const assert = require('assert')
+const sinon = require('sinon')
 
-describe('ensureContentType', function () {
-  var ensureContentType = require('../../../lib/middleware/ensureContentType')
+describe('ensureContentType', () => {
+  const ensureContentType = require('../../../lib/middleware/ensureContentType')
 
-  var onError = sinon.spy()
-  var next = sinon.spy()
+  let onError = sinon.spy()
+  let next = sinon.spy()
 
-  afterEach(function () {
+  afterEach(() => {
     onError.reset()
     next.reset()
   })
 
-  it('calls next with an error (missing_content_type)', function () {
-    var req = {
+  it('calls next with an error (missing_content_type)', () => {
+    let req = {
       headers: {}
     }
 
-    var err = new Error('Bad Request')
+    let err = new Error('Bad Request')
     err.description = 'missing_content_type'
     err.statusCode = 400
 
@@ -31,14 +31,14 @@ describe('ensureContentType', function () {
     assert.equal(req.access, undefined)
   })
 
-  it('calls next with an error (invalid_content_type)', function () {
-    var req = {
+  it('calls next with an error (invalid_content_type)', () => {
+    let req = {
       headers: {
         'content-type': 'invalid/type'
       }
     }
 
-    var err = new Error('Bad Request')
+    let err = new Error('Bad Request')
     err.description = 'invalid_content_type'
     err.statusCode = 400
 
@@ -52,8 +52,8 @@ describe('ensureContentType', function () {
     assert.equal(req.access, undefined)
   })
 
-  it('calls next', function () {
-    var req = {
+  it('calls next', () => {
+    let req = {
       headers: {
         'content-type': 'application/json'
       }

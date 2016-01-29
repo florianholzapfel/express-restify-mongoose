@@ -1,9 +1,9 @@
-var sinon = require('sinon')
+const sinon = require('sinon')
 
-describe('outputFn', function () {
-  var outputFn = require('../../../lib/middleware/outputFn')
+describe('outputFn', () => {
+  const outputFn = require('../../../lib/middleware/outputFn')
 
-  var res = {
+  let res = {
     sendStatus: function () {},
     status: function () {
       return this
@@ -12,20 +12,20 @@ describe('outputFn', function () {
     send: function () {}
   }
 
-  var sendStatus = sinon.spy(res, 'sendStatus')
-  var status = sinon.spy(res, 'status')
-  var json = sinon.spy(res, 'json')
-  var send = sinon.spy(res, 'send')
+  let sendStatus = sinon.spy(res, 'sendStatus')
+  let status = sinon.spy(res, 'status')
+  let json = sinon.spy(res, 'json')
+  let send = sinon.spy(res, 'send')
 
-  afterEach(function () {
+  afterEach(() => {
     sendStatus.reset()
     status.reset()
     json.reset()
     send.reset()
   })
 
-  describe('express', function () {
-    it('sends status code and message', function () {
+  describe('express', () => {
+    it('sends status code and message', () => {
       outputFn(true)({
         erm: {
           statusCode: 200
@@ -39,8 +39,8 @@ describe('outputFn', function () {
       sinon.assert.notCalled(send)
     })
 
-    it('sends data and status code', function () {
-      var req = {
+    it('sends data and status code', () => {
+      let req = {
         erm: {
           statusCode: 201,
           result: {
@@ -62,8 +62,8 @@ describe('outputFn', function () {
     })
   })
 
-  describe('restify', function () {
-    it('sends status code', function () {
+  describe('restify', () => {
+    it('sends status code', () => {
       outputFn(false)({
         erm: {
           statusCode: 200
@@ -77,8 +77,8 @@ describe('outputFn', function () {
       sinon.assert.notCalled(json)
     })
 
-    it('sends data and status code', function () {
-      var req = {
+    it('sends data and status code', () => {
+      let req = {
         erm: {
           statusCode: 201,
           result: {

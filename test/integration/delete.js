@@ -1,25 +1,25 @@
-var assert = require('assert')
-var mongoose = require('mongoose')
-var request = require('request')
-var util = require('util')
+const assert = require('assert')
+const mongoose = require('mongoose')
+const request = require('request')
+const util = require('util')
 
 module.exports = function (createFn, setup, dismantle) {
-  var erm = require('../../lib/express-restify-mongoose')
-  var db = require('./setup')()
+  const erm = require('../../lib/express-restify-mongoose')
+  const db = require('./setup')()
 
-  var testPort = 30023
-  var testUrl = 'http://localhost:' + testPort
-  var invalidId = 'invalid-id'
-  var randomId = mongoose.Types.ObjectId().toHexString()
+  const testPort = 30023
+  const testUrl = `http://localhost:${testPort}`
+  const invalidId = 'invalid-id'
+  const randomId = mongoose.Types.ObjectId().toHexString()
 
-  describe('Delete documents', function () {
-    describe('findOneAndRemove: true', function () {
-      var app = createFn()
-      var server
-      var customer
+  describe('Delete documents', () => {
+    describe('findOneAndRemove: true', () => {
+      let app = createFn()
+      let server
+      let customer
 
-      beforeEach(function (done) {
-        setup(function (err) {
+      beforeEach(done => {
+        setup(err => {
           if (err) {
             return done(err)
           }
@@ -35,76 +35,76 @@ module.exports = function (createFn, setup, dismantle) {
             name: 'John'
           }, {
             name: 'Mike'
-          }]).then(function (createdCustomers) {
+          }]).then(createdCustomers => {
             customer = createdCustomers[0]
             server = app.listen(testPort, done)
-          }, function (err) {
+          }, err => {
             done(err)
           })
         })
       })
 
-      afterEach(function (done) {
+      afterEach(done => {
         dismantle(app, server, done)
       })
 
-      it('DELETE /Customers 204 - no id', function (done) {
+      it('DELETE /Customers 204 - no id', done => {
         request.del({
-          url: util.format('%s/api/v1/Customers', testUrl)
-        }, function (err, res, body) {
+          url: `${testUrl}/api/v1/Customers`
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 204)
           done()
         })
       })
 
-      it('DELETE /Customers/:id 204 - created id', function (done) {
+      it('DELETE /Customers/:id 204 - created id', done => {
         request.del({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id)
-        }, function (err, res, body) {
+          url: `${testUrl}/api/v1/Customers/${customer._id}`
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 204)
           done()
         })
       })
 
-      it('DELETE /Customers/:id 400 - invalid id', function (done) {
+      it('DELETE /Customers/:id 400 - invalid id', done => {
         request.del({
           url: util.format('%s/api/v1/Customers/%s', testUrl, invalidId)
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 400)
           done()
         })
       })
 
-      it('DELETE /Customers/:id 404 - random id', function (done) {
+      it('DELETE /Customers/:id 404 - random id', done => {
         request.del({
           url: util.format('%s/api/v1/Customers/%s', testUrl, randomId)
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 404)
           done()
         })
       })
 
-      it('DELETE /Customers?query={"name":"John"} 200 - exact match', function (done) {
+      it('DELETE /Customers?query={"name":"John"} 200 - exact match', done => {
         request.del({
-          url: util.format('%s/api/v1/Customers', testUrl),
+          url: `${testUrl}/api/v1/Customers`,
           qs: {
             query: JSON.stringify({
               name: 'John'
             })
           },
           json: true
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 204)
 
-          db.models.Customer.find({}, function (err, customers) {
+          db.models.Customer.find({}, (err, customers) => {
             assert.ok(!err)
             assert.equal(customers.length, 2)
-            customers.forEach(function (customer) {
+            customers.forEach(customer => {
               assert.ok(customer.name !== 'John')
             })
             done()
@@ -113,13 +113,13 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    describe('findOneAndRemove: false', function () {
-      var app = createFn()
-      var server
-      var customer
+    describe('findOneAndRemove: false', () => {
+      let app = createFn()
+      let server
+      let customer
 
-      beforeEach(function (done) {
-        setup(function (err) {
+      beforeEach(done => {
+        setup(err => {
           if (err) {
             return done(err)
           }
@@ -135,76 +135,76 @@ module.exports = function (createFn, setup, dismantle) {
             name: 'John'
           }, {
             name: 'Mike'
-          }]).then(function (createdCustomers) {
+          }]).then(createdCustomers => {
             customer = createdCustomers[0]
             server = app.listen(testPort, done)
-          }, function (err) {
+          }, err => {
             done(err)
           })
         })
       })
 
-      afterEach(function (done) {
+      afterEach(done => {
         dismantle(app, server, done)
       })
 
-      it('DELETE /Customers 204 - no id', function (done) {
+      it('DELETE /Customers 204 - no id', done => {
         request.del({
-          url: util.format('%s/api/v1/Customers', testUrl)
-        }, function (err, res, body) {
+          url: `${testUrl}/api/v1/Customers`
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 204)
           done()
         })
       })
 
-      it('DELETE /Customers/:id 204 - created id', function (done) {
+      it('DELETE /Customers/:id 204 - created id', done => {
         request.del({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id)
-        }, function (err, res, body) {
+          url: `${testUrl}/api/v1/Customers/${customer._id}`
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 204)
           done()
         })
       })
 
-      it('DELETE /Customers/:id 400 - invalid id', function (done) {
+      it('DELETE /Customers/:id 400 - invalid id', done => {
         request.del({
           url: util.format('%s/api/v1/Customers/%s', testUrl, invalidId)
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 400)
           done()
         })
       })
 
-      it('DELETE /Customers/:id 404 - random id', function (done) {
+      it('DELETE /Customers/:id 404 - random id', done => {
         request.del({
           url: util.format('%s/api/v1/Customers/%s', testUrl, randomId)
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 404)
           done()
         })
       })
 
-      it('DELETE /Customers?query={"name":"John"} 200 - exact match', function (done) {
+      it('DELETE /Customers?query={"name":"John"} 200 - exact match', done => {
         request.del({
-          url: util.format('%s/api/v1/Customers', testUrl),
+          url: `${testUrl}/api/v1/Customers`,
           qs: {
             query: JSON.stringify({
               name: 'John'
             })
           },
           json: true
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 204)
 
-          db.models.Customer.find({}, function (err, customers) {
+          db.models.Customer.find({}, (err, customers) => {
             assert.ok(!err)
             assert.equal(customers.length, 2)
-            customers.forEach(function (customer) {
+            customers.forEach(customer => {
               assert.ok(customer.name !== 'John')
             })
             done()

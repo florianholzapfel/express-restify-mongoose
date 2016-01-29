@@ -1,10 +1,10 @@
-var assert = require('assert')
-var sinon = require('sinon')
+const assert = require('assert')
+const sinon = require('sinon')
 
-describe('buildQuery', function () {
-  var buildQuery = require('../../lib/buildQuery')
+describe('buildQuery', () => {
+  const buildQuery = require('../../lib/buildQuery')
 
-  var query = {
+  let query = {
     where: sinon.spy(),
     skip: sinon.spy(),
     limit: sinon.spy(),
@@ -14,29 +14,29 @@ describe('buildQuery', function () {
     distinct: sinon.spy()
   }
 
-  afterEach(function () {
-    for (var key in query) {
+  afterEach(() => {
+    for (let key in query) {
       query[key].reset()
     }
   })
 
-  it('does not call any methods and returns a query object', function () {
-    var result = buildQuery({})(query)
+  it('does not call any methods and returns a query object', () => {
+    let result = buildQuery({})(query)
 
-    for (var key in query) {
+    for (let key in query) {
       sinon.assert.notCalled(query[key])
     }
 
     assert.equal(result, query)
   })
 
-  describe('query', function () {
-    it('calls where and returns a query object', function () {
-      var queryOptions = {
+  describe('query', () => {
+    it('calls where and returns a query object', () => {
+      let queryOptions = {
         query: 'foo'
       }
 
-      var result = buildQuery({})(query, queryOptions)
+      let result = buildQuery({})(query, queryOptions)
 
       sinon.assert.calledOnce(query.where)
       sinon.assert.calledWithExactly(query.where, queryOptions.query)
@@ -50,13 +50,13 @@ describe('buildQuery', function () {
     })
   })
 
-  describe('skip', function () {
-    it('calls skip and returns a query object', function () {
-      var queryOptions = {
+  describe('skip', () => {
+    it('calls skip and returns a query object', () => {
+      let queryOptions = {
         skip: '1'
       }
 
-      var result = buildQuery({})(query, queryOptions)
+      let result = buildQuery({})(query, queryOptions)
 
       sinon.assert.calledOnce(query.skip)
       sinon.assert.calledWithExactly(query.skip, queryOptions.skip)
@@ -70,13 +70,13 @@ describe('buildQuery', function () {
     })
   })
 
-  describe('limit', function () {
-    it('calls limit and returns a query object', function () {
-      var queryOptions = {
+  describe('limit', () => {
+    it('calls limit and returns a query object', () => {
+      let queryOptions = {
         limit: '1'
       }
 
-      var result = buildQuery({})(query, queryOptions)
+      let result = buildQuery({})(query, queryOptions)
 
       sinon.assert.calledOnce(query.limit)
       sinon.assert.calledWithExactly(query.limit, queryOptions.limit)
@@ -89,16 +89,16 @@ describe('buildQuery', function () {
       assert.equal(result, query)
     })
 
-    it('calls limit and returns a query object', function () {
-      var options = {
+    it('calls limit and returns a query object', () => {
+      let options = {
         limit: 1
       }
 
-      var queryOptions = {
+      let queryOptions = {
         limit: '2'
       }
 
-      var result = buildQuery(options)(query, queryOptions)
+      let result = buildQuery(options)(query, queryOptions)
 
       sinon.assert.calledOnce(query.limit)
       sinon.assert.calledWithExactly(query.limit, options.limit)
@@ -111,54 +111,54 @@ describe('buildQuery', function () {
       assert.equal(result, query)
     })
 
-    it('does not call limit on count endpoint and returns a query object', function () {
-      var queryOptions = {
+    it('does not call limit on count endpoint and returns a query object', () => {
+      let queryOptions = {
         limit: '2'
       }
 
       query.op = 'count'
-      var result = buildQuery({})(query, queryOptions)
+      let result = buildQuery({})(query, queryOptions)
       delete query.op
 
-      for (var key in query) {
+      for (let key in query) {
         sinon.assert.notCalled(query[key])
       }
 
       assert.equal(result, query)
     })
 
-    it('does not call limit on count endpoint and returns a query object', function () {
-      var options = {
+    it('does not call limit on count endpoint and returns a query object', () => {
+      let options = {
         limit: 1
       }
 
-      var queryOptions = {
+      let queryOptions = {
         limit: '2'
       }
 
       query.op = 'count'
-      var result = buildQuery(options)(query, queryOptions)
+      let result = buildQuery(options)(query, queryOptions)
       delete query.op
 
-      for (var key in query) {
+      for (let key in query) {
         sinon.assert.notCalled(query[key])
       }
 
       assert.equal(result, query)
     })
 
-    it('does not call limit on queries that have a distinct option set and returns the query object', function () {
-      var options = {
+    it('does not call limit on queries that have a distinct option set and returns the query object', () => {
+      let options = {
         limit: 1
       }
 
-      var queryOptions = {
+      let queryOptions = {
         distinct: 'name'
       }
 
-      var result = buildQuery(options)(query, queryOptions)
+      let result = buildQuery(options)(query, queryOptions)
 
-      for (var key in query) {
+      for (let key in query) {
         if (key === 'distinct') continue
         sinon.assert.notCalled(query[key])
       }
@@ -168,13 +168,13 @@ describe('buildQuery', function () {
     })
   })
 
-  describe('sort', function () {
-    it('calls sort and returns a query object', function () {
-      var queryOptions = {
+  describe('sort', () => {
+    it('calls sort and returns a query object', () => {
+      let queryOptions = {
         sort: 'foo'
       }
 
-      var result = buildQuery({})(query, queryOptions)
+      let result = buildQuery({})(query, queryOptions)
 
       sinon.assert.calledOnce(query.sort)
       sinon.assert.calledWithExactly(query.sort, queryOptions.sort)
@@ -188,16 +188,16 @@ describe('buildQuery', function () {
     })
   })
 
-  describe('select', function () {
-    it('accepts an object', function () {
-      var queryOptions = {
+  describe('select', () => {
+    it('accepts an object', () => {
+      let queryOptions = {
         select: {
           foo: 1,
           bar: 0
         }
       }
 
-      var result = buildQuery({})(query, queryOptions)
+      let result = buildQuery({})(query, queryOptions)
 
       sinon.assert.calledOnce(query.select)
       sinon.assert.calledWithExactly(query.select, {
@@ -214,9 +214,9 @@ describe('buildQuery', function () {
     })
   })
 
-  describe('populate', function () {
-    it('accepts an object wrapped in an array to populate a path', function () {
-      var queryOptions = {
+  describe('populate', () => {
+    it('accepts an object wrapped in an array to populate a path', () => {
+      let queryOptions = {
         populate: [{
           path: 'foo.bar',
           select: 'baz',
@@ -225,7 +225,7 @@ describe('buildQuery', function () {
         }]
       }
 
-      var result = buildQuery({})(query, queryOptions)
+      let result = buildQuery({})(query, queryOptions)
 
       sinon.assert.calledOnce(query.populate)
       sinon.assert.calledWithExactly(query.populate, [{
@@ -244,13 +244,13 @@ describe('buildQuery', function () {
     })
   })
 
-  describe('distinct', function () {
-    it('calls distinct and returns a query object', function () {
-      var queryOptions = {
+  describe('distinct', () => {
+    it('calls distinct and returns a query object', () => {
+      let queryOptions = {
         distinct: 'foo'
       }
 
-      var result = buildQuery({})(query, queryOptions)
+      let result = buildQuery({})(query, queryOptions)
 
       sinon.assert.calledOnce(query.distinct)
       sinon.assert.calledWithExactly(query.distinct, 'foo')
