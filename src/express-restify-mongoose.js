@@ -1,6 +1,7 @@
-const util = require('util')
-const _ = require('lodash')
-const inflection = require('inflection')
+import * as util from 'util'
+import * as _ from 'lodash'
+import * as inflection from 'inflection'
+
 const Filter = require('./resource_filter')
 let customDefaults = null
 let excludedMap = {}

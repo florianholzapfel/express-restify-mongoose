@@ -1,5 +1,5 @@
-const _ = require('lodash')
-const async = require('async')
+import * as _ from 'lodash'
+import * as async from 'async'
 
 module.exports = function (options, excludedMap) {
   return function (req, res, next) {

@@ -1,4 +1,4 @@
-const http = require('http')
+import * as http from 'http'
 
 module.exports = function (model, options) {
   return function (req, res, next) {
