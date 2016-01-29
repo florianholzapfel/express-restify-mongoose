@@ -1,4 +1,4 @@
-import * as _ from 'lodash'
+const _ = require('lodash')
 
 module.exports = function (options) {
   function jsonQueryParser (key, value) {

@@ -1,6 +1,6 @@
-import * as _ from 'lodash'
-import * as http from 'http'
-import * as moredots from 'moredots'
+const _ = require('lodash')
+const http = require('http')
+const moredots = require('moredots')
 
 module.exports = function (model, options) {
   const buildQuery = require('./buildQuery')(options)

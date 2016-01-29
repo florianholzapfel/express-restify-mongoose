@@ -1,6 +1,6 @@
-import * as _ from 'lodash'
-import * as detective from 'mongoose-detective'
-import * as weedout from 'weedout'
+const _ = require('lodash')
+const detective = require('mongoose-detective')
+const weedout = require('weedout')
 
 /**
  * Represents a filter.

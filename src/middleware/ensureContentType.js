@@ -1,4 +1,4 @@
-import * as http from 'http'
+const http = require('http')
 
 module.exports = function (options) {
   return function ensureContentType (req, res, next) {
