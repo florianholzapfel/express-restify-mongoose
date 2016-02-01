@@ -16,6 +16,9 @@
   },
   "description": "Easily create a flexible REST interface for mongoose models",
   "devDependencies": {
+    "babel-cli": "^6.4.5",
+    "babel-core": "^6.4.5",
+    "babel-preset-es2015": "^6.3.13",
     "body-parser": "~1",
     "express": "~4",
     "istanbul": "~0.4",
@@ -50,16 +53,30 @@
     "url": "https://github.com/florianholzapfel/express-restify-mongoose/issues"
   },
   "scripts": {
-    "pretest": "standard",
-    "test": "mocha -R spec ./test/unit.js && mocha -R spec ./test/integration/resource_filter.js --timeout 10s && mocha -R spec ./test/express.js --timeout 10s && mocha -R spec ./test/restify.js --timeout 10s",
-    "test-ci": "mocha -R spec ./test/unit.js && mocha -R spec ./test/integration/resource_filter.js --timeout 10s && istanbul cover node_modules/mocha/bin/_mocha -- -R spec ./test/express.js --timeout 10s && mocha -R spec ./test/restify.js --timeout 10s",
-    "test-cov-unit": "istanbul cover node_modules/mocha/bin/_mocha -- -R spec ./test/unit.js",
-    "test-express": "mocha -R spec ./test/express.js --timeout 10s",
-    "test-restify": "mocha -R spec ./test/restify.js --timeout 10s",
-    "test-cov-express": "istanbul cover node_modules/mocha/bin/_mocha -- -R spec ./test/express.js --timeout 10s",
-    "test-cov-restify": "istanbul cover node_modules/mocha/bin/_mocha -- -R spec ./test/restify.js --timeout 10s"
+    "lint": "standard",
+    "compile": "babel src -d lib",
+    "prepublish": "npm test",
+    "pretest": "npm run lint && npm run compile",
+    "test": "npm run test-unit && npm run test-filter && npm run test-express && npm run test-restify",
+    "test-ci": "npm run test-unit && npm run test-filter && npm run test-cov-express && npm run test-restify",
+    "test-unit": "mocha --compilers js:babel-core/register -R spec ./test/unit.js",
+    "test-filter": "mocha -R spec ./test/integration/resource_filter.js --compilers js:babel-core/register --timeout 10s",
+    "test-express": "mocha -R spec ./test/express.js --compilers js:babel-core/register --timeout 10s",
+    "test-restify": "mocha -R spec ./test/restify.js --compilers js:babel-core/register --timeout 10s",
+    "test-cov-unit": "istanbul cover node_modules/mocha/bin/_mocha -- --compilers js:babel-core/register -R spec ./test/unit.js",
+    "test-cov-express": "istanbul cover node_modules/mocha/bin/_mocha -- --compilers js:babel-core/register -R spec ./test/express.js --timeout 10s",
+    "test-cov-restify": "istanbul cover node_modules/mocha/bin/_mocha -- --compilers js:babel-core/register -R spec ./test/restify.js --timeout 10s"
   },
+  "files": [
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md",
+    "lib/"
+  ],
   "standard": {
+    "ignore": [
+      "lib"
+    ],
     "globals": [
       "describe",
       "before",

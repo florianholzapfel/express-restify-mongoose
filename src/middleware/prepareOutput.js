@@ -1,9 +1,9 @@
-var _ = require('lodash')
-var async = require('async')
+const _ = require('lodash')
+const async = require('async')
 
 module.exports = function (options, excludedMap) {
   return function (req, res, next) {
-    var postMiddleware
+    let postMiddleware
 
     switch (req.method.toLowerCase()) {
       case 'get':
@@ -25,16 +25,16 @@ module.exports = function (options, excludedMap) {
         break
     }
 
-    async.eachSeries(postMiddleware, function (middleware, cb) {
+    async.eachSeries(postMiddleware, (middleware, cb) => {
       middleware(req, res, cb)
-    }, function (err) {
+    }, err => {
       if (err) {
         return options.onError(err, req, res, next)
       }
 
       // TODO: this will, but should not, filter /count queries
       if (req.erm.result) {
-        var opts = {
+        let opts = {
           access: req.access,
           excludedMap: excludedMap,
           populate: req._ermQueryOptions ? req._ermQueryOptions.populate : null

@@ -1,11 +1,11 @@
-var _ = require('lodash')
-var async = require('async')
-var mongoose = require('mongoose')
-var Schema = mongoose.Schema
-var util = require('util')
+const _ = require('lodash')
+const async = require('async')
+const mongoose = require('mongoose')
+const Schema = mongoose.Schema
+const util = require('util')
 
 module.exports = function () {
-  var ProductSchema = new Schema({
+  const ProductSchema = new Schema({
     name: { type: String, required: true },
     department: {
       name: { type: String },
@@ -14,7 +14,7 @@ module.exports = function () {
     price: { type: Number }
   })
 
-  var BaseCustomerSchema = function () {
+  const BaseCustomerSchema = function () {
     Schema.apply(this, arguments)
 
     this.add({
@@ -43,7 +43,7 @@ module.exports = function () {
 
   util.inherits(BaseCustomerSchema, Schema)
 
-  var CustomerSchema = new BaseCustomerSchema({}, {
+  const CustomerSchema = new BaseCustomerSchema({}, {
     toObject: { virtuals: true },
     toJSON: { virtuals: true }
   })
@@ -52,7 +52,7 @@ module.exports = function () {
     return this.name + ' is awesome'
   })
 
-  var InvoiceSchema = new Schema({
+  const InvoiceSchema = new Schema({
     customer: { type: Schema.Types.ObjectId, ref: 'Customer' },
     amount: { type: Number },
     receipt: { type: String },
@@ -63,14 +63,14 @@ module.exports = function () {
     versionKey: '__version'
   })
 
-  var RepeatCustomerSchema = new BaseCustomerSchema({
+  const RepeatCustomerSchema = new BaseCustomerSchema({
     account: { type: Schema.Types.ObjectId, ref: 'Account' },
     visits: { type: Number },
     status: { type: String },
     job: { type: String }
   })
 
-  var AccountSchema = new Schema({
+  const AccountSchema = new Schema({
     accountNumber: String,
     points: Number
   })

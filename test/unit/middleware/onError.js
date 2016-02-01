@@ -1,27 +1,27 @@
-var sinon = require('sinon')
+const sinon = require('sinon')
 
-describe('onError', function () {
-  var onError = require('../../../lib/middleware/onError')
+describe('onError', () => {
+  const onError = require('../../../lib/middleware/onError')
 
-  var res = {
-    setHeader: function () {},
+  let res = {
+    setHeader: () => {},
     status: function () {
       return this
     },
-    json: function () {},
-    send: function () {}
+    json: () => {},
+    send: () => {}
   }
 
-  var setHeader = sinon.spy(res, 'setHeader')
-  var status = sinon.spy(res, 'status')
-  var send = sinon.spy(res, 'send')
-  var json = sinon.spy(res, 'json')
-  var next = sinon.spy()
+  let setHeader = sinon.spy(res, 'setHeader')
+  let status = sinon.spy(res, 'status')
+  let send = sinon.spy(res, 'send')
+  let json = sinon.spy(res, 'json')
+  let next = sinon.spy()
 
-  var err = new Error('An error occurred')
+  let err = new Error('An error occurred')
   err.statusCode = 400
 
-  afterEach(function () {
+  afterEach(() => {
     setHeader.reset()
     status.reset()
     send.reset()
@@ -29,7 +29,7 @@ describe('onError', function () {
     next.reset()
   })
 
-  it('with express', function () {
+  it('with express', () => {
     onError(true)(err, {}, res, next)
 
     sinon.assert.calledOnce(setHeader)
@@ -41,7 +41,7 @@ describe('onError', function () {
     sinon.assert.notCalled(next)
   })
 
-  it('with restify', function () {
+  it('with restify', () => {
     onError(false)(err, {}, res, next)
 
     sinon.assert.calledOnce(setHeader)

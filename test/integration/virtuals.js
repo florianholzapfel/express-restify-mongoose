@@ -1,21 +1,20 @@
-var assert = require('assert')
-var request = require('request')
-var util = require('util')
+const assert = require('assert')
+const request = require('request')
 
 module.exports = function (createFn, setup, dismantle) {
-  var erm = require('../../lib/express-restify-mongoose')
-  var db = require('./setup')()
+  const erm = require('../../lib/express-restify-mongoose')
+  const db = require('./setup')()
 
-  var testPort = 30023
-  var testUrl = 'http://localhost:' + testPort
+  const testPort = 30023
+  const testUrl = `http://localhost:${testPort}`
 
-  describe('virtuals', function () {
-    describe('lean: true', function () {
-      var app = createFn()
-      var server
+  describe('virtuals', () => {
+    describe('lean: true', () => {
+      let app = createFn()
+      let server
 
-      beforeEach(function (done) {
-        setup(function (err) {
+      beforeEach(done => {
+        setup(err => {
           if (err) {
             return done(err)
           }
@@ -27,23 +26,23 @@ module.exports = function (createFn, setup, dismantle) {
 
           db.models.Customer.create({
             name: 'Bob'
-          }).then(function (createdCustomers) {
+          }).then(createdCustomers => {
             server = app.listen(testPort, done)
-          }, function (err) {
+          }, err => {
             done(err)
           })
         })
       })
 
-      afterEach(function (done) {
+      afterEach(done => {
         dismantle(app, server, done)
       })
 
-      it('GET /Customers 200 - unavailable', function (done) {
+      it('GET /Customers 200 - unavailable', done => {
         request.get({
-          url: util.format('%s/api/v1/Customers', testUrl),
+          url: `${testUrl}/api/v1/Customers`,
           json: true
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.equal(body.length, 1)
@@ -53,12 +52,12 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    describe('lean: false', function () {
-      var app = createFn()
-      var server
+    describe('lean: false', () => {
+      let app = createFn()
+      let server
 
-      beforeEach(function (done) {
-        setup(function (err) {
+      beforeEach(done => {
+        setup(err => {
           if (err) {
             return done(err)
           }
@@ -70,23 +69,23 @@ module.exports = function (createFn, setup, dismantle) {
 
           db.models.Customer.create({
             name: 'Bob'
-          }).then(function (createdCustomers) {
+          }).then(createdCustomers => {
             server = app.listen(testPort, done)
-          }, function (err) {
+          }, err => {
             done(err)
           })
         })
       })
 
-      afterEach(function (done) {
+      afterEach(done => {
         dismantle(app, server, done)
       })
 
-      it('GET /Customers 200 - available', function (done) {
+      it('GET /Customers 200 - available', done => {
         request.get({
-          url: util.format('%s/api/v1/Customers', testUrl),
+          url: `${testUrl}/api/v1/Customers`,
           json: true
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.equal(body.length, 1)
@@ -96,12 +95,12 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    describe('readPreference: secondary', function () {
-      var app = createFn()
-      var server
+    describe('readPreference: secondary', () => {
+      let app = createFn()
+      let server
 
-      beforeEach(function (done) {
-        setup(function (err) {
+      beforeEach(done => {
+        setup(err => {
           if (err) {
             return done(err)
           }
@@ -113,23 +112,23 @@ module.exports = function (createFn, setup, dismantle) {
 
           db.models.Customer.create({
             name: 'Bob'
-          }).then(function (createdCustomers) {
+          }).then(createdCustomers => {
             server = app.listen(testPort, done)
-          }, function (err) {
+          }, err => {
             done(err)
           })
         })
       })
 
-      afterEach(function (done) {
+      afterEach(done => {
         dismantle(app, server, done)
       })
 
-      it('GET /Customers 200 - available', function (done) {
+      it('GET /Customers 200 - available', done => {
         request.get({
-          url: util.format('%s/api/v1/Customers', testUrl),
+          url: `${testUrl}/api/v1/Customers`,
           json: true
-        }, function (err, res, body) {
+        }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           done()

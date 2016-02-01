@@ -1,6 +1,6 @@
 module.exports = function (options) {
   return function (req, res, next) {
-    var handler = function (err, access) {
+    const handler = function (err, access) {
       if (err) {
         return options.onError(err, req, res, next)
       }
