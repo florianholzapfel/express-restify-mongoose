@@ -13,7 +13,6 @@ function getDefaults () {
     findOneAndUpdate: true,
     findOneAndRemove: true,
     lean: true,
-    lowercase: false,
     plural: true,
     restify: false,
     runValidators: false,
@@ -116,10 +115,6 @@ const restify = function (app, model, opts = {}) {
 
   if (options.plural) {
     options.name = inflection.pluralize(options.name)
-  }
-
-  if (options.lowercase) {
-    options.name = options.name.toLowerCase()
   }
 
   const ops = require('./operations')(model, options)

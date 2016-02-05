@@ -43,7 +43,7 @@ module.exports = function (createFn, setup, dismantle) {
     })
   })
 
-  describe('defaults - plural, lowercase and version set in defaults', () => {
+  describe('defaults - plural and version set in defaults', () => {
     let app = createFn()
     let server
 
@@ -54,7 +54,6 @@ module.exports = function (createFn, setup, dismantle) {
         }
 
         erm.defaults({
-          lowercase: true,
           plural: false,
           version: '/custom'
         })
@@ -73,16 +72,15 @@ module.exports = function (createFn, setup, dismantle) {
 
     after(done => {
       erm.defaults({
-        lowercase: false,
         plural: true
       })
 
       dismantle(app, server, done)
     })
 
-    it('GET /customer 200', done => {
+    it('GET /Customer 200', done => {
       request.get({
-        url: util.format('%s/api/custom/customer', testUrl)
+        url: util.format('%s/api/custom/Customer', testUrl)
       }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 200)
@@ -90,9 +88,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /invoice 200', done => {
+    it('GET /Invoice 200', done => {
       request.get({
-        url: util.format('%s/api/custom/invoice', testUrl)
+        url: util.format('%s/api/custom/Invoice', testUrl)
       }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 200)
@@ -332,50 +330,6 @@ module.exports = function (createFn, setup, dismantle) {
         assert.ok(!err)
         assert.equal(res.statusCode, 200)
         assert.equal(body.count, 3)
-        done()
-      })
-    })
-  })
-
-  describe('lowercase', () => {
-    let app = createFn()
-    let server
-
-    before(done => {
-      setup(err => {
-        if (err) {
-          return done(err)
-        }
-
-        erm.serve(app, db.models.Customer, {
-          lowercase: true,
-          restify: app.isRestify
-        })
-
-        server = app.listen(testPort, done)
-      })
-    })
-
-    after(done => {
-      dismantle(app, server, done)
-    })
-
-    it('GET /customers 200', done => {
-      request.get({
-        url: `${testUrl}/api/v1/customers`
-      }, (err, res, body) => {
-        assert.ok(!err)
-        assert.equal(res.statusCode, 200)
-        done()
-      })
-    })
-
-    it('GET /Customers 200 (Express), 404 (Restify)', done => {
-      request.get({
-        url: `${testUrl}/api/v1/Customers`
-      }, (err, res, body) => {
-        assert.ok(!err)
-        assert.equal(res.statusCode, app.isRestify ? 404 : 200)
         done()
       })
     })
