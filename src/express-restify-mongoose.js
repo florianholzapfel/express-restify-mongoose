@@ -1,6 +1,5 @@
 const util = require('util')
 const _ = require('lodash')
-const inflection = require('inflection')
 const Filter = require('./resource_filter')
 let customDefaults = null
 let excludedMap = {}
@@ -112,10 +111,6 @@ const restify = function (app, model, opts = {}) {
   }
 
   options.name = options.name || model.modelName
-
-  if (options.plural) {
-    options.name = inflection.pluralize(options.name)
-  }
 
   const ops = require('./operations')(model, options)
 

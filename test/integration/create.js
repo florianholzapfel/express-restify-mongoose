@@ -55,9 +55,9 @@ module.exports = function (createFn, setup, dismantle) {
       dismantle(app, server, done)
     })
 
-    it('POST /Customers 201', done => {
+    it('POST /Customer 201', done => {
       request.post({
-        url: `${testUrl}/api/v1/Customers`,
+        url: `${testUrl}/api/v1/Customer`,
         json: {
           name: 'John'
         }
@@ -70,9 +70,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customers 201 - ignore _id', done => {
+    it('POST /Customer 201 - ignore _id', done => {
       request.post({
-        url: `${testUrl}/api/v1/Customers`,
+        url: `${testUrl}/api/v1/Customer`,
         json: {
           _id: randomId,
           name: 'John'
@@ -87,9 +87,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customers 201 - ignore __v', done => {
+    it('POST /Customer 201 - ignore __v', done => {
       request.post({
-        url: `${testUrl}/api/v1/Customers`,
+        url: `${testUrl}/api/v1/Customer`,
         json: {
           __v: '1',
           name: 'John'
@@ -104,9 +104,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customers 201 - array', done => {
+    it('POST /Customer 201 - array', done => {
       request.post({
-        url: `${testUrl}/api/v1/Customers`,
+        url: `${testUrl}/api/v1/Customer`,
         json: [{
           name: 'John'
         }, {
@@ -125,9 +125,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customers 400 - validation error', done => {
+    it('POST /Customer 400 - validation error', done => {
       request.post({
-        url: `${testUrl}/api/v1/Customers`,
+        url: `${testUrl}/api/v1/Customer`,
         json: {}
       }, (err, res, body) => {
         assert.ok(!err)
@@ -139,9 +139,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customers 400 - missing content type', done => {
+    it('POST /Customer 400 - missing content type', done => {
       request.post({
-        url: `${testUrl}/api/v1/Customers`
+        url: `${testUrl}/api/v1/Customer`
       }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 400)
@@ -150,9 +150,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customers 400 - invalid content type', done => {
+    it('POST /Customer 400 - invalid content type', done => {
       request.post({
-        url: `${testUrl}/api/v1/Customers`,
+        url: `${testUrl}/api/v1/Customer`,
         formData: {}
       }, (err, res, body) => {
         assert.ok(!err)
@@ -162,9 +162,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Invoices 201 - referencing customer and product ids as strings', done => {
+    it('POST /Invoice 201 - referencing customer and product ids as strings', done => {
       request.post({
-        url: `${testUrl}/api/v1/Invoices`,
+        url: `${testUrl}/api/v1/Invoice`,
         json: {
           customer: customer._id.toHexString(),
           products: product._id.toHexString(),
@@ -180,9 +180,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Invoices 201 - referencing customer and products ids as strings', done => {
+    it('POST /Invoice 201 - referencing customer and products ids as strings', done => {
       request.post({
-        url: `${testUrl}/api/v1/Invoices`,
+        url: `${testUrl}/api/v1/Invoice`,
         json: {
           customer: customer._id.toHexString(),
           products: [product._id.toHexString(), product._id.toHexString()],
@@ -198,9 +198,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Invoices 201 - referencing customer and product ids', done => {
+    it('POST /Invoice 201 - referencing customer and product ids', done => {
       request.post({
-        url: `${testUrl}/api/v1/Invoices`,
+        url: `${testUrl}/api/v1/Invoice`,
         json: {
           customer: customer._id,
           products: product._id,
@@ -216,9 +216,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Invoices 201 - referencing customer and products ids', done => {
+    it('POST /Invoice 201 - referencing customer and products ids', done => {
       request.post({
-        url: `${testUrl}/api/v1/Invoices`,
+        url: `${testUrl}/api/v1/Invoice`,
         json: {
           customer: customer._id,
           products: [product._id, product._id],
@@ -234,9 +234,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Invoices 201 - referencing customer and product', done => {
+    it('POST /Invoice 201 - referencing customer and product', done => {
       request.post({
-        url: `${testUrl}/api/v1/Invoices`,
+        url: `${testUrl}/api/v1/Invoice`,
         json: {
           customer: customer,
           products: product,
@@ -252,9 +252,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Invoices 201 - referencing customer and products', done => {
+    it('POST /Invoice 201 - referencing customer and products', done => {
       request.post({
-        url: `${testUrl}/api/v1/Invoices`,
+        url: `${testUrl}/api/v1/Invoice`,
         json: {
           customer: customer,
           products: [product, product],
@@ -270,9 +270,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Invoices?populate=customer,products 201 - referencing customer and products', done => {
+    it('POST /Invoice?populate=customer,products 201 - referencing customer and products', done => {
       request.post({
-        url: `${testUrl}/api/v1/Invoices`,
+        url: `${testUrl}/api/v1/Invoice`,
         qs: {
           populate: 'customer,products'
         },
@@ -296,9 +296,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Invoices 400 - referencing invalid customer and products ids', done => {
+    it('POST /Invoice 400 - referencing invalid customer and products ids', done => {
       request.post({
-        url: `${testUrl}/api/v1/Invoices`,
+        url: `${testUrl}/api/v1/Invoice`,
         json: {
           customer: invalidId,
           products: [invalidId, invalidId],

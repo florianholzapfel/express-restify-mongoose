@@ -48,9 +48,9 @@ module.exports = function (createFn, setup, dismantle) {
         dismantle(app, server, done)
       })
 
-      it('DELETE /Customers 204 - no id', done => {
+      it('DELETE /Customer 204 - no id', done => {
         request.del({
-          url: `${testUrl}/api/v1/Customers`
+          url: `${testUrl}/api/v1/Customer`
         }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 204)
@@ -58,9 +58,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('DELETE /Customers/:id 204 - created id', done => {
+      it('DELETE /Customer/:id 204 - created id', done => {
         request.del({
-          url: `${testUrl}/api/v1/Customers/${customer._id}`
+          url: `${testUrl}/api/v1/Customer/${customer._id}`
         }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 204)
@@ -68,9 +68,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('DELETE /Customers/:id 400 - invalid id', done => {
+      it('DELETE /Customer/:id 400 - invalid id', done => {
         request.del({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, invalidId)
+          url: util.format('%s/api/v1/Customer/%s', testUrl, invalidId)
         }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 400)
@@ -78,9 +78,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('DELETE /Customers/:id 404 - random id', done => {
+      it('DELETE /Customer/:id 404 - random id', done => {
         request.del({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, randomId)
+          url: util.format('%s/api/v1/Customer/%s', testUrl, randomId)
         }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 404)
@@ -88,9 +88,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('DELETE /Customers?query={"name":"John"} 200 - exact match', done => {
+      it('DELETE /Customer?query={"name":"John"} 200 - exact match', done => {
         request.del({
-          url: `${testUrl}/api/v1/Customers`,
+          url: `${testUrl}/api/v1/Customer`,
           qs: {
             query: JSON.stringify({
               name: 'John'
@@ -148,9 +148,9 @@ module.exports = function (createFn, setup, dismantle) {
         dismantle(app, server, done)
       })
 
-      it('DELETE /Customers 204 - no id', done => {
+      it('DELETE /Customer 204 - no id', done => {
         request.del({
-          url: `${testUrl}/api/v1/Customers`
+          url: `${testUrl}/api/v1/Customer`
         }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 204)
@@ -158,9 +158,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('DELETE /Customers/:id 204 - created id', done => {
+      it('DELETE /Customer/:id 204 - created id', done => {
         request.del({
-          url: `${testUrl}/api/v1/Customers/${customer._id}`
+          url: `${testUrl}/api/v1/Customer/${customer._id}`
         }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 204)
@@ -168,9 +168,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('DELETE /Customers/:id 400 - invalid id', done => {
+      it('DELETE /Customer/:id 400 - invalid id', done => {
         request.del({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, invalidId)
+          url: util.format('%s/api/v1/Customer/%s', testUrl, invalidId)
         }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 400)
@@ -178,9 +178,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('DELETE /Customers/:id 404 - random id', done => {
+      it('DELETE /Customer/:id 404 - random id', done => {
         request.del({
-          url: util.format('%s/api/v1/Customers/%s', testUrl, randomId)
+          url: util.format('%s/api/v1/Customer/%s', testUrl, randomId)
         }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 404)
@@ -188,9 +188,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('DELETE /Customers?query={"name":"John"} 200 - exact match', done => {
+      it('DELETE /Customer?query={"name":"John"} 200 - exact match', done => {
         request.del({
-          url: `${testUrl}/api/v1/Customers`,
+          url: `${testUrl}/api/v1/Customer`,
           qs: {
             query: JSON.stringify({
               name: 'John'

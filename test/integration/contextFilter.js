@@ -54,9 +54,9 @@ module.exports = function (createFn, setup, dismantle) {
       dismantle(app, server, done)
     })
 
-    it('GET /Customers 200 - filtered name and age', done => {
+    it('GET /Customer 200 - filtered name and age', done => {
       request.get({
-        url: `${testUrl}/api/v1/Customers`,
+        url: `${testUrl}/api/v1/Customer`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -68,9 +68,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customers/:id 404 - filtered name', done => {
+    it('GET /Customer/:id 404 - filtered name', done => {
       request.get({
-        url: `${testUrl}/api/v1/Customers/${customers[0]._id}`,
+        url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -79,9 +79,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customers/:id/shallow 404 - filtered age', done => {
+    it('GET /Customer/:id/shallow 404 - filtered age', done => {
       request.get({
-        url: util.format('%s/api/v1/Customers/%s/shallow', testUrl, customers[2]._id),
+        url: util.format('%s/api/v1/Customer/%s/shallow', testUrl, customers[2]._id),
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -90,9 +90,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customers/count 200 - filtered name and age', done => {
+    it('GET /Customer/count 200 - filtered name and age', done => {
       request.get({
-        url: `${testUrl}/api/v1/Customers/count`,
+        url: `${testUrl}/api/v1/Customer/count`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -102,9 +102,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('PUT /Customers/:id 200', done => {
+    it('PUT /Customer/:id 200', done => {
       request.put({
-        url: `${testUrl}/api/v1/Customers/${customers[1]._id}`,
+        url: `${testUrl}/api/v1/Customer/${customers[1]._id}`,
         json: {
           name: 'Johnny'
         }
@@ -116,9 +116,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('PUT /Customers/:id 404 - filtered name', done => {
+    it('PUT /Customer/:id 404 - filtered name', done => {
       request.put({
-        url: `${testUrl}/api/v1/Customers/${customers[0]._id}`,
+        url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
         json: {
           name: 'Bobby'
         }
@@ -134,9 +134,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('DEL /Customers/:id 200', done => {
+    it('DEL /Customer/:id 200', done => {
       request.del({
-        url: `${testUrl}/api/v1/Customers/${customers[1]._id}`,
+        url: `${testUrl}/api/v1/Customer/${customers[1]._id}`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -150,9 +150,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('DEL /Customers/:id 404 - filtered age', done => {
+    it('DEL /Customer/:id 404 - filtered age', done => {
       request.del({
-        url: `${testUrl}/api/v1/Customers/${customers[2]._id}`,
+        url: `${testUrl}/api/v1/Customer/${customers[2]._id}`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -167,9 +167,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('DEL /Customers 200 - filtered name and age', done => {
+    it('DEL /Customer 200 - filtered name and age', done => {
       request.del({
-        url: `${testUrl}/api/v1/Customers`,
+        url: `${testUrl}/api/v1/Customer`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)

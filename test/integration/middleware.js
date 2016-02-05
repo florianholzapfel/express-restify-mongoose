@@ -48,9 +48,9 @@ module.exports = function (createFn, setup, dismantle) {
       dismantle(app, server, done)
     })
 
-    it('POST /Customers 201', done => {
+    it('POST /Customer 201', done => {
       request.post({
-        url: `${testUrl}/api/v1/Customers`,
+        url: `${testUrl}/api/v1/Customer`,
         json: {
           name: 'John'
         }
@@ -61,9 +61,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customers 200', done => {
+    it('GET /Customer 200', done => {
       request.get({
-        url: `${testUrl}/api/v1/Customers`,
+        url: `${testUrl}/api/v1/Customer`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -72,9 +72,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customers/:id 200', done => {
+    it('POST /Customer/:id 200', done => {
       request.post({
-        url: `${testUrl}/api/v1/Customers/${customer._id}`,
+        url: `${testUrl}/api/v1/Customer/${customer._id}`,
         json: {
           name: 'Bobby'
         }
@@ -85,9 +85,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('PUT /Customers/:id 200', done => {
+    it('PUT /Customer/:id 200', done => {
       request.put({
-        url: `${testUrl}/api/v1/Customers/${customer._id}`,
+        url: `${testUrl}/api/v1/Customer/${customer._id}`,
         json: {
           name: 'Bobby'
         }
@@ -98,9 +98,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('DELETE /Customers/:id 204', done => {
+    it('DELETE /Customer/:id 204', done => {
       request.del({
-        url: `${testUrl}/api/v1/Customers/${customer._id}`,
+        url: `${testUrl}/api/v1/Customer/${customer._id}`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -145,9 +145,9 @@ module.exports = function (createFn, setup, dismantle) {
       dismantle(app, server, done)
     })
 
-    it('GET /Customers 200', done => {
+    it('GET /Customer 200', done => {
       request.get({
-        url: `${testUrl}/api/v1/Customers`,
+        url: `${testUrl}/api/v1/Customer`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -160,9 +160,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customers/:id 200', done => {
+    it('GET /Customer/:id 200', done => {
       request.get({
-        url: `${testUrl}/api/v1/Customers`,
+        url: `${testUrl}/api/v1/Customer`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -175,9 +175,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customers 201', done => {
+    it('POST /Customer 201', done => {
       request.post({
-        url: `${testUrl}/api/v1/Customers`,
+        url: `${testUrl}/api/v1/Customer`,
         json: {
           name: 'Pre'
         }
@@ -192,9 +192,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customers 400 - not called (missing content type)', done => {
+    it('POST /Customer 400 - not called (missing content type)', done => {
       request.post({
-        url: `${testUrl}/api/v1/Customers`
+        url: `${testUrl}/api/v1/Customer`
       }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 400)
@@ -203,9 +203,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customers 400 - not called (invalid content type)', done => {
+    it('POST /Customer 400 - not called (invalid content type)', done => {
       request.post({
-        url: `${testUrl}/api/v1/Customers`,
+        url: `${testUrl}/api/v1/Customer`,
         formData: {}
       }, (err, res, body) => {
         assert.ok(!err)
@@ -215,9 +215,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customers/:id 200', done => {
+    it('POST /Customer/:id 200', done => {
       request.post({
-        url: `${testUrl}/api/v1/Customers/${customer._id}`,
+        url: `${testUrl}/api/v1/Customer/${customer._id}`,
         json: {}
       }, (err, res, body) => {
         assert.ok(!err)
@@ -230,9 +230,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customers/:id 400 - not called (missing content type)', done => {
+    it('POST /Customer/:id 400 - not called (missing content type)', done => {
       request.post({
-        url: `${testUrl}/api/v1/Customers/${customer._id}`
+        url: `${testUrl}/api/v1/Customer/${customer._id}`
       }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 400)
@@ -241,9 +241,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customers/:id 400 - not called (invalid content type)', done => {
+    it('POST /Customer/:id 400 - not called (invalid content type)', done => {
       request.post({
-        url: `${testUrl}/api/v1/Customers/${customer._id}`,
+        url: `${testUrl}/api/v1/Customer/${customer._id}`,
         formData: {}
       }, (err, res, body) => {
         assert.ok(!err)
@@ -253,9 +253,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('PUT /Customers/:id 200', done => {
+    it('PUT /Customer/:id 200', done => {
       request.put({
-        url: `${testUrl}/api/v1/Customers/${customer._id}`,
+        url: `${testUrl}/api/v1/Customer/${customer._id}`,
         json: {}
       }, (err, res, body) => {
         assert.ok(!err)
@@ -268,9 +268,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('PUT /Customers/:id 400 - not called (missing content type)', done => {
+    it('PUT /Customer/:id 400 - not called (missing content type)', done => {
       request.put({
-        url: `${testUrl}/api/v1/Customers/${customer._id}`
+        url: `${testUrl}/api/v1/Customer/${customer._id}`
       }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 400)
@@ -279,9 +279,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('PUT /Customers/:id 400 - not called (invalid content type)', done => {
+    it('PUT /Customer/:id 400 - not called (invalid content type)', done => {
       request.put({
-        url: `${testUrl}/api/v1/Customers/${customer._id}`,
+        url: `${testUrl}/api/v1/Customer/${customer._id}`,
         formData: {}
       }, (err, res, body) => {
         assert.ok(!err)
@@ -291,9 +291,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('DELETE /Customers 204', done => {
+    it('DELETE /Customer 204', done => {
       request.del({
-        url: `${testUrl}/api/v1/Customers`,
+        url: `${testUrl}/api/v1/Customer`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -306,9 +306,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('DELETE /Customers/:id 204', done => {
+    it('DELETE /Customer/:id 204', done => {
       request.del({
-        url: `${testUrl}/api/v1/Customers/${customer._id}`,
+        url: `${testUrl}/api/v1/Customer/${customer._id}`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -349,9 +349,9 @@ module.exports = function (createFn, setup, dismantle) {
       dismantle(app, server, done)
     })
 
-    it('POST /Customers 201', done => {
+    it('POST /Customer 201', done => {
       request.post({
-        url: `${testUrl}/api/v1/Customers`,
+        url: `${testUrl}/api/v1/Customer`,
         json: {
           name: 'Bob'
         }
@@ -404,9 +404,9 @@ module.exports = function (createFn, setup, dismantle) {
       dismantle(app, server, done)
     })
 
-    it('GET /Customers 200', done => {
+    it('GET /Customer 200', done => {
       request.get({
-        url: `${testUrl}/api/v1/Customers`,
+        url: `${testUrl}/api/v1/Customer`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -421,9 +421,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customers/count 200', done => {
+    it('GET /Customer/count 200', done => {
       request.get({
-        url: `${testUrl}/api/v1/Customers/count`,
+        url: `${testUrl}/api/v1/Customer/count`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -438,9 +438,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customers/:id 200', done => {
+    it('GET /Customer/:id 200', done => {
       request.get({
-        url: `${testUrl}/api/v1/Customers/${customer._id}`,
+        url: `${testUrl}/api/v1/Customer/${customer._id}`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -455,9 +455,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customers/:id/shallow 200', done => {
+    it('GET /Customer/:id/shallow 200', done => {
       request.get({
-        url: util.format('%s/api/v1/Customers/%s/shallow', testUrl, customer._id),
+        url: util.format('%s/api/v1/Customer/%s/shallow', testUrl, customer._id),
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -508,9 +508,9 @@ module.exports = function (createFn, setup, dismantle) {
       dismantle(app, server, done)
     })
 
-    it('POST /Customers/:id 200', done => {
+    it('POST /Customer/:id 200', done => {
       request.post({
-        url: `${testUrl}/api/v1/Customers/${customer._id}`,
+        url: `${testUrl}/api/v1/Customer/${customer._id}`,
         json: {
           name: 'Bobby'
         }
@@ -527,9 +527,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customers/:id 400 - not called (missing content type)', done => {
+    it('POST /Customer/:id 400 - not called (missing content type)', done => {
       request.post({
-        url: `${testUrl}/api/v1/Customers/${customer._id}`
+        url: `${testUrl}/api/v1/Customer/${customer._id}`
       }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 400)
@@ -538,9 +538,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customers/:id 400 - not called (invalid content type)', done => {
+    it('POST /Customer/:id 400 - not called (invalid content type)', done => {
       request.post({
-        url: `${testUrl}/api/v1/Customers/${customer._id}`,
+        url: `${testUrl}/api/v1/Customer/${customer._id}`,
         formData: {}
       }, (err, res, body) => {
         assert.ok(!err)
@@ -550,9 +550,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('PUT /Customers/:id 200', done => {
+    it('PUT /Customer/:id 200', done => {
       request.put({
-        url: `${testUrl}/api/v1/Customers/${customer._id}`,
+        url: `${testUrl}/api/v1/Customer/${customer._id}`,
         json: {
           name: 'Bobby'
         }
@@ -569,9 +569,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('PUT /Customers/:id 400 - not called (missing content type)', done => {
+    it('PUT /Customer/:id 400 - not called (missing content type)', done => {
       request.put({
-        url: `${testUrl}/api/v1/Customers/${customer._id}`
+        url: `${testUrl}/api/v1/Customer/${customer._id}`
       }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 400)
@@ -580,9 +580,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('PUT /Customers/:id 400 - not called (invalid content type)', done => {
+    it('PUT /Customer/:id 400 - not called (invalid content type)', done => {
       request.put({
-        url: `${testUrl}/api/v1/Customers/${customer._id}`,
+        url: `${testUrl}/api/v1/Customer/${customer._id}`,
         formData: {}
       }, (err, res, body) => {
         assert.ok(!err)
@@ -628,9 +628,9 @@ module.exports = function (createFn, setup, dismantle) {
       dismantle(app, server, done)
     })
 
-    it('DELETE /Customers 204', done => {
+    it('DELETE /Customer 204', done => {
       request.del({
-        url: `${testUrl}/api/v1/Customers`,
+        url: `${testUrl}/api/v1/Customer`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -645,9 +645,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('DELETE /Customers/:id 204', done => {
+    it('DELETE /Customer/:id 204', done => {
       request.del({
-        url: `${testUrl}/api/v1/Customers/${customer._id}`,
+        url: `${testUrl}/api/v1/Customer/${customer._id}`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -697,9 +697,9 @@ module.exports = function (createFn, setup, dismantle) {
       dismantle(app, server, done)
     })
 
-    it('POST /Customers 201', done => {
+    it('POST /Customer 201', done => {
       request.post({
-        url: `${testUrl}/api/v1/Customers`,
+        url: `${testUrl}/api/v1/Customer`,
         json: {
           name: 'John'
         }
@@ -710,9 +710,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customers 200', done => {
+    it('GET /Customer 200', done => {
       request.get({
-        url: `${testUrl}/api/v1/Customers`,
+        url: `${testUrl}/api/v1/Customer`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -721,9 +721,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customers/:id 200', done => {
+    it('POST /Customer/:id 200', done => {
       request.post({
-        url: `${testUrl}/api/v1/Customers/${customer._id}`,
+        url: `${testUrl}/api/v1/Customer/${customer._id}`,
         json: {
           name: 'Bobby'
         }
@@ -734,9 +734,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('PUT /Customers/:id 200', done => {
+    it('PUT /Customer/:id 200', done => {
       request.put({
-        url: `${testUrl}/api/v1/Customers/${customer._id}`,
+        url: `${testUrl}/api/v1/Customer/${customer._id}`,
         json: {
           name: 'Bobby'
         }
@@ -747,9 +747,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('DELETE /Customers/:id 204', done => {
+    it('DELETE /Customer/:id 204', done => {
       request.del({
-        url: `${testUrl}/api/v1/Customers/${customer._id}`,
+        url: `${testUrl}/api/v1/Customer/${customer._id}`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -786,9 +786,9 @@ module.exports = function (createFn, setup, dismantle) {
       dismantle(app, server, done)
     })
 
-    it('POST /Customers 201', done => {
+    it('POST /Customer 201', done => {
       request.post({
-        url: `${testUrl}/api/v1/Customers`,
+        url: `${testUrl}/api/v1/Customer`,
         json: {
           name: 'Bob'
         }
@@ -805,9 +805,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customers 400 - missing required field', done => {
+    it('POST /Customer 400 - missing required field', done => {
       request.post({
-        url: `${testUrl}/api/v1/Customers`,
+        url: `${testUrl}/api/v1/Customer`,
         json: {
           comment: 'Bar'
         }
@@ -855,9 +855,9 @@ module.exports = function (createFn, setup, dismantle) {
       dismantle(app, server, done)
     })
 
-    it('GET /Customers 200', done => {
+    it('GET /Customer 200', done => {
       request.get({
-        url: `${testUrl}/api/v1/Customers`,
+        url: `${testUrl}/api/v1/Customer`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -872,9 +872,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customers/count 200', done => {
+    it('GET /Customer/count 200', done => {
       request.get({
-        url: `${testUrl}/api/v1/Customers/count`,
+        url: `${testUrl}/api/v1/Customer/count`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -889,9 +889,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customers/:id 200', done => {
+    it('GET /Customer/:id 200', done => {
       request.get({
-        url: `${testUrl}/api/v1/Customers/${customer._id}`,
+        url: `${testUrl}/api/v1/Customer/${customer._id}`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -906,9 +906,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customers/:id 404', done => {
+    it('GET /Customer/:id 404', done => {
       request.get({
-        url: `${testUrl}/api/v1/Customers/${randomId}`,
+        url: `${testUrl}/api/v1/Customer/${randomId}`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -918,9 +918,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customers/:id 400', done => {
+    it('GET /Customer/:id 400', done => {
       request.get({
-        url: `${testUrl}/api/v1/Customers/${invalidId}`,
+        url: `${testUrl}/api/v1/Customer/${invalidId}`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -930,9 +930,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customers/:id/shallow 200', done => {
+    it('GET /Customer/:id/shallow 200', done => {
       request.get({
-        url: util.format('%s/api/v1/Customers/%s/shallow', testUrl, customer._id),
+        url: util.format('%s/api/v1/Customer/%s/shallow', testUrl, customer._id),
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -983,9 +983,9 @@ module.exports = function (createFn, setup, dismantle) {
       dismantle(app, server, done)
     })
 
-    it('POST /Customers/:id 200', done => {
+    it('POST /Customer/:id 200', done => {
       request.post({
-        url: `${testUrl}/api/v1/Customers/${customer._id}`,
+        url: `${testUrl}/api/v1/Customer/${customer._id}`,
         json: {
           name: 'Bobby'
         }
@@ -1002,9 +1002,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customers/:id 404 - random id', done => {
+    it('POST /Customer/:id 404 - random id', done => {
       request.post({
-        url: `${testUrl}/api/v1/Customers/${randomId}`,
+        url: `${testUrl}/api/v1/Customer/${randomId}`,
         json: {
           name: 'Bobby'
         }
@@ -1016,9 +1016,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customers/:id 400 - invalid id', done => {
+    it('POST /Customer/:id 400 - invalid id', done => {
       request.post({
-        url: `${testUrl}/api/v1/Customers/${invalidId}`,
+        url: `${testUrl}/api/v1/Customer/${invalidId}`,
         json: {
           name: 'Bobby'
         }
@@ -1030,9 +1030,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customers/:id 400 - not called (missing content type)', done => {
+    it('POST /Customer/:id 400 - not called (missing content type)', done => {
       request.post({
-        url: `${testUrl}/api/v1/Customers/${customer._id}`
+        url: `${testUrl}/api/v1/Customer/${customer._id}`
       }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 400)
@@ -1041,9 +1041,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customers/:id 400 - not called (invalid content type)', done => {
+    it('POST /Customer/:id 400 - not called (invalid content type)', done => {
       request.post({
-        url: `${testUrl}/api/v1/Customers/${customer._id}`,
+        url: `${testUrl}/api/v1/Customer/${customer._id}`,
         formData: {}
       }, (err, res, body) => {
         assert.ok(!err)
@@ -1053,9 +1053,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('PUT /Customers/:id 200', done => {
+    it('PUT /Customer/:id 200', done => {
       request.put({
-        url: `${testUrl}/api/v1/Customers/${customer._id}`,
+        url: `${testUrl}/api/v1/Customer/${customer._id}`,
         json: {
           name: 'Bobby'
         }
@@ -1072,9 +1072,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('PUT /Customers/:id 404 - random id', done => {
+    it('PUT /Customer/:id 404 - random id', done => {
       request.put({
-        url: `${testUrl}/api/v1/Customers/${randomId}`,
+        url: `${testUrl}/api/v1/Customer/${randomId}`,
         json: {
           name: 'Bobby'
         }
@@ -1086,9 +1086,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('PUT /Customers/:id 400 - invalid id', done => {
+    it('PUT /Customer/:id 400 - invalid id', done => {
       request.put({
-        url: `${testUrl}/api/v1/Customers/${invalidId}`,
+        url: `${testUrl}/api/v1/Customer/${invalidId}`,
         json: {
           name: 'Bobby'
         }
@@ -1100,9 +1100,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('PUT /Customers/:id 400 - not called (missing content type)', done => {
+    it('PUT /Customer/:id 400 - not called (missing content type)', done => {
       request.put({
-        url: `${testUrl}/api/v1/Customers/${customer._id}`
+        url: `${testUrl}/api/v1/Customer/${customer._id}`
       }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 400)
@@ -1111,9 +1111,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('PUT /Customers/:id 400 - not called (invalid content type)', done => {
+    it('PUT /Customer/:id 400 - not called (invalid content type)', done => {
       request.put({
-        url: `${testUrl}/api/v1/Customers/${customer._id}`,
+        url: `${testUrl}/api/v1/Customer/${customer._id}`,
         formData: {}
       }, (err, res, body) => {
         assert.ok(!err)
@@ -1159,9 +1159,9 @@ module.exports = function (createFn, setup, dismantle) {
       dismantle(app, server, done)
     })
 
-    it('DELETE /Customers 204', done => {
+    it('DELETE /Customer 204', done => {
       request.del({
-        url: `${testUrl}/api/v1/Customers`,
+        url: `${testUrl}/api/v1/Customer`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -1176,9 +1176,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('DELETE /Customers/:id 204', done => {
+    it('DELETE /Customer/:id 204', done => {
       request.del({
-        url: `${testUrl}/api/v1/Customers/${customer._id}`,
+        url: `${testUrl}/api/v1/Customer/${customer._id}`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -1193,9 +1193,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('DELETE /Customers/:id 404', done => {
+    it('DELETE /Customer/:id 404', done => {
       request.del({
-        url: `${testUrl}/api/v1/Customers/${randomId}`,
+        url: `${testUrl}/api/v1/Customer/${randomId}`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -1205,9 +1205,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('DELETE /Customers/:id 400', done => {
+    it('DELETE /Customer/:id 400', done => {
       request.del({
-        url: `${testUrl}/api/v1/Customers/${invalidId}`,
+        url: `${testUrl}/api/v1/Customer/${invalidId}`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -1248,9 +1248,9 @@ module.exports = function (createFn, setup, dismantle) {
       dismantle(app, server, done)
     })
 
-    it('POST /Customers 201', done => {
+    it('POST /Customer 201', done => {
       request.post({
-        url: `${testUrl}/api/v1/Customers`,
+        url: `${testUrl}/api/v1/Customer`,
         json: {
           name: 'Bob'
         }
@@ -1296,9 +1296,9 @@ module.exports = function (createFn, setup, dismantle) {
       dismantle(app, server, done)
     })
 
-    it('GET /Customers 200', done => {
+    it('GET /Customer 200', done => {
       request.get({
-        url: `${testUrl}/api/v1/Customers`,
+        url: `${testUrl}/api/v1/Customer`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
