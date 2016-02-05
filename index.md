@@ -217,7 +217,7 @@ version: '/v1/Entities/:id'
 Enable support for [restify](https://www.npmjs.com/package/restify) instead of [express](https://www.npmjs.com/package/express)
 
 #### plural
-<span class="label label-primary" title="type">boolean</span><span class="label label-success" title="default">false</span>
+<span class="label label-primary" title="type">boolean</span><span class="label label-success" title="default">true</span>
 
 Automatically pluralize model names using [inflection](https://www.npmjs.com/package/inflection)
 
