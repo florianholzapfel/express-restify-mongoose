@@ -68,9 +68,9 @@ module.exports = function (createFn, setup, dismantle) {
         dismantle(app, server, done)
       })
 
-      it('POST /Customers/:id 200 - empty body', done => {
+      it('POST /Customer/:id 200 - empty body', done => {
         request.post({
-          url: `${testUrl}/api/v1/Customers/${customers[0]._id}`,
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
           json: {}
         }, (err, res, body) => {
           assert.ok(!err)
@@ -80,9 +80,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('POST /Customers/:id 200 - created id', done => {
+      it('POST /Customer/:id 200 - created id', done => {
         request.post({
-          url: `${testUrl}/api/v1/Customers/${customers[0]._id}`,
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
           json: {
             name: 'Mike'
           }
@@ -94,9 +94,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('POST /Customers/:id 400 - cast error', done => {
+      it('POST /Customer/:id 400 - cast error', done => {
         request.post({
-          url: `${testUrl}/api/v1/Customers/${customers[0]._id}`,
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
           json: {
             age: 'not a number'
           }
@@ -109,9 +109,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('POST /Customers/:id 400 - mongo error', done => {
+      it('POST /Customer/:id 400 - mongo error', done => {
         request.post({
-          url: `${testUrl}/api/v1/Customers/${customers[0]._id}`,
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
           json: {
             name: 'John'
           }
@@ -124,9 +124,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('POST /Customers/:id 400 - missing content type', done => {
+      it('POST /Customer/:id 400 - missing content type', done => {
         request.post({
-          url: `${testUrl}/api/v1/Customers/${customers[0]._id}`
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`
         }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 400)
@@ -135,9 +135,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('POST /Customers/:id 400 - invalid content type', done => {
+      it('POST /Customer/:id 400 - invalid content type', done => {
         request.post({
-          url: `${testUrl}/api/v1/Customers/${customers[0]._id}`,
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
           formData: {}
         }, (err, res, body) => {
           assert.ok(!err)
@@ -147,9 +147,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('POST /Customers/:id 400 - invalid id', done => {
+      it('POST /Customer/:id 400 - invalid id', done => {
         request.post({
-          url: `${testUrl}/api/v1/Customers/${invalidId}`,
+          url: `${testUrl}/api/v1/Customer/${invalidId}`,
           json: {
             name: 'Mike'
           }
@@ -160,9 +160,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('POST /Customers/:id 404 - random id', done => {
+      it('POST /Customer/:id 404 - random id', done => {
         request.post({
-          url: `${testUrl}/api/v1/Customers/${randomId}`,
+          url: `${testUrl}/api/v1/Customer/${randomId}`,
           json: {
             name: 'Mike'
           }
@@ -173,9 +173,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PATCH /Customers/:id 200 - empty body', done => {
+      it('PATCH /Customer/:id 200 - empty body', done => {
         request.patch({
-          url: `${testUrl}/api/v1/Customers/${customers[0]._id}`,
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
           json: {}
         }, (err, res, body) => {
           assert.ok(!err)
@@ -185,9 +185,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PATCH /Customers/:id 200 - created id', done => {
+      it('PATCH /Customer/:id 200 - created id', done => {
         request.patch({
-          url: `${testUrl}/api/v1/Customers/${customers[0]._id}`,
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
           json: {
             name: 'Mike'
           }
@@ -199,9 +199,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PATCH /Customers/:id 400 - cast error', done => {
+      it('PATCH /Customer/:id 400 - cast error', done => {
         request.patch({
-          url: `${testUrl}/api/v1/Customers/${customers[0]._id}`,
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
           json: {
             age: 'not a number'
           }
@@ -214,9 +214,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PATCH /Customers/:id 400 - mongo error', done => {
+      it('PATCH /Customer/:id 400 - mongo error', done => {
         request.patch({
-          url: `${testUrl}/api/v1/Customers/${customers[0]._id}`,
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
           json: {
             name: 'John'
           }
@@ -229,9 +229,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PATCH /Customers/:id 400 - missing content type', done => {
+      it('PATCH /Customer/:id 400 - missing content type', done => {
         request.patch({
-          url: `${testUrl}/api/v1/Customers/${customers[0]._id}`
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`
         }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 400)
@@ -240,9 +240,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PATCH /Customers/:id 400 - invalid content type', done => {
+      it('PATCH /Customer/:id 400 - invalid content type', done => {
         request.patch({
-          url: `${testUrl}/api/v1/Customers/${customers[0]._id}`,
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
           formData: {}
         }, (err, res, body) => {
           assert.ok(!err)
@@ -252,9 +252,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PATCH /Customers/:id 400 - invalid id', done => {
+      it('PATCH /Customer/:id 400 - invalid id', done => {
         request.patch({
-          url: `${testUrl}/api/v1/Customers/${invalidId}`,
+          url: `${testUrl}/api/v1/Customer/${invalidId}`,
           json: {
             name: 'Mike'
           }
@@ -265,9 +265,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PATCH /Customers/:id 404 - random id', done => {
+      it('PATCH /Customer/:id 404 - random id', done => {
         request.patch({
-          url: `${testUrl}/api/v1/Customers/${randomId}`,
+          url: `${testUrl}/api/v1/Customer/${randomId}`,
           json: {
             name: 'Mike'
           }
@@ -278,9 +278,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Customers 404 (Express), 405 (Restify)', done => {
+      it('PUT /Customer 404 (Express), 405 (Restify)', done => {
         request.put({
-          url: `${testUrl}/api/v1/Customers`,
+          url: `${testUrl}/api/v1/Customer`,
           json: {}
         }, (err, res, body) => {
           assert.ok(!err)
@@ -293,9 +293,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Customers/:id 200 - empty body', done => {
+      it('PUT /Customer/:id 200 - empty body', done => {
         request.put({
-          url: `${testUrl}/api/v1/Customers/${customers[0]._id}`,
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
           json: {}
         }, (err, res, body) => {
           assert.ok(!err)
@@ -305,9 +305,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Customers/:id 200 - created id', done => {
+      it('PUT /Customer/:id 200 - created id', done => {
         request.put({
-          url: `${testUrl}/api/v1/Customers/${customers[0]._id}`,
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
           json: {
             name: 'Mike'
           }
@@ -319,9 +319,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Invoices/:id 200 - referencing customer and product ids as strings', done => {
+      it('PUT /Invoice/:id 200 - referencing customer and product ids as strings', done => {
         request.put({
-          url: `${testUrl}/api/v1/Invoices/${invoice._id}`,
+          url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
           json: {
             customer: customers[1]._id.toHexString(),
             products: products[1]._id.toHexString()
@@ -335,9 +335,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Invoices/:id 200 - referencing customer and products ids as strings', done => {
+      it('PUT /Invoice/:id 200 - referencing customer and products ids as strings', done => {
         request.put({
-          url: `${testUrl}/api/v1/Invoices/${invoice._id}`,
+          url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
           json: {
             customer: customers[1]._id.toHexString(),
             products: [products[1]._id.toHexString()]
@@ -351,9 +351,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Invoices/:id 200 - referencing customer and product ids', done => {
+      it('PUT /Invoice/:id 200 - referencing customer and product ids', done => {
         request.put({
-          url: `${testUrl}/api/v1/Invoices/${invoice._id}`,
+          url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
           json: {
             customer: customers[1]._id,
             products: products[1]._id
@@ -367,9 +367,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Invoices/:id 200 - referencing customer and products ids', done => {
+      it('PUT /Invoice/:id 200 - referencing customer and products ids', done => {
         request.put({
-          url: `${testUrl}/api/v1/Invoices/${invoice._id}`,
+          url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
           json: {
             customer: customers[1]._id,
             products: [products[1]._id]
@@ -383,9 +383,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Customers/:id 400 - cast error', done => {
+      it('PUT /Customer/:id 400 - cast error', done => {
         request.put({
-          url: `${testUrl}/api/v1/Customers/${customers[0]._id}`,
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
           json: {
             age: 'not a number'
           }
@@ -398,9 +398,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Customers/:id 400 - mongo error', done => {
+      it('PUT /Customer/:id 400 - mongo error', done => {
         request.put({
-          url: `${testUrl}/api/v1/Customers/${customers[0]._id}`,
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
           json: {
             name: 'John'
           }
@@ -413,9 +413,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Customers/:id 400 - missing content type', done => {
+      it('PUT /Customer/:id 400 - missing content type', done => {
         request.put({
-          url: `${testUrl}/api/v1/Customers/${customers[0]._id}`
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`
         }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 400)
@@ -423,9 +423,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Customers/:id 400 - invalid content type', done => {
+      it('PUT /Customer/:id 400 - invalid content type', done => {
         request.put({
-          url: `${testUrl}/api/v1/Customers/${customers[0]._id}`,
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
           formData: {
             name: 'Mike'
           }
@@ -436,9 +436,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Customers/:id 400 - invalid id', done => {
+      it('PUT /Customer/:id 400 - invalid id', done => {
         request.put({
-          url: `${testUrl}/api/v1/Customers/${invalidId}`,
+          url: `${testUrl}/api/v1/Customer/${invalidId}`,
           json: {
             name: 'Mike'
           }
@@ -449,9 +449,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Customers/:id 404 - random id', done => {
+      it('PUT /Customer/:id 404 - random id', done => {
         request.put({
-          url: `${testUrl}/api/v1/Customers/${randomId}`,
+          url: `${testUrl}/api/v1/Customer/${randomId}`,
           json: {
             name: 'Mike'
           }
@@ -463,13 +463,13 @@ module.exports = function (createFn, setup, dismantle) {
       })
 
       describe('populated subdocument', () => {
-        it('PUT /Invoices/:id 200 - update with populated customer', done => {
+        it('PUT /Invoice/:id 200 - update with populated customer', done => {
           db.models.Invoice.findById(invoice._id).populate('customer').exec().then(invoice => {
             assert.notEqual(invoice.amount, 200)
             invoice.amount = 200
 
             request.put({
-              url: `${testUrl}/api/v1/Invoices/${invoice._id}`,
+              url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
               json: invoice
             }, (err, res, body) => {
               assert.ok(!err)
@@ -483,13 +483,13 @@ module.exports = function (createFn, setup, dismantle) {
           })
         })
 
-        it('PUT /Invoices/:id 200 - update with populated products', done => {
+        it('PUT /Invoice/:id 200 - update with populated products', done => {
           db.models.Invoice.findById(invoice._id).populate('products').exec().then(invoice => {
             assert.notEqual(invoice.amount, 200)
             invoice.amount = 200
 
             request.put({
-              url: `${testUrl}/api/v1/Invoices/${invoice._id}`,
+              url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
               json: invoice
             }, (err, res, body) => {
               assert.ok(!err)
@@ -503,10 +503,10 @@ module.exports = function (createFn, setup, dismantle) {
           })
         })
 
-        it('PUT /Invoices/:id?populate=customer,products 200 - update with populated customer', done => {
+        it('PUT /Invoice/:id?populate=customer,products 200 - update with populated customer', done => {
           db.models.Invoice.findById(invoice._id).populate('customer products').exec().then(invoice => {
             request.put({
-              url: `${testUrl}/api/v1/Invoices/${invoice._id}`,
+              url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
               qs: {
                 populate: 'customer,products'
               },
@@ -587,9 +587,9 @@ module.exports = function (createFn, setup, dismantle) {
         dismantle(app, server, done)
       })
 
-      it('POST /Customers/:id 200 - empty body', done => {
+      it('POST /Customer/:id 200 - empty body', done => {
         request.post({
-          url: `${testUrl}/api/v1/Customers/${customers[0]._id}`,
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
           json: {}
         }, (err, res, body) => {
           assert.ok(!err)
@@ -599,9 +599,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('POST /Customers/:id 200 - created id', done => {
+      it('POST /Customer/:id 200 - created id', done => {
         request.post({
-          url: `${testUrl}/api/v1/Customers/${customers[0]._id}`,
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
           json: {
             name: 'Mike'
           }
@@ -613,9 +613,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('POST /Customers/:id 400 - validation error', done => {
+      it('POST /Customer/:id 400 - validation error', done => {
         request.post({
-          url: `${testUrl}/api/v1/Customers/${customers[0]._id}`,
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
           json: {
             age: 'not a number'
           }
@@ -629,9 +629,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('POST /Customers/:id 400 - mongo error', done => {
+      it('POST /Customer/:id 400 - mongo error', done => {
         request.post({
-          url: `${testUrl}/api/v1/Customers/${customers[0]._id}`,
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
           json: {
             name: 'John'
           }
@@ -644,9 +644,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('POST /Customers/:id 400 - missing content type', done => {
+      it('POST /Customer/:id 400 - missing content type', done => {
         request.post({
-          url: `${testUrl}/api/v1/Customers/${customers[0]._id}`
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`
         }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 400)
@@ -654,9 +654,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('POST /Customers/:id 400 - invalid content type', done => {
+      it('POST /Customer/:id 400 - invalid content type', done => {
         request.post({
-          url: `${testUrl}/api/v1/Customers/${customers[0]._id}`,
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
           formData: {
             name: 'Mike'
           }
@@ -667,9 +667,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('POST /Customers/:id 400 - invalid id', done => {
+      it('POST /Customer/:id 400 - invalid id', done => {
         request.post({
-          url: `${testUrl}/api/v1/Customers/${invalidId}`,
+          url: `${testUrl}/api/v1/Customer/${invalidId}`,
           json: {
             name: 'Mike'
           }
@@ -680,9 +680,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('POST /Customers/:id 404 - random id', done => {
+      it('POST /Customer/:id 404 - random id', done => {
         request.post({
-          url: `${testUrl}/api/v1/Customers/${randomId}`,
+          url: `${testUrl}/api/v1/Customer/${randomId}`,
           json: {
             name: 'Mike'
           }
@@ -693,9 +693,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PATCH /Customers/:id 200 - empty body', done => {
+      it('PATCH /Customer/:id 200 - empty body', done => {
         request.patch({
-          url: `${testUrl}/api/v1/Customers/${customers[0]._id}`,
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
           json: {}
         }, (err, res, body) => {
           assert.ok(!err)
@@ -705,9 +705,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PATCH /Customers/:id 200 - created id', done => {
+      it('PATCH /Customer/:id 200 - created id', done => {
         request.patch({
-          url: `${testUrl}/api/v1/Customers/${customers[0]._id}`,
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
           json: {
             name: 'Mike'
           }
@@ -719,9 +719,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PATCH /Customers/:id 400 - validation error', done => {
+      it('PATCH /Customer/:id 400 - validation error', done => {
         request.patch({
-          url: `${testUrl}/api/v1/Customers/${customers[0]._id}`,
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
           json: {
             age: 'not a number'
           }
@@ -735,9 +735,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PATCH /Customers/:id 400 - mongo error', done => {
+      it('PATCH /Customer/:id 400 - mongo error', done => {
         request.patch({
-          url: `${testUrl}/api/v1/Customers/${customers[0]._id}`,
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
           json: {
             name: 'John'
           }
@@ -750,9 +750,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PATCH /Customers/:id 400 - missing content type', done => {
+      it('PATCH /Customer/:id 400 - missing content type', done => {
         request.patch({
-          url: `${testUrl}/api/v1/Customers/${customers[0]._id}`
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`
         }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 400)
@@ -760,9 +760,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PATCH /Customers/:id 400 - invalid content type', done => {
+      it('PATCH /Customer/:id 400 - invalid content type', done => {
         request.patch({
-          url: `${testUrl}/api/v1/Customers/${customers[0]._id}`,
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
           formData: {
             name: 'Mike'
           }
@@ -773,9 +773,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PATCH /Customers/:id 400 - invalid id', done => {
+      it('PATCH /Customer/:id 400 - invalid id', done => {
         request.patch({
-          url: `${testUrl}/api/v1/Customers/${invalidId}`,
+          url: `${testUrl}/api/v1/Customer/${invalidId}`,
           json: {
             name: 'Mike'
           }
@@ -786,9 +786,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PATCH /Customers/:id 404 - random id', done => {
+      it('PATCH /Customer/:id 404 - random id', done => {
         request.patch({
-          url: `${testUrl}/api/v1/Customers/${randomId}`,
+          url: `${testUrl}/api/v1/Customer/${randomId}`,
           json: {
             name: 'Mike'
           }
@@ -799,9 +799,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Customers 404 (Express), 405 (Restify)', done => {
+      it('PUT /Customer 404 (Express), 405 (Restify)', done => {
         request.put({
-          url: `${testUrl}/api/v1/Customers`,
+          url: `${testUrl}/api/v1/Customer`,
           json: {}
         }, (err, res, body) => {
           assert.ok(!err)
@@ -814,9 +814,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Customers/:id 200 - empty body', done => {
+      it('PUT /Customer/:id 200 - empty body', done => {
         request.put({
-          url: `${testUrl}/api/v1/Customers/${customers[0]._id}`,
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
           json: {}
         }, (err, res, body) => {
           assert.ok(!err)
@@ -826,9 +826,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Customers/:id 200 - created id', done => {
+      it('PUT /Customer/:id 200 - created id', done => {
         request.put({
-          url: `${testUrl}/api/v1/Customers/${customers[0]._id}`,
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
           json: {
             name: 'Mike'
           }
@@ -840,9 +840,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Invoices/:id 200 - referencing customer and product ids as strings', done => {
+      it('PUT /Invoice/:id 200 - referencing customer and product ids as strings', done => {
         request.put({
-          url: `${testUrl}/api/v1/Invoices/${invoice._id}`,
+          url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
           json: {
             customer: customers[1]._id.toHexString(),
             products: products[1]._id.toHexString()
@@ -856,9 +856,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Invoices/:id 200 - referencing customer and products ids as strings', done => {
+      it('PUT /Invoice/:id 200 - referencing customer and products ids as strings', done => {
         request.put({
-          url: `${testUrl}/api/v1/Invoices/${invoice._id}`,
+          url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
           json: {
             customer: customers[1]._id.toHexString(),
             products: [products[1]._id.toHexString()]
@@ -872,9 +872,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Invoices/:id 200 - referencing customer and product ids', done => {
+      it('PUT /Invoice/:id 200 - referencing customer and product ids', done => {
         request.put({
-          url: `${testUrl}/api/v1/Invoices/${invoice._id}`,
+          url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
           json: {
             customer: customers[1]._id,
             products: products[1]._id
@@ -888,9 +888,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Invoices/:id 200 - referencing customer and products ids', done => {
+      it('PUT /Invoice/:id 200 - referencing customer and products ids', done => {
         request.put({
-          url: `${testUrl}/api/v1/Invoices/${invoice._id}`,
+          url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
           json: {
             customer: customers[1]._id,
             products: [products[1]._id]
@@ -904,9 +904,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Customers/:id 400 - validation error', done => {
+      it('PUT /Customer/:id 400 - validation error', done => {
         request.put({
-          url: `${testUrl}/api/v1/Customers/${customers[0]._id}`,
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
           json: {
             age: 'not a number'
           }
@@ -920,9 +920,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Customers/:id 400 - mongo error', done => {
+      it('PUT /Customer/:id 400 - mongo error', done => {
         request.put({
-          url: `${testUrl}/api/v1/Customers/${customers[0]._id}`,
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
           json: {
             name: 'John'
           }
@@ -935,9 +935,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Customers/:id 400 - missing content type', done => {
+      it('PUT /Customer/:id 400 - missing content type', done => {
         request.put({
-          url: `${testUrl}/api/v1/Customers/${customers[0]._id}`
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`
         }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 400)
@@ -945,9 +945,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Customers/:id 400 - invalid content type', done => {
+      it('PUT /Customer/:id 400 - invalid content type', done => {
         request.put({
-          url: `${testUrl}/api/v1/Customers/${customers[0]._id}`,
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
           formData: {
             name: 'Mike'
           }
@@ -958,9 +958,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Customers/:id 400 - invalid id', done => {
+      it('PUT /Customer/:id 400 - invalid id', done => {
         request.put({
-          url: `${testUrl}/api/v1/Customers/${invalidId}`,
+          url: `${testUrl}/api/v1/Customer/${invalidId}`,
           json: {
             name: 'Mike'
           }
@@ -971,9 +971,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Customers/:id 404 - random id', done => {
+      it('PUT /Customer/:id 404 - random id', done => {
         request.put({
-          url: `${testUrl}/api/v1/Customers/${randomId}`,
+          url: `${testUrl}/api/v1/Customer/${randomId}`,
           json: {
             name: 'Mike'
           }
@@ -985,13 +985,13 @@ module.exports = function (createFn, setup, dismantle) {
       })
 
       describe('populated subdocument', () => {
-        it('PUT /Invoices/:id 200 - update with populated customer', done => {
+        it('PUT /Invoice/:id 200 - update with populated customer', done => {
           db.models.Invoice.findById(invoice._id).populate('customer').exec().then(invoice => {
             assert.notEqual(invoice.amount, 200)
             invoice.amount = 200
 
             request.put({
-              url: `${testUrl}/api/v1/Invoices/${invoice._id}`,
+              url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
               json: invoice
             }, (err, res, body) => {
               assert.ok(!err)
@@ -1005,13 +1005,13 @@ module.exports = function (createFn, setup, dismantle) {
           })
         })
 
-        it('PUT /Invoices/:id 200 - update with populated products', done => {
+        it('PUT /Invoice/:id 200 - update with populated products', done => {
           db.models.Invoice.findById(invoice._id).populate('products').exec().then(invoice => {
             assert.notEqual(invoice.amount, 200)
             invoice.amount = 200
 
             request.put({
-              url: `${testUrl}/api/v1/Invoices/${invoice._id}`,
+              url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
               json: invoice
             }, (err, res, body) => {
               assert.ok(!err)
@@ -1025,10 +1025,10 @@ module.exports = function (createFn, setup, dismantle) {
           })
         })
 
-        it('PUT /Invoices/:id?populate=customer,products 200 - update with populated customer', done => {
+        it('PUT /Invoice/:id?populate=customer,products 200 - update with populated customer', done => {
           db.models.Invoice.findById(invoice._id).populate('customer products').exec().then(invoice => {
             request.put({
-              url: `${testUrl}/api/v1/Invoices/${invoice._id}`,
+              url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
               qs: {
                 populate: 'customer,products'
               },

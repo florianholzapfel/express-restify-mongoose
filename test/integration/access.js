@@ -143,9 +143,9 @@ module.exports = function (createFn, setup, dismantle) {
         dismantle(app, server, done)
       })
 
-      it('GET /Customers 200', done => {
+      it('GET /Customer 200', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers`,
+          url: `${testUrl}/api/v1/Customer`,
           json: true
         }, (err, res, body) => {
           assert.ok(!err)
@@ -167,9 +167,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers/:id 200', done => {
+      it('GET /Customer/:id 200', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers/${customer._id}`,
+          url: `${testUrl}/api/v1/Customer/${customer._id}`,
           json: true
         }, (err, res, body) => {
           assert.ok(!err)
@@ -190,9 +190,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers?populate=favorites.purchase.item,purchases.item,returns 200', done => {
+      it('GET /Customer?populate=favorites.purchase.item,purchases.item,returns 200', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers`,
+          url: `${testUrl}/api/v1/Customer`,
           qs: {
             populate: 'favorites.purchase.item,purchases.item,returns'
           },
@@ -239,9 +239,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers/:id?populate=favorites.purchase.item,purchases.item,returns 200', done => {
+      it('GET /Customer/:id?populate=favorites.purchase.item,purchases.item,returns 200', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers/${customer._id}`,
+          url: `${testUrl}/api/v1/Customer/${customer._id}`,
           qs: {
             populate: 'favorites.purchase.item,purchases.item,returns'
           },
@@ -287,9 +287,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Invoices?populate=customer 200', done => {
+      it('GET /Invoice?populate=customer 200', done => {
         request.get({
-          url: `${testUrl}/api/v1/Invoices`,
+          url: `${testUrl}/api/v1/Invoice`,
           qs: {
             populate: 'customer'
           },
@@ -317,9 +317,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Invoices/:id?populate=customer 200', done => {
+      it('GET /Invoice/:id?populate=customer 200', done => {
         request.get({
-          url: `${testUrl}/api/v1/Invoices/${invoice._id}`,
+          url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
           qs: {
             populate: 'customer'
           },
@@ -346,9 +346,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Customers/:id - saves all fields', done => {
+      it('PUT /Customer/:id - saves all fields', done => {
         request.put({
-          url: `${testUrl}/api/v1/Customers/${customer._id}`,
+          url: `${testUrl}/api/v1/Customer/${customer._id}`,
           json: {
             name: 'John',
             age: 24,
@@ -380,9 +380,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Customers/:id - saves all fields (falsy values)', done => {
+      it('PUT /Customer/:id - saves all fields (falsy values)', done => {
         request.put({
-          url: `${testUrl}/api/v1/Customers/${customer._id}`,
+          url: `${testUrl}/api/v1/Customer/${customer._id}`,
           json: {
             age: 0,
             comment: '',
@@ -413,9 +413,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /RepeatCustomers 200 - discriminator', done => {
+      it('GET /RepeatCustomer 200 - discriminator', done => {
         request.get({
-          url: `${testUrl}/api/v1/RepeatCustomers`,
+          url: `${testUrl}/api/v1/RepeatCustomer`,
           json: true
         }, (err, res, body) => {
           assert.ok(!err)
@@ -430,9 +430,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers/:id?populate=account 200 - populate discriminator field from base schema', done => {
+      it('GET /RepeatCustomer/:id?populate=account 200 - populate discriminator field from base schema', done => {
         request.get({
-          url: `${testUrl}/api/v1/RepeatCustomers/${repeatCustomer._id}`,
+          url: `${testUrl}/api/v1/RepeatCustomer/${repeatCustomer._id}`,
           qs: {
             populate: 'account'
           },
@@ -452,9 +452,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Invoices/:id?populate=customer 200 - populated discriminator', done => {
+      it('GET /Invoice/:id?populate=customer 200 - populated discriminator', done => {
         request.get({
-          url: `${testUrl}/api/v1/Invoices/${repeatCustomerInvoice._id}`,
+          url: `${testUrl}/api/v1/Invoice/${repeatCustomerInvoice._id}`,
           qs: {
             populate: 'customer'
           },
@@ -608,9 +608,9 @@ module.exports = function (createFn, setup, dismantle) {
         dismantle(app, server, done)
       })
 
-      it('GET /Customers 200', done => {
+      it('GET /Customer 200', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers`,
+          url: `${testUrl}/api/v1/Customer`,
           json: true
         }, (err, res, body) => {
           assert.ok(!err)
@@ -629,9 +629,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers/:id 200', done => {
+      it('GET /Customer/:id 200', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers/${customer._id}`,
+          url: `${testUrl}/api/v1/Customer/${customer._id}`,
           json: true
         }, (err, res, body) => {
           assert.ok(!err)
@@ -649,9 +649,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers?populate=favorites.purchase.item,purchases.item,returns 200', done => {
+      it('GET /Customer?populate=favorites.purchase.item,purchases.item,returns 200', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers`,
+          url: `${testUrl}/api/v1/Customer`,
           qs: {
             populate: 'favorites.purchase.item,purchases.item,returns'
           },
@@ -690,9 +690,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers/:id?populate=favorites.purchase.item,purchases.item,returns 200', done => {
+      it('GET /Customer/:id?populate=favorites.purchase.item,purchases.item,returns 200', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers/${customer._id}`,
+          url: `${testUrl}/api/v1/Customer/${customer._id}`,
           qs: {
             populate: 'favorites.purchase.item,purchases.item,returns'
           },
@@ -730,9 +730,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Invoices?populate=customer 200', done => {
+      it('GET /Invoice?populate=customer 200', done => {
         request.get({
-          url: `${testUrl}/api/v1/Invoices`,
+          url: `${testUrl}/api/v1/Invoice`,
           qs: {
             populate: 'customer'
           },
@@ -757,9 +757,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Invoices/:id?populate=customer 200', done => {
+      it('GET /Invoice/:id?populate=customer 200', done => {
         request.get({
-          url: `${testUrl}/api/v1/Invoices/${invoice._id}`,
+          url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
           qs: {
             populate: 'customer'
           },
@@ -783,9 +783,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Customers/:id - saves protected and public fields', done => {
+      it('PUT /Customer/:id - saves protected and public fields', done => {
         request.put({
-          url: `${testUrl}/api/v1/Customers/${customer._id}`,
+          url: `${testUrl}/api/v1/Customer/${customer._id}`,
           json: {
             name: 'John',
             age: 24,
@@ -827,9 +827,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Customers/:id - saves protected and public fields (falsy values)', done => {
+      it('PUT /Customer/:id - saves protected and public fields (falsy values)', done => {
         request.put({
-          url: `${testUrl}/api/v1/Customers/${customer._id}`,
+          url: `${testUrl}/api/v1/Customer/${customer._id}`,
           json: {
             age: 0,
             comment: '',
@@ -870,9 +870,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /RepeatCustomers 200 - discriminator', done => {
+      it('GET /RepeatCustomer 200 - discriminator', done => {
         request.get({
-          url: `${testUrl}/api/v1/RepeatCustomers`,
+          url: `${testUrl}/api/v1/RepeatCustomer`,
           json: true
         }, (err, res, body) => {
           assert.ok(!err)
@@ -885,9 +885,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers/:id?populate=account 200 - populate discriminator field from base schema', done => {
+      it('GET /RepeatCustomer/:id?populate=account 200 - populate discriminator field from base schema', done => {
         request.get({
-          url: `${testUrl}/api/v1/RepeatCustomers/${repeatCustomer._id}`,
+          url: `${testUrl}/api/v1/RepeatCustomer/${repeatCustomer._id}`,
           qs: {
             populate: 'account'
           },
@@ -907,9 +907,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Invoices/:id?populate=customer 200 - populated discriminator', done => {
+      it('GET /Invoice/:id?populate=customer 200 - populated discriminator', done => {
         request.get({
-          url: `${testUrl}/api/v1/Invoices/${repeatCustomerInvoice._id}`,
+          url: `${testUrl}/api/v1/Invoice/${repeatCustomerInvoice._id}`,
           qs: {
             populate: 'customer'
           },
@@ -1048,9 +1048,9 @@ module.exports = function (createFn, setup, dismantle) {
         dismantle(app, server, done)
       })
 
-      it('GET /Customers 200', done => {
+      it('GET /Customer 200', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers`,
+          url: `${testUrl}/api/v1/Customer`,
           json: true
         }, (err, res, body) => {
           assert.ok(!err)
@@ -1069,9 +1069,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers/:id 200', done => {
+      it('GET /Customer/:id 200', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers/${customer._id}`,
+          url: `${testUrl}/api/v1/Customer/${customer._id}`,
           json: true
         }, (err, res, body) => {
           assert.ok(!err)
@@ -1089,9 +1089,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers?populate=favorites.purchase.item,purchases.item,returns 200', done => {
+      it('GET /Customer?populate=favorites.purchase.item,purchases.item,returns 200', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers`,
+          url: `${testUrl}/api/v1/Customer`,
           qs: {
             populate: 'favorites.purchase.item,purchases.item,returns'
           },
@@ -1128,9 +1128,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers/:id?populate=favorites.purchase.item,purchases.item,returns 200', done => {
+      it('GET /Customer/:id?populate=favorites.purchase.item,purchases.item,returns 200', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers/${customer._id}`,
+          url: `${testUrl}/api/v1/Customer/${customer._id}`,
           qs: {
             populate: 'favorites.purchase.item,purchases.item,returns'
           },
@@ -1166,9 +1166,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Invoices?populate=customer 200', done => {
+      it('GET /Invoice?populate=customer 200', done => {
         request.get({
-          url: `${testUrl}/api/v1/Invoices`,
+          url: `${testUrl}/api/v1/Invoice`,
           qs: {
             populate: 'customer'
           },
@@ -1192,9 +1192,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Invoices/:id?populate=customer 200', done => {
+      it('GET /Invoice/:id?populate=customer 200', done => {
         request.get({
-          url: `${testUrl}/api/v1/Invoices/${invoice._id}`,
+          url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
           qs: {
             populate: 'customer'
           },
@@ -1217,9 +1217,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Customers/:id - saves public fields', done => {
+      it('PUT /Customer/:id - saves public fields', done => {
         request.put({
-          url: `${testUrl}/api/v1/Customers/${customer._id}`,
+          url: `${testUrl}/api/v1/Customer/${customer._id}`,
           json: {
             name: 'John',
             age: 24,
@@ -1261,9 +1261,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Customers/:id - saves public fields (falsy values)', done => {
+      it('PUT /Customer/:id - saves public fields (falsy values)', done => {
         request.put({
-          url: `${testUrl}/api/v1/Customers/${customer._id}`,
+          url: `${testUrl}/api/v1/Customer/${customer._id}`,
           json: {
             age: 0,
             comment: '',
@@ -1304,9 +1304,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /RepeatCustomers 200 - discriminator', done => {
+      it('GET /RepeatCustomer 200 - discriminator', done => {
         request.get({
-          url: `${testUrl}/api/v1/RepeatCustomers`,
+          url: `${testUrl}/api/v1/RepeatCustomer`,
           json: true
         }, (err, res, body) => {
           assert.ok(!err)
@@ -1319,9 +1319,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers/:id?populate=account 200 - populate discriminator field from base schema', done => {
+      it('GET /RepeatCustomer/:id?populate=account 200 - populate discriminator field from base schema', done => {
         request.get({
-          url: `${testUrl}/api/v1/RepeatCustomers/${repeatCustomer._id}`,
+          url: `${testUrl}/api/v1/RepeatCustomer/${repeatCustomer._id}`,
           qs: {
             populate: 'account'
           },
@@ -1341,9 +1341,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Invoices/:id?populate=customer 200 - populated discriminator', done => {
+      it('GET /Invoice/:id?populate=customer 200 - populated discriminator', done => {
         request.get({
-          url: `${testUrl}/api/v1/Invoices/${repeatCustomerInvoice._id}`,
+          url: `${testUrl}/api/v1/Invoice/${repeatCustomerInvoice._id}`,
           qs: {
             populate: 'customer'
           },
@@ -1389,9 +1389,9 @@ module.exports = function (createFn, setup, dismantle) {
         dismantle(app, server, done)
       })
 
-      it('GET /Customers 500', done => {
+      it('GET /Customer 500', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers`,
+          url: `${testUrl}/api/v1/Customer`,
           json: true
         }, (err, res, body) => {
           assert.ok(!err)

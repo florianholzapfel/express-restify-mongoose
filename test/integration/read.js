@@ -96,9 +96,9 @@ module.exports = function (createFn, setup, dismantle) {
       dismantle(app, server, done)
     })
 
-    it('GET /Customers 200', done => {
+    it('GET /Customer 200', done => {
       request.get({
-        url: `${testUrl}/api/v1/Customers`,
+        url: `${testUrl}/api/v1/Customer`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -108,9 +108,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customers/:id 200 - created id', done => {
+    it('GET /Customer/:id 200 - created id', done => {
       request.get({
-        url: `${testUrl}/api/v1/Customers/${customers[0]._id}`,
+        url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -120,9 +120,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customers/:id 400 - invalid id', done => {
+    it('GET /Customer/:id 400 - invalid id', done => {
       request.get({
-        url: `${testUrl}/api/v1/Customers/${invalidId}`,
+        url: `${testUrl}/api/v1/Customer/${invalidId}`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -131,9 +131,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customers/:id 404 - random id', done => {
+    it('GET /Customer/:id 404 - random id', done => {
       request.get({
-        url: `${testUrl}/api/v1/Customers/${randomId}`,
+        url: `${testUrl}/api/v1/Customer/${randomId}`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -143,9 +143,9 @@ module.exports = function (createFn, setup, dismantle) {
     })
 
     describe('ignore unknown parameters', () => {
-      it('GET /Customers?foo=bar 200', done => {
+      it('GET /Customer?foo=bar 200', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers`,
+          url: `${testUrl}/api/v1/Customer`,
           qs: {
             foo: 'bar'
           },
@@ -160,9 +160,9 @@ module.exports = function (createFn, setup, dismantle) {
     })
 
     describe('limit', () => {
-      it('GET /Customers?limit=1 200', done => {
+      it('GET /Customer?limit=1 200', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers`,
+          url: `${testUrl}/api/v1/Customer`,
           qs: {
             limit: 1
           },
@@ -175,9 +175,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers?limit=foo 200 - evaluates to NaN', done => {
+      it('GET /Customer?limit=foo 200 - evaluates to NaN', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers`,
+          url: `${testUrl}/api/v1/Customer`,
           qs: {
             limit: 'foo'
           },
@@ -192,9 +192,9 @@ module.exports = function (createFn, setup, dismantle) {
     })
 
     describe('skip', () => {
-      it('GET /Customers?skip=1 200', done => {
+      it('GET /Customer?skip=1 200', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers`,
+          url: `${testUrl}/api/v1/Customer`,
           qs: {
             skip: 1
           },
@@ -207,9 +207,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers?skip=foo 200 - evaluates to NaN', done => {
+      it('GET /Customer?skip=foo 200 - evaluates to NaN', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers`,
+          url: `${testUrl}/api/v1/Customer`,
           qs: {
             skip: 'foo'
           },
@@ -224,9 +224,9 @@ module.exports = function (createFn, setup, dismantle) {
     })
 
     describe('sort', () => {
-      it('GET /Customers?sort=name 200', done => {
+      it('GET /Customer?sort=name 200', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers`,
+          url: `${testUrl}/api/v1/Customer`,
           qs: {
             sort: 'name'
           },
@@ -242,9 +242,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers?sort=-name 200', done => {
+      it('GET /Customer?sort=-name 200', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers`,
+          url: `${testUrl}/api/v1/Customer`,
           qs: {
             sort: '-name'
           },
@@ -260,9 +260,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers?sort={"name":1} 200', done => {
+      it('GET /Customer?sort={"name":1} 200', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers`,
+          url: `${testUrl}/api/v1/Customer`,
           qs: {
             sort: {
               name: 1
@@ -280,9 +280,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers?sort={"name":-1} 200', done => {
+      it('GET /Customer?sort={"name":-1} 200', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers`,
+          url: `${testUrl}/api/v1/Customer`,
           qs: {
             sort: {
               name: -1
@@ -302,9 +302,9 @@ module.exports = function (createFn, setup, dismantle) {
     })
 
     describe('query', () => {
-      it('GET /Customers?query={} 200 - empty object', done => {
+      it('GET /Customer?query={} 200 - empty object', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers`,
+          url: `${testUrl}/api/v1/Customer`,
           qs: {
             query: JSON.stringify({})
           },
@@ -317,9 +317,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers?query=invalidJson 400 - invalid json', done => {
+      it('GET /Customer?query=invalidJson 400 - invalid json', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers`,
+          url: `${testUrl}/api/v1/Customer`,
           qs: {
             query: 'invalidJson'
           },
@@ -332,9 +332,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
 
       describe('string', () => {
-        it('GET /Customers?query={"name":"John"} 200 - exact match', done => {
+        it('GET /Customer?query={"name":"John"} 200 - exact match', done => {
           request.get({
-            url: `${testUrl}/api/v1/Customers`,
+            url: `${testUrl}/api/v1/Customer`,
             qs: {
               query: JSON.stringify({
                 name: 'John'
@@ -350,9 +350,9 @@ module.exports = function (createFn, setup, dismantle) {
           })
         })
 
-        it('GET /Customers?query={"favorites.animal":"Jaguar"} 200 - exact match (nested property)', done => {
+        it('GET /Customer?query={"favorites.animal":"Jaguar"} 200 - exact match (nested property)', done => {
           request.get({
-            url: `${testUrl}/api/v1/Customers`,
+            url: `${testUrl}/api/v1/Customer`,
             qs: {
               query: JSON.stringify({
                 'favorites.animal': 'Jaguar'
@@ -368,9 +368,9 @@ module.exports = function (createFn, setup, dismantle) {
           })
         })
 
-        it('GET /Customers?query={"name":"~^J"} 200 - name starting with', done => {
+        it('GET /Customer?query={"name":"~^J"} 200 - name starting with', done => {
           request.get({
-            url: `${testUrl}/api/v1/Customers`,
+            url: `${testUrl}/api/v1/Customer`,
             qs: {
               query: JSON.stringify({
                 name: '~^J'
@@ -386,9 +386,9 @@ module.exports = function (createFn, setup, dismantle) {
           })
         })
 
-        it('GET /Customers?query={"name":">=John"} 200 - greater than or equal', done => {
+        it('GET /Customer?query={"name":">=John"} 200 - greater than or equal', done => {
           request.get({
-            url: `${testUrl}/api/v1/Customers`,
+            url: `${testUrl}/api/v1/Customer`,
             qs: {
               query: JSON.stringify({
                 name: '>=John'
@@ -405,9 +405,9 @@ module.exports = function (createFn, setup, dismantle) {
           })
         })
 
-        it('GET /Customers?query={"name":">John"} 200 - greater than', done => {
+        it('GET /Customer?query={"name":">John"} 200 - greater than', done => {
           request.get({
-            url: `${testUrl}/api/v1/Customers`,
+            url: `${testUrl}/api/v1/Customer`,
             qs: {
               query: JSON.stringify({
                 name: '>John'
@@ -423,9 +423,9 @@ module.exports = function (createFn, setup, dismantle) {
           })
         })
 
-        it('GET /Customers?query={"name":"<=John"} 200 - lower than or equal', done => {
+        it('GET /Customer?query={"name":"<=John"} 200 - lower than or equal', done => {
           request.get({
-            url: `${testUrl}/api/v1/Customers`,
+            url: `${testUrl}/api/v1/Customer`,
             qs: {
               query: JSON.stringify({
                 name: '<=John'
@@ -442,9 +442,9 @@ module.exports = function (createFn, setup, dismantle) {
           })
         })
 
-        it('GET /Customers?query={"name":"<John"} 200 - lower than', done => {
+        it('GET /Customer?query={"name":"<John"} 200 - lower than', done => {
           request.get({
-            url: `${testUrl}/api/v1/Customers`,
+            url: `${testUrl}/api/v1/Customer`,
             qs: {
               query: JSON.stringify({
                 name: '<John'
@@ -460,9 +460,9 @@ module.exports = function (createFn, setup, dismantle) {
           })
         })
 
-        it('GET /Customers?query={"name":"!=John"} 200 - not equal', done => {
+        it('GET /Customer?query={"name":"!=John"} 200 - not equal', done => {
           request.get({
-            url: `${testUrl}/api/v1/Customers`,
+            url: `${testUrl}/api/v1/Customer`,
             qs: {
               query: JSON.stringify({
                 name: '!=John'
@@ -480,9 +480,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
 
         // This feature was disabled because it requires MongoDB 3
-        it.skip('GET /Customers?query={"name":"=John"} 200 - equal', done => {
+        it.skip('GET /Customer?query={"name":"=John"} 200 - equal', done => {
           request.get({
-            url: `${testUrl}/api/v1/Customers`,
+            url: `${testUrl}/api/v1/Customer`,
             qs: {
               query: JSON.stringify({
                 name: '=John'
@@ -498,9 +498,9 @@ module.exports = function (createFn, setup, dismantle) {
           })
         })
 
-        it('GET /Customers?query={"name":["Bob","John"]}&sort=name 200 - in', done => {
+        it('GET /Customer?query={"name":["Bob","John"]}&sort=name 200 - in', done => {
           request.get({
-            url: `${testUrl}/api/v1/Customers`,
+            url: `${testUrl}/api/v1/Customer`,
             qs: {
               query: JSON.stringify({
                 name: ['Bob', 'John']
@@ -520,9 +520,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
 
       describe('number', () => {
-        it('GET /Customers?query={"age":"24"} 200 - exact match', done => {
+        it('GET /Customer?query={"age":"24"} 200 - exact match', done => {
           request.get({
-            url: `${testUrl}/api/v1/Customers`,
+            url: `${testUrl}/api/v1/Customer`,
             qs: {
               query: JSON.stringify({
                 age: 24
@@ -538,9 +538,9 @@ module.exports = function (createFn, setup, dismantle) {
           })
         })
 
-        it('GET /Customers?query={"age":"~2"} 400 - regex on number field', done => {
+        it('GET /Customer?query={"age":"~2"} 400 - regex on number field', done => {
           request.get({
-            url: `${testUrl}/api/v1/Customers`,
+            url: `${testUrl}/api/v1/Customer`,
             qs: {
               query: JSON.stringify({
                 age: '~2'
@@ -554,9 +554,9 @@ module.exports = function (createFn, setup, dismantle) {
           })
         })
 
-        it('GET /Customers?query={"age":">=24"} 200 - greater than or equal', done => {
+        it('GET /Customer?query={"age":">=24"} 200 - greater than or equal', done => {
           request.get({
-            url: `${testUrl}/api/v1/Customers`,
+            url: `${testUrl}/api/v1/Customer`,
             qs: {
               query: JSON.stringify({
                 age: '>=24'
@@ -573,9 +573,9 @@ module.exports = function (createFn, setup, dismantle) {
           })
         })
 
-        it('GET /Customers?query={"age":">24"} 200 - greater than', done => {
+        it('GET /Customer?query={"age":">24"} 200 - greater than', done => {
           request.get({
-            url: `${testUrl}/api/v1/Customers`,
+            url: `${testUrl}/api/v1/Customer`,
             qs: {
               query: JSON.stringify({
                 age: '>24'
@@ -591,9 +591,9 @@ module.exports = function (createFn, setup, dismantle) {
           })
         })
 
-        it('GET /Customers?query={"age":"<=24"} 200 - lower than or equal', done => {
+        it('GET /Customer?query={"age":"<=24"} 200 - lower than or equal', done => {
           request.get({
-            url: `${testUrl}/api/v1/Customers`,
+            url: `${testUrl}/api/v1/Customer`,
             qs: {
               query: JSON.stringify({
                 age: '<=24'
@@ -610,9 +610,9 @@ module.exports = function (createFn, setup, dismantle) {
           })
         })
 
-        it('GET /Customers?query={"age":"<24"} 200 - lower than', done => {
+        it('GET /Customer?query={"age":"<24"} 200 - lower than', done => {
           request.get({
-            url: `${testUrl}/api/v1/Customers`,
+            url: `${testUrl}/api/v1/Customer`,
             qs: {
               query: JSON.stringify({
                 age: '<24'
@@ -628,9 +628,9 @@ module.exports = function (createFn, setup, dismantle) {
           })
         })
 
-        it('GET /Customers?query={"age":"!=24"} 200 - not equal', done => {
+        it('GET /Customer?query={"age":"!=24"} 200 - not equal', done => {
           request.get({
-            url: `${testUrl}/api/v1/Customers`,
+            url: `${testUrl}/api/v1/Customer`,
             qs: {
               query: JSON.stringify({
                 age: '!=24'
@@ -648,9 +648,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
 
         // This feature was disabled because it requires MongoDB 3
-        it.skip('GET /Customers?query={"age":"=24"} 200 - equal', done => {
+        it.skip('GET /Customer?query={"age":"=24"} 200 - equal', done => {
           request.get({
-            url: `${testUrl}/api/v1/Customers`,
+            url: `${testUrl}/api/v1/Customer`,
             qs: {
               query: JSON.stringify({
                 age: '=24'
@@ -666,9 +666,9 @@ module.exports = function (createFn, setup, dismantle) {
           })
         })
 
-        it('GET /Customers?query={"age":["12","24"]}&sort=age 200 - in', done => {
+        it('GET /Customer?query={"age":["12","24"]}&sort=age 200 - in', done => {
           request.get({
-            url: `${testUrl}/api/v1/Customers`,
+            url: `${testUrl}/api/v1/Customer`,
             qs: {
               query: JSON.stringify({
                 age: ['12', '24']
@@ -689,9 +689,9 @@ module.exports = function (createFn, setup, dismantle) {
     })
 
     describe('select', () => {
-      it('GET /Customers?select=name 200 - only include', done => {
+      it('GET /Customer?select=name 200 - only include', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers`,
+          url: `${testUrl}/api/v1/Customer`,
           qs: {
             select: 'name'
           },
@@ -709,9 +709,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers?select=favorites.animal 200 - only include (nested field)', done => {
+      it('GET /Customer?select=favorites.animal 200 - only include (nested field)', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers`,
+          url: `${testUrl}/api/v1/Customer`,
           qs: {
             select: 'favorites.animal'
           },
@@ -731,9 +731,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers?select=-name 200 - exclude name', done => {
+      it('GET /Customer?select=-name 200 - exclude name', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers`,
+          url: `${testUrl}/api/v1/Customer`,
           qs: {
             select: '-name'
           },
@@ -749,9 +749,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers?select={"name":1} 200 - only include name', done => {
+      it('GET /Customer?select={"name":1} 200 - only include name', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers`,
+          url: `${testUrl}/api/v1/Customer`,
           qs: {
             select: JSON.stringify({
               name: 1
@@ -771,9 +771,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers?select={"name":0} 200 - exclude name', done => {
+      it('GET /Customer?select={"name":0} 200 - exclude name', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers`,
+          url: `${testUrl}/api/v1/Customer`,
           qs: {
             select: JSON.stringify({
               name: 0
@@ -793,9 +793,9 @@ module.exports = function (createFn, setup, dismantle) {
     })
 
     describe('populate', () => {
-      it('GET /Invoices?populate=customer 200', done => {
+      it('GET /Invoice?populate=customer 200', done => {
         request.get({
-          url: `${testUrl}/api/v1/Invoices`,
+          url: `${testUrl}/api/v1/Invoice`,
           qs: {
             populate: 'customer'
           },
@@ -814,9 +814,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Invoices?populate={path:"customer"} 200', done => {
+      it('GET /Invoice?populate={path:"customer"} 200', done => {
         request.get({
-          url: `${testUrl}/api/v1/Invoices`,
+          url: `${testUrl}/api/v1/Invoice`,
           qs: {
             populate: JSON.stringify({
               path: 'customer'
@@ -837,9 +837,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Invoices?populate=[{path:"customer"}] 200', done => {
+      it('GET /Invoice?populate=[{path:"customer"}] 200', done => {
         request.get({
-          url: `${testUrl}/api/v1/Invoices`,
+          url: `${testUrl}/api/v1/Invoice`,
           qs: {
             populate: JSON.stringify([{
               path: 'customer'
@@ -860,9 +860,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers?populate=favorites.purchase.item 200 - nested field', done => {
+      it('GET /Customer?populate=favorites.purchase.item 200 - nested field', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers`,
+          url: `${testUrl}/api/v1/Customer`,
           qs: {
             populate: 'favorites.purchase.item'
           },
@@ -882,9 +882,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Invoices?populate=customer.account 200 - ignore deep populate', done => {
+      it('GET /Invoice?populate=customer.account 200 - ignore deep populate', done => {
         request.get({
-          url: `${testUrl}/api/v1/Invoices`,
+          url: `${testUrl}/api/v1/Invoice`,
           qs: {
             populate: 'customer.account'
           },
@@ -901,9 +901,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Invoices?populate=evilCustomer 200 - ignore unknown field', done => {
+      it('GET /Invoice?populate=evilCustomer 200 - ignore unknown field', done => {
         request.get({
-          url: `${testUrl}/api/v1/Invoices`,
+          url: `${testUrl}/api/v1/Invoice`,
           qs: {
             populate: 'evilCustomer'
           },
@@ -919,7 +919,7 @@ module.exports = function (createFn, setup, dismantle) {
       describe('with select', () => {
         it('GET Invoices?populate=customer&select=amount 200 - only include amount and customer document', done => {
           request.get({
-            url: `${testUrl}/api/v1/Invoices`,
+            url: `${testUrl}/api/v1/Invoice`,
             qs: {
               populate: 'customer',
               select: 'amount'
@@ -943,7 +943,7 @@ module.exports = function (createFn, setup, dismantle) {
 
         it('GET Invoices?populate=customer&select=amount,customer.name 200 - only include amount and customer name', done => {
           request.get({
-            url: `${testUrl}/api/v1/Invoices`,
+            url: `${testUrl}/api/v1/Invoice`,
             qs: {
               populate: 'customer',
               select: 'amount,customer.name'
@@ -967,7 +967,7 @@ module.exports = function (createFn, setup, dismantle) {
 
         it('GET Invoices?populate=customer&select=customer.name 200 - include all invoice fields, but only include customer name', done => {
           request.get({
-            url: `${testUrl}/api/v1/Invoices`,
+            url: `${testUrl}/api/v1/Invoice`,
             qs: {
               populate: 'customer',
               select: 'customer.name'
@@ -991,7 +991,7 @@ module.exports = function (createFn, setup, dismantle) {
 
         it('GET Invoices?populate=customer&select=-customer.name 200 - include all invoice and fields, but exclude customer name', done => {
           request.get({
-            url: `${testUrl}/api/v1/Invoices`,
+            url: `${testUrl}/api/v1/Invoice`,
             qs: {
               populate: 'customer',
               select: '-customer.name'
@@ -1015,7 +1015,7 @@ module.exports = function (createFn, setup, dismantle) {
 
         it('GET Invoices?populate=customer&select=amount,-customer.-id,customer.name 200 - only include amount and customer name and exclude customer _id', done => {
           request.get({
-            url: `${testUrl}/api/v1/Invoices`,
+            url: `${testUrl}/api/v1/Invoice`,
             qs: {
               populate: 'customer',
               select: 'amount,-customer._id,customer.name'
@@ -1039,7 +1039,7 @@ module.exports = function (createFn, setup, dismantle) {
 
         it('GET Invoices?populate=customer&select=customer.name,customer.age 200 - only include customer name and age', done => {
           request.get({
-            url: `${testUrl}/api/v1/Invoices`,
+            url: `${testUrl}/api/v1/Invoice`,
             qs: {
               populate: 'customer',
               select: 'customer.name,customer.age'
@@ -1064,9 +1064,9 @@ module.exports = function (createFn, setup, dismantle) {
     })
 
     describe('distinct', () => {
-      it('GET /Customers?distinct=name 200 - array of unique names', done => {
+      it('GET /Customer?distinct=name 200 - array of unique names', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers`,
+          url: `${testUrl}/api/v1/Customer`,
           qs: {
             distinct: 'name'
           },
@@ -1084,9 +1084,9 @@ module.exports = function (createFn, setup, dismantle) {
     })
 
     describe('count', () => {
-      it('GET /Customers/count 200', done => {
+      it('GET /Customer/count 200', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers/count`,
+          url: `${testUrl}/api/v1/Customer/count`,
           json: true
         }, (err, res, body) => {
           assert.ok(!err)
@@ -1098,9 +1098,9 @@ module.exports = function (createFn, setup, dismantle) {
     })
 
     describe('shallow', () => {
-      it('GET /Customers/:id/shallow 200 - created id', done => {
+      it('GET /Customer/:id/shallow 200 - created id', done => {
         request.get({
-          url: util.format('%s/api/v1/Customers/%s/shallow', testUrl, customers[0]._id),
+          url: util.format('%s/api/v1/Customer/%s/shallow', testUrl, customers[0]._id),
           json: true
         }, (err, res, body) => {
           assert.ok(!err)
@@ -1110,9 +1110,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers/:id/shallow 400 - invalid id', done => {
+      it('GET /Customer/:id/shallow 400 - invalid id', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers/${invalidId}/shallow`,
+          url: `${testUrl}/api/v1/Customer/${invalidId}/shallow`,
           json: true
         }, (err, res, body) => {
           assert.ok(!err)
@@ -1121,9 +1121,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customers/:id/shallow 404 - random id', done => {
+      it('GET /Customer/:id/shallow 404 - random id', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers/${randomId}/shallow`,
+          url: `${testUrl}/api/v1/Customer/${randomId}/shallow`,
           json: true
         }, (err, res, body) => {
           assert.ok(!err)

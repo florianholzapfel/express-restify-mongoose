@@ -32,9 +32,9 @@ module.exports = function (createFn, setup, dismantle) {
       dismantle(app, server, done)
     })
 
-    it('GET /Customers 200', done => {
+    it('GET /Customer 200', done => {
       request.get({
-        url: `${testUrl}/api/v1/Customers`
+        url: `${testUrl}/api/v1/Customer`
       }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 200)
@@ -43,7 +43,7 @@ module.exports = function (createFn, setup, dismantle) {
     })
   })
 
-  describe('defaults - plural and version set in defaults', () => {
+  describe('defaults - version set in defaults', () => {
     let app = createFn()
     let server
 
@@ -54,7 +54,6 @@ module.exports = function (createFn, setup, dismantle) {
         }
 
         erm.defaults({
-          plural: false,
           version: '/custom'
         })
 
@@ -72,7 +71,7 @@ module.exports = function (createFn, setup, dismantle) {
 
     after(done => {
       erm.defaults({
-        plural: true
+        version: '/v1'
       })
 
       dismantle(app, server, done)
@@ -132,9 +131,9 @@ module.exports = function (createFn, setup, dismantle) {
       dismantle(app, server, done)
     })
 
-    it('GET /Customers?limit=1 200', done => {
+    it('GET /Customer?limit=1 200', done => {
       request.get({
-        url: `${testUrl}/api/v1/Customers`,
+        url: `${testUrl}/api/v1/Customer`,
         qs: {
           limit: 1
         },
@@ -148,9 +147,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customers?skip=1 200', done => {
+    it('GET /Customer?skip=1 200', done => {
       request.get({
-        url: `${testUrl}/api/v1/Customers`,
+        url: `${testUrl}/api/v1/Customer`,
         qs: {
           skip: 1
         },
@@ -164,9 +163,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customers?limit=1&skip=1 200', done => {
+    it('GET /Customer?limit=1&skip=1 200', done => {
       request.get({
-        url: `${testUrl}/api/v1/Customers`,
+        url: `${testUrl}/api/v1/Customer`,
         qs: {
           limit: 1,
           skip: 1
@@ -215,9 +214,9 @@ module.exports = function (createFn, setup, dismantle) {
       dismantle(app, server, done)
     })
 
-    it('GET /Customers?limit=1 200', done => {
+    it('GET /Customer?limit=1 200', done => {
       request.get({
-        url: `${testUrl}/api/v1/Customers`,
+        url: `${testUrl}/api/v1/Customer`,
         qs: {
           limit: 1
         },
@@ -265,9 +264,9 @@ module.exports = function (createFn, setup, dismantle) {
       dismantle(app, server, done)
     })
 
-    it('GET /Customers 200', done => {
+    it('GET /Customer 200', done => {
       request.get({
-        url: `${testUrl}/api/v1/Customers`,
+        url: `${testUrl}/api/v1/Customer`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -277,9 +276,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customers 200 - override limit in options (query.limit === 0)', done => {
+    it('GET /Customer 200 - override limit in options (query.limit === 0)', done => {
       request.get({
-        url: `${testUrl}/api/v1/Customers`,
+        url: `${testUrl}/api/v1/Customer`,
         qs: {
           limit: 0
         },
@@ -292,9 +291,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customers 200 - override limit in options (query.limit < options.limit)', done => {
+    it('GET /Customer 200 - override limit in options (query.limit < options.limit)', done => {
       request.get({
-        url: `${testUrl}/api/v1/Customers`,
+        url: `${testUrl}/api/v1/Customer`,
         qs: {
           limit: 1
         },
@@ -307,9 +306,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customers 200 - override limit in query (options.limit < query.limit)', done => {
+    it('GET /Customer 200 - override limit in query (options.limit < query.limit)', done => {
       request.get({
-        url: `${testUrl}/api/v1/Customers`,
+        url: `${testUrl}/api/v1/Customer`,
         qs: {
           limit: 3
         },
@@ -322,9 +321,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customers/count 200 - ignore limit', done => {
+    it('GET /Customer/count 200 - ignore limit', done => {
       request.get({
-        url: `${testUrl}/api/v1/Customers/count`,
+        url: `${testUrl}/api/v1/Customer/count`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -358,103 +357,13 @@ module.exports = function (createFn, setup, dismantle) {
       dismantle(app, server, done)
     })
 
-    it('GET /Clients 200', done => {
+    it('GET /Client 200', done => {
       request.get({
-        url: util.format('%s/api/v1/Clients', testUrl)
+        url: util.format('%s/api/v1/Client', testUrl)
       }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 200)
         done()
-      })
-    })
-  })
-
-  describe('plural', () => {
-    describe('true', () => {
-      let app = createFn()
-      let server
-
-      before(done => {
-        setup(err => {
-          if (err) {
-            return done(err)
-          }
-
-          erm.serve(app, db.models.Customer, {
-            plural: true,
-            restify: app.isRestify
-          })
-
-          server = app.listen(testPort, done)
-        })
-      })
-
-      after(done => {
-        dismantle(app, server, done)
-      })
-
-      it('GET /Customer 404', done => {
-        request.get({
-          url: util.format('%s/api/v1/Customer', testUrl)
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 404)
-          done()
-        })
-      })
-
-      it('GET /Customers 200', done => {
-        request.get({
-          url: `${testUrl}/api/v1/Customers`
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 200)
-          done()
-        })
-      })
-    })
-
-    describe('false', () => {
-      let app = createFn()
-      let server
-
-      before(done => {
-        setup(err => {
-          if (err) {
-            return done(err)
-          }
-
-          erm.serve(app, db.models.Customer, {
-            plural: false,
-            restify: app.isRestify
-          })
-
-          server = app.listen(testPort, done)
-        })
-      })
-
-      after(done => {
-        dismantle(app, server, done)
-      })
-
-      it('GET /Customer 200', done => {
-        request.get({
-          url: util.format('%s/api/v1/Customer', testUrl)
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 200)
-          done()
-        })
-      })
-
-      it('GET /Customers 404', done => {
-        request.get({
-          url: `${testUrl}/api/v1/Customers`
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 404)
-          done()
-        })
       })
     })
   })
@@ -482,9 +391,9 @@ module.exports = function (createFn, setup, dismantle) {
       dismantle(app, server, done)
     })
 
-    it('GET /applepie/v1/Customers 200', done => {
+    it('GET /applepie/v1/Customer 200', done => {
       request.get({
-        url: util.format('%s/applepie/v1/Customers', testUrl)
+        url: util.format('%s/applepie/v1/Customer', testUrl)
       }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 200)
@@ -517,9 +426,9 @@ module.exports = function (createFn, setup, dismantle) {
         dismantle(app, server, done)
       })
 
-      it('GET /v8/Customers 200', done => {
+      it('GET /v8/Customer 200', done => {
         request.get({
-          url: util.format('%s/api/v8/Customers', testUrl)
+          url: util.format('%s/api/v8/Customer', testUrl)
         }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
@@ -559,9 +468,9 @@ module.exports = function (createFn, setup, dismantle) {
         dismantle(app, server, done)
       })
 
-      it('GET /v8/Entities/Customers 200', done => {
+      it('GET /v8/Entities/Customer 200', done => {
         request.get({
-          url: util.format('%s/api/v8/Entities/Customers', testUrl)
+          url: util.format('%s/api/v8/Entities/Customer', testUrl)
         }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
@@ -569,9 +478,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /v8/Entities/:id/Customers 200', done => {
+      it('GET /v8/Entities/:id/Customer 200', done => {
         request.get({
-          url: util.format('%s/api/v8/Entities/%s/Customers', testUrl, customer._id)
+          url: util.format('%s/api/v8/Entities/%s/Customer', testUrl, customer._id)
         }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
@@ -579,9 +488,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /v8/Entities/:id/Customers/shallow 200', done => {
+      it('GET /v8/Entities/:id/Customer/shallow 200', done => {
         request.get({
-          url: util.format('%s/api/v8/Entities/%s/Customers/shallow', testUrl, customer._id)
+          url: util.format('%s/api/v8/Entities/%s/Customer/shallow', testUrl, customer._id)
         }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
@@ -589,9 +498,9 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /v8/Entities/Customers/count 200', done => {
+      it('GET /v8/Entities/Customer/count 200', done => {
         request.get({
-          url: util.format('%s/api/v8/Entities/Customers/count', testUrl)
+          url: util.format('%s/api/v8/Entities/Customer/count', testUrl)
         }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
@@ -650,9 +559,9 @@ module.exports = function (createFn, setup, dismantle) {
       dismantle(app, server, done)
     })
 
-    it('PUT /Customers/:id 200', done => {
+    it('PUT /Customer/:id 200', done => {
       request.put({
-        url: `${testUrl}/api/v1/Customers/${customer._id}`,
+        url: `${testUrl}/api/v1/Customer/${customer._id}`,
         json: {
           age: 12
         }
@@ -718,9 +627,9 @@ module.exports = function (createFn, setup, dismantle) {
       dismantle(app, server, done)
     })
 
-    it('DELETE /Customers/:id 204', done => {
+    it('DELETE /Customer/:id 204', done => {
       request.del({
-        url: `${testUrl}/api/v1/Customers/${customer._id}`
+        url: `${testUrl}/api/v1/Customer/${customer._id}`
       }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 204)
@@ -763,9 +672,9 @@ module.exports = function (createFn, setup, dismantle) {
       dismantle(app, server, done)
     })
 
-    it('GET /Customers/:name 200', done => {
+    it('GET /Customer/:name 200', done => {
       request.get({
-        url: `${testUrl}/api/v1/Customers/${customer.name}`,
+        url: `${testUrl}/api/v1/Customer/${customer.name}`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -775,9 +684,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customers/:name 200', done => {
+    it('POST /Customer/:name 200', done => {
       request.post({
-        url: `${testUrl}/api/v1/Customers/${customer.name}`,
+        url: `${testUrl}/api/v1/Customer/${customer.name}`,
         json: {
           age: 12
         }
@@ -790,9 +699,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('PUT /Customers/:name 200', done => {
+    it('PUT /Customer/:name 200', done => {
       request.put({
-        url: `${testUrl}/api/v1/Customers/${customer.name}`,
+        url: `${testUrl}/api/v1/Customer/${customer.name}`,
         json: {
           age: 12
         }
@@ -805,9 +714,9 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('DELETE /Customers/:name 204', done => {
+    it('DELETE /Customer/:name 204', done => {
       request.del({
-        url: `${testUrl}/api/v1/Customers/${customer.name}`
+        url: `${testUrl}/api/v1/Customer/${customer.name}`
       }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 204)

@@ -38,9 +38,9 @@ module.exports = function (createFn, setup, dismantle) {
         dismantle(app, server, done)
       })
 
-      it('GET /Customers 200 - unavailable', done => {
+      it('GET /Customer 200 - unavailable', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers`,
+          url: `${testUrl}/api/v1/Customer`,
           json: true
         }, (err, res, body) => {
           assert.ok(!err)
@@ -81,9 +81,9 @@ module.exports = function (createFn, setup, dismantle) {
         dismantle(app, server, done)
       })
 
-      it('GET /Customers 200 - available', done => {
+      it('GET /Customer 200 - available', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers`,
+          url: `${testUrl}/api/v1/Customer`,
           json: true
         }, (err, res, body) => {
           assert.ok(!err)
@@ -124,9 +124,9 @@ module.exports = function (createFn, setup, dismantle) {
         dismantle(app, server, done)
       })
 
-      it('GET /Customers 200 - available', done => {
+      it('GET /Customer 200 - available', done => {
         request.get({
-          url: `${testUrl}/api/v1/Customers`,
+          url: `${testUrl}/api/v1/Customer`,
           json: true
         }, (err, res, body) => {
           assert.ok(!err)
