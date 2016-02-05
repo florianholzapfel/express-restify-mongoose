@@ -1,6 +1,12 @@
 Changelog
 =========
 
+### 3.0.0
+
+* ported source to ES2015, compiled and published as ES5 with Babel
+* document filtering is now done right before output allowing access to the full document in post middleware
+* removed `options.lowercase` and `options.plural`, use `options.name = require('inflection').pluralize('modelName').toLowerCase()`
+
 ### 2.0.0
 
 * changed `serve` to no longer returns an Express 4 router, now returns the resource's base path (ie.: `/api/v1/Customer`)
