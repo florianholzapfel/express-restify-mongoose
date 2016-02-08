@@ -26,7 +26,7 @@
     "request": "~2",
     "restify": "~3",
     "sinon": "~1",
-    "standard": "^5.0.0"
+    "standard": "^6.0.0"
   },
   "engines": {
     "node": ">=0.10"
