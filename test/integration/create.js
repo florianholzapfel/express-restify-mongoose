@@ -16,8 +16,8 @@ module.exports = function (createFn, setup, dismantle) {
     let server
     let customer, product
 
-    beforeEach(done => {
-      setup(err => {
+    beforeEach((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -36,26 +36,26 @@ module.exports = function (createFn, setup, dismantle) {
 
         db.models.Customer.create({
           name: 'Bob'
-        }).then(createdCustomer => {
+        }).then((createdCustomer) => {
           customer = createdCustomer
 
           return db.models.Product.create({
             name: 'Bobsleigh'
           })
-        }).then(createdProduct => {
+        }).then((createdProduct) => {
           product = createdProduct
           server = app.listen(testPort, done)
-        }, err => {
+        }, (err) => {
           done(err)
         })
       })
     })
 
-    afterEach(done => {
+    afterEach((done) => {
       dismantle(app, server, done)
     })
 
-    it('POST /Customer 201', done => {
+    it('POST /Customer 201', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Customer`,
         json: {
@@ -70,7 +70,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customer 201 - ignore _id', done => {
+    it('POST /Customer 201 - ignore _id', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Customer`,
         json: {
@@ -87,7 +87,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customer 201 - ignore __v', done => {
+    it('POST /Customer 201 - ignore __v', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Customer`,
         json: {
@@ -104,7 +104,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customer 201 - array', done => {
+    it('POST /Customer 201 - array', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Customer`,
         json: [{
@@ -125,7 +125,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customer 400 - validation error', done => {
+    it('POST /Customer 400 - validation error', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Customer`,
         json: {}
@@ -139,7 +139,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customer 400 - missing content type', done => {
+    it('POST /Customer 400 - missing content type', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Customer`
       }, (err, res, body) => {
@@ -150,7 +150,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customer 400 - invalid content type', done => {
+    it('POST /Customer 400 - invalid content type', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Customer`,
         formData: {}
@@ -162,7 +162,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Invoice 201 - referencing customer and product ids as strings', done => {
+    it('POST /Invoice 201 - referencing customer and product ids as strings', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Invoice`,
         json: {
@@ -180,7 +180,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Invoice 201 - referencing customer and products ids as strings', done => {
+    it('POST /Invoice 201 - referencing customer and products ids as strings', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Invoice`,
         json: {
@@ -198,7 +198,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Invoice 201 - referencing customer and product ids', done => {
+    it('POST /Invoice 201 - referencing customer and product ids', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Invoice`,
         json: {
@@ -216,7 +216,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Invoice 201 - referencing customer and products ids', done => {
+    it('POST /Invoice 201 - referencing customer and products ids', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Invoice`,
         json: {
@@ -234,7 +234,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Invoice 201 - referencing customer and product', done => {
+    it('POST /Invoice 201 - referencing customer and product', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Invoice`,
         json: {
@@ -252,7 +252,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Invoice 201 - referencing customer and products', done => {
+    it('POST /Invoice 201 - referencing customer and products', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Invoice`,
         json: {
@@ -270,7 +270,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Invoice?populate=customer,products 201 - referencing customer and products', done => {
+    it('POST /Invoice?populate=customer,products 201 - referencing customer and products', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Invoice`,
         qs: {
@@ -296,7 +296,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Invoice 400 - referencing invalid customer and products ids', done => {
+    it('POST /Invoice 400 - referencing invalid customer and products ids', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Invoice`,
         json: {

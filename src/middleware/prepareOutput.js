@@ -27,7 +27,7 @@ module.exports = function (options, excludedMap) {
 
     async.eachSeries(postMiddleware, (middleware, cb) => {
       middleware(req, res, cb)
-    }, err => {
+    }, (err) => {
       if (err) {
         return options.onError(err, req, res, next)
       }

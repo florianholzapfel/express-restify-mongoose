@@ -14,8 +14,8 @@ module.exports = function (createFn, setup, dismantle) {
     let app = createFn()
     let server
 
-    before(done => {
-      setup(err => {
+    before((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -28,11 +28,11 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    after(done => {
+    after((done) => {
       dismantle(app, server, done)
     })
 
-    it('GET /Customer 200', done => {
+    it('GET /Customer 200', (done) => {
       request.get({
         url: `${testUrl}/api/v1/Customer`
       }, (err, res, body) => {
@@ -47,8 +47,8 @@ module.exports = function (createFn, setup, dismantle) {
     let app = createFn()
     let server
 
-    before(done => {
-      setup(err => {
+    before((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -69,7 +69,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    after(done => {
+    after((done) => {
       erm.defaults({
         version: '/v1'
       })
@@ -77,7 +77,7 @@ module.exports = function (createFn, setup, dismantle) {
       dismantle(app, server, done)
     })
 
-    it('GET /Customer 200', done => {
+    it('GET /Customer 200', (done) => {
       request.get({
         url: util.format('%s/api/custom/Customer', testUrl)
       }, (err, res, body) => {
@@ -87,7 +87,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Invoice 200', done => {
+    it('GET /Invoice 200', (done) => {
       request.get({
         url: util.format('%s/api/custom/Invoice', testUrl)
       }, (err, res, body) => {
@@ -102,8 +102,8 @@ module.exports = function (createFn, setup, dismantle) {
     let app = createFn()
     let server
 
-    before(done => {
-      setup(err => {
+    before((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -119,19 +119,19 @@ module.exports = function (createFn, setup, dismantle) {
           name: 'John'
         }, {
           name: 'Mike'
-        }]).then(createdCustomers => {
+        }]).then((createdCustomers) => {
           server = app.listen(testPort, done)
-        }, err => {
+        }, (err) => {
           done(err)
         })
       })
     })
 
-    after(done => {
+    after((done) => {
       dismantle(app, server, done)
     })
 
-    it('GET /Customer?limit=1 200', done => {
+    it('GET /Customer?limit=1 200', (done) => {
       request.get({
         url: `${testUrl}/api/v1/Customer`,
         qs: {
@@ -147,7 +147,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customer?skip=1 200', done => {
+    it('GET /Customer?skip=1 200', (done) => {
       request.get({
         url: `${testUrl}/api/v1/Customer`,
         qs: {
@@ -163,7 +163,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customer?limit=1&skip=1 200', done => {
+    it('GET /Customer?limit=1&skip=1 200', (done) => {
       request.get({
         url: `${testUrl}/api/v1/Customer`,
         qs: {
@@ -185,8 +185,8 @@ module.exports = function (createFn, setup, dismantle) {
     let app = createFn()
     let server
 
-    before(done => {
-      setup(err => {
+    before((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -202,19 +202,19 @@ module.exports = function (createFn, setup, dismantle) {
           name: 'John'
         }, {
           name: 'Mike'
-        }]).then(createdCustomers => {
+        }]).then((createdCustomers) => {
           server = app.listen(testPort, done)
-        }, err => {
+        }, (err) => {
           done(err)
         })
       })
     })
 
-    after(done => {
+    after((done) => {
       dismantle(app, server, done)
     })
 
-    it('GET /Customer?limit=1 200', done => {
+    it('GET /Customer?limit=1 200', (done) => {
       request.get({
         url: `${testUrl}/api/v1/Customer`,
         qs: {
@@ -235,8 +235,8 @@ module.exports = function (createFn, setup, dismantle) {
     let app = createFn()
     let server
 
-    before(done => {
-      setup(err => {
+    before((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -252,19 +252,19 @@ module.exports = function (createFn, setup, dismantle) {
           name: 'John'
         }, {
           name: 'Mike'
-        }]).then(createdCustomers => {
+        }]).then((createdCustomers) => {
           server = app.listen(testPort, done)
-        }, err => {
+        }, (err) => {
           done(err)
         })
       })
     })
 
-    after(done => {
+    after((done) => {
       dismantle(app, server, done)
     })
 
-    it('GET /Customer 200', done => {
+    it('GET /Customer 200', (done) => {
       request.get({
         url: `${testUrl}/api/v1/Customer`,
         json: true
@@ -276,7 +276,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customer 200 - override limit in options (query.limit === 0)', done => {
+    it('GET /Customer 200 - override limit in options (query.limit === 0)', (done) => {
       request.get({
         url: `${testUrl}/api/v1/Customer`,
         qs: {
@@ -291,7 +291,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customer 200 - override limit in options (query.limit < options.limit)', done => {
+    it('GET /Customer 200 - override limit in options (query.limit < options.limit)', (done) => {
       request.get({
         url: `${testUrl}/api/v1/Customer`,
         qs: {
@@ -306,7 +306,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customer 200 - override limit in query (options.limit < query.limit)', done => {
+    it('GET /Customer 200 - override limit in query (options.limit < query.limit)', (done) => {
       request.get({
         url: `${testUrl}/api/v1/Customer`,
         qs: {
@@ -321,7 +321,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customer/count 200 - ignore limit', done => {
+    it('GET /Customer/count 200 - ignore limit', (done) => {
       request.get({
         url: `${testUrl}/api/v1/Customer/count`,
         json: true
@@ -338,8 +338,8 @@ module.exports = function (createFn, setup, dismantle) {
     let app = createFn()
     let server
 
-    before(done => {
-      setup(err => {
+    before((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -353,11 +353,11 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    after(done => {
+    after((done) => {
       dismantle(app, server, done)
     })
 
-    it('GET /Client 200', done => {
+    it('GET /Client 200', (done) => {
       request.get({
         url: util.format('%s/api/v1/Client', testUrl)
       }, (err, res, body) => {
@@ -372,8 +372,8 @@ module.exports = function (createFn, setup, dismantle) {
     let app = createFn()
     let server
 
-    before(done => {
-      setup(err => {
+    before((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -387,11 +387,11 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    after(done => {
+    after((done) => {
       dismantle(app, server, done)
     })
 
-    it('GET /applepie/v1/Customer 200', done => {
+    it('GET /applepie/v1/Customer 200', (done) => {
       request.get({
         url: util.format('%s/applepie/v1/Customer', testUrl)
       }, (err, res, body) => {
@@ -407,8 +407,8 @@ module.exports = function (createFn, setup, dismantle) {
       let app = createFn()
       let server
 
-      before(done => {
-        setup(err => {
+      before((done) => {
+        setup((err) => {
           if (err) {
             return done(err)
           }
@@ -422,11 +422,11 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      after(done => {
+      after((done) => {
         dismantle(app, server, done)
       })
 
-      it('GET /v8/Customer 200', done => {
+      it('GET /v8/Customer 200', (done) => {
         request.get({
           url: util.format('%s/api/v8/Customer', testUrl)
         }, (err, res, body) => {
@@ -442,8 +442,8 @@ module.exports = function (createFn, setup, dismantle) {
       let server
       let customer
 
-      before(done => {
-        setup(err => {
+      before((done) => {
+        setup((err) => {
           if (err) {
             return done(err)
           }
@@ -455,20 +455,20 @@ module.exports = function (createFn, setup, dismantle) {
 
           db.models.Customer.create({
             name: 'Bob'
-          }).then(createdCustomer => {
+          }).then((createdCustomer) => {
             customer = createdCustomer
             server = app.listen(testPort, done)
-          }, err => {
+          }, (err) => {
             done(err)
           })
         })
       })
 
-      after(done => {
+      after((done) => {
         dismantle(app, server, done)
       })
 
-      it('GET /v8/Entities/Customer 200', done => {
+      it('GET /v8/Entities/Customer 200', (done) => {
         request.get({
           url: util.format('%s/api/v8/Entities/Customer', testUrl)
         }, (err, res, body) => {
@@ -478,7 +478,7 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /v8/Entities/:id/Customer 200', done => {
+      it('GET /v8/Entities/:id/Customer 200', (done) => {
         request.get({
           url: util.format('%s/api/v8/Entities/%s/Customer', testUrl, customer._id)
         }, (err, res, body) => {
@@ -488,7 +488,7 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /v8/Entities/:id/Customer/shallow 200', done => {
+      it('GET /v8/Entities/:id/Customer/shallow 200', (done) => {
         request.get({
           url: util.format('%s/api/v8/Entities/%s/Customer/shallow', testUrl, customer._id)
         }, (err, res, body) => {
@@ -498,7 +498,7 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /v8/Entities/Customer/count 200', done => {
+      it('GET /v8/Entities/Customer/count 200', (done) => {
         request.get({
           url: util.format('%s/api/v8/Entities/Customer/count', testUrl)
         }, (err, res, body) => {
@@ -526,8 +526,8 @@ module.exports = function (createFn, setup, dismantle) {
       ]
     }
 
-    before(done => {
-      setup(err => {
+    before((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -545,21 +545,21 @@ module.exports = function (createFn, setup, dismantle) {
 
         db.models.Customer.create({
           name: 'Bob'
-        }).then(createdCustomer => {
+        }).then((createdCustomer) => {
           customer = createdCustomer
           server = app.listen(testPort, done)
-        }, err => {
+        }, (err) => {
           done(err)
         })
       })
     })
 
-    after(done => {
+    after((done) => {
       erm.defaults(null)
       dismantle(app, server, done)
     })
 
-    it('PUT /Customer/:id 200', done => {
+    it('PUT /Customer/:id 200', (done) => {
       request.put({
         url: `${testUrl}/api/v1/Customer/${customer._id}`,
         json: {
@@ -594,8 +594,8 @@ module.exports = function (createFn, setup, dismantle) {
       ]
     }
 
-    before(done => {
-      setup(err => {
+    before((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -613,21 +613,21 @@ module.exports = function (createFn, setup, dismantle) {
 
         db.models.Customer.create({
           name: 'Bob'
-        }).then(createdCustomer => {
+        }).then((createdCustomer) => {
           customer = createdCustomer
           server = app.listen(testPort, done)
-        }, err => {
+        }, (err) => {
           done(err)
         })
       })
     })
 
-    after(done => {
+    after((done) => {
       erm.defaults(null)
       dismantle(app, server, done)
     })
 
-    it('DELETE /Customer/:id 204', done => {
+    it('DELETE /Customer/:id 204', (done) => {
       request.del({
         url: `${testUrl}/api/v1/Customer/${customer._id}`
       }, (err, res, body) => {
@@ -646,8 +646,8 @@ module.exports = function (createFn, setup, dismantle) {
     let server
     let customer
 
-    before(done => {
-      setup(err => {
+    before((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -659,20 +659,20 @@ module.exports = function (createFn, setup, dismantle) {
 
         db.models.Customer.create({
           name: 'Bob'
-        }).then(createdCustomer => {
+        }).then((createdCustomer) => {
           customer = createdCustomer
           server = app.listen(testPort, done)
-        }, err => {
+        }, (err) => {
           done(err)
         })
       })
     })
 
-    after(done => {
+    after((done) => {
       dismantle(app, server, done)
     })
 
-    it('GET /Customer/:name 200', done => {
+    it('GET /Customer/:name 200', (done) => {
       request.get({
         url: `${testUrl}/api/v1/Customer/${customer.name}`,
         json: true
@@ -684,7 +684,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customer/:name 200', done => {
+    it('POST /Customer/:name 200', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Customer/${customer.name}`,
         json: {
@@ -699,7 +699,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('PUT /Customer/:name 200', done => {
+    it('PUT /Customer/:name 200', (done) => {
       request.put({
         url: `${testUrl}/api/v1/Customer/${customer.name}`,
         json: {
@@ -714,7 +714,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('DELETE /Customer/:name 204', done => {
+    it('DELETE /Customer/:name 204', (done) => {
       request.del({
         url: `${testUrl}/api/v1/Customer/${customer.name}`
       }, (err, res, body) => {

@@ -18,8 +18,8 @@ module.exports = function (createFn, setup, dismantle) {
       let server
       let customer
 
-      beforeEach(done => {
-        setup(err => {
+      beforeEach((done) => {
+        setup((err) => {
           if (err) {
             return done(err)
           }
@@ -35,20 +35,20 @@ module.exports = function (createFn, setup, dismantle) {
             name: 'John'
           }, {
             name: 'Mike'
-          }]).then(createdCustomers => {
+          }]).then((createdCustomers) => {
             customer = createdCustomers[0]
             server = app.listen(testPort, done)
-          }, err => {
+          }, (err) => {
             done(err)
           })
         })
       })
 
-      afterEach(done => {
+      afterEach((done) => {
         dismantle(app, server, done)
       })
 
-      it('DELETE /Customer 204 - no id', done => {
+      it('DELETE /Customer 204 - no id', (done) => {
         request.del({
           url: `${testUrl}/api/v1/Customer`
         }, (err, res, body) => {
@@ -58,7 +58,7 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('DELETE /Customer/:id 204 - created id', done => {
+      it('DELETE /Customer/:id 204 - created id', (done) => {
         request.del({
           url: `${testUrl}/api/v1/Customer/${customer._id}`
         }, (err, res, body) => {
@@ -68,7 +68,7 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('DELETE /Customer/:id 400 - invalid id', done => {
+      it('DELETE /Customer/:id 400 - invalid id', (done) => {
         request.del({
           url: util.format('%s/api/v1/Customer/%s', testUrl, invalidId)
         }, (err, res, body) => {
@@ -78,7 +78,7 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('DELETE /Customer/:id 404 - random id', done => {
+      it('DELETE /Customer/:id 404 - random id', (done) => {
         request.del({
           url: util.format('%s/api/v1/Customer/%s', testUrl, randomId)
         }, (err, res, body) => {
@@ -88,7 +88,7 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('DELETE /Customer?query={"name":"John"} 200 - exact match', done => {
+      it('DELETE /Customer?query={"name":"John"} 200 - exact match', (done) => {
         request.del({
           url: `${testUrl}/api/v1/Customer`,
           qs: {
@@ -104,7 +104,7 @@ module.exports = function (createFn, setup, dismantle) {
           db.models.Customer.find({}, (err, customers) => {
             assert.ok(!err)
             assert.equal(customers.length, 2)
-            customers.forEach(customer => {
+            customers.forEach((customer) => {
               assert.ok(customer.name !== 'John')
             })
             done()
@@ -118,8 +118,8 @@ module.exports = function (createFn, setup, dismantle) {
       let server
       let customer
 
-      beforeEach(done => {
-        setup(err => {
+      beforeEach((done) => {
+        setup((err) => {
           if (err) {
             return done(err)
           }
@@ -135,20 +135,20 @@ module.exports = function (createFn, setup, dismantle) {
             name: 'John'
           }, {
             name: 'Mike'
-          }]).then(createdCustomers => {
+          }]).then((createdCustomers) => {
             customer = createdCustomers[0]
             server = app.listen(testPort, done)
-          }, err => {
+          }, (err) => {
             done(err)
           })
         })
       })
 
-      afterEach(done => {
+      afterEach((done) => {
         dismantle(app, server, done)
       })
 
-      it('DELETE /Customer 204 - no id', done => {
+      it('DELETE /Customer 204 - no id', (done) => {
         request.del({
           url: `${testUrl}/api/v1/Customer`
         }, (err, res, body) => {
@@ -158,7 +158,7 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('DELETE /Customer/:id 204 - created id', done => {
+      it('DELETE /Customer/:id 204 - created id', (done) => {
         request.del({
           url: `${testUrl}/api/v1/Customer/${customer._id}`
         }, (err, res, body) => {
@@ -168,7 +168,7 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('DELETE /Customer/:id 400 - invalid id', done => {
+      it('DELETE /Customer/:id 400 - invalid id', (done) => {
         request.del({
           url: util.format('%s/api/v1/Customer/%s', testUrl, invalidId)
         }, (err, res, body) => {
@@ -178,7 +178,7 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('DELETE /Customer/:id 404 - random id', done => {
+      it('DELETE /Customer/:id 404 - random id', (done) => {
         request.del({
           url: util.format('%s/api/v1/Customer/%s', testUrl, randomId)
         }, (err, res, body) => {
@@ -188,7 +188,7 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('DELETE /Customer?query={"name":"John"} 200 - exact match', done => {
+      it('DELETE /Customer?query={"name":"John"} 200 - exact match', (done) => {
         request.del({
           url: `${testUrl}/api/v1/Customer`,
           qs: {
@@ -204,7 +204,7 @@ module.exports = function (createFn, setup, dismantle) {
           db.models.Customer.find({}, (err, customers) => {
             assert.ok(!err)
             assert.equal(customers.length, 2)
-            customers.forEach(customer => {
+            customers.forEach((customer) => {
               assert.ok(customer.name !== 'John')
             })
             done()

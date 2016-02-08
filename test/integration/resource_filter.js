@@ -10,8 +10,8 @@ describe('Resource filter', () => {
   let invoiceFilter
   let productFilter
 
-  before(done => {
-    db.initialize(err => {
+  before((done) => {
+    db.initialize((err) => {
       if (err) {
         return done(err)
       }
@@ -41,7 +41,7 @@ describe('Resource filter', () => {
     })
   })
 
-  after(done => {
+  after((done) => {
     db.close(done)
   })
 
@@ -84,7 +84,7 @@ describe('Resource filter', () => {
           }]
         })
 
-        invoice.products.forEach(product => {
+        invoice.products.forEach((product) => {
           assert.ok(product.name !== undefined, 'product name should be populated')
           assert.ok(product.price === undefined, 'product price should be excluded')
         })
@@ -116,7 +116,7 @@ describe('Resource filter', () => {
         assert.equal(invoice.customer.name, 'John', 'customer name should be populated')
         assert.ok(invoice.customer.address === undefined, 'customer address should be excluded')
 
-        invoice.products.forEach(product => {
+        invoice.products.forEach((product) => {
           assert.ok(product.name !== undefined, 'product name should be populated')
           assert.ok(product.price === undefined, 'product price should be excluded')
         })
@@ -166,7 +166,7 @@ describe('Resource filter', () => {
           }]
         })
 
-        customer.purchases.forEach(p => {
+        customer.purchases.forEach((p) => {
           assert.ok(p.number === undefined, 'Purchase number should be excluded')
           assert.ok(p.item, 'Item should be included')
           assert.ok(p.item.name !== undefined, 'Item name should be populated')
@@ -219,7 +219,7 @@ describe('Resource filter', () => {
 
       customer = customerFilter.filterObject(customer)
 
-      customer.purchases.forEach(purchase => {
+      customer.purchases.forEach((purchase) => {
         assert.ok(purchase.item !== undefined, 'item should be included')
         assert.ok(purchase.number === undefined, 'number should be excluded')
       })
@@ -230,7 +230,7 @@ describe('Resource filter', () => {
       let invoiceId
       let customerId
 
-      before(done => {
+      before((done) => {
         products = [{
           name: 'Squirt Gun',
           department: {
@@ -289,17 +289,17 @@ describe('Resource filter', () => {
         })
       })
 
-      after(done => {
-        db.models.Customer.remove(err => {
+      after((done) => {
+        db.models.Customer.remove((err) => {
           assert(!err, err)
-          db.models.Invoice.remove(err => {
+          db.models.Invoice.remove((err) => {
             assert(!err, err)
             db.models.Product.remove(done)
           })
         })
       })
 
-      it('excludes fields from populated items', done => {
+      it('excludes fields from populated items', (done) => {
         db.models.Invoice.findById(invoiceId).populate('customer').exec((err, invoice) => {
           assert(!err, err)
           invoice = invoiceFilter.filterObject(invoice, {
@@ -314,7 +314,7 @@ describe('Resource filter', () => {
         })
       })
 
-      it('iterates through array of populated objects', done => {
+      it('iterates through array of populated objects', (done) => {
         db.models.Invoice.findById(invoiceId).populate('products').exec((err, invoice) => {
           assert(!err, err)
           invoice = invoiceFilter.filterObject(invoice, {
@@ -323,7 +323,7 @@ describe('Resource filter', () => {
             }]
           })
 
-          invoice.products.forEach(product => {
+          invoice.products.forEach((product) => {
             assert.ok(product.name !== undefined, 'product name should be populated')
             assert.ok(product.price === undefined, 'product price should be excluded')
           })
@@ -332,7 +332,7 @@ describe('Resource filter', () => {
         })
       })
 
-      it('filters multiple populated models', done => {
+      it('filters multiple populated models', (done) => {
         db.models.Invoice.findById(invoiceId).populate('products customer').exec((err, invoice) => {
           assert(!err, err)
           invoice = invoiceFilter.filterObject(invoice, {
@@ -345,7 +345,7 @@ describe('Resource filter', () => {
           assert.equal(invoice.customer.name, 'John', 'customer name should be populated')
           assert.ok(invoice.customer.address === undefined, 'customer address should be excluded')
 
-          invoice.products.forEach(product => {
+          invoice.products.forEach((product) => {
             assert.ok(product.name !== undefined, 'product name should be populated')
             assert.ok(product.price === undefined, 'product price should be excluded')
           })
@@ -354,7 +354,7 @@ describe('Resource filter', () => {
         })
       })
 
-      it.skip('filters nested populated docs', done => {
+      it.skip('filters nested populated docs', (done) => {
         db.models.Customer.findById(customerId).populate('favorites.purchase.item').exec((err, customer) => {
           assert(!err, err)
           customer = customerFilter.filterObject(customer, {
@@ -372,7 +372,7 @@ describe('Resource filter', () => {
         })
       })
 
-      it.skip('filters embedded array of populated docs', done => {
+      it.skip('filters embedded array of populated docs', (done) => {
         db.models.Customer.findById(customerId).populate('purchases.item').exec((err, customer) => {
           assert(!err, err)
           customer = customerFilter.filterObject(customer, {
@@ -448,7 +448,7 @@ describe('Resource filter', () => {
     let accountFilter // eslint-disable-line no-unused-vars
     let repeatCustFilter
 
-    before(done => {
+    before((done) => {
       accountFilter = new Filter({
         model: db.models.Account,
         filteredKeys: {
@@ -472,13 +472,13 @@ describe('Resource filter', () => {
       })
     })
 
-    after(done => {
+    after((done) => {
       db.models.Account.remove(() => {
         db.models.Customer.remove(done)
       })
     })
 
-    it.skip('should filter populated from subschema', done => {
+    it.skip('should filter populated from subschema', (done) => {
       db.models.RepeatCustomer.findOne().populate('account').exec((err, doc) => {
         assert(!err, err)
         let customer = repeatCustFilter.filterObject(doc, {
@@ -493,7 +493,7 @@ describe('Resource filter', () => {
       })
     })
 
-    it.skip('should filter populated from base schema', done => {
+    it.skip('should filter populated from base schema', (done) => {
       db.models.Customer.findOne().populate('account').exec((err, doc) => {
         assert(!err, err)
         doc.populate('account', (err, doc) => {
