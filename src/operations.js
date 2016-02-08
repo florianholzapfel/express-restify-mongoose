@@ -12,25 +12,25 @@ module.exports = function (model, options) {
   }
 
   function getItems (req, res, next) {
-    options.contextFilter(model, req, filteredContext => {
+    options.contextFilter(model, req, (filteredContext) => {
       let query = buildQuery(filteredContext.find(), req._ermQueryOptions).read(options.readPreference)
 
-      query.lean(options.lean).exec().then(items => {
+      query.lean(options.lean).exec().then((items) => {
         req.erm.result = items
         req.erm.statusCode = 200
 
         if (options.totalCountHeader) {
-          query.skip(0).limit(0).count().then(count => {
+          query.skip(0).limit(0).count().then((count) => {
             req.erm.totalCount = count
             next()
-          }, err => {
+          }, (err) => {
             err.statusCode = 400
             options.onError(err, req, res, next)
           })
         } else {
           next()
         }
-      }, err => {
+      }, (err) => {
         err.statusCode = 400
         options.onError(err, req, res, next)
       })
@@ -38,13 +38,13 @@ module.exports = function (model, options) {
   }
 
   function getCount (req, res, next) {
-    options.contextFilter(model, req, filteredContext => {
-      buildQuery(filteredContext.count(), req._ermQueryOptions).exec().then(count => {
+    options.contextFilter(model, req, (filteredContext) => {
+      buildQuery(filteredContext.count(), req._ermQueryOptions).exec().then((count) => {
         req.erm.result = { count: count }
         req.erm.statusCode = 200
 
         next()
-      }, err => {
+      }, (err) => {
         err.statusCode = 400
         options.onError(err, req, res, next)
       })
@@ -52,8 +52,8 @@ module.exports = function (model, options) {
   }
 
   function getShallow (req, res, next) {
-    options.contextFilter(model, req, filteredContext => {
-      buildQuery(findById(filteredContext, req.params.id), req._ermQueryOptions).lean(options.lean).read(options.readPreference).exec().then(item => {
+    options.contextFilter(model, req, (filteredContext) => {
+      buildQuery(findById(filteredContext, req.params.id), req._ermQueryOptions).lean(options.lean).read(options.readPreference).exec().then((item) => {
         if (!item) {
           let err = new Error(http.STATUS_CODES[404])
           err.statusCode = 404
@@ -68,7 +68,7 @@ module.exports = function (model, options) {
         req.erm.statusCode = 200
 
         next()
-      }, err => {
+      }, (err) => {
         err.statusCode = 400
         options.onError(err, req, res, next)
       })
@@ -76,12 +76,12 @@ module.exports = function (model, options) {
   }
 
   function deleteItems (req, res, next) {
-    options.contextFilter(model, req, filteredContext => {
+    options.contextFilter(model, req, (filteredContext) => {
       buildQuery(filteredContext.find(), req._ermQueryOptions).remove().then(() => {
         req.erm.statusCode = 204
 
         next()
-      }, err => {
+      }, (err) => {
         err.statusCode = 400
         options.onError(err, req, res, next)
       })
@@ -89,8 +89,8 @@ module.exports = function (model, options) {
   }
 
   function getItem (req, res, next) {
-    options.contextFilter(model, req, filteredContext => {
-      buildQuery(findById(filteredContext, req.params.id), req._ermQueryOptions).lean(options.lean).read(options.readPreference).exec().then(item => {
+    options.contextFilter(model, req, (filteredContext) => {
+      buildQuery(findById(filteredContext, req.params.id), req._ermQueryOptions).lean(options.lean).read(options.readPreference).exec().then((item) => {
         if (!item) {
           let err = new Error(http.STATUS_CODES[404])
           err.statusCode = 404
@@ -101,7 +101,7 @@ module.exports = function (model, options) {
         req.erm.statusCode = 200
 
         next()
-      }, err => {
+      }, (err) => {
         err.statusCode = 400
         options.onError(err, req, res, next)
       })
@@ -110,8 +110,8 @@ module.exports = function (model, options) {
 
   function deleteItem (req, res, next) {
     if (options.findOneAndRemove) {
-      options.contextFilter(model, req, filteredContext => {
-        findById(filteredContext, req.params.id).findOneAndRemove().then(item => {
+      options.contextFilter(model, req, (filteredContext) => {
+        findById(filteredContext, req.params.id).findOneAndRemove().then((item) => {
           if (!item) {
             let err = new Error(http.STATUS_CODES[404])
             err.statusCode = 404
@@ -121,7 +121,7 @@ module.exports = function (model, options) {
           req.erm.statusCode = 204
 
           next()
-        }, err => {
+        }, (err) => {
           err.statusCode = 400
           options.onError(err, req, res, next)
         })
@@ -131,7 +131,7 @@ module.exports = function (model, options) {
         req.erm.statusCode = 204
 
         next()
-      }, err => {
+      }, (err) => {
         err.statusCode = 400
         options.onError(err, req, res, next)
       })
@@ -152,12 +152,12 @@ module.exports = function (model, options) {
       delete req.body[model.schema.options.versionKey]
     }
 
-    model.create(req.body).then(item => model.populate(item, req._ermQueryOptions.populate || [])).then(item => {
+    model.create(req.body).then((item) => model.populate(item, req._ermQueryOptions.populate || [])).then((item) => {
       req.erm.result = item
       req.erm.statusCode = 201
 
       next()
-    }, err => {
+    }, (err) => {
       err.statusCode = 400
       options.onError(err, req, res, next)
     })
@@ -211,13 +211,13 @@ module.exports = function (model, options) {
     const cleanBody = moredots(depopulate(req.body))
 
     if (options.findOneAndUpdate) {
-      options.contextFilter(model, req, filteredContext => {
+      options.contextFilter(model, req, (filteredContext) => {
         findById(filteredContext, req.params.id).findOneAndUpdate({}, {
           $set: cleanBody
         }, {
           new: true,
           runValidators: options.runValidators
-        }).exec().then(item => model.populate(item, req._ermQueryOptions.populate || [])).then(item => {
+        }).exec().then((item) => model.populate(item, req._ermQueryOptions.populate || [])).then((item) => {
           if (!item) {
             let err = new Error(http.STATUS_CODES[404])
             err.statusCode = 404
@@ -228,7 +228,7 @@ module.exports = function (model, options) {
           req.erm.statusCode = 200
 
           next()
-        }, err => {
+        }, (err) => {
           err.statusCode = 400
           options.onError(err, req, res, next)
         })
@@ -238,12 +238,12 @@ module.exports = function (model, options) {
         req.erm.document.set(key, cleanBody[key])
       }
 
-      req.erm.document.save().then(item => model.populate(item, req._ermQueryOptions.populate || [])).then(item => {
+      req.erm.document.save().then((item) => model.populate(item, req._ermQueryOptions.populate || [])).then((item) => {
         req.erm.result = item
         req.erm.statusCode = 200
 
         next()
-      }, err => {
+      }, (err) => {
         err.statusCode = 400
         options.onError(err, req, res, next)
       })

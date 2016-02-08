@@ -18,8 +18,8 @@ module.exports = function (createFn, setup, dismantle) {
     let server
     let customer
 
-    beforeEach(done => {
-      setup(err => {
+    beforeEach((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -35,20 +35,20 @@ module.exports = function (createFn, setup, dismantle) {
 
         db.models.Customer.create({
           name: 'Bob'
-        }).then(createdCustomer => {
+        }).then((createdCustomer) => {
           customer = createdCustomer
           server = app.listen(testPort, done)
-        }, err => {
+        }, (err) => {
           done(err)
         })
       })
     })
 
-    afterEach(done => {
+    afterEach((done) => {
       dismantle(app, server, done)
     })
 
-    it('POST /Customer 201', done => {
+    it('POST /Customer 201', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Customer`,
         json: {
@@ -61,7 +61,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customer 200', done => {
+    it('GET /Customer 200', (done) => {
       request.get({
         url: `${testUrl}/api/v1/Customer`,
         json: true
@@ -72,7 +72,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customer/:id 200', done => {
+    it('POST /Customer/:id 200', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Customer/${customer._id}`,
         json: {
@@ -85,7 +85,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('PUT /Customer/:id 200', done => {
+    it('PUT /Customer/:id 200', (done) => {
       request.put({
         url: `${testUrl}/api/v1/Customer/${customer._id}`,
         json: {
@@ -98,7 +98,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('DELETE /Customer/:id 204', done => {
+    it('DELETE /Customer/:id 204', (done) => {
       request.del({
         url: `${testUrl}/api/v1/Customer/${customer._id}`,
         json: true
@@ -121,8 +121,8 @@ module.exports = function (createFn, setup, dismantle) {
       restify: app.isRestify
     }
 
-    beforeEach(done => {
-      setup(err => {
+    beforeEach((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -131,21 +131,21 @@ module.exports = function (createFn, setup, dismantle) {
 
         db.models.Customer.create({
           name: 'Bob'
-        }).then(createdCustomer => {
+        }).then((createdCustomer) => {
           customer = createdCustomer
           server = app.listen(testPort, done)
-        }, err => {
+        }, (err) => {
           done(err)
         })
       })
     })
 
-    afterEach(done => {
+    afterEach((done) => {
       options.preMiddleware.reset()
       dismantle(app, server, done)
     })
 
-    it('GET /Customer 200', done => {
+    it('GET /Customer 200', (done) => {
       request.get({
         url: `${testUrl}/api/v1/Customer`,
         json: true
@@ -160,7 +160,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customer/:id 200', done => {
+    it('GET /Customer/:id 200', (done) => {
       request.get({
         url: `${testUrl}/api/v1/Customer`,
         json: true
@@ -175,7 +175,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customer 201', done => {
+    it('POST /Customer 201', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Customer`,
         json: {
@@ -192,7 +192,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customer 400 - not called (missing content type)', done => {
+    it('POST /Customer 400 - not called (missing content type)', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Customer`
       }, (err, res, body) => {
@@ -203,7 +203,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customer 400 - not called (invalid content type)', done => {
+    it('POST /Customer 400 - not called (invalid content type)', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Customer`,
         formData: {}
@@ -215,7 +215,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customer/:id 200', done => {
+    it('POST /Customer/:id 200', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Customer/${customer._id}`,
         json: {}
@@ -230,7 +230,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customer/:id 400 - not called (missing content type)', done => {
+    it('POST /Customer/:id 400 - not called (missing content type)', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Customer/${customer._id}`
       }, (err, res, body) => {
@@ -241,7 +241,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customer/:id 400 - not called (invalid content type)', done => {
+    it('POST /Customer/:id 400 - not called (invalid content type)', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Customer/${customer._id}`,
         formData: {}
@@ -253,7 +253,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('PUT /Customer/:id 200', done => {
+    it('PUT /Customer/:id 200', (done) => {
       request.put({
         url: `${testUrl}/api/v1/Customer/${customer._id}`,
         json: {}
@@ -268,7 +268,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('PUT /Customer/:id 400 - not called (missing content type)', done => {
+    it('PUT /Customer/:id 400 - not called (missing content type)', (done) => {
       request.put({
         url: `${testUrl}/api/v1/Customer/${customer._id}`
       }, (err, res, body) => {
@@ -279,7 +279,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('PUT /Customer/:id 400 - not called (invalid content type)', done => {
+    it('PUT /Customer/:id 400 - not called (invalid content type)', (done) => {
       request.put({
         url: `${testUrl}/api/v1/Customer/${customer._id}`,
         formData: {}
@@ -291,7 +291,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('DELETE /Customer 204', done => {
+    it('DELETE /Customer 204', (done) => {
       request.del({
         url: `${testUrl}/api/v1/Customer`,
         json: true
@@ -306,7 +306,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('DELETE /Customer/:id 204', done => {
+    it('DELETE /Customer/:id 204', (done) => {
       request.del({
         url: `${testUrl}/api/v1/Customer/${customer._id}`,
         json: true
@@ -332,8 +332,8 @@ module.exports = function (createFn, setup, dismantle) {
       restify: app.isRestify
     }
 
-    beforeEach(done => {
-      setup(err => {
+    beforeEach((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -344,12 +344,12 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    afterEach(done => {
+    afterEach((done) => {
       options.preCreate.reset()
       dismantle(app, server, done)
     })
 
-    it('POST /Customer 201', done => {
+    it('POST /Customer 201', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Customer`,
         json: {
@@ -380,8 +380,8 @@ module.exports = function (createFn, setup, dismantle) {
       restify: app.isRestify
     }
 
-    beforeEach(done => {
-      setup(err => {
+    beforeEach((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -390,21 +390,21 @@ module.exports = function (createFn, setup, dismantle) {
 
         db.models.Customer.create({
           name: 'Bob'
-        }).then(createdCustomer => {
+        }).then((createdCustomer) => {
           customer = createdCustomer
           server = app.listen(testPort, done)
-        }, err => {
+        }, (err) => {
           done(err)
         })
       })
     })
 
-    afterEach(done => {
+    afterEach((done) => {
       options.preRead.reset()
       dismantle(app, server, done)
     })
 
-    it('GET /Customer 200', done => {
+    it('GET /Customer 200', (done) => {
       request.get({
         url: `${testUrl}/api/v1/Customer`,
         json: true
@@ -421,7 +421,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customer/count 200', done => {
+    it('GET /Customer/count 200', (done) => {
       request.get({
         url: `${testUrl}/api/v1/Customer/count`,
         json: true
@@ -438,7 +438,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customer/:id 200', done => {
+    it('GET /Customer/:id 200', (done) => {
       request.get({
         url: `${testUrl}/api/v1/Customer/${customer._id}`,
         json: true
@@ -455,7 +455,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customer/:id/shallow 200', done => {
+    it('GET /Customer/:id/shallow 200', (done) => {
       request.get({
         url: util.format('%s/api/v1/Customer/%s/shallow', testUrl, customer._id),
         json: true
@@ -484,8 +484,8 @@ module.exports = function (createFn, setup, dismantle) {
       restify: app.isRestify
     }
 
-    beforeEach(done => {
-      setup(err => {
+    beforeEach((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -494,21 +494,21 @@ module.exports = function (createFn, setup, dismantle) {
 
         db.models.Customer.create({
           name: 'Bob'
-        }).then(createdCustomer => {
+        }).then((createdCustomer) => {
           customer = createdCustomer
           server = app.listen(testPort, done)
-        }, err => {
+        }, (err) => {
           done(err)
         })
       })
     })
 
-    afterEach(done => {
+    afterEach((done) => {
       options.preUpdate.reset()
       dismantle(app, server, done)
     })
 
-    it('POST /Customer/:id 200', done => {
+    it('POST /Customer/:id 200', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Customer/${customer._id}`,
         json: {
@@ -527,7 +527,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customer/:id 400 - not called (missing content type)', done => {
+    it('POST /Customer/:id 400 - not called (missing content type)', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Customer/${customer._id}`
       }, (err, res, body) => {
@@ -538,7 +538,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customer/:id 400 - not called (invalid content type)', done => {
+    it('POST /Customer/:id 400 - not called (invalid content type)', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Customer/${customer._id}`,
         formData: {}
@@ -550,7 +550,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('PUT /Customer/:id 200', done => {
+    it('PUT /Customer/:id 200', (done) => {
       request.put({
         url: `${testUrl}/api/v1/Customer/${customer._id}`,
         json: {
@@ -569,7 +569,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('PUT /Customer/:id 400 - not called (missing content type)', done => {
+    it('PUT /Customer/:id 400 - not called (missing content type)', (done) => {
       request.put({
         url: `${testUrl}/api/v1/Customer/${customer._id}`
       }, (err, res, body) => {
@@ -580,7 +580,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('PUT /Customer/:id 400 - not called (invalid content type)', done => {
+    it('PUT /Customer/:id 400 - not called (invalid content type)', (done) => {
       request.put({
         url: `${testUrl}/api/v1/Customer/${customer._id}`,
         formData: {}
@@ -604,8 +604,8 @@ module.exports = function (createFn, setup, dismantle) {
       restify: app.isRestify
     }
 
-    beforeEach(done => {
-      setup(err => {
+    beforeEach((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -614,21 +614,21 @@ module.exports = function (createFn, setup, dismantle) {
 
         db.models.Customer.create({
           name: 'Bob'
-        }).then(createdCustomer => {
+        }).then((createdCustomer) => {
           customer = createdCustomer
           server = app.listen(testPort, done)
-        }, err => {
+        }, (err) => {
           done(err)
         })
       })
     })
 
-    afterEach(done => {
+    afterEach((done) => {
       options.preDelete.reset()
       dismantle(app, server, done)
     })
 
-    it('DELETE /Customer 204', done => {
+    it('DELETE /Customer 204', (done) => {
       request.del({
         url: `${testUrl}/api/v1/Customer`,
         json: true
@@ -645,7 +645,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('DELETE /Customer/:id 204', done => {
+    it('DELETE /Customer/:id 204', (done) => {
       request.del({
         url: `${testUrl}/api/v1/Customer/${customer._id}`,
         json: true
@@ -668,8 +668,8 @@ module.exports = function (createFn, setup, dismantle) {
     let server
     let customer
 
-    beforeEach(done => {
-      setup(err => {
+    beforeEach((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -684,20 +684,20 @@ module.exports = function (createFn, setup, dismantle) {
 
         db.models.Customer.create({
           name: 'Bob'
-        }).then(createdCustomer => {
+        }).then((createdCustomer) => {
           customer = createdCustomer
           server = app.listen(testPort, done)
-        }, err => {
+        }, (err) => {
           done(err)
         })
       })
     })
 
-    afterEach(done => {
+    afterEach((done) => {
       dismantle(app, server, done)
     })
 
-    it('POST /Customer 201', done => {
+    it('POST /Customer 201', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Customer`,
         json: {
@@ -710,7 +710,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customer 200', done => {
+    it('GET /Customer 200', (done) => {
       request.get({
         url: `${testUrl}/api/v1/Customer`,
         json: true
@@ -721,7 +721,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customer/:id 200', done => {
+    it('POST /Customer/:id 200', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Customer/${customer._id}`,
         json: {
@@ -734,7 +734,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('PUT /Customer/:id 200', done => {
+    it('PUT /Customer/:id 200', (done) => {
       request.put({
         url: `${testUrl}/api/v1/Customer/${customer._id}`,
         json: {
@@ -747,7 +747,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('DELETE /Customer/:id 204', done => {
+    it('DELETE /Customer/:id 204', (done) => {
       request.del({
         url: `${testUrl}/api/v1/Customer/${customer._id}`,
         json: true
@@ -769,8 +769,8 @@ module.exports = function (createFn, setup, dismantle) {
       restify: app.isRestify
     }
 
-    beforeEach(done => {
-      setup(err => {
+    beforeEach((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -781,12 +781,12 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    afterEach(done => {
+    afterEach((done) => {
       options.postCreate.reset()
       dismantle(app, server, done)
     })
 
-    it('POST /Customer 201', done => {
+    it('POST /Customer 201', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Customer`,
         json: {
@@ -805,7 +805,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customer 400 - missing required field', done => {
+    it('POST /Customer 400 - missing required field', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Customer`,
         json: {
@@ -831,8 +831,8 @@ module.exports = function (createFn, setup, dismantle) {
       restify: app.isRestify
     }
 
-    beforeEach(done => {
-      setup(err => {
+    beforeEach((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -841,21 +841,21 @@ module.exports = function (createFn, setup, dismantle) {
 
         db.models.Customer.create({
           name: 'Bob'
-        }).then(createdCustomer => {
+        }).then((createdCustomer) => {
           customer = createdCustomer
           server = app.listen(testPort, done)
-        }, err => {
+        }, (err) => {
           done(err)
         })
       })
     })
 
-    afterEach(done => {
+    afterEach((done) => {
       options.postRead.reset()
       dismantle(app, server, done)
     })
 
-    it('GET /Customer 200', done => {
+    it('GET /Customer 200', (done) => {
       request.get({
         url: `${testUrl}/api/v1/Customer`,
         json: true
@@ -872,7 +872,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customer/count 200', done => {
+    it('GET /Customer/count 200', (done) => {
       request.get({
         url: `${testUrl}/api/v1/Customer/count`,
         json: true
@@ -889,7 +889,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customer/:id 200', done => {
+    it('GET /Customer/:id 200', (done) => {
       request.get({
         url: `${testUrl}/api/v1/Customer/${customer._id}`,
         json: true
@@ -906,7 +906,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customer/:id 404', done => {
+    it('GET /Customer/:id 404', (done) => {
       request.get({
         url: `${testUrl}/api/v1/Customer/${randomId}`,
         json: true
@@ -918,7 +918,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customer/:id 400', done => {
+    it('GET /Customer/:id 400', (done) => {
       request.get({
         url: `${testUrl}/api/v1/Customer/${invalidId}`,
         json: true
@@ -930,7 +930,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customer/:id/shallow 200', done => {
+    it('GET /Customer/:id/shallow 200', (done) => {
       request.get({
         url: util.format('%s/api/v1/Customer/%s/shallow', testUrl, customer._id),
         json: true
@@ -959,8 +959,8 @@ module.exports = function (createFn, setup, dismantle) {
       restify: app.isRestify
     }
 
-    beforeEach(done => {
-      setup(err => {
+    beforeEach((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -969,21 +969,21 @@ module.exports = function (createFn, setup, dismantle) {
 
         db.models.Customer.create({
           name: 'Bob'
-        }).then(createdCustomer => {
+        }).then((createdCustomer) => {
           customer = createdCustomer
           server = app.listen(testPort, done)
-        }, err => {
+        }, (err) => {
           done(err)
         })
       })
     })
 
-    afterEach(done => {
+    afterEach((done) => {
       options.postUpdate.reset()
       dismantle(app, server, done)
     })
 
-    it('POST /Customer/:id 200', done => {
+    it('POST /Customer/:id 200', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Customer/${customer._id}`,
         json: {
@@ -1002,7 +1002,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customer/:id 404 - random id', done => {
+    it('POST /Customer/:id 404 - random id', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Customer/${randomId}`,
         json: {
@@ -1016,7 +1016,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customer/:id 400 - invalid id', done => {
+    it('POST /Customer/:id 400 - invalid id', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Customer/${invalidId}`,
         json: {
@@ -1030,7 +1030,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customer/:id 400 - not called (missing content type)', done => {
+    it('POST /Customer/:id 400 - not called (missing content type)', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Customer/${customer._id}`
       }, (err, res, body) => {
@@ -1041,7 +1041,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customer/:id 400 - not called (invalid content type)', done => {
+    it('POST /Customer/:id 400 - not called (invalid content type)', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Customer/${customer._id}`,
         formData: {}
@@ -1053,7 +1053,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('PUT /Customer/:id 200', done => {
+    it('PUT /Customer/:id 200', (done) => {
       request.put({
         url: `${testUrl}/api/v1/Customer/${customer._id}`,
         json: {
@@ -1072,7 +1072,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('PUT /Customer/:id 404 - random id', done => {
+    it('PUT /Customer/:id 404 - random id', (done) => {
       request.put({
         url: `${testUrl}/api/v1/Customer/${randomId}`,
         json: {
@@ -1086,7 +1086,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('PUT /Customer/:id 400 - invalid id', done => {
+    it('PUT /Customer/:id 400 - invalid id', (done) => {
       request.put({
         url: `${testUrl}/api/v1/Customer/${invalidId}`,
         json: {
@@ -1100,7 +1100,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('PUT /Customer/:id 400 - not called (missing content type)', done => {
+    it('PUT /Customer/:id 400 - not called (missing content type)', (done) => {
       request.put({
         url: `${testUrl}/api/v1/Customer/${customer._id}`
       }, (err, res, body) => {
@@ -1111,7 +1111,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('PUT /Customer/:id 400 - not called (invalid content type)', done => {
+    it('PUT /Customer/:id 400 - not called (invalid content type)', (done) => {
       request.put({
         url: `${testUrl}/api/v1/Customer/${customer._id}`,
         formData: {}
@@ -1135,8 +1135,8 @@ module.exports = function (createFn, setup, dismantle) {
       restify: app.isRestify
     }
 
-    beforeEach(done => {
-      setup(err => {
+    beforeEach((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -1145,21 +1145,21 @@ module.exports = function (createFn, setup, dismantle) {
 
         db.models.Customer.create({
           name: 'Bob'
-        }).then(createdCustomer => {
+        }).then((createdCustomer) => {
           customer = createdCustomer
           server = app.listen(testPort, done)
-        }, err => {
+        }, (err) => {
           done(err)
         })
       })
     })
 
-    afterEach(done => {
+    afterEach((done) => {
       options.postDelete.reset()
       dismantle(app, server, done)
     })
 
-    it('DELETE /Customer 204', done => {
+    it('DELETE /Customer 204', (done) => {
       request.del({
         url: `${testUrl}/api/v1/Customer`,
         json: true
@@ -1176,7 +1176,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('DELETE /Customer/:id 204', done => {
+    it('DELETE /Customer/:id 204', (done) => {
       request.del({
         url: `${testUrl}/api/v1/Customer/${customer._id}`,
         json: true
@@ -1193,7 +1193,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('DELETE /Customer/:id 404', done => {
+    it('DELETE /Customer/:id 404', (done) => {
       request.del({
         url: `${testUrl}/api/v1/Customer/${randomId}`,
         json: true
@@ -1205,7 +1205,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('DELETE /Customer/:id 400', done => {
+    it('DELETE /Customer/:id 400', (done) => {
       request.del({
         url: `${testUrl}/api/v1/Customer/${invalidId}`,
         json: true
@@ -1231,8 +1231,8 @@ module.exports = function (createFn, setup, dismantle) {
       restify: app.isRestify
     }
 
-    beforeEach(done => {
-      setup(err => {
+    beforeEach((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -1243,12 +1243,12 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    afterEach(done => {
+    afterEach((done) => {
       options.postCreate.reset()
       dismantle(app, server, done)
     })
 
-    it('POST /Customer 201', done => {
+    it('POST /Customer 201', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Customer`,
         json: {
@@ -1279,8 +1279,8 @@ module.exports = function (createFn, setup, dismantle) {
       restify: app.isRestify
     }
 
-    beforeEach(done => {
-      setup(err => {
+    beforeEach((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -1291,12 +1291,12 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    afterEach(done => {
+    afterEach((done) => {
       options.postProcess.reset()
       dismantle(app, server, done)
     })
 
-    it('GET /Customer 200', done => {
+    it('GET /Customer 200', (done) => {
       request.get({
         url: `${testUrl}/api/v1/Customer`,
         json: true

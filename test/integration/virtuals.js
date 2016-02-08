@@ -13,8 +13,8 @@ module.exports = function (createFn, setup, dismantle) {
       let app = createFn()
       let server
 
-      beforeEach(done => {
-        setup(err => {
+      beforeEach((done) => {
+        setup((err) => {
           if (err) {
             return done(err)
           }
@@ -26,19 +26,19 @@ module.exports = function (createFn, setup, dismantle) {
 
           db.models.Customer.create({
             name: 'Bob'
-          }).then(createdCustomers => {
+          }).then((createdCustomers) => {
             server = app.listen(testPort, done)
-          }, err => {
+          }, (err) => {
             done(err)
           })
         })
       })
 
-      afterEach(done => {
+      afterEach((done) => {
         dismantle(app, server, done)
       })
 
-      it('GET /Customer 200 - unavailable', done => {
+      it('GET /Customer 200 - unavailable', (done) => {
         request.get({
           url: `${testUrl}/api/v1/Customer`,
           json: true
@@ -56,8 +56,8 @@ module.exports = function (createFn, setup, dismantle) {
       let app = createFn()
       let server
 
-      beforeEach(done => {
-        setup(err => {
+      beforeEach((done) => {
+        setup((err) => {
           if (err) {
             return done(err)
           }
@@ -69,19 +69,19 @@ module.exports = function (createFn, setup, dismantle) {
 
           db.models.Customer.create({
             name: 'Bob'
-          }).then(createdCustomers => {
+          }).then((createdCustomers) => {
             server = app.listen(testPort, done)
-          }, err => {
+          }, (err) => {
             done(err)
           })
         })
       })
 
-      afterEach(done => {
+      afterEach((done) => {
         dismantle(app, server, done)
       })
 
-      it('GET /Customer 200 - available', done => {
+      it('GET /Customer 200 - available', (done) => {
         request.get({
           url: `${testUrl}/api/v1/Customer`,
           json: true
@@ -99,8 +99,8 @@ module.exports = function (createFn, setup, dismantle) {
       let app = createFn()
       let server
 
-      beforeEach(done => {
-        setup(err => {
+      beforeEach((done) => {
+        setup((err) => {
           if (err) {
             return done(err)
           }
@@ -112,19 +112,19 @@ module.exports = function (createFn, setup, dismantle) {
 
           db.models.Customer.create({
             name: 'Bob'
-          }).then(createdCustomers => {
+          }).then((createdCustomers) => {
             server = app.listen(testPort, done)
-          }, err => {
+          }, (err) => {
             done(err)
           })
         })
       })
 
-      afterEach(done => {
+      afterEach((done) => {
         dismantle(app, server, done)
       })
 
-      it('GET /Customer 200 - available', done => {
+      it('GET /Customer 200 - available', (done) => {
         request.get({
           url: `${testUrl}/api/v1/Customer`,
           json: true

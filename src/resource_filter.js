@@ -69,7 +69,7 @@ Filter.prototype.getExcluded = function (opts) {
  */
 Filter.prototype.filterItem = function (item, excluded) {
   if (_.isArray(item)) {
-    return item.map(i => this.filterItem(i, excluded))
+    return item.map((i) => this.filterItem(i, excluded))
   }
 
   if (item && excluded) {
@@ -101,7 +101,7 @@ Filter.prototype.filterItem = function (item, excluded) {
  */
 Filter.prototype.filterPopulatedItem = function (item, opts) {
   if (_.isArray(item)) {
-    return item.map(i => this.filterPopulatedItem(i, opts))
+    return item.map((i) => this.filterPopulatedItem(i, opts))
   }
 
   for (let i = 0; i < opts.populate.length; i++) {
