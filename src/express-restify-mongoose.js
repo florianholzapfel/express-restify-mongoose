@@ -12,7 +12,6 @@ function getDefaults () {
     findOneAndUpdate: true,
     findOneAndRemove: true,
     lean: true,
-    plural: true,
     restify: false,
     runValidators: false,
     private: [],
