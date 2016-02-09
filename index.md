@@ -187,19 +187,21 @@ restify.serve(router, model[, options])
 
 **options**: object <span class="label label-primary">type</span><span class="label label-success">default</span><span class="label label-info">version</span>
 
+> When `version` is unspecified, the feature is available in the initial major release (3.0.0)
+
 #### prefix
 <span class="label label-primary" title="type">string</span><span class="label label-success" title="default">/api</span>
 
-Path to prefix to the REST endpoint
+Path to prefix to the REST endpoint.
 
 #### version
 <span class="label label-primary" title="type">string</span><span class="label label-success" title="default">/v1</span>
 
-API version that will be prefixed to the rest path. If prefix or version contains `/:id`, then that will be used as the location to search for the id
+API version that will be prefixed to the rest path. If prefix or version contains `/:id`, then that will be used as the location to search for the id.
 
 ##### Example
 
-Generates `/api/v1/Entities/:id/Model` and `/api/v1/Entities/Model` for all pertinent methods
+Generates `/api/v1/Entities/:id/Model` and `/api/v1/Entities/Model` for all pertinent methods.
 
 ```js
 version: '/v1/Entities/:id'
@@ -208,12 +210,12 @@ version: '/v1/Entities/:id'
 #### idProperty
 <span class="label label-primary" title="type">string</span><span class="label label-success" title="default">_id</span>
 
-`findById` will query on the given property
+`findById` will query on the given property.
 
 #### restify
 <span class="label label-primary" title="type">boolean</span><span class="label label-success" title="default">false</span>
 
-Enable support for [restify](https://www.npmjs.com/package/restify) instead of [express](https://www.npmjs.com/package/express)
+Enable support for [restify](https://www.npmjs.com/package/restify) instead of [express](https://www.npmjs.com/package/express).
 
 #### name
 <span class="label label-primary" title="type">string</span><span class="label label-success" title="default">model name</span>
@@ -221,15 +223,14 @@ Enable support for [restify](https://www.npmjs.com/package/restify) instead of [
 Endpoint name
 
 #### readPreference
-<span class="label label-primary" title="type">string</span><span class="label label-success" title="default">primary</span><span class="label label-info">2.3</span>
+<span class="label label-primary" title="type">string</span><span class="label label-success" title="default">primary</span>
 
 Determines the MongoDB nodes from which to read. [Read more](http://mongoosejs.com/docs/api.html#query_Query-read)
 
 #### totalCountHeader
-<span class="label label-primary" title="type">boolean|string</span><span class="label label-success" title="default">false</span><span class="label label-info">2.4</span>
+<span class="label label-primary" title="type">boolean|string</span><span class="label label-success" title="default">false</span>
 
-When set to `true`, executes a count query on `GET /Model` requests that sets limit and skip to 0 and sets the result in the
-`X-Total-Count` header. It can also be set to a string to allow for a custom header.
+When `totalCountHeader: true`, execute a count query on `GET /Model` requests ignoring limit and skip and setting the result in the a response header. It can also be set to a string to allow for a custom header. This is useful when it's necessary to know in advance how many matching documents exist.
 
 ##### Examples
 
@@ -264,7 +265,7 @@ Headers: {
 #### private
 <span class="label label-primary" title="type">array</span>
 
-Array of fields which are only to be returned by queries that have private access
+Array of fields which are only to be returned by queries that have `private` access.
 
 ##### Example
 
@@ -286,7 +287,7 @@ new Schema({
 #### protected
 <span class="label label-primary" title="type">array</span>
 
-Array of fields which are only to be returned by queries that have private or protected access
+Array of fields which are only to be returned by queries that have `private` or `protected` access.
 
 ##### Examples
 
@@ -313,15 +314,15 @@ Whether or not mongoose should use `.lean()` to convert results to plain old Jav
 #### findOneAndUpdate
 <span class="label label-primary" title="type">boolean</span><span class="label label-success" title="default">true</span>
 
-Whether to use findOneAndUpdate or first findById and then save, allowing document middleware to be called. For more information regarding mongoose middleware, [read the docs](http://mongoosejs.com/docs/middleware.html).
+Whether to use `.findOneAndUpdate()` or `.findById()` and then `.save()`, allowing document middleware to be called. For more information regarding mongoose middleware, [read the docs](http://mongoosejs.com/docs/middleware.html).
 
 #### findOneAndRemove
 <span class="label label-primary" title="type">boolean</span><span class="label label-success" title="default">true</span>
 
-Whether to use findOneAndRemove or first findById and then remove, allowing document middleware to be called. For more information regarding mongoose middleware, [read the docs](http://mongoosejs.com/docs/middleware.html).
+Whether to use `.findOneAndRemove()` or `.findById()` and then `.remove()`, allowing document middleware to be called. For more information regarding mongoose middleware, [read the docs](http://mongoosejs.com/docs/middleware.html).
 
 #### preMiddleware
-<span class="label label-primary" title="type">function (req, res, next)</span><span class="label label-info">2.0</span>
+<span class="label label-primary" title="type">function (req, res, next)</span>
 
 Middleware that runs before [preCreate](#preCreate), [preRead](#preRead), [preUpdate](#preUpdate) and [preDelete](#preDelete). 
 
@@ -329,54 +330,52 @@ Middleware that runs before [preCreate](#preCreate), [preRead](#preRead), [preUp
 
 ```js
 preMiddleware: function (req, res, next) {
-  performAsyncLogic(function (err) {
+  performAsyncLogic((err) => {
     next(err)
   })
 }
 ```
 
 #### preCreate
-<span class="label label-primary" title="type">function (req, res, next)</span><span class="label label-info">2.1</span>
+<span class="label label-primary" title="type">function (req, res, next)</span>
 
-Middleware that runs before creating a resource
+Middleware that runs before creating a resource.
 
 ```js
 preCreate: function (req, res, next) {
-  performAsyncLogic(function (err) {
+  performAsyncLogic((err) => {
     next(err)
   })
 }
 ```
 
 #### preRead
-<span class="label label-primary" title="type">function (req, res, next)</span><span class="label label-info">2.1</span>
+<span class="label label-primary" title="type">function (req, res, next)</span>
 
-Middleware that runs before reading a resource
+Middleware that runs before reading a resource.
 
 ```js
 preRead: function (req, res, next) {
-  performAsyncLogic(function (err) {
+  performAsyncLogic((err) => {
     next(err)
   })
 }
 ```
 
 #### preUpdate
-<span class="label label-primary" title="type">function (req, res, next)</span><span class="label label-info">2.1</span>
+<span class="label label-primary" title="type">function (req, res, next)</span>
 
-Middleware that runs before updating a resource
+Middleware that runs before updating a resource.
 
 ```js
 preUpdate: function (req, res, next) {
-  performAsyncLogic(function (err) {
+  performAsyncLogic((err) => {
     next(err)
   })
 }
 ```
 
-<span class="label label-info">new in 2.2</span>
-
-When `findOneAndUpdate` is disabled, the document is made available which is useful for authorization as well as setting values
+When `findOneAndUpdate: false`, the document is available which is useful for authorization as well as setting values.
 
 ```js
 findOneAndUpdate: false,
@@ -392,21 +391,19 @@ preUpdate: function (req, res, next) {
 ```
 
 #### preDelete
-<span class="label label-primary" title="type">function (req, res, next)</span><span class="label label-info">2.1</span>
+<span class="label label-primary" title="type">function (req, res, next)</span>
 
-Middleware that runs before deleting a resource
+Middleware that runs before deleting a resource.
 
 ```js
 preDelete: function (req, res, next) {
-  performAsyncLogic(function (err) {
+  performAsyncLogic((err) => {
     next(err)
   })
 }
 ```
 
-<span class="label label-info">new in 2.2</span>
-
-When `findOneAndRemove` is disabled, the document is made available which is useful for authorization as well as performing non-destructive removals
+When `findOneAndRemove: false`, the document is available which is useful for authorization as well as performing non-destructive removals.
 
 ```js
 findOneAndRemove: false,
@@ -427,7 +424,7 @@ preDelete: function (req, res, next) {
 #### access
 <span class="label label-primary" title="type">function (req[, done])</span>
 
-Returns or yields 'private', 'protected' or 'public'. It is called on GET, POST and PUT requests and filters out the fields defined in [private](#private) and [protected](#protected)
+Returns or yields 'private', 'protected' or 'public'. It is called on GET, POST and PUT requests and filters out the fields defined in [private](#private) and [protected](#protected).
 
 ##### Examples
 
@@ -456,7 +453,7 @@ access: function (req, done) {
 #### contextFilter
 <span class="label label-primary" title="type">function (model, req, done)</span>
 
-Allows request specific filtering
+Allows request specific filtering.
 
 ##### Example
 
@@ -469,64 +466,64 @@ contextFilter: function (model, req, done) {
 ```
 
 #### postCreate
-<span class="label label-primary" title="type">function (req, res, next)</span><span class="label label-info">2.0</span>
+<span class="label label-primary" title="type">function (req, res, next)</span>
 
-Middleware that runs after successfully creating a resource
+Middleware that runs after successfully creating a resource. The unfiltered document is available on `req.erm.result`.
 
 ```js
 postCreate: function (req, res, next) {
   let result = req.erm.result         // unfiltered document or object
   let statusCode = req.erm.statusCode // 201
 
-  performAsyncLogic(function (err) {
+  performAsyncLogic((err) => {
     next(err)
   })
 }
 ```
 
 #### postRead
-<span class="label label-primary" title="type">function (req, res, next)</span><span class="label label-info">2.0</span>
+<span class="label label-primary" title="type">function (req, res, next)</span>
 
-Middleware that runs after successfully reading a resource
+Middleware that runs after successfully reading a resource. The unfiltered document(s), or object(s) when `lean: false`, is available on `req.erm.result`.
 
 ```js
 postRead: function (req, res, next) {
-  let result = req.erm.result         // unfiltered document, object, document array or object array
+  let result = req.erm.result         // unfiltered document, object or array
   let statusCode = req.erm.statusCode // 200
 
-  performAsyncLogic(function (err) {
+  performAsyncLogic((err) => {
     next(err)
   })
 }
 ```
 
 #### postUpdate
-<span class="label label-primary" title="type">function (req, res, next)</span><span class="label label-info">2.0</span>
+<span class="label label-primary" title="type">function (req, res, next)</span>
 
-Middleware that runs after successfully updating a resource
+Middleware that runs after successfully updating a resource. The unfiltered document, or object when `lean: false`, is available on `req.erm.result`. 
 
 ```js
 postUpdate: function (req, res, next) {
   let result = req.erm.result         // unfiltered document or object
   let statusCode = req.erm.statusCode // 200
 
-  performAsyncLogic(function (err) {
+  performAsyncLogic((err) => {
     next(err)
   })
 }
 ```
 
 #### postDelete
-<span class="label label-primary" title="type">function (req, res, next)</span><span class="label label-info">2.0</span>
+<span class="label label-primary" title="type">function (req, res, next)</span>
 
-Middleware that runs after successfully deleting a resource
+Middleware that runs after successfully deleting a resource.
 
 ```js
 postDelete: function (req, res, next) {
   let result = req.erm.result         // undefined
   let statusCode = req.erm.statusCode // 204
 
-  performAsyncLogic(function (err) {
+  performAsyncLogic((err) => {
     next(err)
   })
 }
@@ -535,7 +532,7 @@ postDelete: function (req, res, next) {
 #### outputFn
 <span class="label label-primary" title="type">function (req, res)</span>
 
-Function used to output the result
+Function used to output the result. The filtered object is available on `req.erm.result`.
 
 ##### Example
 
@@ -548,13 +545,11 @@ outputFn: function (req, res) {
 ```
 
 #### postProcess
-<span class="label label-primary" title="type">function (req, res, next)</span><span class="label label-info">2.0</span>
+<span class="label label-primary" title="type">function (req, res, next)</span>
 
-Middleware that is called after output, useful for logging
+Middleware that is called after output, useful for logging. The filtered object is available on `req.erm.result`.
 
-<div class="alert alert-warning">
-  <i class="glyphicon glyphicon-alert"></i> Not guaranteed to execute after output if async operations are performed inside `outputFn`
-</div>
+> Not guaranteed to execute after output if async operations are performed inside `outputFn`
 
 ```js
 postProcess: function (req, res, next) {
@@ -565,11 +560,9 @@ postProcess: function (req, res, next) {
 #### onError
 <span class="label label-primary" title="type">function (err, req, res, next)</span><span class="label label-success" title="default">send the entire mongoose error</span>
 
-<div class="alert alert-warning">
-  <i class="glyphicon glyphicon-alert"></i> Leaving this as default may leak information about your database
-</div>
+> Leaving this as default may leak information about your database
 
-Function used to output an error
+Function used to output an error.
 
 ##### Example
 
