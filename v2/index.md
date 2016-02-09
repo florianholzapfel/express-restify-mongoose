@@ -1,6 +1,6 @@
 ---
 layout: default
-version: 3
+version: 2
 ---
 
 ## Getting started
@@ -11,7 +11,7 @@ version: 3
 ```js
 {
   "dependencies": {
-    "express-restify-mongoose": "^3.0.0",
+    "express-restify-mongoose": "^2.0.0",
     "mongoose": "^4.0.0"
   }
 }
@@ -23,20 +23,18 @@ version: 3
 npm install express-restify-mongoose --save
 ```
 
-> While the source and examples are now written in ES2015, the module is transpiled and published as ES5 using Babel and remains fully compatible with Node 0.10 and newer.
-
 ### Express 4 app
 
 This snippet...
 
 ```js
-const express = require('express')
-const bodyParser = require('body-parser')
-const methodOverride = require('method-override')
-const mongoose = require('mongoose')
-const restify = require('express-restify-mongoose')
-const app = express()
-const router = express.Router()
+var express = require('express')
+var bodyParser = require('body-parser')
+var methodOverride = require('method-override')
+var mongoose = require('mongoose')
+var restify = require('express-restify-mongoose')
+var app = express()
+var router = express.Router()
 
 app.use(bodyParser.json())
 app.use(methodOverride())
@@ -74,7 +72,7 @@ DELETE http://localhost/api/v1/Customers/:id
 ### Usage with [request](https://www.npmjs.com/package/request)
 
 ```js
-let request = require('request')
+var request = require('request')
 
 request({
   url: '/api/v1/Model',
@@ -214,6 +212,16 @@ version: '/v1/Entities/:id'
 <span class="label label-primary" title="type">boolean</span><span class="label label-success" title="default">false</span>
 
 Enable support for [restify](https://www.npmjs.com/package/restify) instead of [express](https://www.npmjs.com/package/express)
+
+#### plural
+<span class="label label-primary" title="type">boolean</span><span class="label label-success" title="default">true</span>
+
+Automatically pluralize model names using [inflection](https://www.npmjs.com/package/inflection)
+
+#### lowercase
+<span class="label label-primary" title="type">boolean</span><span class="label label-success" title="default">false</span>
+
+Whether to call `.toLowerCase()` on model names before generating the routes
 
 #### name
 <span class="label label-primary" title="type">string</span><span class="label label-success" title="default">model name</span>
@@ -475,8 +483,8 @@ Middleware that runs after successfully creating a resource
 
 ```js
 postCreate: function (req, res, next) {
-  let result = req.erm.result         // unfiltered document or object
-  let statusCode = req.erm.statusCode // 201
+  var result = req.erm.result         // object
+  var statusCode = req.erm.statusCode // 201
 
   performAsyncLogic(function (err) {
     next(err)
@@ -491,8 +499,8 @@ Middleware that runs after successfully reading a resource
 
 ```js
 postRead: function (req, res, next) {
-  let result = req.erm.result         // unfiltered document, object, document array or object array
-  let statusCode = req.erm.statusCode // 200
+  var result = req.erm.result         // object / array
+  var statusCode = req.erm.statusCode // 200
 
   performAsyncLogic(function (err) {
     next(err)
@@ -507,8 +515,8 @@ Middleware that runs after successfully updating a resource
 
 ```js
 postUpdate: function (req, res, next) {
-  let result = req.erm.result         // unfiltered document or object
-  let statusCode = req.erm.statusCode // 200
+  var result = req.erm.result         // object
+  var statusCode = req.erm.statusCode // 200
 
   performAsyncLogic(function (err) {
     next(err)
@@ -523,8 +531,8 @@ Middleware that runs after successfully deleting a resource
 
 ```js
 postDelete: function (req, res, next) {
-  let result = req.erm.result         // undefined
-  let statusCode = req.erm.statusCode // 204
+  var result = req.erm.result         // undefined
+  var statusCode = req.erm.statusCode // 204
 
   performAsyncLogic(function (err) {
     next(err)
@@ -541,9 +549,7 @@ Function used to output the result
 
 ```js
 outputFn: function (req, res) {
-  let result = req.erm.result         // filtered object
-
-  res.status(req.erm.statusCode).json(result)
+  res.status(req.erm.statusCode).json(req.erm.result)
 }
 ```
 
