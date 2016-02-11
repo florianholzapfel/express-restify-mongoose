@@ -58,17 +58,17 @@ app.listen(3000, function () {
 ...automatically generates those endpoints.
 
 ```
-GET http://localhost/api/v1/Customers/count
-GET http://localhost/api/v1/Customers
-PUT http://localhost/api/v1/Customers
-POST http://localhost/api/v1/Customers
-DELETE http://localhost/api/v1/Customers
+GET http://localhost/api/v1/Customer/count
+GET http://localhost/api/v1/Customer
+POST http://localhost/api/v1/Customer
+DELETE http://localhost/api/v1/Customer
 
-GET http://localhost/api/v1/Customers/:id
-GET http://localhost/api/v1/Customers/:id/shallow
-PUT http://localhost/api/v1/Customers/:id
-POST http://localhost/api/v1/Customers/:id
-DELETE http://localhost/api/v1/Customers/:id
+GET http://localhost/api/v1/Customer/:id
+GET http://localhost/api/v1/Customer/:id/shallow
+PUT http://localhost/api/v1/Customer/:id
+POST http://localhost/api/v1/Customer/:id
+PATCH http://localhost/api/v1/Customer/:id
+DELETE http://localhost/api/v1/Customer/:id
 ```
 
 ### Usage with [request](https://www.npmjs.com/package/request)
