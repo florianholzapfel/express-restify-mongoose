@@ -5,7 +5,7 @@ const weedout = require('weedout')
 /**
  * Represents a filter.
  * @constructor
- * @param {Object} - Options
+ * @param {Object} opts - Options
  * @param {Object} opts.model - Mongoose model
  * @param {Object} opts.excludedMap {} - Filtered keys for related models
  * @param {Object} opts.filteredKeys {} - Keys to filter for the current model
@@ -58,6 +58,21 @@ Filter.prototype.getExcluded = function (opts) {
   }
 
   return opts.access === 'protected' ? entry.private : entry.private.concat(entry.protected)
+}
+
+Filter.prototype.isExcluded = function (field, opts) {
+  if (!field) {
+    return false
+  }
+
+  opts = _.defaults(opts, {
+    access: 'public',
+    excludedMap: {},
+    filteredKeys: this.filteredKeys,
+    modelName: this.model.modelName
+  })
+
+  return this.getExcluded(opts).indexOf(field) >= 0
 }
 
 /**

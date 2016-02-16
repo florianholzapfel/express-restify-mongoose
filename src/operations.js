@@ -2,7 +2,7 @@ const _ = require('lodash')
 const http = require('http')
 const moredots = require('moredots')
 
-module.exports = function (model, options) {
+module.exports = function (model, options, excludedMap) {
   const buildQuery = require('./buildQuery')(options)
 
   function findById (filteredContext, id) {
@@ -11,7 +11,20 @@ module.exports = function (model, options) {
     })
   }
 
+  function isDistinctExcluded (req) {
+    return options.filter.isExcluded(req._ermQueryOptions['distinct'], {
+      access: req.access,
+      excludedMap: excludedMap
+    })
+  }
+
   function getItems (req, res, next) {
+    if (isDistinctExcluded(req)) {
+      req.erm.result = []
+      req.erm.statusCode = 200
+      return next()
+    }
+
     options.contextFilter(model, req, (filteredContext) => {
       let query = buildQuery(filteredContext.find(), req._ermQueryOptions).read(options.readPreference)
 
@@ -89,6 +102,12 @@ module.exports = function (model, options) {
   }
 
   function getItem (req, res, next) {
+    if (isDistinctExcluded(req)) {
+      req.erm.result = []
+      req.erm.statusCode = 200
+      return next()
+    }
+
     options.contextFilter(model, req, (filteredContext) => {
       buildQuery(findById(filteredContext, req.params.id), req._ermQueryOptions).lean(options.lean).read(options.readPreference).exec().then((item) => {
         if (!item) {

@@ -167,6 +167,38 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
+      it('GET /Customer?distinct=age 200', (done) => {
+        request.get({
+          url: `${testUrl}/api/v1/Customer`,
+          qs: {
+            distinct: 'age'
+          },
+          json: true
+        }, (err, res, body) => {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 1)
+          assert.equal(body[0], 12)
+          done()
+        })
+      })
+
+      it('GET /Customer?distinct=comment 200', (done) => {
+        request.get({
+          url: `${testUrl}/api/v1/Customer`,
+          qs: {
+            distinct: 'comment'
+          },
+          json: true
+        }, (err, res, body) => {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 1)
+          assert.equal(body[0], 'Boo')
+          done()
+        })
+      })
+
       it('GET /Customer/:id 200', (done) => {
         request.get({
           url: `${testUrl}/api/v1/Customer/${customer._id}`,
@@ -186,6 +218,38 @@ module.exports = function (createFn, setup, dismantle) {
               number: 1
             }
           })
+          done()
+        })
+      })
+
+      it('GET /Customer/:id?distinct=age 200', (done) => {
+        request.get({
+          url: `${testUrl}/api/v1/Customer/${customer._id}`,
+          qs: {
+            distinct: 'age'
+          },
+          json: true
+        }, (err, res, body) => {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 1)
+          assert.equal(body[0], 12)
+          done()
+        })
+      })
+
+      it('GET /Customer/:id?distinct=comment 200', (done) => {
+        request.get({
+          url: `${testUrl}/api/v1/Customer/${customer._id}`,
+          qs: {
+            distinct: 'comment'
+          },
+          json: true
+        }, (err, res, body) => {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 1)
+          assert.equal(body[0], 'Boo')
           done()
         })
       })
@@ -629,6 +693,37 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
+      it('GET /Customer?distinct=age 200', (done) => {
+        request.get({
+          url: `${testUrl}/api/v1/Customer`,
+          qs: {
+            distinct: 'age'
+          },
+          json: true
+        }, (err, res, body) => {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 0)
+          done()
+        })
+      })
+
+      it('GET /Customer?distinct=comment 200', (done) => {
+        request.get({
+          url: `${testUrl}/api/v1/Customer`,
+          qs: {
+            distinct: 'comment'
+          },
+          json: true
+        }, (err, res, body) => {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 1)
+          assert.equal(body[0], 'Boo')
+          done()
+        })
+      })
+
       it('GET /Customer/:id 200', (done) => {
         request.get({
           url: `${testUrl}/api/v1/Customer/${customer._id}`,
@@ -645,6 +740,37 @@ module.exports = function (createFn, setup, dismantle) {
               item: product._id.toHexString()
             }
           })
+          done()
+        })
+      })
+
+      it('GET /Customer/:id?distinct=age 200', (done) => {
+        request.get({
+          url: `${testUrl}/api/v1/Customer/${customer._id}`,
+          qs: {
+            distinct: 'age'
+          },
+          json: true
+        }, (err, res, body) => {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 0)
+          done()
+        })
+      })
+
+      it('GET /Customer/:id?distinct=comment 200', (done) => {
+        request.get({
+          url: `${testUrl}/api/v1/Customer/${customer._id}`,
+          qs: {
+            distinct: 'comment'
+          },
+          json: true
+        }, (err, res, body) => {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 1)
+          assert.equal(body[0], 'Boo')
           done()
         })
       })
@@ -1069,6 +1195,36 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
+      it('GET /Customer?distinct=age 200', (done) => {
+        request.get({
+          url: `${testUrl}/api/v1/Customer`,
+          qs: {
+            distinct: 'age'
+          },
+          json: true
+        }, (err, res, body) => {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 0)
+          done()
+        })
+      })
+
+      it('GET /Customer?distinct=comment 200', (done) => {
+        request.get({
+          url: `${testUrl}/api/v1/Customer`,
+          qs: {
+            distinct: 'comment'
+          },
+          json: true
+        }, (err, res, body) => {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 0)
+          done()
+        })
+      })
+
       it('GET /Customer/:id 200', (done) => {
         request.get({
           url: `${testUrl}/api/v1/Customer/${customer._id}`,
@@ -1085,6 +1241,36 @@ module.exports = function (createFn, setup, dismantle) {
               item: product._id.toHexString()
             }
           })
+          done()
+        })
+      })
+
+      it('GET /Customer/:id?distinct=age 200', (done) => {
+        request.get({
+          url: `${testUrl}/api/v1/Customer/${customer._id}`,
+          qs: {
+            distinct: 'age'
+          },
+          json: true
+        }, (err, res, body) => {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 0)
+          done()
+        })
+      })
+
+      it('GET /Customer/:id?distinct=comment 200', (done) => {
+        request.get({
+          url: `${testUrl}/api/v1/Customer/${customer._id}`,
+          qs: {
+            distinct: 'comment'
+          },
+          json: true
+        }, (err, res, body) => {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 0)
           done()
         })
       })

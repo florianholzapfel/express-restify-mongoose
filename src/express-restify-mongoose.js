@@ -111,7 +111,7 @@ const restify = function (app, model, opts = {}) {
 
   options.name = options.name || model.modelName
 
-  const ops = require('./operations')(model, options)
+  const ops = require('./operations')(model, options, excludedMap)
 
   let uri_item = `${options.prefix}${options.version}/${options.name}`
   if (uri_item.indexOf('/:id') === -1) {
