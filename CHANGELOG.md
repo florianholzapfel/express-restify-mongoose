@@ -1,6 +1,10 @@
 Changelog
 =========
 
+### 3.1.0
+
+* critical security fix with the `distinct` operator, see [issue #252](https://github.com/florianholzapfel/express-restify-mongoose/issues/252) for details
+
 ### 3.0.0
 
 * ported source to ES2015, compiled and published as ES5 with Babel
