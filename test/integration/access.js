@@ -168,6 +168,38 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
+      it('GET /Customers?distinct=age 200', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          qs: {
+            distinct: 'age'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 1)
+          assert.equal(body[0], 12)
+          done()
+        })
+      })
+
+      it('GET /Customers?distinct=comment 200', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          qs: {
+            distinct: 'comment'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 1)
+          assert.equal(body[0], 'Boo')
+          done()
+        })
+      })
+
       it('GET /Customers/:id 200', function (done) {
         request.get({
           url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
@@ -187,6 +219,38 @@ module.exports = function (createFn, setup, dismantle) {
               number: 1
             }
           })
+          done()
+        })
+      })
+
+      it('GET /Customers/:id?distinct=age 200', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          qs: {
+            distinct: 'age'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 1)
+          assert.equal(body[0], 12)
+          done()
+        })
+      })
+
+      it('GET /Customers/:id?distinct=comment 200', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          qs: {
+            distinct: 'comment'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 1)
+          assert.equal(body[0], 'Boo')
           done()
         })
       })
@@ -630,6 +694,37 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
+      it('GET /Customers?distinct=age 200', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          qs: {
+            distinct: 'age'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 0)
+          done()
+        })
+      })
+
+      it('GET /Customers?distinct=comment 200', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          qs: {
+            distinct: 'comment'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 1)
+          assert.equal(body[0], 'Boo')
+          done()
+        })
+      })
+
       it('GET /Customers/:id 200', function (done) {
         request.get({
           url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
@@ -646,6 +741,37 @@ module.exports = function (createFn, setup, dismantle) {
               item: product._id.toHexString()
             }
           })
+          done()
+        })
+      })
+
+      it('GET /Customers/:id?distinct=age 200', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          qs: {
+            distinct: 'age'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 0)
+          done()
+        })
+      })
+
+      it('GET /Customers/:id?distinct=comment 200', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          qs: {
+            distinct: 'comment'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 1)
+          assert.equal(body[0], 'Boo')
           done()
         })
       })
@@ -1070,6 +1196,36 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
+      it('GET /Customers?distinct=age 200', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          qs: {
+            distinct: 'age'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 0)
+          done()
+        })
+      })
+
+      it('GET /Customers?distinct=comment 200', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers', testUrl),
+          qs: {
+            distinct: 'comment'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 0)
+          done()
+        })
+      })
+
       it('GET /Customers/:id 200', function (done) {
         request.get({
           url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
@@ -1086,6 +1242,36 @@ module.exports = function (createFn, setup, dismantle) {
               item: product._id.toHexString()
             }
           })
+          done()
+        })
+      })
+
+      it('GET /Customers/:id?distinct=age 200', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          qs: {
+            distinct: 'age'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 0)
+          done()
+        })
+      })
+
+      it('GET /Customers/:id?distinct=comment 200', function (done) {
+        request.get({
+          url: util.format('%s/api/v1/Customers/%s', testUrl, customer._id),
+          qs: {
+            distinct: 'comment'
+          },
+          json: true
+        }, function (err, res, body) {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 0)
           done()
         })
       })
