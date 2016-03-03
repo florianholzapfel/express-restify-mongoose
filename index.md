@@ -105,16 +105,16 @@ All the following parameters (sort, skip, limit, query, populate, select and dis
 ### Sort
 
 ```
-GET /Customers?sort=name
-GET /Customers?sort=-name
-GET /Customers?sort={"name":1}
-GET /Customers?sort={"name":0}
+GET /Customer?sort=name
+GET /Customer?sort=-name
+GET /Customer?sort={"name":1}
+GET /Customer?sort={"name":0}
 ```
 
 ### Skip
 
 ```
-GET /Customers?skip=10
+GET /Customer?skip=10
 ```
 
 ### Limit
@@ -122,7 +122,7 @@ GET /Customers?skip=10
 Only overrides `options.limit` if the queried limit is lower
 
 ```
-GET /Customers?limit=10
+GET /Customer?limit=10
 ```
 
 ### Query
@@ -130,19 +130,19 @@ GET /Customers?limit=10
 Supports all operators ($regex, $gt, $gte, $lt, $lte, $ne, etc.) as well as shorthands: ~, >, >=, <, <=, !=
 
 ```
-GET /Customers?query={"name":"Bob"}
-GET /Customers?query={"name":{"$regex":"^(Bob)"}}
-GET /Customers?query={"name":"~^(Bob)"}
-GET /Customers?query={"age":{"$gt":12}}
-GET /Customers?query={"age":">12"}
-GET /Customers?query={"age":{"$gte":12}}
-GET /Customers?query={"age":">=12"}
-GET /Customers?query={"age":{"$lt":12}}
-GET /Customers?query={"age":"<12"}
-GET /Customers?query={"age":{"$lte":12}}
-GET /Customers?query={"age":"<=12"}
-GET /Customers?query={"age":{"$ne":12}}
-GET /Customers?query={"age":"!=12"}
+GET /Customer?query={"name":"Bob"}
+GET /Customer?query={"name":{"$regex":"^(Bob)"}}
+GET /Customer?query={"name":"~^(Bob)"}
+GET /Customer?query={"age":{"$gt":12}}
+GET /Customer?query={"age":">12"}
+GET /Customer?query={"age":{"$gte":12}}
+GET /Customer?query={"age":">=12"}
+GET /Customer?query={"age":{"$lt":12}}
+GET /Customer?query={"age":"<12"}
+GET /Customer?query={"age":{"$lte":12}}
+GET /Customer?query={"age":"<=12"}
+GET /Customer?query={"age":{"$ne":12}}
+GET /Customer?query={"age":"!=12"}
 ```
 
 ### Populate
@@ -160,16 +160,16 @@ GET/POST/PUT /Invoices?populate=[{"path":"customer"},{"path":"products"}]
 `_id` is always returned unless explicitely excluded
 
 ```
-GET /Customers?select=name
-GET /Customers?select=-name
-GET /Customers?select={"name":1}
-GET /Customers?select={"name":0}
+GET /Customer?select=name
+GET /Customer?select=-name
+GET /Customer?select={"name":1}
+GET /Customer?select={"name":0}
 ```
 
 ### Distinct
 
 ```
-GET /Customers?distinct=name
+GET /Customer?distinct=name
 ```
 
 ## Reference
