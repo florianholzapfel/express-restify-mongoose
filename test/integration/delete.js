@@ -67,12 +67,12 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('DELETE /Customer/:id 400 - invalid id', (done) => {
+      it('DELETE /Customer/:id 404 - invalid id', (done) => {
         request.del({
           url: `${testUrl}/api/v1/Customer/${invalidId}`
         }, (err, res, body) => {
           assert.ok(!err)
-          assert.equal(res.statusCode, 400)
+          assert.equal(res.statusCode, 404)
           done()
         })
       })
@@ -167,12 +167,12 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('DELETE /Customer/:id 400 - invalid id', (done) => {
+      it('DELETE /Customer/:id 404 - invalid id', (done) => {
         request.del({
           url: `${testUrl}/api/v1/Customer/${invalidId}`
         }, (err, res, body) => {
           assert.ok(!err)
-          assert.equal(res.statusCode, 400)
+          assert.equal(res.statusCode, 404)
           done()
         })
       })

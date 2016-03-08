@@ -4,6 +4,7 @@ const moredots = require('moredots')
 
 module.exports = function (model, options, excludedMap) {
   const buildQuery = require('./buildQuery')(options)
+  const errorHandler = require('./errorHandler')(options)
 
   function findById (filteredContext, id) {
     return filteredContext.findOne().and({
@@ -36,17 +37,11 @@ module.exports = function (model, options, excludedMap) {
           query.skip(0).limit(0).count().then((count) => {
             req.erm.totalCount = count
             next()
-          }, (err) => {
-            err.statusCode = 400
-            options.onError(err, req, res, next)
-          })
+          }, errorHandler(req, res, next))
         } else {
           next()
         }
-      }, (err) => {
-        err.statusCode = 400
-        options.onError(err, req, res, next)
-      })
+      }, errorHandler(req, res, next))
     })
   }
 
@@ -57,10 +52,7 @@ module.exports = function (model, options, excludedMap) {
         req.erm.statusCode = 200
 
         next()
-      }, (err) => {
-        err.statusCode = 400
-        options.onError(err, req, res, next)
-      })
+      }, errorHandler(req, res, next))
     })
   }
 
@@ -81,10 +73,7 @@ module.exports = function (model, options, excludedMap) {
         req.erm.statusCode = 200
 
         next()
-      }, (err) => {
-        err.statusCode = 400
-        options.onError(err, req, res, next)
-      })
+      }, errorHandler(req, res, next))
     })
   }
 
@@ -94,10 +83,7 @@ module.exports = function (model, options, excludedMap) {
         req.erm.statusCode = 204
 
         next()
-      }, (err) => {
-        err.statusCode = 400
-        options.onError(err, req, res, next)
-      })
+      }, errorHandler(req, res, next))
     })
   }
 
@@ -120,10 +106,7 @@ module.exports = function (model, options, excludedMap) {
         req.erm.statusCode = 200
 
         next()
-      }, (err) => {
-        err.statusCode = 400
-        options.onError(err, req, res, next)
-      })
+      }, errorHandler(req, res, next))
     })
   }
 
@@ -140,20 +123,14 @@ module.exports = function (model, options, excludedMap) {
           req.erm.statusCode = 204
 
           next()
-        }, (err) => {
-          err.statusCode = 400
-          options.onError(err, req, res, next)
-        })
+        }, errorHandler(req, res, next))
       })
     } else {
       req.erm.document.remove().then(() => {
         req.erm.statusCode = 204
 
         next()
-      }, (err) => {
-        err.statusCode = 400
-        options.onError(err, req, res, next)
-      })
+      }, errorHandler(req, res, next))
     }
   }
 
@@ -176,10 +153,7 @@ module.exports = function (model, options, excludedMap) {
       req.erm.statusCode = 201
 
       next()
-    }, (err) => {
-      err.statusCode = 400
-      options.onError(err, req, res, next)
-    })
+    }, errorHandler(req, res, next))
   }
 
   function modifyObject (req, res, next) {
@@ -247,10 +221,7 @@ module.exports = function (model, options, excludedMap) {
           req.erm.statusCode = 200
 
           next()
-        }, (err) => {
-          err.statusCode = 400
-          options.onError(err, req, res, next)
-        })
+        }, errorHandler(req, res, next))
       })
     } else {
       for (let key in cleanBody) {
@@ -262,10 +233,7 @@ module.exports = function (model, options, excludedMap) {
         req.erm.statusCode = 200
 
         next()
-      }, (err) => {
-        err.statusCode = 400
-        options.onError(err, req, res, next)
-      })
+      }, errorHandler(req, res, next))
     }
   }
 

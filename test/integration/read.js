@@ -119,13 +119,13 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customer/:id 400 - invalid id', (done) => {
+    it('GET /Customer/:id 404 - invalid id', (done) => {
       request.get({
         url: `${testUrl}/api/v1/Customer/${invalidId}`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
-        assert.equal(res.statusCode, 400)
+        assert.equal(res.statusCode, 404)
         done()
       })
     })
@@ -1111,13 +1111,13 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customer/:id/shallow 400 - invalid id', (done) => {
+      it('GET /Customer/:id/shallow 404 - invalid id', (done) => {
         request.get({
           url: `${testUrl}/api/v1/Customer/${invalidId}/shallow`,
           json: true
         }, (err, res, body) => {
           assert.ok(!err)
-          assert.equal(res.statusCode, 400)
+          assert.equal(res.statusCode, 404)
           done()
         })
       })
