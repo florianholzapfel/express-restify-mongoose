@@ -2,7 +2,6 @@ const assert = require('assert')
 const mongoose = require('mongoose')
 const request = require('request')
 const sinon = require('sinon')
-const util = require('util')
 
 module.exports = function (createFn, setup, dismantle) {
   const erm = require('../../lib/express-restify-mongoose')
@@ -457,7 +456,7 @@ module.exports = function (createFn, setup, dismantle) {
 
     it('GET /Customer/:id/shallow 200', (done) => {
       request.get({
-        url: util.format('%s/api/v1/Customer/%s/shallow', testUrl, customer._id),
+        url: `${testUrl}/api/v1/Customer/${customer._id}/shallow`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -932,7 +931,7 @@ module.exports = function (createFn, setup, dismantle) {
 
     it('GET /Customer/:id/shallow 200', (done) => {
       request.get({
-        url: util.format('%s/api/v1/Customer/%s/shallow', testUrl, customer._id),
+        url: `${testUrl}/api/v1/Customer/${customer._id}/shallow`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)

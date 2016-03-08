@@ -1,7 +1,6 @@
 const assert = require('assert')
 const mongoose = require('mongoose')
 const request = require('request')
-const util = require('util')
 
 module.exports = function (createFn, setup, dismantle) {
   const erm = require('../../lib/express-restify-mongoose')
@@ -70,7 +69,7 @@ module.exports = function (createFn, setup, dismantle) {
 
       it('DELETE /Customer/:id 400 - invalid id', (done) => {
         request.del({
-          url: util.format('%s/api/v1/Customer/%s', testUrl, invalidId)
+          url: `${testUrl}/api/v1/Customer/${invalidId}`
         }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 400)
@@ -80,7 +79,7 @@ module.exports = function (createFn, setup, dismantle) {
 
       it('DELETE /Customer/:id 404 - random id', (done) => {
         request.del({
-          url: util.format('%s/api/v1/Customer/%s', testUrl, randomId)
+          url: `${testUrl}/api/v1/Customer/${randomId}`
         }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 404)
@@ -170,7 +169,7 @@ module.exports = function (createFn, setup, dismantle) {
 
       it('DELETE /Customer/:id 400 - invalid id', (done) => {
         request.del({
-          url: util.format('%s/api/v1/Customer/%s', testUrl, invalidId)
+          url: `${testUrl}/api/v1/Customer/${invalidId}`
         }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 400)
@@ -180,7 +179,7 @@ module.exports = function (createFn, setup, dismantle) {
 
       it('DELETE /Customer/:id 404 - random id', (done) => {
         request.del({
-          url: util.format('%s/api/v1/Customer/%s', testUrl, randomId)
+          url: `${testUrl}/api/v1/Customer/${randomId}`
         }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 404)

@@ -1,6 +1,5 @@
 const assert = require('assert')
 const request = require('request')
-const util = require('util')
 
 module.exports = function (createFn, setup, dismantle) {
   const erm = require('../../lib/express-restify-mongoose')
@@ -81,7 +80,7 @@ module.exports = function (createFn, setup, dismantle) {
 
     it('GET /Customer/:id/shallow 404 - filtered age', (done) => {
       request.get({
-        url: util.format('%s/api/v1/Customer/%s/shallow', testUrl, customers[2]._id),
+        url: `${testUrl}/api/v1/Customer/${customers[2]._id}/shallow`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
