@@ -168,6 +168,8 @@ GET /Customer?select={"name":0}
 
 ### Distinct
 
+If the field is private or protected and the request does not have appropriate access, an empty array is returned
+
 ```
 GET /Customer?distinct=name
 ```
