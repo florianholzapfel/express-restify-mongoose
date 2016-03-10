@@ -2,6 +2,7 @@
 title: express-restify-mongoose
 description: >
   Easily create a flexible REST interface for mongoose models
+projecturl: "https://github.com/florianholzapfel/express-restify-mongoose"
 baseurl: "/express-restify-mongoose/"
 url: "https://florianholzapfel.github.io"
 github_username: florianholzapfel
