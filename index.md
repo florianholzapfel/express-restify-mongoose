@@ -224,6 +224,11 @@ Enable support for [restify](https://www.npmjs.com/package/restify) instead of [
 
 Endpoint name
 
+#### runValidators
+<span class="label label-primary" title="type">boolean</span><span class="label label-success" title="default">false</span>
+
+Whether or not mongoose should run schema validators when using `findOneAndUpdate`. For more information, [read the mongoose docs](http://mongoosejs.com/docs/validation.html#update-validators).
+
 #### readPreference
 <span class="label label-primary" title="type">string</span><span class="label label-success" title="default">primary</span>
 
