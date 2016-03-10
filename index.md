@@ -232,7 +232,7 @@ Whether or not mongoose should run schema validators when using `findOneAndUpdat
 #### readPreference
 <span class="label label-primary" title="type">string</span><span class="label label-success" title="default">primary</span>
 
-Determines the MongoDB nodes from which to read. [Read more](http://mongoosejs.com/docs/api.html#query_Query-read)
+Determines the MongoDB nodes from which to read. For more information, [read the mongoose docs](http://mongoosejs.com/docs/api.html#query_Query-read).
 
 #### totalCountHeader
 <span class="label label-primary" title="type">boolean|string</span><span class="label label-success" title="default">false</span>
