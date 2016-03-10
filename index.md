@@ -189,7 +189,7 @@ restify.serve(router, model[, options])
 
 **options**: object <span class="label label-primary">type</span><span class="label label-success">default</span><span class="label label-info">version</span>
 
-> When `version` is unspecified, the feature is available in the initial major release (3.0.0)
+> When <span class="label label-info">version</span> is unspecified, the feature is available in the initial major release (3.0.0)
 
 #### prefix
 <span class="label label-primary" title="type">string</span><span class="label label-success" title="default">/api</span>
