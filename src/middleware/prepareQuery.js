@@ -1,4 +1,5 @@
 const _ = require('lodash')
+const isCoordinates = require('is-coordinates')
 
 module.exports = function (options) {
   function jsonQueryParser (key, value) {
@@ -23,7 +24,7 @@ module.exports = function (options) {
       } else if (value[0] === '=') {
         return { $eq: value.substr(1) }*/
       }
-    } else if (_.isArray(value) && key[0] !== '$') {
+    } else if (_.isArray(value) && key[0] !== '$' && key !== 'coordinates' && !isCoordinates(value)) {
       return { $in: value }
     }
 
