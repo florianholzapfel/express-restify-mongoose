@@ -147,7 +147,7 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('POST /Customer/:id 400 - invalid id', (done) => {
+      it('POST /Customer/:id 404 - invalid id', (done) => {
         request.post({
           url: `${testUrl}/api/v1/Customer/${invalidId}`,
           json: {
@@ -155,7 +155,7 @@ module.exports = function (createFn, setup, dismantle) {
           }
         }, (err, res, body) => {
           assert.ok(!err)
-          assert.equal(res.statusCode, 400)
+          assert.equal(res.statusCode, 404)
           done()
         })
       })
@@ -252,7 +252,7 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PATCH /Customer/:id 400 - invalid id', (done) => {
+      it('PATCH /Customer/:id 404 - invalid id', (done) => {
         request.patch({
           url: `${testUrl}/api/v1/Customer/${invalidId}`,
           json: {
@@ -260,7 +260,7 @@ module.exports = function (createFn, setup, dismantle) {
           }
         }, (err, res, body) => {
           assert.ok(!err)
-          assert.equal(res.statusCode, 400)
+          assert.equal(res.statusCode, 404)
           done()
         })
       })
@@ -436,7 +436,7 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Customer/:id 400 - invalid id', (done) => {
+      it('PUT /Customer/:id 404 - invalid id', (done) => {
         request.put({
           url: `${testUrl}/api/v1/Customer/${invalidId}`,
           json: {
@@ -444,7 +444,7 @@ module.exports = function (createFn, setup, dismantle) {
           }
         }, (err, res, body) => {
           assert.ok(!err)
-          assert.equal(res.statusCode, 400)
+          assert.equal(res.statusCode, 404)
           done()
         })
       })
@@ -667,7 +667,7 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('POST /Customer/:id 400 - invalid id', (done) => {
+      it('POST /Customer/:id 404 - invalid id', (done) => {
         request.post({
           url: `${testUrl}/api/v1/Customer/${invalidId}`,
           json: {
@@ -675,7 +675,7 @@ module.exports = function (createFn, setup, dismantle) {
           }
         }, (err, res, body) => {
           assert.ok(!err)
-          assert.equal(res.statusCode, 400)
+          assert.equal(res.statusCode, 404)
           done()
         })
       })
@@ -773,7 +773,7 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PATCH /Customer/:id 400 - invalid id', (done) => {
+      it('PATCH /Customer/:id 404 - invalid id', (done) => {
         request.patch({
           url: `${testUrl}/api/v1/Customer/${invalidId}`,
           json: {
@@ -781,7 +781,7 @@ module.exports = function (createFn, setup, dismantle) {
           }
         }, (err, res, body) => {
           assert.ok(!err)
-          assert.equal(res.statusCode, 400)
+          assert.equal(res.statusCode, 404)
           done()
         })
       })
@@ -958,7 +958,7 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Customer/:id 400 - invalid id', (done) => {
+      it('PUT /Customer/:id 404 - invalid id', (done) => {
         request.put({
           url: `${testUrl}/api/v1/Customer/${invalidId}`,
           json: {
@@ -966,7 +966,7 @@ module.exports = function (createFn, setup, dismantle) {
           }
         }, (err, res, body) => {
           assert.ok(!err)
-          assert.equal(res.statusCode, 400)
+          assert.equal(res.statusCode, 404)
           done()
         })
       })

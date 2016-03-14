@@ -1,6 +1,5 @@
 const assert = require('assert')
 const request = require('request')
-const util = require('util')
 const sinon = require('sinon')
 
 module.exports = function (createFn, setup, dismantle) {
@@ -79,7 +78,7 @@ module.exports = function (createFn, setup, dismantle) {
 
     it('GET /Customer 200', (done) => {
       request.get({
-        url: util.format('%s/api/custom/Customer', testUrl)
+        url: `${testUrl}/api/custom/Customer`
       }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 200)
@@ -89,7 +88,7 @@ module.exports = function (createFn, setup, dismantle) {
 
     it('GET /Invoice 200', (done) => {
       request.get({
-        url: util.format('%s/api/custom/Invoice', testUrl)
+        url: `${testUrl}/api/custom/Invoice`
       }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 200)
@@ -359,7 +358,7 @@ module.exports = function (createFn, setup, dismantle) {
 
     it('GET /Client 200', (done) => {
       request.get({
-        url: util.format('%s/api/v1/Client', testUrl)
+        url: `${testUrl}/api/v1/Client`
       }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 200)
@@ -393,7 +392,7 @@ module.exports = function (createFn, setup, dismantle) {
 
     it('GET /applepie/v1/Customer 200', (done) => {
       request.get({
-        url: util.format('%s/applepie/v1/Customer', testUrl)
+        url: `${testUrl}/applepie/v1/Customer`
       }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 200)
@@ -428,7 +427,7 @@ module.exports = function (createFn, setup, dismantle) {
 
       it('GET /v8/Customer 200', (done) => {
         request.get({
-          url: util.format('%s/api/v8/Customer', testUrl)
+          url: `${testUrl}/api/v8/Customer`
         }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
@@ -470,7 +469,7 @@ module.exports = function (createFn, setup, dismantle) {
 
       it('GET /v8/Entities/Customer 200', (done) => {
         request.get({
-          url: util.format('%s/api/v8/Entities/Customer', testUrl)
+          url: `${testUrl}/api/v8/Entities/Customer`
         }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
@@ -480,7 +479,7 @@ module.exports = function (createFn, setup, dismantle) {
 
       it('GET /v8/Entities/:id/Customer 200', (done) => {
         request.get({
-          url: util.format('%s/api/v8/Entities/%s/Customer', testUrl, customer._id)
+          url: `${testUrl}/api/v8/Entities/${customer._id}/Customer`
         }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
@@ -490,7 +489,7 @@ module.exports = function (createFn, setup, dismantle) {
 
       it('GET /v8/Entities/:id/Customer/shallow 200', (done) => {
         request.get({
-          url: util.format('%s/api/v8/Entities/%s/Customer/shallow', testUrl, customer._id)
+          url: `${testUrl}/api/v8/Entities/${customer._id}/Customer/shallow`
         }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
@@ -500,7 +499,7 @@ module.exports = function (createFn, setup, dismantle) {
 
       it('GET /v8/Entities/Customer/count 200', (done) => {
         request.get({
-          url: util.format('%s/api/v8/Entities/Customer/count', testUrl)
+          url: `${testUrl}/api/v8/Entities/Customer/count`
         }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)

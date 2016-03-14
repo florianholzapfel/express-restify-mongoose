@@ -1,7 +1,6 @@
 const assert = require('assert')
 const mongoose = require('mongoose')
 const request = require('request')
-const util = require('util')
 
 module.exports = function (createFn, setup, dismantle) {
   const erm = require('../../lib/express-restify-mongoose')
@@ -120,13 +119,13 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customer/:id 400 - invalid id', (done) => {
+    it('GET /Customer/:id 404 - invalid id', (done) => {
       request.get({
         url: `${testUrl}/api/v1/Customer/${invalidId}`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
-        assert.equal(res.statusCode, 400)
+        assert.equal(res.statusCode, 404)
         done()
       })
     })
@@ -1102,7 +1101,7 @@ module.exports = function (createFn, setup, dismantle) {
     describe('shallow', () => {
       it('GET /Customer/:id/shallow 200 - created id', (done) => {
         request.get({
-          url: util.format('%s/api/v1/Customer/%s/shallow', testUrl, customers[0]._id),
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}/shallow`,
           json: true
         }, (err, res, body) => {
           assert.ok(!err)
@@ -1112,13 +1111,13 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customer/:id/shallow 400 - invalid id', (done) => {
+      it('GET /Customer/:id/shallow 404 - invalid id', (done) => {
         request.get({
           url: `${testUrl}/api/v1/Customer/${invalidId}/shallow`,
           json: true
         }, (err, res, body) => {
           assert.ok(!err)
-          assert.equal(res.statusCode, 400)
+          assert.equal(res.statusCode, 404)
           done()
         })
       })

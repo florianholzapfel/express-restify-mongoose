@@ -2,7 +2,6 @@ const assert = require('assert')
 const mongoose = require('mongoose')
 const request = require('request')
 const sinon = require('sinon')
-const util = require('util')
 
 module.exports = function (createFn, setup, dismantle) {
   const erm = require('../../lib/express-restify-mongoose')
@@ -457,7 +456,7 @@ module.exports = function (createFn, setup, dismantle) {
 
     it('GET /Customer/:id/shallow 200', (done) => {
       request.get({
-        url: util.format('%s/api/v1/Customer/%s/shallow', testUrl, customer._id),
+        url: `${testUrl}/api/v1/Customer/${customer._id}/shallow`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -918,13 +917,13 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('GET /Customer/:id 400', (done) => {
+    it('GET /Customer/:id 404 - invalid id', (done) => {
       request.get({
         url: `${testUrl}/api/v1/Customer/${invalidId}`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
-        assert.equal(res.statusCode, 400)
+        assert.equal(res.statusCode, 404)
         sinon.assert.notCalled(options.postRead)
         done()
       })
@@ -932,7 +931,7 @@ module.exports = function (createFn, setup, dismantle) {
 
     it('GET /Customer/:id/shallow 200', (done) => {
       request.get({
-        url: util.format('%s/api/v1/Customer/%s/shallow', testUrl, customer._id),
+        url: `${testUrl}/api/v1/Customer/${customer._id}/shallow`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
@@ -1016,7 +1015,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customer/:id 400 - invalid id', (done) => {
+    it('POST /Customer/:id 404 - invalid id', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Customer/${invalidId}`,
         json: {
@@ -1024,7 +1023,7 @@ module.exports = function (createFn, setup, dismantle) {
         }
       }, (err, res, body) => {
         assert.ok(!err)
-        assert.equal(res.statusCode, 400)
+        assert.equal(res.statusCode, 404)
         sinon.assert.notCalled(options.postUpdate)
         done()
       })
@@ -1086,7 +1085,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('PUT /Customer/:id 400 - invalid id', (done) => {
+    it('PUT /Customer/:id 404 - invalid id', (done) => {
       request.put({
         url: `${testUrl}/api/v1/Customer/${invalidId}`,
         json: {
@@ -1094,7 +1093,7 @@ module.exports = function (createFn, setup, dismantle) {
         }
       }, (err, res, body) => {
         assert.ok(!err)
-        assert.equal(res.statusCode, 400)
+        assert.equal(res.statusCode, 404)
         sinon.assert.notCalled(options.postUpdate)
         done()
       })
@@ -1205,13 +1204,13 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('DELETE /Customer/:id 400', (done) => {
+    it('DELETE /Customer/:id 404 - invalid id', (done) => {
       request.del({
         url: `${testUrl}/api/v1/Customer/${invalidId}`,
         json: true
       }, (err, res, body) => {
         assert.ok(!err)
-        assert.equal(res.statusCode, 400)
+        assert.equal(res.statusCode, 404)
         sinon.assert.notCalled(options.postDelete)
         done()
       })

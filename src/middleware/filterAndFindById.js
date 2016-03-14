@@ -1,6 +1,8 @@
 const http = require('http')
 
 module.exports = function (model, options) {
+  const errorHandler = require('../errorHandler')(options)
+
   return function (req, res, next) {
     if (!req.params.id) {
       return next()
@@ -19,10 +21,7 @@ module.exports = function (model, options) {
         req.erm.document = doc
 
         next()
-      }, (err) => {
-        err.statusCode = 400
-        options.onError(err, req, res, next)
-      })
+      }, errorHandler(req, res, next))
     })
   }
 }
