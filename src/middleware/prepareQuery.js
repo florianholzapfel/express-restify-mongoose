@@ -2,9 +2,13 @@ const _ = require('lodash')
 
 module.exports = function (options) {
   function jsonQueryParser (key, value) {
+    if (key === '$regex' && !options.allowRegex) {
+      return undefined
+    }
+
     if (_.isString(value)) {
       if (value[0] === '~') { // parse RegExp
-        return new RegExp(value.substr(1), 'i')
+        return options.allowRegex ? new RegExp(value.substr(1), 'i') : undefined
       } else if (value[0] === '>') {
         if (value[1] === '=') {
           return { $gte: value.substr(2) }

@@ -5,13 +5,15 @@ describe('prepareQuery', () => {
   const prepareQuery = require('../../../lib/middleware/prepareQuery')
 
   let options = {
-    onError: sinon.spy()
+    onError: sinon.spy(),
+    allowRegex: true
   }
 
   let next = sinon.spy()
 
   afterEach(() => {
     options.onError.reset()
+    options.allowRegex = true
     next.reset()
   })
 
@@ -28,6 +30,46 @@ describe('prepareQuery', () => {
       assert.deepEqual(req._ermQueryOptions, {
         query: {
           foo: new RegExp('bar', 'i')
+        }
+      })
+      sinon.assert.calledOnce(next)
+      sinon.assert.calledWithExactly(next)
+      sinon.assert.notCalled(options.onError)
+    })
+
+    it('converts ~ to undefined', () => {
+      let req = {
+        query: {
+          query: '{"foo":"~bar"}'
+        }
+      }
+
+      options.allowRegex = false
+
+      prepareQuery(options)(req, {}, next)
+
+      assert.deepEqual(req._ermQueryOptions, {
+        query: {}
+      })
+      sinon.assert.calledOnce(next)
+      sinon.assert.calledWithExactly(next)
+      sinon.assert.notCalled(options.onError)
+    })
+
+    it('converts $regex to undefined', () => {
+      let req = {
+        query: {
+          query: '{"foo":{"$regex":"bar"}}'
+        }
+      }
+
+      options.allowRegex = false
+
+      prepareQuery(options)(req, {}, next)
+
+      assert.deepEqual(req._ermQueryOptions, {
+        query: {
+          foo: {}
         }
       })
       sinon.assert.calledOnce(next)
