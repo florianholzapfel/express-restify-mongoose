@@ -20,7 +20,7 @@
     "babel-preset-es2015": "^6.3.13",
     "body-parser": "~1",
     "express": "~4",
-    "istanbul": "~0.4",
+    "istanbul": ">=1.0.0-alpha.2",
     "method-override": "~2",
     "mocha": "~2",
     "request": "~2",
@@ -53,7 +53,7 @@
   },
   "scripts": {
     "lint": "standard",
-    "compile": "babel src -d lib",
+    "compile": "babel src -d lib --source-maps both",
     "prepublish": "npm test",
     "pretest": "npm run lint && npm run compile",
     "test": "npm run test-unit && npm run test-filter && npm run test-express && npm run test-restify",
@@ -64,7 +64,8 @@
     "test-restify": "mocha -R spec ./test/restify.js --compilers js:babel-core/register --timeout 10s",
     "test-cov-unit": "istanbul cover node_modules/mocha/bin/_mocha -- --compilers js:babel-core/register -R spec ./test/unit.js",
     "test-cov-express": "istanbul cover node_modules/mocha/bin/_mocha -- --compilers js:babel-core/register -R spec ./test/express.js --timeout 10s",
-    "test-cov-restify": "istanbul cover node_modules/mocha/bin/_mocha -- --compilers js:babel-core/register -R spec ./test/restify.js --timeout 10s"
+    "test-cov-restify": "istanbul cover node_modules/mocha/bin/_mocha -- --compilers js:babel-core/register -R spec ./test/restify.js --timeout 10s",
+    "report-coverage": "cat ./coverage/lcov.info | coveralls"
   },
   "files": [
     "CHANGELOG.md",

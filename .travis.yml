@@ -13,8 +13,9 @@ script:
   - npm run lint
   - npm run compile
   - npm run test-ci
-after_script:
-  - npm install coveralls@~2.11.0 && cat ./coverage/lcov.info | coveralls
+after_success:
+  - npm install coveralls@~2.11.0
+  - npm run report-coverage
 branches:
   only:
     - master
