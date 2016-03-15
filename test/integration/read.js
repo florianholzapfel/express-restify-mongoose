@@ -43,7 +43,8 @@ module.exports = function (createFn, setup, dismantle) {
                 item: createdProduct._id,
                 number: 1
               }
-            }
+            },
+            coordinates: [45.2667, 72.1500]
           }, {
             name: 'John',
             age: 24,
@@ -312,6 +313,31 @@ module.exports = function (createFn, setup, dismantle) {
           assert.ok(!err)
           assert.equal(res.statusCode, 200)
           assert.equal(body.length, 3)
+          done()
+        })
+      })
+
+      it('GET /Customer?query={"$near": { "$geometry": { "coordinates": [45.2667, 72.1500] } }} 200 - coordinates', (done) => {
+        request.get({
+          url: `${testUrl}/api/v1/Customer`,
+          qs: {
+            query: JSON.stringify({
+              coordinates: {
+                $near: {
+                  $geometry: {
+                    type: 'Point',
+                    coordinates: [45.2667, 72.1500]
+                  },
+                  $maxDistance: 1000
+                }
+              }
+            })
+          },
+          json: true
+        }, (err, res, body) => {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 1)
           done()
         })
       })
