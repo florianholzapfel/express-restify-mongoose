@@ -106,7 +106,7 @@ All the following parameters (sort, skip, limit, query, populate, select and dis
 GET /Customers?sort=name
 GET /Customers?sort=-name
 GET /Customers?sort={"name":1}
-GET /Customers?sort={"name":0}
+GET /Customers?sort={"name":-1}
 ```
 
 ### Skip
