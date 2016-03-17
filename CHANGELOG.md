@@ -1,6 +1,12 @@
 Changelog
 =========
 
+### 3.2.0
+
+* added an option to disable regex operations  ([#195](https://github.com/florianholzapfel/express-restify-mongoose/issues/195))
+* fixed queries with an `idProperty` resulting in a `CastError` to return `404` instead of `400`  ([#184](https://github.com/florianholzapfel/express-restify-mongoose/issues/184))
+* fixed query parser to handle geospatial operators ([#187](https://github.com/florianholzapfel/express-restify-mongoose/issues/187))
+
 ### 3.1.0
 
 * critical security fix with the `distinct` operator, see [issue #252](https://github.com/florianholzapfel/express-restify-mongoose/issues/252) for details
