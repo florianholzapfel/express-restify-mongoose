@@ -413,6 +413,24 @@ module.exports = function (createFn, setup, dismantle) {
           })
         })
 
+        it('GET /Customer?query={"name":{"$regex":"^J"}} 200 - name starting with', (done) => {
+          request.get({
+            url: `${testUrl}/api/v1/Customer`,
+            qs: {
+              query: JSON.stringify({
+                name: { $regex: '^J' }
+              })
+            },
+            json: true
+          }, (err, res, body) => {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 200)
+            assert.equal(body.length, 1)
+            assert.ok(body[0].name[0] === 'J')
+            done()
+          })
+        })
+
         it('GET /Customer?query={"name":">=John"} 200 - greater than or equal', (done) => {
           request.get({
             url: `${testUrl}/api/v1/Customer`,

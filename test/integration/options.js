@@ -723,4 +723,50 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
   })
+
+  describe('allowRegex', () => {
+    let app = createFn()
+    let server
+
+    before((done) => {
+      setup((err) => {
+        if (err) {
+          return done(err)
+        }
+
+        erm.serve(app, db.models.Customer, {
+          allowRegex: false,
+          restify: app.isRestify
+        })
+
+        db.models.Customer.create({
+          name: 'Bob'
+        }).then((createdCustomer) => {
+          server = app.listen(testPort, done)
+        }, (err) => {
+          done(err)
+        })
+      })
+    })
+
+    after((done) => {
+      dismantle(app, server, done)
+    })
+
+    it('GET /Customer 200', (done) => {
+      request.get({
+        url: `${testUrl}/api/v1/Customer`,
+        qs: {
+          query: JSON.stringify({
+            name: { $regex: '^B' }
+          })
+        },
+        json: true
+      }, (err, res, body) => {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 400)
+        done()
+      })
+    })
+  })
 }

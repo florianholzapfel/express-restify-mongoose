@@ -14,6 +14,7 @@ function getDefaults () {
     lean: true,
     restify: false,
     runValidators: false,
+    allowRegex: true,
     private: [],
     protected: []
   })
