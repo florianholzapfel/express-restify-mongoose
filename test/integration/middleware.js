@@ -11,6 +11,7 @@ module.exports = function (createFn, setup, dismantle) {
   const testUrl = `http://localhost:${testPort}`
   const invalidId = 'invalid-id'
   const randomId = mongoose.Types.ObjectId().toHexString()
+  const updateMethods = ['PATCH', 'POST', 'PUT']
 
   describe('preMiddleware/Create/Read/Update/Delete - null', () => {
     let app = createFn()
@@ -71,29 +72,18 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customer/:id 200', (done) => {
-      request.post({
-        url: `${testUrl}/api/v1/Customer/${customer._id}`,
-        json: {
-          name: 'Bobby'
-        }
-      }, (err, res, body) => {
-        assert.ok(!err)
-        assert.equal(res.statusCode, 200)
-        done()
-      })
-    })
-
-    it('PUT /Customer/:id 200', (done) => {
-      request.put({
-        url: `${testUrl}/api/v1/Customer/${customer._id}`,
-        json: {
-          name: 'Bobby'
-        }
-      }, (err, res, body) => {
-        assert.ok(!err)
-        assert.equal(res.statusCode, 200)
-        done()
+    updateMethods.forEach((method) => {
+      it(`${method} /Customer/:id 200`, (done) => {
+        request({ method,
+          url: `${testUrl}/api/v1/Customer/${customer._id}`,
+          json: {
+            name: 'Bobby'
+          }
+        }, (err, res, body) => {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          done()
+        })
       })
     })
 
@@ -214,79 +204,45 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customer/:id 200', (done) => {
-      request.post({
-        url: `${testUrl}/api/v1/Customer/${customer._id}`,
-        json: {}
-      }, (err, res, body) => {
-        assert.ok(!err)
-        assert.equal(res.statusCode, 200)
-        sinon.assert.calledOnce(options.preMiddleware)
-        let args = options.preMiddleware.args[0]
-        assert.equal(args.length, 3)
-        assert.equal(typeof args[2], 'function')
-        done()
+    updateMethods.forEach((method) => {
+      it(`${method} /Customer/:id 200`, (done) => {
+        request({ method,
+          url: `${testUrl}/api/v1/Customer/${customer._id}`,
+          json: {
+            name: 'Bobby'
+          }
+        }, (err, res, body) => {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          sinon.assert.calledOnce(options.preMiddleware)
+          let args = options.preMiddleware.args[0]
+          assert.equal(args.length, 3)
+          assert.equal(typeof args[2], 'function')
+          done()
+        })
       })
-    })
 
-    it('POST /Customer/:id 400 - not called (missing content type)', (done) => {
-      request.post({
-        url: `${testUrl}/api/v1/Customer/${customer._id}`
-      }, (err, res, body) => {
-        assert.ok(!err)
-        assert.equal(res.statusCode, 400)
-        sinon.assert.notCalled(options.preMiddleware)
-        done()
+      it(`${method} /Customer/:id 400 - not called (missing content type)`, (done) => {
+        request({ method,
+          url: `${testUrl}/api/v1/Customer/${customer._id}`
+        }, (err, res, body) => {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 400)
+          sinon.assert.notCalled(options.preMiddleware)
+          done()
+        })
       })
-    })
 
-    it('POST /Customer/:id 400 - not called (invalid content type)', (done) => {
-      request.post({
-        url: `${testUrl}/api/v1/Customer/${customer._id}`,
-        formData: {}
-      }, (err, res, body) => {
-        assert.ok(!err)
-        assert.equal(res.statusCode, 400)
-        sinon.assert.notCalled(options.preMiddleware)
-        done()
-      })
-    })
-
-    it('PUT /Customer/:id 200', (done) => {
-      request.put({
-        url: `${testUrl}/api/v1/Customer/${customer._id}`,
-        json: {}
-      }, (err, res, body) => {
-        assert.ok(!err)
-        assert.equal(res.statusCode, 200)
-        sinon.assert.calledOnce(options.preMiddleware)
-        let args = options.preMiddleware.args[0]
-        assert.equal(args.length, 3)
-        assert.equal(typeof args[2], 'function')
-        done()
-      })
-    })
-
-    it('PUT /Customer/:id 400 - not called (missing content type)', (done) => {
-      request.put({
-        url: `${testUrl}/api/v1/Customer/${customer._id}`
-      }, (err, res, body) => {
-        assert.ok(!err)
-        assert.equal(res.statusCode, 400)
-        sinon.assert.notCalled(options.preMiddleware)
-        done()
-      })
-    })
-
-    it('PUT /Customer/:id 400 - not called (invalid content type)', (done) => {
-      request.put({
-        url: `${testUrl}/api/v1/Customer/${customer._id}`,
-        formData: {}
-      }, (err, res, body) => {
-        assert.ok(!err)
-        assert.equal(res.statusCode, 400)
-        sinon.assert.notCalled(options.preMiddleware)
-        done()
+      it(`${method} /Customer/:id 400 - not called (invalid content type)`, (done) => {
+        request({ method,
+          url: `${testUrl}/api/v1/Customer/${customer._id}`,
+          formData: {}
+        }, (err, res, body) => {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 400)
+          sinon.assert.notCalled(options.preMiddleware)
+          done()
+        })
       })
     })
 
@@ -507,87 +463,47 @@ module.exports = function (createFn, setup, dismantle) {
       dismantle(app, server, done)
     })
 
-    it('POST /Customer/:id 200', (done) => {
-      request.post({
-        url: `${testUrl}/api/v1/Customer/${customer._id}`,
-        json: {
-          name: 'Bobby'
-        }
-      }, (err, res, body) => {
-        assert.ok(!err)
-        assert.equal(res.statusCode, 200)
-        sinon.assert.calledOnce(options.preUpdate)
-        let args = options.preUpdate.args[0]
-        assert.equal(args.length, 3)
-        assert.equal(args[0].erm.result.name, 'Bobby')
-        assert.equal(args[0].erm.statusCode, 200)
-        assert.equal(typeof args[2], 'function')
-        done()
+    updateMethods.forEach((method) => {
+      it(`${method} /Customer/:id 200`, (done) => {
+        request({ method,
+          url: `${testUrl}/api/v1/Customer/${customer._id}`,
+          json: {
+            name: 'Bobby'
+          }
+        }, (err, res, body) => {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          sinon.assert.calledOnce(options.preUpdate)
+          let args = options.preUpdate.args[0]
+          assert.equal(args.length, 3)
+          assert.equal(args[0].erm.result.name, 'Bobby')
+          assert.equal(args[0].erm.statusCode, 200)
+          assert.equal(typeof args[2], 'function')
+          done()
+        })
       })
-    })
 
-    it('POST /Customer/:id 400 - not called (missing content type)', (done) => {
-      request.post({
-        url: `${testUrl}/api/v1/Customer/${customer._id}`
-      }, (err, res, body) => {
-        assert.ok(!err)
-        assert.equal(res.statusCode, 400)
-        sinon.assert.notCalled(options.preUpdate)
-        done()
+      it(`${method} /Customer/:id 400 - not called (missing content type)`, (done) => {
+        request({ method,
+          url: `${testUrl}/api/v1/Customer/${customer._id}`
+        }, (err, res, body) => {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 400)
+          sinon.assert.notCalled(options.preUpdate)
+          done()
+        })
       })
-    })
 
-    it('POST /Customer/:id 400 - not called (invalid content type)', (done) => {
-      request.post({
-        url: `${testUrl}/api/v1/Customer/${customer._id}`,
-        formData: {}
-      }, (err, res, body) => {
-        assert.ok(!err)
-        assert.equal(res.statusCode, 400)
-        sinon.assert.notCalled(options.preUpdate)
-        done()
-      })
-    })
-
-    it('PUT /Customer/:id 200', (done) => {
-      request.put({
-        url: `${testUrl}/api/v1/Customer/${customer._id}`,
-        json: {
-          name: 'Bobby'
-        }
-      }, (err, res, body) => {
-        assert.ok(!err)
-        assert.equal(res.statusCode, 200)
-        sinon.assert.calledOnce(options.preUpdate)
-        let args = options.preUpdate.args[0]
-        assert.equal(args.length, 3)
-        assert.equal(args[0].erm.result.name, 'Bobby')
-        assert.equal(args[0].erm.statusCode, 200)
-        assert.equal(typeof args[2], 'function')
-        done()
-      })
-    })
-
-    it('PUT /Customer/:id 400 - not called (missing content type)', (done) => {
-      request.put({
-        url: `${testUrl}/api/v1/Customer/${customer._id}`
-      }, (err, res, body) => {
-        assert.ok(!err)
-        assert.equal(res.statusCode, 400)
-        sinon.assert.notCalled(options.preUpdate)
-        done()
-      })
-    })
-
-    it('PUT /Customer/:id 400 - not called (invalid content type)', (done) => {
-      request.put({
-        url: `${testUrl}/api/v1/Customer/${customer._id}`,
-        formData: {}
-      }, (err, res, body) => {
-        assert.ok(!err)
-        assert.equal(res.statusCode, 400)
-        sinon.assert.notCalled(options.preUpdate)
-        done()
+      it(`${method} /Customer/:id 400 - not called (invalid content type)`, (done) => {
+        request({ method,
+          url: `${testUrl}/api/v1/Customer/${customer._id}`,
+          formData: {}
+        }, (err, res, body) => {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 400)
+          sinon.assert.notCalled(options.preUpdate)
+          done()
+        })
       })
     })
   })
@@ -720,29 +636,18 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customer/:id 200', (done) => {
-      request.post({
-        url: `${testUrl}/api/v1/Customer/${customer._id}`,
-        json: {
-          name: 'Bobby'
-        }
-      }, (err, res, body) => {
-        assert.ok(!err)
-        assert.equal(res.statusCode, 200)
-        done()
-      })
-    })
-
-    it('PUT /Customer/:id 200', (done) => {
-      request.put({
-        url: `${testUrl}/api/v1/Customer/${customer._id}`,
-        json: {
-          name: 'Bobby'
-        }
-      }, (err, res, body) => {
-        assert.ok(!err)
-        assert.equal(res.statusCode, 200)
-        done()
+    updateMethods.forEach((method) => {
+      it(`${method} /Customer/:id 200`, (done) => {
+        request.post({
+          url: `${testUrl}/api/v1/Customer/${customer._id}`,
+          json: {
+            name: 'Bobby'
+          }
+        }, (err, res, body) => {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          done()
+        })
       })
     })
 
@@ -982,143 +887,75 @@ module.exports = function (createFn, setup, dismantle) {
       dismantle(app, server, done)
     })
 
-    it('POST /Customer/:id 200', (done) => {
-      request.post({
-        url: `${testUrl}/api/v1/Customer/${customer._id}`,
-        json: {
-          name: 'Bobby'
-        }
-      }, (err, res, body) => {
-        assert.ok(!err)
-        assert.equal(res.statusCode, 200)
-        sinon.assert.calledOnce(options.postUpdate)
-        let args = options.postUpdate.args[0]
-        assert.equal(args.length, 3)
-        assert.equal(args[0].erm.result.name, 'Bobby')
-        assert.equal(args[0].erm.statusCode, 200)
-        assert.equal(typeof args[2], 'function')
-        done()
+    updateMethods.forEach((method) => {
+      it(`${method} /Customer/:id 200`, (done) => {
+        request({ method,
+          url: `${testUrl}/api/v1/Customer/${customer._id}`,
+          json: {
+            name: 'Bobby'
+          }
+        }, (err, res, body) => {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          sinon.assert.calledOnce(options.postUpdate)
+          let args = options.postUpdate.args[0]
+          assert.equal(args.length, 3)
+          assert.equal(args[0].erm.result.name, 'Bobby')
+          assert.equal(args[0].erm.statusCode, 200)
+          assert.equal(typeof args[2], 'function')
+          done()
+        })
       })
-    })
 
-    it('POST /Customer/:id 404 - random id', (done) => {
-      request.post({
-        url: `${testUrl}/api/v1/Customer/${randomId}`,
-        json: {
-          name: 'Bobby'
-        }
-      }, (err, res, body) => {
-        assert.ok(!err)
-        assert.equal(res.statusCode, 404)
-        sinon.assert.notCalled(options.postUpdate)
-        done()
+      it(`${method} /Customer/:id 404 - random id`, (done) => {
+        request({ method,
+          url: `${testUrl}/api/v1/Customer/${randomId}`,
+          json: {
+            name: 'Bobby'
+          }
+        }, (err, res, body) => {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 404)
+          sinon.assert.notCalled(options.postUpdate)
+          done()
+        })
       })
-    })
 
-    it('POST /Customer/:id 404 - invalid id', (done) => {
-      request.post({
-        url: `${testUrl}/api/v1/Customer/${invalidId}`,
-        json: {
-          name: 'Bobby'
-        }
-      }, (err, res, body) => {
-        assert.ok(!err)
-        assert.equal(res.statusCode, 404)
-        sinon.assert.notCalled(options.postUpdate)
-        done()
+      it(`${method} /Customer/:id 404 - invalid id`, (done) => {
+        request({ method,
+          url: `${testUrl}/api/v1/Customer/${invalidId}`,
+          json: {
+            name: 'Bobby'
+          }
+        }, (err, res, body) => {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 404)
+          sinon.assert.notCalled(options.postUpdate)
+          done()
+        })
       })
-    })
 
-    it('POST /Customer/:id 400 - not called (missing content type)', (done) => {
-      request.post({
-        url: `${testUrl}/api/v1/Customer/${customer._id}`
-      }, (err, res, body) => {
-        assert.ok(!err)
-        assert.equal(res.statusCode, 400)
-        sinon.assert.notCalled(options.postUpdate)
-        done()
+      it(`${method} /Customer/:id 400 - not called (missing content type)`, (done) => {
+        request({ method,
+          url: `${testUrl}/api/v1/Customer/${customer._id}`
+        }, (err, res, body) => {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 400)
+          sinon.assert.notCalled(options.postUpdate)
+          done()
+        })
       })
-    })
 
-    it('POST /Customer/:id 400 - not called (invalid content type)', (done) => {
-      request.post({
-        url: `${testUrl}/api/v1/Customer/${customer._id}`,
-        formData: {}
-      }, (err, res, body) => {
-        assert.ok(!err)
-        assert.equal(res.statusCode, 400)
-        sinon.assert.notCalled(options.postUpdate)
-        done()
-      })
-    })
-
-    it('PUT /Customer/:id 200', (done) => {
-      request.put({
-        url: `${testUrl}/api/v1/Customer/${customer._id}`,
-        json: {
-          name: 'Bobby'
-        }
-      }, (err, res, body) => {
-        assert.ok(!err)
-        assert.equal(res.statusCode, 200)
-        sinon.assert.calledOnce(options.postUpdate)
-        let args = options.postUpdate.args[0]
-        assert.equal(args.length, 3)
-        assert.equal(args[0].erm.result.name, 'Bobby')
-        assert.equal(args[0].erm.statusCode, 200)
-        assert.equal(typeof args[2], 'function')
-        done()
-      })
-    })
-
-    it('PUT /Customer/:id 404 - random id', (done) => {
-      request.put({
-        url: `${testUrl}/api/v1/Customer/${randomId}`,
-        json: {
-          name: 'Bobby'
-        }
-      }, (err, res, body) => {
-        assert.ok(!err)
-        assert.equal(res.statusCode, 404)
-        sinon.assert.notCalled(options.postUpdate)
-        done()
-      })
-    })
-
-    it('PUT /Customer/:id 404 - invalid id', (done) => {
-      request.put({
-        url: `${testUrl}/api/v1/Customer/${invalidId}`,
-        json: {
-          name: 'Bobby'
-        }
-      }, (err, res, body) => {
-        assert.ok(!err)
-        assert.equal(res.statusCode, 404)
-        sinon.assert.notCalled(options.postUpdate)
-        done()
-      })
-    })
-
-    it('PUT /Customer/:id 400 - not called (missing content type)', (done) => {
-      request.put({
-        url: `${testUrl}/api/v1/Customer/${customer._id}`
-      }, (err, res, body) => {
-        assert.ok(!err)
-        assert.equal(res.statusCode, 400)
-        sinon.assert.notCalled(options.postUpdate)
-        done()
-      })
-    })
-
-    it('PUT /Customer/:id 400 - not called (invalid content type)', (done) => {
-      request.put({
-        url: `${testUrl}/api/v1/Customer/${customer._id}`,
-        formData: {}
-      }, (err, res, body) => {
-        assert.ok(!err)
-        assert.equal(res.statusCode, 400)
-        sinon.assert.notCalled(options.postUpdate)
-        done()
+      it(`${method} /Customer/:id 400 - not called (invalid content type)`, (done) => {
+        request({ method,
+          url: `${testUrl}/api/v1/Customer/${customer._id}`,
+          formData: {}
+        }, (err, res, body) => {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 400)
+          sinon.assert.notCalled(options.postUpdate)
+          done()
+        })
       })
     })
   })

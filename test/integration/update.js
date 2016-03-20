@@ -10,6 +10,7 @@ module.exports = function (createFn, setup, dismantle) {
   const testUrl = `http://localhost:${testPort}`
   const invalidId = 'invalid-id'
   const randomId = mongoose.Types.ObjectId().toHexString()
+  const updateMethods = ['PATCH', 'POST', 'PUT']
 
   describe('Update documents', () => {
     describe('findOneAndUpdate: true', () => {
@@ -68,212 +69,256 @@ module.exports = function (createFn, setup, dismantle) {
         dismantle(app, server, done)
       })
 
-      it('POST /Customer/:id 200 - empty body', (done) => {
-        request.post({
-          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
+      updateMethods.forEach((method) => {
+        it(`${method} /Customer/:id 200 - empty body`, (done) => {
+          request({ method,
+            url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
+            json: {}
+          }, (err, res, body) => {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 200)
+            assert.equal(body.name, 'Bob')
+            done()
+          })
+        })
+
+        it(`${method} /Customer/:id 200 - created id`, (done) => {
+          request({ method,
+            url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
+            json: {
+              name: 'Mike'
+            }
+          }, (err, res, body) => {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 200)
+            assert.equal(body.name, 'Mike')
+            done()
+          })
+        })
+
+        it(`${method} /Customer/:id 400 - cast error`, (done) => {
+          request({ method,
+            url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
+            json: {
+              age: 'not a number'
+            }
+          }, (err, res, body) => {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 400)
+            assert.equal(body.name, 'CastError')
+            assert.equal(body.path, 'age')
+            done()
+          })
+        })
+
+        it(`${method} /Customer/:id 400 - mongo error`, (done) => {
+          request({ method,
+            url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
+            json: {
+              name: 'John'
+            }
+          }, (err, res, body) => {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 400)
+            assert.equal(body.name, 'MongoError')
+            assert.ok(body.code === 11000 || body.code === 11001)
+            done()
+          })
+        })
+
+        it(`${method} /Customer/:id 400 - missing content type`, (done) => {
+          request({ method,
+            url: `${testUrl}/api/v1/Customer/${customers[0]._id}`
+          }, (err, res, body) => {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 400)
+            assert.equal(JSON.parse(body).description, 'missing_content_type')
+            done()
+          })
+        })
+
+        it(`${method} /Customer/:id 400 - invalid content type`, (done) => {
+          request({ method,
+            url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
+            formData: {}
+          }, (err, res, body) => {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 400)
+            assert.equal(JSON.parse(body).description, 'invalid_content_type')
+            done()
+          })
+        })
+
+        it(`${method} /Customer/:id 404 - invalid id`, (done) => {
+          request({ method,
+            url: `${testUrl}/api/v1/Customer/${invalidId}`,
+            json: {
+              name: 'Mike'
+            }
+          }, (err, res, body) => {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 404)
+            done()
+          })
+        })
+
+        it(`${method} /Customer/:id 404 - random id`, (done) => {
+          request({ method,
+            url: `${testUrl}/api/v1/Customer/${randomId}`,
+            json: {
+              name: 'Mike'
+            }
+          }, (err, res, body) => {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 404)
+            done()
+          })
+        })
+
+        it(`${method} /Invoice/:id 200 - referencing customer and product ids as strings`, (done) => {
+          request({ method,
+            url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
+            json: {
+              customer: customers[1]._id.toHexString(),
+              products: products[1]._id.toHexString()
+            }
+          }, (err, res, body) => {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 200)
+            assert.equal(body.customer, customers[1]._id)
+            assert.equal(body.products[0], products[1]._id)
+            done()
+          })
+        })
+
+        it(`${method} /Invoice/:id 200 - referencing customer and products ids as strings`, (done) => {
+          request({ method,
+            url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
+            json: {
+              customer: customers[1]._id.toHexString(),
+              products: [products[1]._id.toHexString()]
+            }
+          }, (err, res, body) => {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 200)
+            assert.equal(body.customer, customers[1]._id)
+            assert.equal(body.products[0], products[1]._id)
+            done()
+          })
+        })
+
+        it(`${method} /Invoice/:id 200 - referencing customer and product ids`, (done) => {
+          request({ method,
+            url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
+            json: {
+              customer: customers[1]._id,
+              products: products[1]._id
+            }
+          }, (err, res, body) => {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 200)
+            assert.equal(body.customer, customers[1]._id)
+            assert.equal(body.products[0], products[1]._id)
+            done()
+          })
+        })
+
+        it(`${method} /Invoice/:id 200 - referencing customer and products ids`, (done) => {
+          request({ method,
+            url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
+            json: {
+              customer: customers[1]._id,
+              products: [products[1]._id]
+            }
+          }, (err, res, body) => {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 200)
+            assert.equal(body.customer, customers[1]._id)
+            assert.equal(body.products[0], products[1]._id)
+            done()
+          })
+        })
+
+        describe('populated subdocument', () => {
+          it(`${method} /Invoice/:id 200 - update with populated customer`, (done) => {
+            db.models.Invoice.findById(invoice._id).populate('customer').exec().then((invoice) => {
+              assert.notEqual(invoice.amount, 200)
+              invoice.amount = 200
+
+              request({ method,
+                url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
+                json: invoice
+              }, (err, res, body) => {
+                assert.ok(!err)
+                assert.equal(res.statusCode, 200)
+                assert.equal(body.amount, 200)
+                assert.equal(body.customer, invoice.customer._id)
+                done()
+              })
+            }, (err) => {
+              done(err)
+            })
+          })
+
+          it(`${method} /Invoice/:id 200 - update with populated products`, (done) => {
+            db.models.Invoice.findById(invoice._id).populate('products').exec().then((invoice) => {
+              assert.notEqual(invoice.amount, 200)
+              invoice.amount = 200
+
+              request({ method,
+                url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
+                json: invoice
+              }, (err, res, body) => {
+                assert.ok(!err)
+                assert.equal(res.statusCode, 200)
+                assert.equal(body.amount, 200)
+                assert.deepEqual(body.products, [invoice.products[0]._id.toHexString(), invoice.products[1]._id.toHexString()])
+                done()
+              })
+            }, (err) => {
+              done(err)
+            })
+          })
+
+          it(`${method} /Invoice/:id?populate=customer,products 200 - update with populated customer`, (done) => {
+            db.models.Invoice.findById(invoice._id).populate('customer products').exec().then((invoice) => {
+              request({ method,
+                url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
+                qs: {
+                  populate: 'customer,products'
+                },
+                json: invoice
+              }, (err, res, body) => {
+                assert.ok(!err)
+                assert.equal(res.statusCode, 200)
+                assert.ok(body.customer)
+                assert.equal(body.customer._id, invoice.customer._id)
+                assert.equal(body.customer.name, invoice.customer.name)
+                assert.ok(body.products)
+                assert.equal(body.products[0]._id, invoice.products[0]._id.toHexString())
+                assert.equal(body.products[0].name, invoice.products[0].name)
+                assert.equal(body.products[1]._id, invoice.products[1]._id.toHexString())
+                assert.equal(body.products[1].name, invoice.products[1].name)
+                done()
+              })
+            }, (err) => {
+              done(err)
+            })
+          })
+        })
+      })
+
+      it('PATCH /Customer 404 (Express), 405 (Restify)', (done) => {
+        request.patch({
+          url: `${testUrl}/api/v1/Customer`,
           json: {}
         }, (err, res, body) => {
           assert.ok(!err)
-          assert.equal(res.statusCode, 200)
-          assert.equal(body.name, 'Bob')
-          done()
-        })
-      })
-
-      it('POST /Customer/:id 200 - created id', (done) => {
-        request.post({
-          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
-          json: {
-            name: 'Mike'
+          if (app.isRestify) {
+            assert.equal(res.statusCode, 405)
+          } else {
+            assert.equal(res.statusCode, 404)
           }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 200)
-          assert.equal(body.name, 'Mike')
-          done()
-        })
-      })
-
-      it('POST /Customer/:id 400 - cast error', (done) => {
-        request.post({
-          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
-          json: {
-            age: 'not a number'
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 400)
-          assert.equal(body.name, 'CastError')
-          assert.equal(body.path, 'age')
-          done()
-        })
-      })
-
-      it('POST /Customer/:id 400 - mongo error', (done) => {
-        request.post({
-          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
-          json: {
-            name: 'John'
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 400)
-          assert.equal(body.name, 'MongoError')
-          assert.ok(body.code === 11000 || body.code === 11001)
-          done()
-        })
-      })
-
-      it('POST /Customer/:id 400 - missing content type', (done) => {
-        request.post({
-          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 400)
-          assert.equal(JSON.parse(body).description, 'missing_content_type')
-          done()
-        })
-      })
-
-      it('POST /Customer/:id 400 - invalid content type', (done) => {
-        request.post({
-          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
-          formData: {}
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 400)
-          assert.equal(JSON.parse(body).description, 'invalid_content_type')
-          done()
-        })
-      })
-
-      it('POST /Customer/:id 404 - invalid id', (done) => {
-        request.post({
-          url: `${testUrl}/api/v1/Customer/${invalidId}`,
-          json: {
-            name: 'Mike'
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 404)
-          done()
-        })
-      })
-
-      it('POST /Customer/:id 404 - random id', (done) => {
-        request.post({
-          url: `${testUrl}/api/v1/Customer/${randomId}`,
-          json: {
-            name: 'Mike'
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 404)
-          done()
-        })
-      })
-
-      it('PATCH /Customer/:id 200 - empty body', (done) => {
-        request.patch({
-          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
-          json: {}
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 200)
-          assert.equal(body.name, 'Bob')
-          done()
-        })
-      })
-
-      it('PATCH /Customer/:id 200 - created id', (done) => {
-        request.patch({
-          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
-          json: {
-            name: 'Mike'
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 200)
-          assert.equal(body.name, 'Mike')
-          done()
-        })
-      })
-
-      it('PATCH /Customer/:id 400 - cast error', (done) => {
-        request.patch({
-          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
-          json: {
-            age: 'not a number'
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 400)
-          assert.equal(body.name, 'CastError')
-          assert.equal(body.path, 'age')
-          done()
-        })
-      })
-
-      it('PATCH /Customer/:id 400 - mongo error', (done) => {
-        request.patch({
-          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
-          json: {
-            name: 'John'
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 400)
-          assert.equal(body.name, 'MongoError')
-          assert.ok(body.code === 11000 || body.code === 11001)
-          done()
-        })
-      })
-
-      it('PATCH /Customer/:id 400 - missing content type', (done) => {
-        request.patch({
-          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 400)
-          assert.equal(JSON.parse(body).description, 'missing_content_type')
-          done()
-        })
-      })
-
-      it('PATCH /Customer/:id 400 - invalid content type', (done) => {
-        request.patch({
-          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
-          formData: {}
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 400)
-          assert.equal(JSON.parse(body).description, 'invalid_content_type')
-          done()
-        })
-      })
-
-      it('PATCH /Customer/:id 404 - invalid id', (done) => {
-        request.patch({
-          url: `${testUrl}/api/v1/Customer/${invalidId}`,
-          json: {
-            name: 'Mike'
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 404)
-          done()
-        })
-      })
-
-      it('PATCH /Customer/:id 404 - random id', (done) => {
-        request.patch({
-          url: `${testUrl}/api/v1/Customer/${randomId}`,
-          json: {
-            name: 'Mike'
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 404)
           done()
         })
       })
@@ -290,243 +335,6 @@ module.exports = function (createFn, setup, dismantle) {
             assert.equal(res.statusCode, 404)
           }
           done()
-        })
-      })
-
-      it('PUT /Customer/:id 200 - empty body', (done) => {
-        request.put({
-          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
-          json: {}
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 200)
-          assert.equal(body.name, 'Bob')
-          done()
-        })
-      })
-
-      it('PUT /Customer/:id 200 - created id', (done) => {
-        request.put({
-          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
-          json: {
-            name: 'Mike'
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 200)
-          assert.equal(body.name, 'Mike')
-          done()
-        })
-      })
-
-      it('PUT /Invoice/:id 200 - referencing customer and product ids as strings', (done) => {
-        request.put({
-          url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
-          json: {
-            customer: customers[1]._id.toHexString(),
-            products: products[1]._id.toHexString()
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 200)
-          assert.equal(body.customer, customers[1]._id)
-          assert.equal(body.products[0], products[1]._id)
-          done()
-        })
-      })
-
-      it('PUT /Invoice/:id 200 - referencing customer and products ids as strings', (done) => {
-        request.put({
-          url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
-          json: {
-            customer: customers[1]._id.toHexString(),
-            products: [products[1]._id.toHexString()]
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 200)
-          assert.equal(body.customer, customers[1]._id)
-          assert.equal(body.products[0], products[1]._id)
-          done()
-        })
-      })
-
-      it('PUT /Invoice/:id 200 - referencing customer and product ids', (done) => {
-        request.put({
-          url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
-          json: {
-            customer: customers[1]._id,
-            products: products[1]._id
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 200)
-          assert.equal(body.customer, customers[1]._id)
-          assert.equal(body.products[0], products[1]._id)
-          done()
-        })
-      })
-
-      it('PUT /Invoice/:id 200 - referencing customer and products ids', (done) => {
-        request.put({
-          url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
-          json: {
-            customer: customers[1]._id,
-            products: [products[1]._id]
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 200)
-          assert.equal(body.customer, customers[1]._id)
-          assert.equal(body.products[0], products[1]._id)
-          done()
-        })
-      })
-
-      it('PUT /Customer/:id 400 - cast error', (done) => {
-        request.put({
-          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
-          json: {
-            age: 'not a number'
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 400)
-          assert.equal(body.name, 'CastError')
-          assert.equal(body.path, 'age')
-          done()
-        })
-      })
-
-      it('PUT /Customer/:id 400 - mongo error', (done) => {
-        request.put({
-          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
-          json: {
-            name: 'John'
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 400)
-          assert.equal(body.name, 'MongoError')
-          assert.ok(body.code === 11000 || body.code === 11001)
-          done()
-        })
-      })
-
-      it('PUT /Customer/:id 400 - missing content type', (done) => {
-        request.put({
-          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 400)
-          done()
-        })
-      })
-
-      it('PUT /Customer/:id 400 - invalid content type', (done) => {
-        request.put({
-          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
-          formData: {
-            name: 'Mike'
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 400)
-          done()
-        })
-      })
-
-      it('PUT /Customer/:id 404 - invalid id', (done) => {
-        request.put({
-          url: `${testUrl}/api/v1/Customer/${invalidId}`,
-          json: {
-            name: 'Mike'
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 404)
-          done()
-        })
-      })
-
-      it('PUT /Customer/:id 404 - random id', (done) => {
-        request.put({
-          url: `${testUrl}/api/v1/Customer/${randomId}`,
-          json: {
-            name: 'Mike'
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 404)
-          done()
-        })
-      })
-
-      describe('populated subdocument', () => {
-        it('PUT /Invoice/:id 200 - update with populated customer', (done) => {
-          db.models.Invoice.findById(invoice._id).populate('customer').exec().then((invoice) => {
-            assert.notEqual(invoice.amount, 200)
-            invoice.amount = 200
-
-            request.put({
-              url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
-              json: invoice
-            }, (err, res, body) => {
-              assert.ok(!err)
-              assert.equal(res.statusCode, 200)
-              assert.equal(body.amount, 200)
-              assert.equal(body.customer, invoice.customer._id)
-              done()
-            })
-          }, (err) => {
-            done(err)
-          })
-        })
-
-        it('PUT /Invoice/:id 200 - update with populated products', (done) => {
-          db.models.Invoice.findById(invoice._id).populate('products').exec().then((invoice) => {
-            assert.notEqual(invoice.amount, 200)
-            invoice.amount = 200
-
-            request.put({
-              url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
-              json: invoice
-            }, (err, res, body) => {
-              assert.ok(!err)
-              assert.equal(res.statusCode, 200)
-              assert.equal(body.amount, 200)
-              assert.deepEqual(body.products, [invoice.products[0]._id.toHexString(), invoice.products[1]._id.toHexString()])
-              done()
-            })
-          }, (err) => {
-            done(err)
-          })
-        })
-
-        it('PUT /Invoice/:id?populate=customer,products 200 - update with populated customer', (done) => {
-          db.models.Invoice.findById(invoice._id).populate('customer products').exec().then((invoice) => {
-            request.put({
-              url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
-              qs: {
-                populate: 'customer,products'
-              },
-              json: invoice
-            }, (err, res, body) => {
-              assert.ok(!err)
-              assert.equal(res.statusCode, 200)
-              assert.ok(body.customer)
-              assert.equal(body.customer._id, invoice.customer._id)
-              assert.equal(body.customer.name, invoice.customer.name)
-              assert.ok(body.products)
-              assert.equal(body.products[0]._id, invoice.products[0]._id.toHexString())
-              assert.equal(body.products[0].name, invoice.products[0].name)
-              assert.equal(body.products[1]._id, invoice.products[1]._id.toHexString())
-              assert.equal(body.products[1].name, invoice.products[1].name)
-              done()
-            })
-          }, (err) => {
-            done(err)
-          })
         })
       })
     })
@@ -587,214 +395,257 @@ module.exports = function (createFn, setup, dismantle) {
         dismantle(app, server, done)
       })
 
-      it('POST /Customer/:id 200 - empty body', (done) => {
-        request.post({
-          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
+      updateMethods.forEach((method) => {
+        it(`${method} /Customer/:id 200 - empty body`, (done) => {
+          request({ method,
+            url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
+            json: {}
+          }, (err, res, body) => {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 200)
+            assert.equal(body.name, 'Bob')
+            done()
+          })
+        })
+
+        it(`${method} /Customer/:id 200 - created id`, (done) => {
+          request({ method,
+            url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
+            json: {
+              name: 'Mike'
+            }
+          }, (err, res, body) => {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 200)
+            assert.equal(body.name, 'Mike')
+            done()
+          })
+        })
+
+        it(`${method} /Customer/:id 400 - validation error`, (done) => {
+          request({ method,
+            url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
+            json: {
+              age: 'not a number'
+            }
+          }, (err, res, body) => {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 400)
+            assert.equal(body.name, 'ValidationError')
+            assert.equal(Object.keys(body.errors).length, 1)
+            assert.ok(body.errors['age'])
+            done()
+          })
+        })
+
+        it(`${method} /Customer/:id 400 - mongo error`, (done) => {
+          request({ method,
+            url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
+            json: {
+              name: 'John'
+            }
+          }, (err, res, body) => {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 400)
+            assert.equal(body.name, 'MongoError')
+            assert.ok(body.code === 11000 || body.code === 11001)
+            done()
+          })
+        })
+
+        it(`${method} /Customer/:id 400 - missing content type`, (done) => {
+          request({ method,
+            url: `${testUrl}/api/v1/Customer/${customers[0]._id}`
+          }, (err, res, body) => {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 400)
+            done()
+          })
+        })
+
+        it(`${method} /Customer/:id 400 - invalid content type`, (done) => {
+          request({ method,
+            url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
+            formData: {
+              name: 'Mike'
+            }
+          }, (err, res, body) => {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 400)
+            done()
+          })
+        })
+
+        it(`${method} /Customer/:id 404 - invalid id`, (done) => {
+          request({ method,
+            url: `${testUrl}/api/v1/Customer/${invalidId}`,
+            json: {
+              name: 'Mike'
+            }
+          }, (err, res, body) => {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 404)
+            done()
+          })
+        })
+
+        it(`${method} /Customer/:id 404 - random id`, (done) => {
+          request({ method,
+            url: `${testUrl}/api/v1/Customer/${randomId}`,
+            json: {
+              name: 'Mike'
+            }
+          }, (err, res, body) => {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 404)
+            done()
+          })
+        })
+
+        it(`${method} /Invoice/:id 200 - referencing customer and product ids as strings`, (done) => {
+          request({ method,
+            url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
+            json: {
+              customer: customers[1]._id.toHexString(),
+              products: products[1]._id.toHexString()
+            }
+          }, (err, res, body) => {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 200)
+            assert.equal(body.customer, customers[1]._id)
+            assert.equal(body.products[0], products[1]._id)
+            done()
+          })
+        })
+
+        it(`${method} /Invoice/:id 200 - referencing customer and products ids as strings`, (done) => {
+          request({ method,
+            url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
+            json: {
+              customer: customers[1]._id.toHexString(),
+              products: [products[1]._id.toHexString()]
+            }
+          }, (err, res, body) => {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 200)
+            assert.equal(body.customer, customers[1]._id)
+            assert.equal(body.products[0], products[1]._id)
+            done()
+          })
+        })
+
+        it(`${method} /Invoice/:id 200 - referencing customer and product ids`, (done) => {
+          request({ method,
+            url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
+            json: {
+              customer: customers[1]._id,
+              products: products[1]._id
+            }
+          }, (err, res, body) => {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 200)
+            assert.equal(body.customer, customers[1]._id)
+            assert.equal(body.products[0], products[1]._id)
+            done()
+          })
+        })
+
+        it(`${method} /Invoice/:id 200 - referencing customer and products ids`, (done) => {
+          request({ method,
+            url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
+            json: {
+              customer: customers[1]._id,
+              products: [products[1]._id]
+            }
+          }, (err, res, body) => {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 200)
+            assert.equal(body.customer, customers[1]._id)
+            assert.equal(body.products[0], products[1]._id)
+            done()
+          })
+        })
+
+        describe('populated subdocument', () => {
+          it(`${method} /Invoice/:id 200 - update with populated customer`, (done) => {
+            db.models.Invoice.findById(invoice._id).populate('customer').exec().then((invoice) => {
+              assert.notEqual(invoice.amount, 200)
+              invoice.amount = 200
+
+              request({ method,
+                url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
+                json: invoice
+              }, (err, res, body) => {
+                assert.ok(!err)
+                assert.equal(res.statusCode, 200)
+                assert.equal(body.amount, 200)
+                assert.equal(body.customer, invoice.customer._id)
+                done()
+              })
+            }, (err) => {
+              done(err)
+            })
+          })
+
+          it(`${method} /Invoice/:id 200 - update with populated products`, (done) => {
+            db.models.Invoice.findById(invoice._id).populate('products').exec().then((invoice) => {
+              assert.notEqual(invoice.amount, 200)
+              invoice.amount = 200
+
+              request({ method,
+                url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
+                json: invoice
+              }, (err, res, body) => {
+                assert.ok(!err)
+                assert.equal(res.statusCode, 200)
+                assert.equal(body.amount, 200)
+                assert.deepEqual(body.products, [invoice.products[0]._id.toHexString(), invoice.products[1]._id.toHexString()])
+                done()
+              })
+            }, (err) => {
+              done(err)
+            })
+          })
+
+          it(`${method} /Invoice/:id?populate=customer,products 200 - update with populated customer`, (done) => {
+            db.models.Invoice.findById(invoice._id).populate('customer products').exec().then((invoice) => {
+              request({ method,
+                url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
+                qs: {
+                  populate: 'customer,products'
+                },
+                json: invoice
+              }, (err, res, body) => {
+                assert.ok(!err)
+                assert.equal(res.statusCode, 200)
+                assert.ok(body.customer)
+                assert.equal(body.customer._id, invoice.customer._id)
+                assert.equal(body.customer.name, invoice.customer.name)
+                assert.ok(body.products)
+                assert.equal(body.products[0]._id, invoice.products[0]._id.toHexString())
+                assert.equal(body.products[0].name, invoice.products[0].name)
+                assert.equal(body.products[1]._id, invoice.products[1]._id.toHexString())
+                assert.equal(body.products[1].name, invoice.products[1].name)
+                done()
+              })
+            }, (err) => {
+              done(err)
+            })
+          })
+        })
+      })
+
+      it('PATCH /Customer 404 (Express), 405 (Restify)', (done) => {
+        request.patch({
+          url: `${testUrl}/api/v1/Customer`,
           json: {}
         }, (err, res, body) => {
           assert.ok(!err)
-          assert.equal(res.statusCode, 200)
-          assert.equal(body.name, 'Bob')
-          done()
-        })
-      })
-
-      it('POST /Customer/:id 200 - created id', (done) => {
-        request.post({
-          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
-          json: {
-            name: 'Mike'
+          if (app.isRestify) {
+            assert.equal(res.statusCode, 405)
+          } else {
+            assert.equal(res.statusCode, 404)
           }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 200)
-          assert.equal(body.name, 'Mike')
-          done()
-        })
-      })
-
-      it('POST /Customer/:id 400 - validation error', (done) => {
-        request.post({
-          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
-          json: {
-            age: 'not a number'
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 400)
-          assert.equal(body.name, 'ValidationError')
-          assert.equal(Object.keys(body.errors).length, 1)
-          assert.ok(body.errors['age'])
-          done()
-        })
-      })
-
-      it('POST /Customer/:id 400 - mongo error', (done) => {
-        request.post({
-          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
-          json: {
-            name: 'John'
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 400)
-          assert.equal(body.name, 'MongoError')
-          assert.ok(body.code === 11000 || body.code === 11001)
-          done()
-        })
-      })
-
-      it('POST /Customer/:id 400 - missing content type', (done) => {
-        request.post({
-          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 400)
-          done()
-        })
-      })
-
-      it('POST /Customer/:id 400 - invalid content type', (done) => {
-        request.post({
-          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
-          formData: {
-            name: 'Mike'
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 400)
-          done()
-        })
-      })
-
-      it('POST /Customer/:id 404 - invalid id', (done) => {
-        request.post({
-          url: `${testUrl}/api/v1/Customer/${invalidId}`,
-          json: {
-            name: 'Mike'
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 404)
-          done()
-        })
-      })
-
-      it('POST /Customer/:id 404 - random id', (done) => {
-        request.post({
-          url: `${testUrl}/api/v1/Customer/${randomId}`,
-          json: {
-            name: 'Mike'
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 404)
-          done()
-        })
-      })
-
-      it('PATCH /Customer/:id 200 - empty body', (done) => {
-        request.patch({
-          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
-          json: {}
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 200)
-          assert.equal(body.name, 'Bob')
-          done()
-        })
-      })
-
-      it('PATCH /Customer/:id 200 - created id', (done) => {
-        request.patch({
-          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
-          json: {
-            name: 'Mike'
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 200)
-          assert.equal(body.name, 'Mike')
-          done()
-        })
-      })
-
-      it('PATCH /Customer/:id 400 - validation error', (done) => {
-        request.patch({
-          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
-          json: {
-            age: 'not a number'
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 400)
-          assert.equal(body.name, 'ValidationError')
-          assert.equal(Object.keys(body.errors).length, 1)
-          assert.ok(body.errors['age'])
-          done()
-        })
-      })
-
-      it('PATCH /Customer/:id 400 - mongo error', (done) => {
-        request.patch({
-          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
-          json: {
-            name: 'John'
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 400)
-          assert.equal(body.name, 'MongoError')
-          assert.ok(body.code === 11000 || body.code === 11001)
-          done()
-        })
-      })
-
-      it('PATCH /Customer/:id 400 - missing content type', (done) => {
-        request.patch({
-          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 400)
-          done()
-        })
-      })
-
-      it('PATCH /Customer/:id 400 - invalid content type', (done) => {
-        request.patch({
-          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
-          formData: {
-            name: 'Mike'
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 400)
-          done()
-        })
-      })
-
-      it('PATCH /Customer/:id 404 - invalid id', (done) => {
-        request.patch({
-          url: `${testUrl}/api/v1/Customer/${invalidId}`,
-          json: {
-            name: 'Mike'
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 404)
-          done()
-        })
-      })
-
-      it('PATCH /Customer/:id 404 - random id', (done) => {
-        request.patch({
-          url: `${testUrl}/api/v1/Customer/${randomId}`,
-          json: {
-            name: 'Mike'
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 404)
           done()
         })
       })
@@ -811,244 +662,6 @@ module.exports = function (createFn, setup, dismantle) {
             assert.equal(res.statusCode, 404)
           }
           done()
-        })
-      })
-
-      it('PUT /Customer/:id 200 - empty body', (done) => {
-        request.put({
-          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
-          json: {}
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 200)
-          assert.equal(body.name, 'Bob')
-          done()
-        })
-      })
-
-      it('PUT /Customer/:id 200 - created id', (done) => {
-        request.put({
-          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
-          json: {
-            name: 'Mike'
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 200)
-          assert.equal(body.name, 'Mike')
-          done()
-        })
-      })
-
-      it('PUT /Invoice/:id 200 - referencing customer and product ids as strings', (done) => {
-        request.put({
-          url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
-          json: {
-            customer: customers[1]._id.toHexString(),
-            products: products[1]._id.toHexString()
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 200)
-          assert.equal(body.customer, customers[1]._id)
-          assert.equal(body.products[0], products[1]._id)
-          done()
-        })
-      })
-
-      it('PUT /Invoice/:id 200 - referencing customer and products ids as strings', (done) => {
-        request.put({
-          url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
-          json: {
-            customer: customers[1]._id.toHexString(),
-            products: [products[1]._id.toHexString()]
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 200)
-          assert.equal(body.customer, customers[1]._id)
-          assert.equal(body.products[0], products[1]._id)
-          done()
-        })
-      })
-
-      it('PUT /Invoice/:id 200 - referencing customer and product ids', (done) => {
-        request.put({
-          url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
-          json: {
-            customer: customers[1]._id,
-            products: products[1]._id
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 200)
-          assert.equal(body.customer, customers[1]._id)
-          assert.equal(body.products[0], products[1]._id)
-          done()
-        })
-      })
-
-      it('PUT /Invoice/:id 200 - referencing customer and products ids', (done) => {
-        request.put({
-          url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
-          json: {
-            customer: customers[1]._id,
-            products: [products[1]._id]
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 200)
-          assert.equal(body.customer, customers[1]._id)
-          assert.equal(body.products[0], products[1]._id)
-          done()
-        })
-      })
-
-      it('PUT /Customer/:id 400 - validation error', (done) => {
-        request.put({
-          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
-          json: {
-            age: 'not a number'
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 400)
-          assert.equal(body.name, 'ValidationError')
-          assert.equal(Object.keys(body.errors).length, 1)
-          assert.ok(body.errors['age'])
-          done()
-        })
-      })
-
-      it('PUT /Customer/:id 400 - mongo error', (done) => {
-        request.put({
-          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
-          json: {
-            name: 'John'
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 400)
-          assert.equal(body.name, 'MongoError')
-          assert.ok(body.code === 11000 || body.code === 11001)
-          done()
-        })
-      })
-
-      it('PUT /Customer/:id 400 - missing content type', (done) => {
-        request.put({
-          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 400)
-          done()
-        })
-      })
-
-      it('PUT /Customer/:id 400 - invalid content type', (done) => {
-        request.put({
-          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
-          formData: {
-            name: 'Mike'
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 400)
-          done()
-        })
-      })
-
-      it('PUT /Customer/:id 404 - invalid id', (done) => {
-        request.put({
-          url: `${testUrl}/api/v1/Customer/${invalidId}`,
-          json: {
-            name: 'Mike'
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 404)
-          done()
-        })
-      })
-
-      it('PUT /Customer/:id 404 - random id', (done) => {
-        request.put({
-          url: `${testUrl}/api/v1/Customer/${randomId}`,
-          json: {
-            name: 'Mike'
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 404)
-          done()
-        })
-      })
-
-      describe('populated subdocument', () => {
-        it('PUT /Invoice/:id 200 - update with populated customer', (done) => {
-          db.models.Invoice.findById(invoice._id).populate('customer').exec().then((invoice) => {
-            assert.notEqual(invoice.amount, 200)
-            invoice.amount = 200
-
-            request.put({
-              url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
-              json: invoice
-            }, (err, res, body) => {
-              assert.ok(!err)
-              assert.equal(res.statusCode, 200)
-              assert.equal(body.amount, 200)
-              assert.equal(body.customer, invoice.customer._id)
-              done()
-            })
-          }, (err) => {
-            done(err)
-          })
-        })
-
-        it('PUT /Invoice/:id 200 - update with populated products', (done) => {
-          db.models.Invoice.findById(invoice._id).populate('products').exec().then((invoice) => {
-            assert.notEqual(invoice.amount, 200)
-            invoice.amount = 200
-
-            request.put({
-              url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
-              json: invoice
-            }, (err, res, body) => {
-              assert.ok(!err)
-              assert.equal(res.statusCode, 200)
-              assert.equal(body.amount, 200)
-              assert.deepEqual(body.products, [invoice.products[0]._id.toHexString(), invoice.products[1]._id.toHexString()])
-              done()
-            })
-          }, (err) => {
-            done(err)
-          })
-        })
-
-        it('PUT /Invoice/:id?populate=customer,products 200 - update with populated customer', (done) => {
-          db.models.Invoice.findById(invoice._id).populate('customer products').exec().then((invoice) => {
-            request.put({
-              url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
-              qs: {
-                populate: 'customer,products'
-              },
-              json: invoice
-            }, (err, res, body) => {
-              assert.ok(!err)
-              assert.equal(res.statusCode, 200)
-              assert.ok(body.customer)
-              assert.equal(body.customer._id, invoice.customer._id)
-              assert.equal(body.customer.name, invoice.customer.name)
-              assert.ok(body.products)
-              assert.equal(body.products[0]._id, invoice.products[0]._id.toHexString())
-              assert.equal(body.products[0].name, invoice.products[0].name)
-              assert.equal(body.products[1]._id, invoice.products[1]._id.toHexString())
-              assert.equal(body.products[1].name, invoice.products[1].name)
-              done()
-            })
-          }, (err) => {
-            done(err)
-          })
         })
       })
     })

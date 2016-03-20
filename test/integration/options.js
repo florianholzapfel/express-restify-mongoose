@@ -8,6 +8,7 @@ module.exports = function (createFn, setup, dismantle) {
 
   const testPort = 30023
   const testUrl = `http://localhost:${testPort}`
+  const updateMethods = ['PATCH', 'POST', 'PUT']
 
   describe('no options', () => {
     let app = createFn()
@@ -558,21 +559,27 @@ module.exports = function (createFn, setup, dismantle) {
       dismantle(app, server, done)
     })
 
-    it('PUT /Customer/:id 200', (done) => {
-      request.put({
-        url: `${testUrl}/api/v1/Customer/${customer._id}`,
-        json: {
-          age: 12
-        }
-      }, (err, res, body) => {
-        assert.ok(!err)
-        assert.equal(res.statusCode, 200)
-        assert.equal(body.name, 'Bob')
-        assert.equal(body.age, 12)
-        assert.equal(options.preUpdate.length, 2)
-        sinon.assert.calledOnce(options.preUpdate[0])
-        sinon.assert.calledOnce(options.preUpdate[1])
-        done()
+    updateMethods.forEach((method) => {
+      it(`${method} /Customer/:id 200`, (done) => {
+        request({ method,
+          url: `${testUrl}/api/v1/Customer/${customer._id}`,
+          json: {
+            age: 12
+          }
+        }, (err, res, body) => {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.name, 'Bob')
+          assert.equal(body.age, 12)
+          assert.equal(options.preUpdate.length, 2)
+          sinon.assert.calledOnce(options.preUpdate[0])
+          sinon.assert.calledOnce(options.preUpdate[1])
+
+          options.preUpdate[0].reset()
+          options.preUpdate[1].reset()
+
+          done()
+        })
       })
     })
   })
@@ -683,33 +690,20 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customer/:name 200', (done) => {
-      request.post({
-        url: `${testUrl}/api/v1/Customer/${customer.name}`,
-        json: {
-          age: 12
-        }
-      }, (err, res, body) => {
-        assert.ok(!err)
-        assert.equal(res.statusCode, 200)
-        assert.equal(body.name, 'Bob')
-        assert.equal(body.age, 12)
-        done()
-      })
-    })
-
-    it('PUT /Customer/:name 200', (done) => {
-      request.put({
-        url: `${testUrl}/api/v1/Customer/${customer.name}`,
-        json: {
-          age: 12
-        }
-      }, (err, res, body) => {
-        assert.ok(!err)
-        assert.equal(res.statusCode, 200)
-        assert.equal(body.name, 'Bob')
-        assert.equal(body.age, 12)
-        done()
+    updateMethods.forEach((method) => {
+      it(`${method} /Customer/:name 200`, (done) => {
+        request({ method,
+          url: `${testUrl}/api/v1/Customer/${customer.name}`,
+          json: {
+            age: 12
+          }
+        }, (err, res, body) => {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.name, 'Bob')
+          assert.equal(body.age, 12)
+          done()
+        })
       })
     })
 

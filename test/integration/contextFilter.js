@@ -7,6 +7,7 @@ module.exports = function (createFn, setup, dismantle) {
 
   const testPort = 30023
   const testUrl = `http://localhost:${testPort}`
+  const updateMethods = ['PATCH', 'POST', 'PUT']
 
   describe('contextFilter', () => {
     let app = createFn()
@@ -101,39 +102,41 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('PUT /Customer/:id 200', (done) => {
-      request.put({
-        url: `${testUrl}/api/v1/Customer/${customers[1]._id}`,
-        json: {
-          name: 'Johnny'
-        }
-      }, (err, res, body) => {
-        assert.ok(!err)
-        assert.equal(res.statusCode, 200)
-        assert.equal(body.name, 'Johnny')
-        done()
-      })
-    })
-
-    it('PUT /Customer/:id 404 - filtered name', (done) => {
-      request.put({
-        url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
-        json: {
-          name: 'Bobby'
-        }
-      }, (err, res, body) => {
-        assert.ok(!err)
-        assert.equal(res.statusCode, 404, 'Wrong status code')
-
-        db.models.Customer.findById(customers[0]._id, (err, customer) => {
+    updateMethods.forEach((method) => {
+      it(`${method} /Customer/:id 200`, (done) => {
+        request({ method,
+          url: `${testUrl}/api/v1/Customer/${customers[1]._id}`,
+          json: {
+            name: 'Johnny'
+          }
+        }, (err, res, body) => {
           assert.ok(!err)
-          assert.notEqual(customer.name, 'Bobby')
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.name, 'Johnny')
           done()
+        })
+      })
+
+      it(`${method} /Customer/:id 404 - filtered name`, (done) => {
+        request({ method,
+          url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
+          json: {
+            name: 'Bobby'
+          }
+        }, (err, res, body) => {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 404)
+
+          db.models.Customer.findById(customers[0]._id, (err, customer) => {
+            assert.ok(!err)
+            assert.notEqual(customer.name, 'Bobby')
+            done()
+          })
         })
       })
     })
 
-    it('DEL /Customer/:id 200', (done) => {
+    it('DELETE /Customer/:id 200', (done) => {
       request.del({
         url: `${testUrl}/api/v1/Customer/${customers[1]._id}`,
         json: true
@@ -149,7 +152,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('DEL /Customer/:id 404 - filtered age', (done) => {
+    it('DELETE /Customer/:id 404 - filtered age', (done) => {
       request.del({
         url: `${testUrl}/api/v1/Customer/${customers[2]._id}`,
         json: true
@@ -166,7 +169,7 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('DEL /Customer 200 - filtered name and age', (done) => {
+    it('DELETE /Customer 200 - filtered name and age', (done) => {
       request.del({
         url: `${testUrl}/api/v1/Customer`,
         json: true
