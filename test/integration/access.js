@@ -7,6 +7,7 @@ module.exports = function (createFn, setup, dismantle) {
 
   const testPort = 30023
   const testUrl = `http://localhost:${testPort}`
+  const updateMethods = ['PATCH', 'POST', 'PUT']
 
   describe('access', () => {
     describe('private - include private and protected fields', () => {
@@ -410,70 +411,72 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Customer/:id - saves all fields', (done) => {
-        request.put({
-          url: `${testUrl}/api/v1/Customer/${customer._id}`,
-          json: {
-            name: 'John',
-            age: 24,
-            comment: 'Jumbo',
-            favorites: {
+      updateMethods.forEach((method) => {
+        it(`${method} /Customer/:id - saves all fields`, (done) => {
+          request({ method,
+            url: `${testUrl}/api/v1/Customer/${customer._id}`,
+            json: {
+              name: 'John',
+              age: 24,
+              comment: 'Jumbo',
+              favorites: {
+                animal: 'Jaguar',
+                color: 'Jade',
+                purchase: {
+                  number: 2
+                }
+              }
+            }
+          }, (err, res, body) => {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 200)
+            assert.equal(body.name, 'John')
+            assert.equal(body.age, 24)
+            assert.equal(body.comment, 'Jumbo')
+            assert.equal(body.purchases.length, 1)
+            assert.deepEqual(body.favorites, {
               animal: 'Jaguar',
               color: 'Jade',
               purchase: {
+                item: product._id.toHexString(),
                 number: 2
               }
-            }
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 200)
-          assert.equal(body.name, 'John')
-          assert.equal(body.age, 24)
-          assert.equal(body.comment, 'Jumbo')
-          assert.equal(body.purchases.length, 1)
-          assert.deepEqual(body.favorites, {
-            animal: 'Jaguar',
-            color: 'Jade',
-            purchase: {
-              item: product._id.toHexString(),
-              number: 2
-            }
+            })
+            done()
           })
-          done()
         })
-      })
 
-      it('PUT /Customer/:id - saves all fields (falsy values)', (done) => {
-        request.put({
-          url: `${testUrl}/api/v1/Customer/${customer._id}`,
-          json: {
-            age: 0,
-            comment: '',
-            favorites: {
+        it(`${method} /Customer/:id - saves all fields (falsy values)`, (done) => {
+          request({ method,
+            url: `${testUrl}/api/v1/Customer/${customer._id}`,
+            json: {
+              age: 0,
+              comment: '',
+              favorites: {
+                animal: '',
+                color: '',
+                purchase: {
+                  number: 0
+                }
+              }
+            }
+          }, (err, res, body) => {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 200)
+            assert.equal(body.name, 'Bob')
+            assert.equal(body.age, 0)
+            assert.equal(body.comment, '')
+            assert.equal(body.purchases.length, 1)
+            assert.deepEqual(body.favorites, {
               animal: '',
               color: '',
               purchase: {
+                item: product._id.toHexString(),
                 number: 0
               }
-            }
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 200)
-          assert.equal(body.name, 'Bob')
-          assert.equal(body.age, 0)
-          assert.equal(body.comment, '')
-          assert.equal(body.purchases.length, 1)
-          assert.deepEqual(body.favorites, {
-            animal: '',
-            color: '',
-            purchase: {
-              item: product._id.toHexString(),
-              number: 0
-            }
+            })
+            done()
           })
-          done()
         })
       })
 
@@ -909,89 +912,91 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Customer/:id - saves protected and public fields', (done) => {
-        request.put({
-          url: `${testUrl}/api/v1/Customer/${customer._id}`,
-          json: {
-            name: 'John',
-            age: 24,
-            comment: 'Jumbo',
-            favorites: {
-              animal: 'Jaguar',
-              color: 'Jade',
-              purchase: {
-                number: 2
+      updateMethods.forEach((method) => {
+        it(`${method} /Customer/:id - saves protected and public fields`, (done) => {
+          request({ method,
+            url: `${testUrl}/api/v1/Customer/${customer._id}`,
+            json: {
+              name: 'John',
+              age: 24,
+              comment: 'Jumbo',
+              favorites: {
+                animal: 'Jaguar',
+                color: 'Jade',
+                purchase: {
+                  number: 2
+                }
               }
             }
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 200)
-          assert.equal(body.name, 'John')
-          assert.equal(body.age, undefined)
-          assert.equal(body.comment, 'Jumbo')
-          assert.deepEqual(body.favorites, {
-            color: 'Jade',
-            purchase: {
-              item: product._id.toHexString()
-            }
-          })
-
-          db.models.Customer.findById(customer._id, (err, customer) => {
+          }, (err, res, body) => {
             assert.ok(!err)
-            assert.equal(customer.age, 12)
-            assert.deepEqual(customer.favorites.toObject(), {
-              animal: 'Boar',
+            assert.equal(res.statusCode, 200)
+            assert.equal(body.name, 'John')
+            assert.equal(body.age, undefined)
+            assert.equal(body.comment, 'Jumbo')
+            assert.deepEqual(body.favorites, {
               color: 'Jade',
               purchase: {
-                item: product._id,
-                number: 1
+                item: product._id.toHexString()
               }
             })
-            done()
+
+            db.models.Customer.findById(customer._id, (err, customer) => {
+              assert.ok(!err)
+              assert.equal(customer.age, 12)
+              assert.deepEqual(customer.favorites.toObject(), {
+                animal: 'Boar',
+                color: 'Jade',
+                purchase: {
+                  item: product._id,
+                  number: 1
+                }
+              })
+              done()
+            })
           })
         })
-      })
 
-      it('PUT /Customer/:id - saves protected and public fields (falsy values)', (done) => {
-        request.put({
-          url: `${testUrl}/api/v1/Customer/${customer._id}`,
-          json: {
-            age: 0,
-            comment: '',
-            favorites: {
-              animal: '',
-              color: '',
-              purchase: {
-                number: 0
+        it(`${method} /Customer/:id - saves protected and public fields (falsy values)`, (done) => {
+          request({ method,
+            url: `${testUrl}/api/v1/Customer/${customer._id}`,
+            json: {
+              age: 0,
+              comment: '',
+              favorites: {
+                animal: '',
+                color: '',
+                purchase: {
+                  number: 0
+                }
               }
             }
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 200)
-          assert.equal(body.name, 'Bob')
-          assert.equal(body.age, undefined)
-          assert.equal(body.comment, '')
-          assert.deepEqual(body.favorites, {
-            color: '',
-            purchase: {
-              item: product._id.toHexString()
-            }
-          })
-
-          db.models.Customer.findById(customer._id, (err, customer) => {
+          }, (err, res, body) => {
             assert.ok(!err)
-            assert.equal(customer.age, 12)
-            assert.deepEqual(customer.favorites.toObject(), {
-              animal: 'Boar',
+            assert.equal(res.statusCode, 200)
+            assert.equal(body.name, 'Bob')
+            assert.equal(body.age, undefined)
+            assert.equal(body.comment, '')
+            assert.deepEqual(body.favorites, {
               color: '',
               purchase: {
-                item: product._id,
-                number: 1
+                item: product._id.toHexString()
               }
             })
-            done()
+
+            db.models.Customer.findById(customer._id, (err, customer) => {
+              assert.ok(!err)
+              assert.equal(customer.age, 12)
+              assert.deepEqual(customer.favorites.toObject(), {
+                animal: 'Boar',
+                color: '',
+                purchase: {
+                  item: product._id,
+                  number: 1
+                }
+              })
+              done()
+            })
           })
         })
       })
@@ -1403,89 +1408,91 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('PUT /Customer/:id - saves public fields', (done) => {
-        request.put({
-          url: `${testUrl}/api/v1/Customer/${customer._id}`,
-          json: {
-            name: 'John',
-            age: 24,
-            comment: 'Jumbo',
-            favorites: {
-              animal: 'Jaguar',
-              color: 'Jade',
-              purchase: {
-                number: 2
+      updateMethods.forEach((method) => {
+        it(`${method} /Customer/:id - saves public fields`, (done) => {
+          request({ method,
+            url: `${testUrl}/api/v1/Customer/${customer._id}`,
+            json: {
+              name: 'John',
+              age: 24,
+              comment: 'Jumbo',
+              favorites: {
+                animal: 'Jaguar',
+                color: 'Jade',
+                purchase: {
+                  number: 2
+                }
               }
             }
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 200)
-          assert.equal(body.name, 'John')
-          assert.equal(body.age, undefined)
-          assert.equal(body.comment, undefined)
-          assert.deepEqual(body.favorites, {
-            purchase: {
-              item: product._id.toHexString()
-            }
-          })
-
-          db.models.Customer.findById(customer._id, (err, customer) => {
+          }, (err, res, body) => {
             assert.ok(!err)
-            assert.equal(customer.age, 12)
-            assert.equal(customer.comment, 'Boo')
-            assert.deepEqual(customer.favorites.toObject(), {
-              animal: 'Boar',
-              color: 'Black',
+            assert.equal(res.statusCode, 200)
+            assert.equal(body.name, 'John')
+            assert.equal(body.age, undefined)
+            assert.equal(body.comment, undefined)
+            assert.deepEqual(body.favorites, {
               purchase: {
-                item: product._id,
-                number: 1
+                item: product._id.toHexString()
               }
             })
-            done()
+
+            db.models.Customer.findById(customer._id, (err, customer) => {
+              assert.ok(!err)
+              assert.equal(customer.age, 12)
+              assert.equal(customer.comment, 'Boo')
+              assert.deepEqual(customer.favorites.toObject(), {
+                animal: 'Boar',
+                color: 'Black',
+                purchase: {
+                  item: product._id,
+                  number: 1
+                }
+              })
+              done()
+            })
           })
         })
-      })
 
-      it('PUT /Customer/:id - saves public fields (falsy values)', (done) => {
-        request.put({
-          url: `${testUrl}/api/v1/Customer/${customer._id}`,
-          json: {
-            age: 0,
-            comment: '',
-            favorites: {
-              animal: '',
-              color: '',
-              purchase: {
-                number: 0
+        it(`${method} /Customer/:id - saves public fields (falsy values)`, (done) => {
+          request({ method,
+            url: `${testUrl}/api/v1/Customer/${customer._id}`,
+            json: {
+              age: 0,
+              comment: '',
+              favorites: {
+                animal: '',
+                color: '',
+                purchase: {
+                  number: 0
+                }
               }
             }
-          }
-        }, (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 200)
-          assert.equal(body.name, 'Bob')
-          assert.equal(body.age, undefined)
-          assert.equal(body.comment, undefined)
-          assert.deepEqual(body.favorites, {
-            purchase: {
-              item: product._id.toHexString()
-            }
-          })
-
-          db.models.Customer.findById(customer._id, (err, customer) => {
+          }, (err, res, body) => {
             assert.ok(!err)
-            assert.equal(customer.age, 12)
-            assert.equal(customer.comment, 'Boo')
-            assert.deepEqual(customer.favorites.toObject(), {
-              animal: 'Boar',
-              color: 'Black',
+            assert.equal(res.statusCode, 200)
+            assert.equal(body.name, 'Bob')
+            assert.equal(body.age, undefined)
+            assert.equal(body.comment, undefined)
+            assert.deepEqual(body.favorites, {
               purchase: {
-                item: product._id,
-                number: 1
+                item: product._id.toHexString()
               }
             })
-            done()
+
+            db.models.Customer.findById(customer._id, (err, customer) => {
+              assert.ok(!err)
+              assert.equal(customer.age, 12)
+              assert.equal(customer.comment, 'Boo')
+              assert.deepEqual(customer.favorites.toObject(), {
+                animal: 'Boar',
+                color: 'Black',
+                purchase: {
+                  item: product._id,
+                  number: 1
+                }
+              })
+              done()
+            })
           })
         })
       })
