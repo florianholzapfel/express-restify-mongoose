@@ -1,21 +1,15 @@
-const http = require('http')
-
 module.exports = function (options) {
+  const errorHandler = require('../errorHandler')(options)
+
   return function ensureContentType (req, res, next) {
     const ct = req.headers['content-type']
 
     if (!ct) {
-      let err = new Error(http.STATUS_CODES[400])
-      err.description = 'missing_content_type'
-      err.statusCode = 400
-      return options.onError(err, req, res, next)
+      return errorHandler(req, res, next)(new Error('missing_content_type'))
     }
 
     if (ct.indexOf('application/json') === -1) {
-      let err = new Error(http.STATUS_CODES[400])
-      err.description = 'invalid_content_type'
-      err.statusCode = 400
-      return options.onError(err, req, res, next)
+      return errorHandler(req, res, next)(new Error('invalid_content_type'))
     }
 
     next()

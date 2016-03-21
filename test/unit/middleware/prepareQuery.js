@@ -253,19 +253,17 @@ describe('prepareQuery', () => {
 
   it('calls onError when query key is invalid json', () => {
     let req = {
+      erm: {},
+      params: {},
       query: {
         query: 'not json'
       }
     }
 
-    let err = new Error('query must be a valid JSON string')
-    err.description = 'invalid_json'
-    err.statusCode = 400
-
     prepareQuery(options)(req, {}, next)
 
     sinon.assert.calledOnce(options.onError)
-    sinon.assert.calledWithExactly(options.onError, err, req, {}, next)
+    sinon.assert.calledWithExactly(options.onError, new Error('invalid_json_query'), req, {}, next)
     sinon.assert.notCalled(next)
   })
 

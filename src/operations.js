@@ -60,9 +60,7 @@ module.exports = function (model, options, excludedMap) {
     options.contextFilter(model, req, (filteredContext) => {
       buildQuery(findById(filteredContext, req.params.id), req._ermQueryOptions).lean(options.lean).read(options.readPreference).exec().then((item) => {
         if (!item) {
-          let err = new Error(http.STATUS_CODES[404])
-          err.statusCode = 404
-          return options.onError(err, req, res, next)
+          return errorHandler(req, res, next)(new Error(http.STATUS_CODES[404]))
         }
 
         for (let prop in item) {
@@ -97,9 +95,7 @@ module.exports = function (model, options, excludedMap) {
     options.contextFilter(model, req, (filteredContext) => {
       buildQuery(findById(filteredContext, req.params.id), req._ermQueryOptions).lean(options.lean).read(options.readPreference).exec().then((item) => {
         if (!item) {
-          let err = new Error(http.STATUS_CODES[404])
-          err.statusCode = 404
-          return options.onError(err, req, res, next)
+          return errorHandler(req, res, next)(new Error(http.STATUS_CODES[404]))
         }
 
         req.erm.result = item
@@ -115,9 +111,7 @@ module.exports = function (model, options, excludedMap) {
       options.contextFilter(model, req, (filteredContext) => {
         findById(filteredContext, req.params.id).findOneAndRemove().then((item) => {
           if (!item) {
-            let err = new Error(http.STATUS_CODES[404])
-            err.statusCode = 404
-            return options.onError(err, req, res, next)
+            return errorHandler(req, res, next)(new Error(http.STATUS_CODES[404]))
           }
 
           req.erm.statusCode = 204
@@ -212,9 +206,7 @@ module.exports = function (model, options, excludedMap) {
           runValidators: options.runValidators
         }).exec().then((item) => model.populate(item, req._ermQueryOptions.populate || [])).then((item) => {
           if (!item) {
-            let err = new Error(http.STATUS_CODES[404])
-            err.statusCode = 404
-            return options.onError(err, req, res, next)
+            return errorHandler(req, res, next)(new Error(http.STATUS_CODES[404]))
           }
 
           req.erm.result = item

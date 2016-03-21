@@ -1588,8 +1588,11 @@ module.exports = function (createFn, setup, dismantle) {
           json: true
         }, (err, res, body) => {
           assert.ok(!err)
-          assert.equal(res.statusCode, 500)
-          // assert.equal(body.message, 'Something went wrong')
+          assert.equal(res.statusCode, 400)
+          assert.deepEqual(body, {
+            name: 'Error',
+            message: 'Something went wrong'
+          })
           done()
         })
       })

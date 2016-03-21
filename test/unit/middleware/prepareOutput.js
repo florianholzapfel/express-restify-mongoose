@@ -203,7 +203,8 @@ describe('prepareOutput', () => {
   it('calls onError with default options and bad postRead middleware', () => {
     let req = {
       erm: {},
-      method: 'GET'
+      method: 'GET',
+      params: {}
     }
 
     let err = new Error('An error occurred')

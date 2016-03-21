@@ -187,6 +187,10 @@ module.exports = function (createFn, setup, dismantle) {
       }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 400)
+        assert.deepEqual(JSON.parse(body), {
+          name: 'Error',
+          message: 'missing_content_type'
+        })
         sinon.assert.notCalled(options.preMiddleware)
         done()
       })
@@ -199,6 +203,10 @@ module.exports = function (createFn, setup, dismantle) {
       }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 400)
+        assert.deepEqual(JSON.parse(body), {
+          name: 'Error',
+          message: 'invalid_content_type'
+        })
         sinon.assert.notCalled(options.preMiddleware)
         done()
       })
@@ -228,6 +236,10 @@ module.exports = function (createFn, setup, dismantle) {
         }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 400)
+          assert.deepEqual(JSON.parse(body), {
+            name: 'Error',
+            message: 'missing_content_type'
+          })
           sinon.assert.notCalled(options.preMiddleware)
           done()
         })
@@ -240,6 +252,10 @@ module.exports = function (createFn, setup, dismantle) {
         }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 400)
+          assert.deepEqual(JSON.parse(body), {
+            name: 'Error',
+            message: 'invalid_content_type'
+          })
           sinon.assert.notCalled(options.preMiddleware)
           done()
         })
@@ -489,6 +505,10 @@ module.exports = function (createFn, setup, dismantle) {
         }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 400)
+          assert.deepEqual(JSON.parse(body), {
+            name: 'Error',
+            message: 'missing_content_type'
+          })
           sinon.assert.notCalled(options.preUpdate)
           done()
         })
@@ -501,6 +521,10 @@ module.exports = function (createFn, setup, dismantle) {
         }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 400)
+          assert.deepEqual(JSON.parse(body), {
+            name: 'Error',
+            message: 'invalid_content_type'
+          })
           sinon.assert.notCalled(options.preUpdate)
           done()
         })
@@ -718,6 +742,23 @@ module.exports = function (createFn, setup, dismantle) {
       }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 400)
+        assert.deepEqual(body, {
+          name: 'ValidationError',
+          message: 'Customer validation failed',
+          errors: {
+            name: {
+              kind: 'required',
+              message: 'Path `name` is required.',
+              name: 'ValidatorError',
+              path: 'name',
+              properties: {
+                message: 'Path `{PATH}` is required.',
+                path: 'name',
+                type: 'required'
+              }
+            }
+          }
+        })
         sinon.assert.notCalled(options.postCreate)
         done()
       })
@@ -941,6 +982,10 @@ module.exports = function (createFn, setup, dismantle) {
         }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 400)
+          assert.deepEqual(JSON.parse(body), {
+            name: 'Error',
+            message: 'missing_content_type'
+          })
           sinon.assert.notCalled(options.postUpdate)
           done()
         })
@@ -953,6 +998,10 @@ module.exports = function (createFn, setup, dismantle) {
         }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 400)
+          assert.deepEqual(JSON.parse(body), {
+            name: 'Error',
+            message: 'invalid_content_type'
+          })
           sinon.assert.notCalled(options.postUpdate)
           done()
         })
@@ -1059,9 +1108,7 @@ module.exports = function (createFn, setup, dismantle) {
     let server
     let options = {
       postCreate: sinon.spy((req, res, next) => {
-        let err = new Error('Something went wrong')
-        err.statusCode = 400
-        next(err)
+        next(new Error('Something went wrong'))
       }),
       postProcess: sinon.spy(),
       restify: app.isRestify
@@ -1084,6 +1131,7 @@ module.exports = function (createFn, setup, dismantle) {
       dismantle(app, server, done)
     })
 
+    // TODO: This test is weird
     it('POST /Customer 201', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Customer`,
@@ -1097,7 +1145,7 @@ module.exports = function (createFn, setup, dismantle) {
         let args = options.postCreate.args[0]
         assert.equal(args.length, 3)
         assert.equal(args[0].erm.result.name, 'Bob')
-        assert.equal(args[0].erm.statusCode, 201)
+        assert.equal(args[0].erm.statusCode, 400)
         assert.equal(typeof args[2], 'function')
         sinon.assert.notCalled(options.postProcess)
         done()

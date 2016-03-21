@@ -23,6 +23,7 @@ describe('errorHandler', () => {
     }
 
     const req = {
+      erm: {},
       params: {}
     }
 
@@ -31,7 +32,7 @@ describe('errorHandler', () => {
     errorHandler(options)(req)(err)
 
     sinon.assert.calledOnce(options.onError)
-    assert.equal(err.statusCode, 400)
+    assert.equal(req.erm.statusCode, 400)
   })
 
   it('sets statusCode 400 and calls onError', () => {
@@ -41,6 +42,7 @@ describe('errorHandler', () => {
     }
 
     const req = {
+      erm: {},
       params: {
         id: '42'
       }
@@ -51,7 +53,7 @@ describe('errorHandler', () => {
     errorHandler(options)(req)(err)
 
     sinon.assert.calledOnce(options.onError)
-    assert.equal(err.statusCode, 400)
+    assert.equal(req.erm.statusCode, 400)
   })
 
   it('sets statusCode 404 and calls onError', () => {
@@ -61,6 +63,7 @@ describe('errorHandler', () => {
     }
 
     const req = {
+      erm: {},
       params: {
         id: '42'
       }
@@ -71,6 +74,6 @@ describe('errorHandler', () => {
     errorHandler(options)(req)(err)
 
     sinon.assert.calledOnce(options.onError)
-    assert.equal(err.statusCode, 404)
+    assert.equal(req.erm.statusCode, 404)
   })
 })

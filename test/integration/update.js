@@ -105,8 +105,13 @@ module.exports = function (createFn, setup, dismantle) {
           }, (err, res, body) => {
             assert.ok(!err)
             assert.equal(res.statusCode, 400)
-            assert.equal(body.name, 'CastError')
-            assert.equal(body.path, 'age')
+            assert.deepEqual(body, {
+              kind: 'number',
+              message: 'Cast to number failed for value \"not a number\" at path \"age\"',
+              name: 'CastError',
+              path: 'age',
+              value: 'not a number'
+            })
             done()
           })
         })
@@ -120,8 +125,13 @@ module.exports = function (createFn, setup, dismantle) {
           }, (err, res, body) => {
             assert.ok(!err)
             assert.equal(res.statusCode, 400)
+            assert.equal(Object.keys(body).length, 5)
             assert.equal(body.name, 'MongoError')
+            // Remove extra whitespace and allow code 11001 for MongoDB < 3
+            assert.equal(body.errmsg.replace(/\s+/g, ' '), 'exception: E11000 duplicate key error index: database.customers.$name_1 dup key: { : \"John\" }')
+            assert.equal(body.message.replace(/\s+/g, ' '), 'exception: E11000 duplicate key error index: database.customers.$name_1 dup key: { : \"John\" }')
             assert.ok(body.code === 11000 || body.code === 11001)
+            assert.equal(body.ok, 0)
             done()
           })
         })
@@ -132,7 +142,10 @@ module.exports = function (createFn, setup, dismantle) {
           }, (err, res, body) => {
             assert.ok(!err)
             assert.equal(res.statusCode, 400)
-            assert.equal(JSON.parse(body).description, 'missing_content_type')
+            assert.deepEqual(JSON.parse(body), {
+              name: 'Error',
+              message: 'missing_content_type'
+            })
             done()
           })
         })
@@ -144,7 +157,10 @@ module.exports = function (createFn, setup, dismantle) {
           }, (err, res, body) => {
             assert.ok(!err)
             assert.equal(res.statusCode, 400)
-            assert.equal(JSON.parse(body).description, 'invalid_content_type')
+            assert.deepEqual(JSON.parse(body), {
+              name: 'Error',
+              message: 'invalid_content_type'
+            })
             done()
           })
         })
@@ -431,9 +447,19 @@ module.exports = function (createFn, setup, dismantle) {
           }, (err, res, body) => {
             assert.ok(!err)
             assert.equal(res.statusCode, 400)
-            assert.equal(body.name, 'ValidationError')
-            assert.equal(Object.keys(body.errors).length, 1)
-            assert.ok(body.errors['age'])
+            assert.deepEqual(body, {
+              name: 'ValidationError',
+              message: 'Customer validation failed',
+              errors: {
+                age: {
+                  kind: 'Number',
+                  message: 'Cast to Number failed for value \"not a number\" at path \"age\"',
+                  name: 'CastError',
+                  path: 'age',
+                  value: 'not a number'
+                }
+              }
+            })
             done()
           })
         })
@@ -447,7 +473,12 @@ module.exports = function (createFn, setup, dismantle) {
           }, (err, res, body) => {
             assert.ok(!err)
             assert.equal(res.statusCode, 400)
+            // Remove extra whitespace, allow 8 keys and code 11001 for MongoDB < 3
+            assert.ok(Object.keys(body).length === 6 || Object.keys(body).length === 8)
             assert.equal(body.name, 'MongoError')
+            assert.equal(body.driver, true)
+            assert.equal(body.errmsg.replace(/\s+/g, ' '), 'E11000 duplicate key error index: database.customers.$name_1 dup key: { : \"John\" }')
+            assert.equal(body.message.replace(/\s+/g, ' '), 'E11000 duplicate key error index: database.customers.$name_1 dup key: { : \"John\" }')
             assert.ok(body.code === 11000 || body.code === 11001)
             done()
           })
@@ -459,6 +490,10 @@ module.exports = function (createFn, setup, dismantle) {
           }, (err, res, body) => {
             assert.ok(!err)
             assert.equal(res.statusCode, 400)
+            assert.deepEqual(JSON.parse(body), {
+              name: 'Error',
+              message: 'missing_content_type'
+            })
             done()
           })
         })
@@ -472,6 +507,10 @@ module.exports = function (createFn, setup, dismantle) {
           }, (err, res, body) => {
             assert.ok(!err)
             assert.equal(res.statusCode, 400)
+            assert.deepEqual(JSON.parse(body), {
+              name: 'Error',
+              message: 'invalid_content_type'
+            })
             done()
           })
         })

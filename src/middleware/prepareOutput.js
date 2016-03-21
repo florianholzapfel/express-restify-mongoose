@@ -2,6 +2,8 @@ const _ = require('lodash')
 const async = require('async')
 
 module.exports = function (options, excludedMap) {
+  const errorHandler = require('../errorHandler')(options)
+
   return function (req, res, next) {
     let postMiddleware
 
@@ -29,7 +31,7 @@ module.exports = function (options, excludedMap) {
       middleware(req, res, cb)
     }, (err) => {
       if (err) {
-        return options.onError(err, req, res, next)
+        return errorHandler(req, res, next)(err)
       }
 
       // TODO: this will, but should not, filter /count queries

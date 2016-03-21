@@ -2,6 +2,8 @@ const _ = require('lodash')
 const isCoordinates = require('is-coordinates')
 
 module.exports = function (options) {
+  const errorHandler = require('../errorHandler')(options)
+
   function jsonQueryParser (key, value) {
     if (key === '$regex' && !options.allowRegex) {
       return undefined
@@ -107,10 +109,7 @@ module.exports = function (options) {
         try {
           req._ermQueryOptions[key] = JSON.parse(req.query[key], jsonQueryParser)
         } catch (e) {
-          let err = new Error('%s must be a valid JSON string')
-          err.description = 'invalid_json'
-          err.statusCode = 400
-          return options.onError(err, req, res, next)
+          return errorHandler(req, res, next)(new Error(`invalid_json_${key}`))
         }
       } else if (key === 'populate' || key === 'select' || key === 'sort') {
         try {

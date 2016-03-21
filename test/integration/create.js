@@ -133,8 +133,23 @@ module.exports = function (createFn, setup, dismantle) {
         assert.ok(!err)
         assert.equal(res.statusCode, 400)
         assert.equal(body.name, 'ValidationError')
-        assert.equal(Object.keys(body.errors).length, 1)
-        assert.ok(body.errors['name'])
+        assert.deepEqual(body, {
+          name: 'ValidationError',
+          message: 'Customer validation failed',
+          errors: {
+            name: {
+              kind: 'required',
+              message: 'Path `name` is required.',
+              name: 'ValidatorError',
+              path: 'name',
+              properties: {
+                message: 'Path `{PATH}` is required.',
+                path: 'name',
+                type: 'required'
+              }
+            }
+          }
+        })
         done()
       })
     })
@@ -145,7 +160,10 @@ module.exports = function (createFn, setup, dismantle) {
       }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 400)
-        assert.equal(JSON.parse(body).description, 'missing_content_type')
+        assert.deepEqual(JSON.parse(body), {
+          name: 'Error',
+          message: 'missing_content_type'
+        })
         done()
       })
     })
@@ -157,7 +175,10 @@ module.exports = function (createFn, setup, dismantle) {
       }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 400)
-        assert.equal(JSON.parse(body).description, 'invalid_content_type')
+        assert.deepEqual(JSON.parse(body), {
+          name: 'Error',
+          message: 'invalid_content_type'
+        })
         done()
       })
     })
@@ -307,10 +328,26 @@ module.exports = function (createFn, setup, dismantle) {
       }, (err, res, body) => {
         assert.ok(!err)
         assert.equal(res.statusCode, 400)
-        assert.equal(body.name, 'ValidationError')
-        assert.equal(Object.keys(body.errors).length, 2)
-        assert.ok(body.errors['customer'])
-        assert.ok(body.errors['products'])
+        assert.deepEqual(body, {
+          name: 'ValidationError',
+          message: 'Invoice validation failed',
+          errors: {
+            customer: {
+              kind: 'ObjectID',
+              message: 'Cast to ObjectID failed for value \"invalid-id\" at path \"customer\"',
+              name: 'CastError',
+              path: 'customer',
+              value: 'invalid-id'
+            },
+            products: {
+              kind: 'Array',
+              message: 'Cast to Array failed for value \"invalid-id,invalid-id\" at path \"products\"',
+              name: 'CastError',
+              path: 'products',
+              value: ['invalid-id', 'invalid-id']
+            }
+          }
+        })
         done()
       })
     })
