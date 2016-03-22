@@ -21,6 +21,7 @@
     "babel-preset-es2015": "^6.3.13",
     "body-parser": "~1",
     "express": "~4",
+    "in-publish": "^2.0.0",
     "istanbul": ">=1.0.0-alpha.2",
     "method-override": "~2",
     "mocha": "~2",
@@ -55,7 +56,7 @@
   "scripts": {
     "lint": "standard",
     "compile": "babel src -d lib --source-maps both",
-    "prepublish": "npm test",
+    "prepublish": "in-publish && npm test || not-in-publish",
     "pretest": "npm run lint && npm run compile",
     "test": "npm run test-unit && npm run test-filter && npm run test-express && npm run test-restify",
     "test-ci": "npm run test-unit && npm run test-filter && npm run test-cov-express && npm run test-restify",
