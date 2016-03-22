@@ -1,6 +1,14 @@
 Changelog
 =========
 
+### 4.0.0
+
+* improved default error middleware by serializing error objects and removing stack traces
+* fixed Mongoose async middleware error propagation
+* fixed requests to always set `req.erm.statusCode`
+* removed `statusCode` from error object and response body
+* removed undocumented `outputFn` parameter, use `req.erm.result` and `req.erm.statusCode`
+
 ### 3.2.0
 
 * added an option to disable regex operations  ([#195](https://github.com/florianholzapfel/express-restify-mongoose/issues/195))
