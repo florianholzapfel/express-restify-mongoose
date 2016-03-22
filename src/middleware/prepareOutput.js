@@ -47,10 +47,7 @@ module.exports = function (options, excludedMap) {
         res.header(_.isString(options.totalCountHeader) ? options.totalCountHeader : 'X-Total-Count', req.erm.totalCount)
       }
 
-      options.outputFn(req, res, {
-        result: req.erm.result,
-        statusCode: req.erm.statusCode
-      })
+      options.outputFn(req, res)
 
       if (options.postProcess) {
         options.postProcess(req, res, next)
