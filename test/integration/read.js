@@ -602,13 +602,7 @@ module.exports = function (createFn, setup, dismantle) {
               message: 'Cast to number failed for value \"/2/i\" at path \"age\"',
               name: 'CastError',
               path: 'age',
-              value: {
-                global: false,
-                ignoreCase: true,
-                lastIndex: 0,
-                multiline: false,
-                source: '2'
-              }
+              value: {}
             })
             done()
           })
