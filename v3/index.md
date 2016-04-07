@@ -1,6 +1,6 @@
 ---
 layout: default
-version: 4
+version: 3
 ---
 
 ## Getting started
@@ -11,7 +11,7 @@ version: 4
 ```js
 {
   "dependencies": {
-    "express-restify-mongoose": "^4.0.0",
+    "express-restify-mongoose": "^3.0.0",
     "mongoose": "^4.0.0"
   }
 }
@@ -41,7 +41,7 @@ const router = express.Router()
 app.use(bodyParser.json())
 app.use(methodOverride())
 
-mongoose.connect('mongodb://localhost:27017/database')
+mongoose.connect('mongodb://localhost/database')
 
 restify.serve(router, mongoose.model('Customer', new mongoose.Schema({
   name: { type: String, required: true },
@@ -50,7 +50,7 @@ restify.serve(router, mongoose.model('Customer', new mongoose.Schema({
 
 app.use(router)
 
-app.listen(3000, () => {
+app.listen(3000, function () {
   console.log('Express server listening on port 3000')
 })
 ```
@@ -74,9 +74,9 @@ DELETE http://localhost/api/v1/Customer/:id
 ### Usage with [request](https://www.npmjs.com/package/request)
 
 ```js
-const request = require('request')
+let request = require('request')
 
-request.get({
+request({
   url: '/api/v1/Model',
   qs: {
     query: JSON.stringify({
@@ -100,7 +100,7 @@ request.get({
 
 All the following parameters (sort, skip, limit, query, populate, select and distinct) support the entire mongoose feature set.
 
-> When passing values as objects or arrays in URLs, they must be valid JSON.
+> When passing values as objects or arrays in URLs, they must be valid JSON
 
 ### Sort
 
@@ -119,7 +119,7 @@ GET /Customer?skip=10
 
 ### Limit
 
-Only overrides `options.limit` if the queried limit is lower.
+Only overrides `options.limit` if the queried limit is lower
 
 ```
 GET /Customer?limit=10
@@ -147,7 +147,7 @@ GET /Customer?query={"age":"!=12"}
 
 ### Populate
 
-Works with create, read and update operations.
+Works with create, read and update operations
 
 ```
 GET/POST/PUT /Invoices?populate=customer
@@ -156,6 +156,8 @@ GET/POST/PUT /Invoices?populate=[{"path":"customer"},{"path":"products"}]
 ```
 
 ### Select
+
+`_id` is always returned unless explicitely excluded
 
 ```
 GET /Customer?select=name
@@ -166,7 +168,7 @@ GET /Customer?select={"name":0}
 
 ### Distinct
 
-If the field is private or protected and the request does not have appropriate access, an empty array is returned.
+If the field is private or protected and the request does not have appropriate access, an empty array is returned
 
 ```
 GET /Customer?distinct=name
@@ -178,18 +180,16 @@ GET /Customer?distinct=name
 ### serve
 
 ```js
-const uri = restify.serve(router, model[, options])
-
-// uri = '/api/v1/Model'
+restify.serve(router, model[, options])
 ```
 
-**router**: `express.Router()` instance (Express 4), `app` object (Express 3) or `server` object (restify)
+**router**: express.Router() instance (Express 4), app object (Express 3) or server object (restify)
 
 **model**: mongoose model
 
 **options**: object <span class="label label-primary">type</span><span class="label label-success">default</span><span class="label label-info">version</span>
 
-> When <span class="label label-info">version</span> is unspecified, the feature is available in the initial major release (4.0.0)
+> When <span class="label label-info">version</span> is unspecified, the feature is available in the initial major release (3.0.0)
 
 - [prefix](#prefix)
 - [version](#version)
@@ -254,7 +254,7 @@ Enable support for [restify](https://www.npmjs.com/package/restify) instead of [
 Endpoint name
 
 #### allowRegex
-<span class="label label-primary" title="type">boolean</span><span class="label label-success" title="default">true</span>
+<span class="label label-primary" title="type">boolean</span><span class="label label-success" title="default">true</span><span class="label label-info">3.2</span>
 
 Whether or not regular expressions should be executed. Setting it to `true` will protect against ReDoS, see [issue #195](https://github.com/florianholzapfel/express-restify-mongoose/issues/195) for details.
 
@@ -513,8 +513,8 @@ Middleware that runs after successfully creating a resource. The unfiltered docu
 
 ```js
 postCreate: function (req, res, next) {
-  const result = req.erm.result         // unfiltered document or object
-  const statusCode = req.erm.statusCode // 201
+  let result = req.erm.result         // unfiltered document or object
+  let statusCode = req.erm.statusCode // 201
 
   performAsyncLogic((err) => {
     next(err)
@@ -529,8 +529,8 @@ Middleware that runs after successfully reading a resource. The unfiltered docum
 
 ```js
 postRead: function (req, res, next) {
-  const result = req.erm.result         // unfiltered document, object or array
-  const statusCode = req.erm.statusCode // 200
+  let result = req.erm.result         // unfiltered document, object or array
+  let statusCode = req.erm.statusCode // 200
 
   performAsyncLogic((err) => {
     next(err)
@@ -545,8 +545,8 @@ Middleware that runs after successfully updating a resource. The unfiltered docu
 
 ```js
 postUpdate: function (req, res, next) {
-  const result = req.erm.result         // unfiltered document or object
-  const statusCode = req.erm.statusCode // 200
+  let result = req.erm.result         // unfiltered document or object
+  let statusCode = req.erm.statusCode // 200
 
   performAsyncLogic((err) => {
     next(err)
@@ -561,8 +561,8 @@ Middleware that runs after successfully deleting a resource.
 
 ```js
 postDelete: function (req, res, next) {
-  const result = req.erm.result         // undefined
-  const statusCode = req.erm.statusCode // 204
+  let result = req.erm.result         // undefined
+  let statusCode = req.erm.statusCode // 204
 
   performAsyncLogic((err) => {
     next(err)
@@ -579,10 +579,9 @@ Function used to output the result. The filtered object is available on `req.erm
 
 ```js
 outputFn: function (req, res) {
-  const result = req.erm.result         // filtered object
-  const statusCode = req.erm.statusCode // 200 or 201
+  let result = req.erm.result         // filtered object
 
-  res.status(statusCode).json(result)
+  res.status(req.erm.statusCode).json(result)
 }
 ```
 
@@ -595,15 +594,12 @@ Middleware that is called after output, useful for logging. The filtered object 
 
 ```js
 postProcess: function (req, res, next) {
-  const result = req.erm.result         // filtered object
-  const statusCode = req.erm.statusCode // 200 or 201
-
-  console.info(`${req.method} ${req.path} request completed with status code ${statusCode}`)
+  console.log(`${req.method} ${req.path} request completed with response code ${req.erm.statusCode}`)
 }
 ```
 
 #### onError
-<span class="label label-primary" title="type">function (err, req, res, next)</span><span class="label label-success" title="default">serialize the entire error, except stack</span>
+<span class="label label-primary" title="type">function (err, req, res, next)</span><span class="label label-success" title="default">send the entire mongoose error</span>
 
 > Leaving this as default may leak information about your database
 
@@ -613,11 +609,7 @@ Function used to output an error.
 
 ```js
 onError: function (err, req, res, next) {
-  const statusCode = req.erm.statusCode // 400 or 404
-
-  res.status(statusCode).json({
-    message: err.message
-  })
+  next(err)
 }
 ```
 
