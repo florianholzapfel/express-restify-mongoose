@@ -76,6 +76,24 @@ module.exports = function () {
     points: Number
   })
 
+  const HooksSchema = new Schema({
+    preSaveError: Boolean,
+    postSaveError: Boolean
+  })
+
+  HooksSchema.pre('save', true, function (next, done) {
+    next()
+    setTimeout(() => {
+      done(this.preSaveError ? new Error('AsyncPreSaveError') : null)
+    }, 42)
+  })
+
+  HooksSchema.post('save', function (doc, next) {
+    setTimeout(() => {
+      next(doc.postSaveError ? new Error('AsyncPostSaveError') : null)
+    }, 42)
+  })
+
   function initialize (opts, callback) {
     if (_.isFunction(opts)) {
       callback = opts
@@ -104,6 +122,10 @@ module.exports = function () {
 
     if (!mongoose.models.Account) {
       mongoose.model('Account', AccountSchema)
+    }
+
+    if (!mongoose.models.Hook) {
+      mongoose.model('Hook', HooksSchema)
     }
 
     if (opts.connect) {

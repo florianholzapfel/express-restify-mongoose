@@ -9,6 +9,7 @@
     "lodash": "~4.8.0",
     "mongoose-detective": "~0.1.0",
     "moredots": "~0.1.0",
+    "serialize-error": "~2.0.0",
     "weedout": "~0.1.0"
   },
   "peerDependencies": {

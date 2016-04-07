@@ -13,9 +13,7 @@ module.exports = function (model, options) {
         [options.idProperty]: req.params.id
       }).lean(false).read(options.readPreference).exec().then((doc) => {
         if (!doc) {
-          let err = new Error(http.STATUS_CODES[404])
-          err.statusCode = 404
-          return options.onError(err, req, res, next)
+          return errorHandler(req, res, next)(new Error(http.STATUS_CODES[404]))
         }
 
         req.erm.document = doc

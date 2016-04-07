@@ -352,8 +352,10 @@ module.exports = function (createFn, setup, dismantle) {
         }, (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 400)
-          assert.equal(body.description, 'invalid_json')
-          assert.equal(body.statusCode, 400)
+          assert.deepEqual(body, {
+            name: 'Error',
+            message: 'invalid_json_query'
+          })
           done()
         })
       })
@@ -595,6 +597,13 @@ module.exports = function (createFn, setup, dismantle) {
           }, (err, res, body) => {
             assert.ok(!err)
             assert.equal(res.statusCode, 400)
+            assert.deepEqual(body, {
+              kind: 'number',
+              message: 'Cast to number failed for value \"/2/i\" at path \"age\"',
+              name: 'CastError',
+              path: 'age',
+              value: {}
+            })
             done()
           })
         })

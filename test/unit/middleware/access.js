@@ -57,7 +57,10 @@ describe('access', () => {
     })
 
     it('calls onError', () => {
-      let req = {}
+      let req = {
+        erm: {},
+        params: {}
+      }
       let onError = sinon.spy()
       let err = new Error('Something bad happened')
 

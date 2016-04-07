@@ -14,40 +14,32 @@ describe('ensureContentType', () => {
 
   it('calls next with an error (missing_content_type)', () => {
     let req = {
-      headers: {}
+      erm: {},
+      headers: {},
+      params: {}
     }
 
-    let err = new Error('Bad Request')
-    err.description = 'missing_content_type'
-    err.statusCode = 400
-
-    ensureContentType({
-      onError: onError
-    })(req, {}, next)
+    ensureContentType({ onError })(req, {}, next)
 
     sinon.assert.calledOnce(onError)
-    sinon.assert.calledWithExactly(onError, err, req, {}, next)
+    sinon.assert.calledWithExactly(onError, new Error('missing_content_type'), req, {}, next)
     sinon.assert.notCalled(next)
     assert.equal(req.access, undefined)
   })
 
   it('calls next with an error (invalid_content_type)', () => {
     let req = {
+      erm: {},
       headers: {
         'content-type': 'invalid/type'
-      }
+      },
+      params: {}
     }
 
-    let err = new Error('Bad Request')
-    err.description = 'invalid_content_type'
-    err.statusCode = 400
-
-    ensureContentType({
-      onError: onError
-    })(req, {}, next)
+    ensureContentType({ onError })(req, {}, next)
 
     sinon.assert.calledOnce(onError)
-    sinon.assert.calledWithExactly(onError, err, req, {}, next)
+    sinon.assert.calledWithExactly(onError, new Error('invalid_content_type'), req, {}, next)
     sinon.assert.notCalled(next)
     assert.equal(req.access, undefined)
   })
@@ -56,12 +48,11 @@ describe('ensureContentType', () => {
     let req = {
       headers: {
         'content-type': 'application/json'
-      }
+      },
+      params: {}
     }
 
-    ensureContentType({
-      onError: onError
-    })(req, {}, next)
+    ensureContentType({ onError })(req, {}, next)
 
     sinon.assert.calledOnce(next)
     sinon.assert.calledWithExactly(next)

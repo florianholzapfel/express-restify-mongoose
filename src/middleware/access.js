@@ -1,8 +1,10 @@
 module.exports = function (options) {
+  const errorHandler = require('../errorHandler')(options)
+
   return function (req, res, next) {
     const handler = function (err, access) {
       if (err) {
-        return options.onError(err, req, res, next)
+        return errorHandler(req, res, next)(err)
       }
 
       if (['public', 'private', 'protected'].indexOf(access) < 0) {
