@@ -27,10 +27,7 @@ describe('prepareOutput', () => {
     prepareOutput(options)(req, {}, next)
 
     sinon.assert.calledOnce(outputFn)
-    sinon.assert.calledWithExactly(outputFn, req, {}, {
-      result: undefined,
-      statusCode: undefined
-    })
+    sinon.assert.calledWithExactly(outputFn, req, {})
     sinon.assert.notCalled(onError)
     sinon.assert.notCalled(next)
   })
@@ -58,12 +55,7 @@ describe('prepareOutput', () => {
 
     sinon.assert.calledOnce(postCreate)
     sinon.assert.calledOnce(outputFn)
-    sinon.assert.calledWithExactly(outputFn, req, {}, {
-      result: {
-        name: 'Bob'
-      },
-      statusCode: 201
-    })
+    sinon.assert.calledWithExactly(outputFn, req, {})
     sinon.assert.notCalled(onError)
     sinon.assert.notCalled(next)
   })
@@ -91,12 +83,7 @@ describe('prepareOutput', () => {
 
     sinon.assert.calledOnce(postRead)
     sinon.assert.calledOnce(outputFn)
-    sinon.assert.calledWithExactly(outputFn, req, {}, {
-      result: {
-        name: 'Bob'
-      },
-      statusCode: 200
-    })
+    sinon.assert.calledWithExactly(outputFn, req, {})
     sinon.assert.notCalled(onError)
     sinon.assert.notCalled(next)
   })
@@ -124,12 +111,7 @@ describe('prepareOutput', () => {
 
     sinon.assert.calledOnce(postUpdate)
     sinon.assert.calledOnce(outputFn)
-    sinon.assert.calledWithExactly(outputFn, req, {}, {
-      result: {
-        name: 'Bob'
-      },
-      statusCode: 200
-    })
+    sinon.assert.calledWithExactly(outputFn, req, {})
     sinon.assert.notCalled(onError)
     sinon.assert.notCalled(next)
   })
@@ -157,12 +139,7 @@ describe('prepareOutput', () => {
 
     sinon.assert.calledOnce(postUpdate)
     sinon.assert.calledOnce(outputFn)
-    sinon.assert.calledWithExactly(outputFn, req, {}, {
-      result: {
-        name: 'Bob'
-      },
-      statusCode: 200
-    })
+    sinon.assert.calledWithExactly(outputFn, req, {})
     sinon.assert.notCalled(onError)
     sinon.assert.notCalled(next)
   })
@@ -190,12 +167,7 @@ describe('prepareOutput', () => {
 
     sinon.assert.calledOnce(postDelete)
     sinon.assert.calledOnce(outputFn)
-    sinon.assert.calledWithExactly(outputFn, req, {}, {
-      result: {
-        name: 'Bob'
-      },
-      statusCode: 204
-    })
+    sinon.assert.calledWithExactly(outputFn, req, {})
     sinon.assert.notCalled(onError)
     sinon.assert.notCalled(next)
   })
