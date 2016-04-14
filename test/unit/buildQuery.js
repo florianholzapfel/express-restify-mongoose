@@ -21,13 +21,13 @@ describe('buildQuery', () => {
   })
 
   it('does not call any methods and returns a query object', () => {
-    let result = buildQuery({})(query)
+    return buildQuery({})(query).then((result) => {
+      for (let key in query) {
+        sinon.assert.notCalled(query[key])
+      }
 
-    for (let key in query) {
-      sinon.assert.notCalled(query[key])
-    }
-
-    assert.equal(result, query)
+      assert.equal(result, query)
+    })
   })
 
   describe('query', () => {
@@ -36,17 +36,17 @@ describe('buildQuery', () => {
         query: 'foo'
       }
 
-      let result = buildQuery({})(query, queryOptions)
-
-      sinon.assert.calledOnce(query.where)
-      sinon.assert.calledWithExactly(query.where, queryOptions.query)
-      sinon.assert.notCalled(query.skip)
-      sinon.assert.notCalled(query.limit)
-      sinon.assert.notCalled(query.sort)
-      sinon.assert.notCalled(query.select)
-      sinon.assert.notCalled(query.populate)
-      sinon.assert.notCalled(query.distinct)
-      assert.equal(result, query)
+      return buildQuery({})(query, queryOptions).then((result) => {
+        sinon.assert.calledOnce(query.where)
+        sinon.assert.calledWithExactly(query.where, queryOptions.query)
+        sinon.assert.notCalled(query.skip)
+        sinon.assert.notCalled(query.limit)
+        sinon.assert.notCalled(query.sort)
+        sinon.assert.notCalled(query.select)
+        sinon.assert.notCalled(query.populate)
+        sinon.assert.notCalled(query.distinct)
+        assert.equal(result, query)
+      })
     })
   })
 
@@ -56,17 +56,17 @@ describe('buildQuery', () => {
         skip: '1'
       }
 
-      let result = buildQuery({})(query, queryOptions)
-
-      sinon.assert.calledOnce(query.skip)
-      sinon.assert.calledWithExactly(query.skip, queryOptions.skip)
-      sinon.assert.notCalled(query.where)
-      sinon.assert.notCalled(query.limit)
-      sinon.assert.notCalled(query.sort)
-      sinon.assert.notCalled(query.select)
-      sinon.assert.notCalled(query.populate)
-      sinon.assert.notCalled(query.distinct)
-      assert.equal(result, query)
+      return buildQuery({})(query, queryOptions).then((result) => {
+        sinon.assert.calledOnce(query.skip)
+        sinon.assert.calledWithExactly(query.skip, queryOptions.skip)
+        sinon.assert.notCalled(query.where)
+        sinon.assert.notCalled(query.limit)
+        sinon.assert.notCalled(query.sort)
+        sinon.assert.notCalled(query.select)
+        sinon.assert.notCalled(query.populate)
+        sinon.assert.notCalled(query.distinct)
+        assert.equal(result, query)
+      })
     })
   })
 
@@ -76,17 +76,17 @@ describe('buildQuery', () => {
         limit: '1'
       }
 
-      let result = buildQuery({})(query, queryOptions)
-
-      sinon.assert.calledOnce(query.limit)
-      sinon.assert.calledWithExactly(query.limit, queryOptions.limit)
-      sinon.assert.notCalled(query.where)
-      sinon.assert.notCalled(query.skip)
-      sinon.assert.notCalled(query.sort)
-      sinon.assert.notCalled(query.select)
-      sinon.assert.notCalled(query.populate)
-      sinon.assert.notCalled(query.distinct)
-      assert.equal(result, query)
+      return buildQuery({})(query, queryOptions).then((result) => {
+        sinon.assert.calledOnce(query.limit)
+        sinon.assert.calledWithExactly(query.limit, queryOptions.limit)
+        sinon.assert.notCalled(query.where)
+        sinon.assert.notCalled(query.skip)
+        sinon.assert.notCalled(query.sort)
+        sinon.assert.notCalled(query.select)
+        sinon.assert.notCalled(query.populate)
+        sinon.assert.notCalled(query.distinct)
+        assert.equal(result, query)
+      })
     })
 
     it('calls limit and returns a query object', () => {
@@ -98,17 +98,17 @@ describe('buildQuery', () => {
         limit: '2'
       }
 
-      let result = buildQuery(options)(query, queryOptions)
-
-      sinon.assert.calledOnce(query.limit)
-      sinon.assert.calledWithExactly(query.limit, options.limit)
-      sinon.assert.notCalled(query.where)
-      sinon.assert.notCalled(query.skip)
-      sinon.assert.notCalled(query.sort)
-      sinon.assert.notCalled(query.select)
-      sinon.assert.notCalled(query.populate)
-      sinon.assert.notCalled(query.distinct)
-      assert.equal(result, query)
+      return buildQuery(options)(query, queryOptions).then((result) => {
+        sinon.assert.calledOnce(query.limit)
+        sinon.assert.calledWithExactly(query.limit, options.limit)
+        sinon.assert.notCalled(query.where)
+        sinon.assert.notCalled(query.skip)
+        sinon.assert.notCalled(query.sort)
+        sinon.assert.notCalled(query.select)
+        sinon.assert.notCalled(query.populate)
+        sinon.assert.notCalled(query.distinct)
+        assert.equal(result, query)
+      })
     })
 
     it('does not call limit on count endpoint and returns a query object', () => {
@@ -117,14 +117,16 @@ describe('buildQuery', () => {
       }
 
       query.op = 'count'
-      let result = buildQuery({})(query, queryOptions)
-      delete query.op
 
-      for (let key in query) {
-        sinon.assert.notCalled(query[key])
-      }
+      return buildQuery({})(query, queryOptions).then((result) => {
+        delete query.op
 
-      assert.equal(result, query)
+        for (let key in query) {
+          sinon.assert.notCalled(query[key])
+        }
+
+        assert.equal(result, query)
+      })
     })
 
     it('does not call limit on count endpoint and returns a query object', () => {
@@ -137,14 +139,16 @@ describe('buildQuery', () => {
       }
 
       query.op = 'count'
-      let result = buildQuery(options)(query, queryOptions)
-      delete query.op
 
-      for (let key in query) {
-        sinon.assert.notCalled(query[key])
-      }
+      return buildQuery(options)(query, queryOptions).then((result) => {
+        delete query.op
 
-      assert.equal(result, query)
+        for (let key in query) {
+          sinon.assert.notCalled(query[key])
+        }
+
+        assert.equal(result, query)
+      })
     })
 
     it('does not call limit on queries that have a distinct option set and returns the query object', () => {
@@ -156,15 +160,15 @@ describe('buildQuery', () => {
         distinct: 'name'
       }
 
-      let result = buildQuery(options)(query, queryOptions)
+      return buildQuery(options)(query, queryOptions).then((result) => {
+        for (let key in query) {
+          if (key === 'distinct') continue
+          sinon.assert.notCalled(query[key])
+        }
+        sinon.assert.called(query.distinct)
 
-      for (let key in query) {
-        if (key === 'distinct') continue
-        sinon.assert.notCalled(query[key])
-      }
-      sinon.assert.called(query.distinct)
-
-      assert.equal(result, query)
+        assert.equal(result, query)
+      })
     })
   })
 
@@ -174,17 +178,17 @@ describe('buildQuery', () => {
         sort: 'foo'
       }
 
-      let result = buildQuery({})(query, queryOptions)
-
-      sinon.assert.calledOnce(query.sort)
-      sinon.assert.calledWithExactly(query.sort, queryOptions.sort)
-      sinon.assert.notCalled(query.where)
-      sinon.assert.notCalled(query.skip)
-      sinon.assert.notCalled(query.limit)
-      sinon.assert.notCalled(query.select)
-      sinon.assert.notCalled(query.populate)
-      sinon.assert.notCalled(query.distinct)
-      assert.equal(result, query)
+      return buildQuery({})(query, queryOptions).then((result) => {
+        sinon.assert.calledOnce(query.sort)
+        sinon.assert.calledWithExactly(query.sort, queryOptions.sort)
+        sinon.assert.notCalled(query.where)
+        sinon.assert.notCalled(query.skip)
+        sinon.assert.notCalled(query.limit)
+        sinon.assert.notCalled(query.select)
+        sinon.assert.notCalled(query.populate)
+        sinon.assert.notCalled(query.distinct)
+        assert.equal(result, query)
+      })
     })
   })
 
@@ -197,20 +201,20 @@ describe('buildQuery', () => {
         }
       }
 
-      let result = buildQuery({})(query, queryOptions)
-
-      sinon.assert.calledOnce(query.select)
-      sinon.assert.calledWithExactly(query.select, {
-        foo: 1,
-        bar: 0
+      return buildQuery({})(query, queryOptions).then((result) => {
+        sinon.assert.calledOnce(query.select)
+        sinon.assert.calledWithExactly(query.select, {
+          foo: 1,
+          bar: 0
+        })
+        sinon.assert.notCalled(query.where)
+        sinon.assert.notCalled(query.skip)
+        sinon.assert.notCalled(query.limit)
+        sinon.assert.notCalled(query.sort)
+        sinon.assert.notCalled(query.populate)
+        sinon.assert.notCalled(query.distinct)
+        assert.equal(result, query)
       })
-      sinon.assert.notCalled(query.where)
-      sinon.assert.notCalled(query.skip)
-      sinon.assert.notCalled(query.limit)
-      sinon.assert.notCalled(query.sort)
-      sinon.assert.notCalled(query.populate)
-      sinon.assert.notCalled(query.distinct)
-      assert.equal(result, query)
     })
   })
 
@@ -225,22 +229,22 @@ describe('buildQuery', () => {
         }]
       }
 
-      let result = buildQuery({})(query, queryOptions)
-
-      sinon.assert.calledOnce(query.populate)
-      sinon.assert.calledWithExactly(query.populate, [{
-        path: 'foo.bar',
-        select: 'baz',
-        match: { 'qux': 'quux' },
-        options: { sort: 'baz' }
-      }])
-      sinon.assert.notCalled(query.where)
-      sinon.assert.notCalled(query.skip)
-      sinon.assert.notCalled(query.limit)
-      sinon.assert.notCalled(query.select)
-      sinon.assert.notCalled(query.sort)
-      sinon.assert.notCalled(query.distinct)
-      assert.equal(result, query)
+      return buildQuery({})(query, queryOptions).then((result) => {
+        sinon.assert.calledOnce(query.populate)
+        sinon.assert.calledWithExactly(query.populate, [{
+          path: 'foo.bar',
+          select: 'baz',
+          match: { 'qux': 'quux' },
+          options: { sort: 'baz' }
+        }])
+        sinon.assert.notCalled(query.where)
+        sinon.assert.notCalled(query.skip)
+        sinon.assert.notCalled(query.limit)
+        sinon.assert.notCalled(query.select)
+        sinon.assert.notCalled(query.sort)
+        sinon.assert.notCalled(query.distinct)
+        assert.equal(result, query)
+      })
     })
   })
 
@@ -250,17 +254,17 @@ describe('buildQuery', () => {
         distinct: 'foo'
       }
 
-      let result = buildQuery({})(query, queryOptions)
-
-      sinon.assert.calledOnce(query.distinct)
-      sinon.assert.calledWithExactly(query.distinct, 'foo')
-      sinon.assert.notCalled(query.where)
-      sinon.assert.notCalled(query.skip)
-      sinon.assert.notCalled(query.limit)
-      sinon.assert.notCalled(query.sort)
-      sinon.assert.notCalled(query.populate)
-      sinon.assert.notCalled(query.select)
-      assert.equal(result, query)
+      return buildQuery({})(query, queryOptions).then((result) => {
+        sinon.assert.calledOnce(query.distinct)
+        sinon.assert.calledWithExactly(query.distinct, 'foo')
+        sinon.assert.notCalled(query.where)
+        sinon.assert.notCalled(query.skip)
+        sinon.assert.notCalled(query.limit)
+        sinon.assert.notCalled(query.sort)
+        sinon.assert.notCalled(query.populate)
+        sinon.assert.notCalled(query.select)
+        assert.equal(result, query)
+      })
     })
   })
 })
