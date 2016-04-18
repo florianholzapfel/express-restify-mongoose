@@ -27,14 +27,15 @@ module.exports = function (model, options, excludedMap) {
     }
 
     options.contextFilter(model, req, (filteredContext) => {
-      let query = buildQuery(filteredContext.find(), req._ermQueryOptions).read(options.readPreference)
-
-      query.lean(options.lean).exec().then((items) => {
+      buildQuery(filteredContext.find(), req._ermQueryOptions).then((items) => {
         req.erm.result = items
         req.erm.statusCode = 200
 
         if (options.totalCountHeader) {
-          query.skip(0).limit(0).count().then((count) => {
+          buildQuery(filteredContext.count(), _.assign(req._ermQueryOptions, {
+            skip: 0,
+            limit: 0
+          })).then((count) => {
             req.erm.totalCount = count
             next()
           }, errorHandler(req, res, next))
@@ -47,7 +48,7 @@ module.exports = function (model, options, excludedMap) {
 
   function getCount (req, res, next) {
     options.contextFilter(model, req, (filteredContext) => {
-      buildQuery(filteredContext.count(), req._ermQueryOptions).exec().then((count) => {
+      buildQuery(filteredContext.count(), req._ermQueryOptions).then((count) => {
         req.erm.result = { count: count }
         req.erm.statusCode = 200
 
@@ -58,7 +59,7 @@ module.exports = function (model, options, excludedMap) {
 
   function getShallow (req, res, next) {
     options.contextFilter(model, req, (filteredContext) => {
-      buildQuery(findById(filteredContext, req.params.id), req._ermQueryOptions).lean(options.lean).read(options.readPreference).exec().then((item) => {
+      buildQuery(findById(filteredContext, req.params.id), req._ermQueryOptions).then((item) => {
         if (!item) {
           return errorHandler(req, res, next)(new Error(http.STATUS_CODES[404]))
         }
@@ -77,7 +78,7 @@ module.exports = function (model, options, excludedMap) {
 
   function deleteItems (req, res, next) {
     options.contextFilter(model, req, (filteredContext) => {
-      buildQuery(filteredContext.find(), req._ermQueryOptions).remove().then(() => {
+      buildQuery(filteredContext.remove(), req._ermQueryOptions).then(() => {
         req.erm.statusCode = 204
 
         next()
@@ -93,7 +94,7 @@ module.exports = function (model, options, excludedMap) {
     }
 
     options.contextFilter(model, req, (filteredContext) => {
-      buildQuery(findById(filteredContext, req.params.id), req._ermQueryOptions).lean(options.lean).read(options.readPreference).exec().then((item) => {
+      buildQuery(findById(filteredContext, req.params.id), req._ermQueryOptions).then((item) => {
         if (!item) {
           return errorHandler(req, res, next)(new Error(http.STATUS_CODES[404]))
         }
