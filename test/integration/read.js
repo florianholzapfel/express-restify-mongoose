@@ -1167,6 +1167,23 @@ module.exports = function (createFn, setup, dismantle) {
           done()
         })
       })
+
+      it('GET /Customer/count 200 - ignores sort', (done) => {
+        request.get({
+          url: `${testUrl}/api/v1/Customer/count`,
+          qs: {
+            sort: {
+              _id: 1
+            }
+          },
+          json: true
+        }, (err, res, body) => {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.count, 3)
+          done()
+        })
+      })
     })
 
     describe('shallow', () => {
