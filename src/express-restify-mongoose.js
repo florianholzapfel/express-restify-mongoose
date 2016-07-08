@@ -114,14 +114,14 @@ const restify = function (app, model, opts = {}) {
 
   const ops = require('./operations')(model, options, excludedMap)
 
-  let uri_item = `${options.prefix}${options.version}/${options.name}`
-  if (uri_item.indexOf('/:id') === -1) {
-    uri_item += '/:id'
+  let uriItem = `${options.prefix}${options.version}/${options.name}`
+  if (uriItem.indexOf('/:id') === -1) {
+    uriItem += '/:id'
   }
 
-  const uri_items = uri_item.replace('/:id', '')
-  const uri_count = uri_items + '/count'
-  const uri_shallow = uri_item + '/shallow'
+  const uriItems = uriItem.replace('/:id', '')
+  const uriCount = uriItems + '/count'
+  const uriShallow = uriItem + '/shallow'
 
   if (_.isUndefined(app.delete)) {
     app.delete = app.del
@@ -134,21 +134,21 @@ const restify = function (app, model, opts = {}) {
 
   const accessMiddleware = options.access ? access(options) : []
 
-  app.get(uri_items, prepareQuery, options.preMiddleware, options.preRead, accessMiddleware, ops.getItems, prepareOutput)
-  app.get(uri_count, prepareQuery, options.preMiddleware, options.preRead, accessMiddleware, ops.getCount, prepareOutput)
-  app.get(uri_item, prepareQuery, options.preMiddleware, options.preRead, accessMiddleware, ops.getItem, prepareOutput)
-  app.get(uri_shallow, prepareQuery, options.preMiddleware, options.preRead, accessMiddleware, ops.getShallow, prepareOutput)
+  app.get(uriItems, prepareQuery, options.preMiddleware, options.preRead, accessMiddleware, ops.getItems, prepareOutput)
+  app.get(uriCount, prepareQuery, options.preMiddleware, options.preRead, accessMiddleware, ops.getCount, prepareOutput)
+  app.get(uriItem, prepareQuery, options.preMiddleware, options.preRead, accessMiddleware, ops.getItem, prepareOutput)
+  app.get(uriShallow, prepareQuery, options.preMiddleware, options.preRead, accessMiddleware, ops.getShallow, prepareOutput)
 
-  app.post(uri_items, prepareQuery, ensureContentType, options.preMiddleware, options.preCreate, accessMiddleware, ops.createObject, prepareOutput)
-  app.post(uri_item, util.deprecate(prepareQuery, 'Warning: in a future major version, the POST method to update resources will be removed. Use PATCH instead.'), ensureContentType, options.preMiddleware, options.findOneAndUpdate ? [] : filterAndFindById, options.preUpdate, accessMiddleware, ops.modifyObject, prepareOutput)
+  app.post(uriItems, prepareQuery, ensureContentType, options.preMiddleware, options.preCreate, accessMiddleware, ops.createObject, prepareOutput)
+  app.post(uriItem, util.deprecate(prepareQuery, 'Warning: in a future major version, the POST method to update resources will be removed. Use PATCH instead.'), ensureContentType, options.preMiddleware, options.findOneAndUpdate ? [] : filterAndFindById, options.preUpdate, accessMiddleware, ops.modifyObject, prepareOutput)
 
-  app.put(uri_item, util.deprecate(prepareQuery, 'Warning: in a future major version, the PUT method will replace rather than update a resource. Use PATCH instead.'), ensureContentType, options.preMiddleware, options.findOneAndUpdate ? [] : filterAndFindById, options.preUpdate, accessMiddleware, ops.modifyObject, prepareOutput)
-  app.patch(uri_item, prepareQuery, ensureContentType, options.preMiddleware, options.findOneAndUpdate ? [] : filterAndFindById, options.preUpdate, accessMiddleware, ops.modifyObject, prepareOutput)
+  app.put(uriItem, util.deprecate(prepareQuery, 'Warning: in a future major version, the PUT method will replace rather than update a resource. Use PATCH instead.'), ensureContentType, options.preMiddleware, options.findOneAndUpdate ? [] : filterAndFindById, options.preUpdate, accessMiddleware, ops.modifyObject, prepareOutput)
+  app.patch(uriItem, prepareQuery, ensureContentType, options.preMiddleware, options.findOneAndUpdate ? [] : filterAndFindById, options.preUpdate, accessMiddleware, ops.modifyObject, prepareOutput)
 
-  app.delete(uri_items, prepareQuery, options.preMiddleware, options.preDelete, ops.deleteItems, prepareOutput)
-  app.delete(uri_item, prepareQuery, options.preMiddleware, options.findOneAndRemove ? [] : filterAndFindById, options.preDelete, ops.deleteItem, prepareOutput)
+  app.delete(uriItems, prepareQuery, options.preMiddleware, options.preDelete, ops.deleteItems, prepareOutput)
+  app.delete(uriItem, prepareQuery, options.preMiddleware, options.findOneAndRemove ? [] : filterAndFindById, options.preDelete, ops.deleteItem, prepareOutput)
 
-  return uri_items
+  return uriItems
 }
 
 module.exports = {

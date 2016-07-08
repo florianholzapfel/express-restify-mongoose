@@ -334,14 +334,14 @@ module.exports = function (createFn, setup, dismantle) {
           errors: {
             customer: {
               kind: 'ObjectID',
-              message: 'Cast to ObjectID failed for value \"invalid-id\" at path \"customer\"',
+              message: 'Cast to ObjectID failed for value "invalid-id" at path "customer"',
               name: 'CastError',
               path: 'customer',
               value: 'invalid-id'
             },
             products: {
               kind: 'Array',
-              message: 'Cast to Array failed for value \"invalid-id,invalid-id\" at path \"products\"',
+              message: 'Cast to Array failed for value "invalid-id,invalid-id" at path "products"',
               name: 'CastError',
               path: 'products',
               value: ['invalid-id', 'invalid-id']
