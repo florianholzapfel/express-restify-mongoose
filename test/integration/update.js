@@ -128,8 +128,8 @@ module.exports = function (createFn, setup, dismantle) {
             assert.equal(Object.keys(body).length, 5)
             assert.equal(body.name, 'MongoError')
             // Remove extra whitespace and allow code 11001 for MongoDB < 3
-            assert.equal(body.errmsg.replace(/\s+/g, ' '), 'exception: E11000 duplicate key error index: database.customers.$name_1 dup key: { : "John" }')
-            assert.equal(body.message.replace(/\s+/g, ' '), 'exception: E11000 duplicate key error index: database.customers.$name_1 dup key: { : "John" }')
+            assert.equal(body.errmsg.replace(/\s+/g, ' ').replace('exception: ', ''), 'E11000 duplicate key error index: database.customers.$name_1 dup key: { : "John" }')
+            assert.equal(body.message.replace(/\s+/g, ' ').replace('exception: ', ''), 'E11000 duplicate key error index: database.customers.$name_1 dup key: { : "John" }')
             assert.ok(body.code === 11000 || body.code === 11001)
             assert.equal(body.ok, 0)
             done()

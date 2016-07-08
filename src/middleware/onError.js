@@ -8,6 +8,7 @@ module.exports = function (isExpress) {
 
     if (serializedErr.errors) {
       for (let key in serializedErr.errors) {
+        delete serializedErr.errors[key].reason
         delete serializedErr.errors[key].stack
       }
     }
