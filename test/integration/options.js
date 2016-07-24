@@ -179,6 +179,25 @@ module.exports = function (createFn, setup, dismantle) {
         done()
       })
     })
+
+    it('GET /Customer?distinct=name 200 - ignore total count header', (done) => {
+      request.get({
+        url: `${testUrl}/api/v1/Customer`,
+        qs: {
+          distinct: 'name'
+        },
+        json: true
+      }, (err, res, body) => {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 200)
+        assert.equal(body.length, 3)
+        assert.equal(res.headers['x-total-count'], undefined)
+        assert.equal(body[0], 'Bob')
+        assert.equal(body[1], 'John')
+        assert.equal(body[2], 'Mike')
+        done()
+      })
+    })
   })
 
   describe('totalCountHeader - string (custom header)', () => {

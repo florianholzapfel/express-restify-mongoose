@@ -31,7 +31,7 @@ module.exports = function (model, options, excludedMap) {
         req.erm.result = items
         req.erm.statusCode = 200
 
-        if (options.totalCountHeader) {
+        if (options.totalCountHeader && !req._ermQueryOptions['distinct']) {
           buildQuery(filteredContext.count(), _.assign(req._ermQueryOptions, {
             skip: 0,
             limit: 0
