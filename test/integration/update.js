@@ -40,6 +40,14 @@ module.exports = function (createFn, setup, dismantle) {
             name: 'Bob'
           }, {
             name: 'John'
+          }, {
+            name: 'Jane',
+            purchases: [{
+              item: mongoose.Types.ObjectId()
+            }, {
+              item: mongoose.Types.ObjectId()
+            }],
+            returns: [mongoose.Types.ObjectId(), mongoose.Types.ObjectId()]
           }]).then((createdCustomers) => {
             customers = createdCustomers
 
@@ -92,6 +100,28 @@ module.exports = function (createFn, setup, dismantle) {
             assert.ok(!err)
             assert.equal(res.statusCode, 200)
             assert.equal(body.name, 'Mike')
+            done()
+          })
+        })
+
+        it(`${method} /Customer/:id 200 - update object array`, (done) => {
+          request({ method,
+            url: `${testUrl}/api/v1/Customer/${customers[2]._id}`,
+            json: {
+              purchases: [customers[2].purchases[0]],
+              returns: [{
+                _id: customers[2].returns[0].toHexString()
+              }]
+            }
+          }, (err, res, body) => {
+            assert.ok(!err)
+            assert.equal(res.statusCode, 200)
+            assert.equal(body.name, 'Jane')
+            assert.deepEqual(body.purchases, [{
+              _id: customers[2].purchases[0]._id.toHexString(),
+              item: customers[2].purchases[0].item.toHexString()
+            }])
+            assert.deepEqual(body.returns, [customers[2].returns[0].toHexString()])
             done()
           })
         })
