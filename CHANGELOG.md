@@ -1,6 +1,10 @@
 Changelog
 =========
 
+### 4.1.1
+
+* fixed `distinct` queries when `options.totalCountHeader` is enabled
+
 ### 4.1.0
 
 * improved sync error handling in `buildQuery` by wrapping in a promise
