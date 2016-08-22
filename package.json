@@ -26,7 +26,7 @@
     "in-publish": "^2.0.0",
     "istanbul": ">=1.0.0-alpha.2",
     "method-override": "^2.3.0",
-    "mocha": "^2.4.0",
+    "mocha": "^3.0.0",
     "request": "^2.69.0",
     "restify": "^3.0.0",
     "sinon": "^1.17.0",
