@@ -28,7 +28,7 @@ module.exports = function (options) {
         return { $ne: value.substr(2) }
       /* This feature was disabled because it requires MongoDB 3
       } else if (value[0] === '=') {
-        return { $eq: value.substr(1) }*/
+        return { $eq: value.substr(1) } */
       }
     } else if (_.isArray(value) && key[0] !== '$' && key !== 'coordinates' && !isCoordinates(value)) {
       return { $in: value }

@@ -30,7 +30,7 @@
     "request": "^2.69.0",
     "restify": "^3.0.0",
     "sinon": "^1.17.0",
-    "standard": "^7.0.0"
+    "standard": "^8.0.0"
   },
   "engines": {
     "node": ">=0.10"
