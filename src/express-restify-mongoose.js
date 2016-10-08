@@ -5,7 +5,7 @@ let customDefaults = null
 let excludedMap = {}
 
 function getDefaults () {
-  return _.defaults(customDefaults || {}, {
+  return _.defaults(_.clone(customDefaults) || {}, {
     prefix: '/api',
     version: '/v1',
     idProperty: '_id',
