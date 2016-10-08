@@ -341,7 +341,7 @@ module.exports = function (createFn, setup, dismantle) {
             },
             products: {
               kind: 'Array',
-              message: 'Cast to Array failed for value "invalid-id,invalid-id" at path "products"',
+              message: 'Cast to Array failed for value "[ \'invalid-id\', \'invalid-id\' ]" at path "products"',
               name: 'CastError',
               path: 'products',
               value: ['invalid-id', 'invalid-id']
