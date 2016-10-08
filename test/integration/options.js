@@ -200,6 +200,57 @@ module.exports = function (createFn, setup, dismantle) {
     })
   })
 
+  describe('totalCountHeader - boolean (default header) + contextFilter', () => {
+    let app = createFn()
+    let server
+
+    before((done) => {
+      setup((err) => {
+        if (err) {
+          return done(err)
+        }
+
+        erm.serve(app, db.models.Customer, {
+          totalCountHeader: true,
+          contextFilter: (model, req, done) => done(model.find()),
+          restify: app.isRestify
+        })
+
+        db.models.Customer.create([{
+          name: 'Bob'
+        }, {
+          name: 'John'
+        }, {
+          name: 'Mike'
+        }]).then((createdCustomers) => {
+          server = app.listen(testPort, done)
+        }, (err) => {
+          done(err)
+        })
+      })
+    })
+
+    after((done) => {
+      dismantle(app, server, done)
+    })
+
+    it('GET /Customer?limit=1 200', (done) => {
+      request.get({
+        url: `${testUrl}/api/v1/Customer`,
+        qs: {
+          limit: 1
+        },
+        json: true
+      }, (err, res, body) => {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 200)
+        assert.equal(res.headers['x-total-count'], 3)
+        assert.equal(body.length, 1)
+        done()
+      })
+    })
+  })
+
   describe('totalCountHeader - string (custom header)', () => {
     let app = createFn()
     let server

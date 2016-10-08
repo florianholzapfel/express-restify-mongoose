@@ -32,13 +32,15 @@ module.exports = function (model, options, excludedMap) {
         req.erm.statusCode = 200
 
         if (options.totalCountHeader && !req._ermQueryOptions['distinct']) {
-          buildQuery(filteredContext.count(), _.assign(req._ermQueryOptions, {
-            skip: 0,
-            limit: 0
-          })).then((count) => {
-            req.erm.totalCount = count
-            next()
-          }, errorHandler(req, res, next))
+          options.contextFilter(model, req, (countFilteredContext) => {
+            buildQuery(countFilteredContext.count(), _.assign(req._ermQueryOptions, {
+              skip: 0,
+              limit: 0
+            })).then((count) => {
+              req.erm.totalCount = count
+              next()
+            }, errorHandler(req, res, next))
+          })
         } else {
           next()
         }
