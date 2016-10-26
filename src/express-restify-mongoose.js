@@ -1,6 +1,8 @@
 const util = require('util')
 const _ = require('lodash')
+
 const Filter = require('./resource_filter')
+
 let customDefaults = null
 let excludedMap = {}
 
@@ -18,6 +20,16 @@ function getDefaults () {
     private: [],
     protected: []
   })
+}
+
+function ensureValueIsArray (value) {
+  if (_.isArray(value)) {
+    return value
+  }
+
+  return value
+    ? [value]
+    : []
 }
 
 const restify = function (app, model, opts = {}) {
@@ -64,45 +76,20 @@ const restify = function (app, model, opts = {}) {
 
   excludedMap[model.modelName] = options.filter.filteredKeys
 
-  if (!_.isArray(options.preMiddleware)) {
-    options.preMiddleware = options.preMiddleware ? [options.preMiddleware] : []
-  }
-
-  if (!_.isArray(options.preCreate)) {
-    options.preCreate = options.preCreate ? [options.preCreate] : []
-  }
-
-  if (!_.isArray(options.preRead)) {
-    options.preRead = options.preRead ? [options.preRead] : []
-  }
-
-  if (!_.isArray(options.preUpdate)) {
-    options.preUpdate = options.preUpdate ? [options.preUpdate] : []
-  }
-
-  if (!_.isArray(options.preDelete)) {
-    options.preDelete = options.preDelete ? [options.preDelete] : []
-  }
+  options.preMiddleware = ensureValueIsArray(options.preMiddleware)
+  options.preCreate = ensureValueIsArray(options.preCreate)
+  options.preRead = ensureValueIsArray(options.preRead)
+  options.preUpdate = ensureValueIsArray(options.preUpdate)
+  options.preDelete = ensureValueIsArray(options.preDelete)
 
   if (!options.contextFilter) {
     options.contextFilter = (model, req, done) => done(model)
   }
 
-  if (!_.isArray(options.postCreate)) {
-    options.postCreate = options.postCreate ? [options.postCreate] : []
-  }
-
-  if (!_.isArray(options.postRead)) {
-    options.postRead = options.postRead ? [options.postRead] : []
-  }
-
-  if (!_.isArray(options.postUpdate)) {
-    options.postUpdate = options.postUpdate ? [options.postUpdate] : []
-  }
-
-  if (!_.isArray(options.postDelete)) {
-    options.postDelete = options.postDelete ? [options.postDelete] : []
-  }
+  options.postCreate = ensureValueIsArray(options.postCreate)
+  options.postRead = ensureValueIsArray(options.postRead)
+  options.postUpdate = ensureValueIsArray(options.postUpdate)
+  options.postDelete = ensureValueIsArray(options.postDelete)
 
   if (!options.onError) {
     options.onError = onError(!options.restify)
