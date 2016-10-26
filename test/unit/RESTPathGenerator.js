@@ -105,7 +105,7 @@ describe('joinPathsAsURL', () => {
     )
   })
 
-  it('handles trailing slash in first argument', () => {
+  it('handles leading slash in first argument', () => {
     assert.equal(
       joinPathsAsURL('/foo', 'bar'),
       '/foo/bar'
