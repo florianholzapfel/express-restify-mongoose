@@ -42,17 +42,17 @@ class RESTPathGenerator {
     // Is a document id already in the base path?
     const basePathContainsDocumentId = this._basePath.indexOf('/:id') !== -1
 
-    // Path to retrieve a single document specified by its id
+    // Path to a single document specified by its id
     this._singleDocumentPath = basePathContainsDocumentId
       ? this._basePath
       : joinPathsAsURL(this._basePath, ':id')
 
-    // Path to retrieve all documents for the model
+    // Path to all documents for the model
     this._allDocumentsPath = this._singleDocumentPath.replace('/:id', '')
   }
 
   /**
-   * Path for retrieving a single document specified by its id
+   * Path to a single document specified by its id
    * @return {String}
    */
   get singleDocument () {
@@ -60,7 +60,7 @@ class RESTPathGenerator {
   }
 
   /**
-   * Path for retrieving an array of all documents
+   * Path to the set of all documents
    * @return {String}
    */
   get allDocuments () {
@@ -68,7 +68,7 @@ class RESTPathGenerator {
   }
 
   /**
-   * Path for retrieving the count of all documents
+   * Path to the count of all documents
    * @return {String}
    */
   get allDocumentsCount () {
@@ -76,7 +76,7 @@ class RESTPathGenerator {
   }
 
   /**
-   * Path for retrieving a single shallow document, specified by its id
+   * Path to a single document specified by its id, retrieve shallowly
    * @return {String}
    */
   get singleDocumentShallow () {
