@@ -2,6 +2,7 @@ const util = require('util')
 const _ = require('lodash')
 
 const Filter = require('./resource_filter')
+const RESTPathGenerator = require('./RESTPathGenerator')
 
 let customDefaults = null
 let excludedMap = {}
@@ -102,15 +103,7 @@ const restify = function (app, model, opts = {}) {
   options.name = options.name || model.modelName
 
   const ops = require('./operations')(model, options, excludedMap)
-
-  let uriItem = `${options.prefix}${options.version}/${options.name}`
-  if (uriItem.indexOf('/:id') === -1) {
-    uriItem += '/:id'
-  }
-
-  const uriItems = uriItem.replace('/:id', '')
-  const uriCount = uriItems + '/count'
-  const uriShallow = uriItem + '/shallow'
+  const restPaths = new RESTPathGenerator(options.prefix, options.version, options.name)
 
   if (_.isUndefined(app.delete)) {
     app.delete = app.del
@@ -123,21 +116,21 @@ const restify = function (app, model, opts = {}) {
 
   const accessMiddleware = options.access ? access(options) : []
 
-  app.get(uriItems, prepareQuery, options.preMiddleware, options.preRead, accessMiddleware, ops.getItems, prepareOutput)
-  app.get(uriCount, prepareQuery, options.preMiddleware, options.preRead, accessMiddleware, ops.getCount, prepareOutput)
-  app.get(uriItem, prepareQuery, options.preMiddleware, options.preRead, accessMiddleware, ops.getItem, prepareOutput)
-  app.get(uriShallow, prepareQuery, options.preMiddleware, options.preRead, accessMiddleware, ops.getShallow, prepareOutput)
+  app.get(restPaths.allDocuments, prepareQuery, options.preMiddleware, options.preRead, accessMiddleware, ops.getItems, prepareOutput)
+  app.get(restPaths.allDocumentsCount, prepareQuery, options.preMiddleware, options.preRead, accessMiddleware, ops.getCount, prepareOutput)
+  app.get(restPaths.singleDocument, prepareQuery, options.preMiddleware, options.preRead, accessMiddleware, ops.getItem, prepareOutput)
+  app.get(restPaths.singleDocumentShallow, prepareQuery, options.preMiddleware, options.preRead, accessMiddleware, ops.getShallow, prepareOutput)
 
-  app.post(uriItems, prepareQuery, ensureContentType, options.preMiddleware, options.preCreate, accessMiddleware, ops.createObject, prepareOutput)
-  app.post(uriItem, util.deprecate(prepareQuery, 'express-restify-mongoose: in a future major version, the POST method to update resources will be removed. Use PATCH instead.'), ensureContentType, options.preMiddleware, options.findOneAndUpdate ? [] : filterAndFindById, options.preUpdate, accessMiddleware, ops.modifyObject, prepareOutput)
+  app.post(restPaths.allDocuments, prepareQuery, ensureContentType, options.preMiddleware, options.preCreate, accessMiddleware, ops.createObject, prepareOutput)
+  app.post(restPaths.singleDocument, util.deprecate(prepareQuery, 'express-restify-mongoose: in a future major version, the POST method to update resources will be removed. Use PATCH instead.'), ensureContentType, options.preMiddleware, options.findOneAndUpdate ? [] : filterAndFindById, options.preUpdate, accessMiddleware, ops.modifyObject, prepareOutput)
 
-  app.put(uriItem, util.deprecate(prepareQuery, 'express-restify-mongoose: in a future major version, the PUT method will replace rather than update a resource. Use PATCH instead.'), ensureContentType, options.preMiddleware, options.findOneAndUpdate ? [] : filterAndFindById, options.preUpdate, accessMiddleware, ops.modifyObject, prepareOutput)
-  app.patch(uriItem, prepareQuery, ensureContentType, options.preMiddleware, options.findOneAndUpdate ? [] : filterAndFindById, options.preUpdate, accessMiddleware, ops.modifyObject, prepareOutput)
+  app.put(restPaths.singleDocument, util.deprecate(prepareQuery, 'express-restify-mongoose: in a future major version, the PUT method will replace rather than update a resource. Use PATCH instead.'), ensureContentType, options.preMiddleware, options.findOneAndUpdate ? [] : filterAndFindById, options.preUpdate, accessMiddleware, ops.modifyObject, prepareOutput)
+  app.patch(restPaths.singleDocument, prepareQuery, ensureContentType, options.preMiddleware, options.findOneAndUpdate ? [] : filterAndFindById, options.preUpdate, accessMiddleware, ops.modifyObject, prepareOutput)
 
-  app.delete(uriItems, prepareQuery, options.preMiddleware, options.preDelete, ops.deleteItems, prepareOutput)
-  app.delete(uriItem, prepareQuery, options.preMiddleware, options.findOneAndRemove ? [] : filterAndFindById, options.preDelete, ops.deleteItem, prepareOutput)
+  app.delete(restPaths.allDocuments, prepareQuery, options.preMiddleware, options.preDelete, ops.deleteItems, prepareOutput)
+  app.delete(restPaths.singleDocument, prepareQuery, options.preMiddleware, options.findOneAndRemove ? [] : filterAndFindById, options.preDelete, ops.deleteItem, prepareOutput)
 
-  return uriItems
+  return restPaths.allDocuments
 }
 
 module.exports = {
