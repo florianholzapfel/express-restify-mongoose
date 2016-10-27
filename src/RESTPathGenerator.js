@@ -2,8 +2,6 @@
  * Generate RESTful URI paths for the an Express router.
  */
 
-const assert = require('assert')
-
 /**
  * Given an array of URI paths, joins them together using forward slashes.
  *
@@ -28,7 +26,9 @@ module.exports.joinPathsAsURL = joinPathsAsURL
 
 class RESTPathGenerator {
   constructor (apiPrefix = '', apiVersion = '', modelName) {
-    assert(typeof modelName === 'string', 'modelName must be a string')
+    if (!_.isString(modelName)) {
+      throw new Error('modelName must be a string')
+    }
 
     this._apiPrefix = apiPrefix
     this._apiVersion = apiVersion
