@@ -1,5 +1,6 @@
 const assert = require('assert')
 const sinon = require('sinon')
+const _ = require('lodash')
 
 describe('prepareQuery', () => {
   const prepareQuery = require('../../../lib/middleware/prepareQuery')
@@ -10,6 +11,101 @@ describe('prepareQuery', () => {
   }
 
   let next = sinon.spy()
+
+  /**
+   * This test of the prepareQuery() middleware passes if prepareQuery() successfully prepares
+   * the query and calls next().
+   *
+   * If expected query options are passed to the test, the test will also assert that the
+   * _ermQueryOptions property of the request matches the expected output.
+   *
+   * This function returns a Promise that resolves if the test passes.
+   *
+   * @param {Object} prepareQueryOptions - erm options passed to prepareQuery()
+   * @param {Object} req - request object that's passed to Express
+   * @param {Object} res - response object that's passed to Express
+   * @param {Object} [expectedQueryOptions] - expected result of the prepareQuery() (i.e. the thing stored in _ermQueryOptions)
+   * @return {Promise}
+   */
+  function assertPrepareQueryHasResult (prepareQueryOptions, req, res, expectedQueryOptions) {
+    assert.ok(!_.isUndefined(prepareQueryOptions))
+    assert.ok(!_.isUndefined(req))
+    assert.ok(!_.isUndefined(res))
+
+    return new Promise((resolve, reject) => {
+      return prepareQuery(prepareQueryOptions)(req, res, () => {
+        try {
+          sinon.assert.notCalled(prepareQueryOptions.onError)
+
+          if (expectedQueryOptions) {
+            assert.deepEqual(req._ermQueryOptions, expectedQueryOptions)
+          }
+
+          return resolve()
+        } catch (err) {
+          // Since we're inside-a-function-inside-a-promise, we need to manually check
+          // whether our assertions failed and tell the promise what happened.
+          return reject(err)
+        }
+      })
+    })
+  }
+
+  /**
+   * This test of the prepareQuery() middleware passes if prepareQuery() successfully prepares
+   * the query and calls next().
+   *
+   * If expected query options are passed to the test, the test will also assert that the
+   * _ermQueryOptions property of the request matches the expected output.
+   *
+   * This function returns a Promise that resolves if the test passes.
+   *
+   * @param {Object} prepareQueryOptions - erm options passed to prepareQuery()
+   * @param {Object} req - request object that's passed to Express
+   * @param {Object} res - response object that's passed to Express
+   * @param {Object} [expectedError] - expected result of the prepareQuery() (i.e. the thing stored in _ermQueryOptions)
+   * @return {Promise}
+   */
+  function assertPrepareQueryThrowsError (prepareQueryOptions, req, res, expectedError) {
+    assert.ok(!_.isUndefined(prepareQueryOptions))
+    assert.ok(!_.isUndefined(req))
+    assert.ok(!_.isUndefined(res))
+
+    return new Promise((resolve, reject) => {
+      // Wrap the provided options, but use a special error handler
+      const wrappedOptions = _.assign(
+        {},
+        prepareQueryOptions,
+        {
+          onError: (actualError, actualRequest, actualResponse, actualNext) => {
+            try {
+              // If prepare query errored, then next shouldn't have been called.
+              sinon.assert.notCalled(next)
+
+              // req, res, and next shouldn't have been modified.
+              assert.deepEqual(actualRequest, req)
+              assert.deepEqual(actualResponse, res)
+              assert.deepEqual(actualNext, next)
+
+              // The actual error should match the expected one
+              if (expectedError) {
+                // use lodash .isEqual() because assert.deepEqual() doesn't check the error message
+                assert.ok(_.isEqual(actualError, expectedError))
+              }
+
+              return resolve()
+            } catch (err) {
+              // Since we're inside-a-function-inside-a-promise, we need to manually check
+              // whether our assertions failed and tell the promise what happened.
+              return reject(err)
+            }
+          }
+        }
+      )
+
+      return prepareQuery(wrappedOptions)(req, res, next)
+    })
+  }
 
   afterEach(() => {
     options.onError.reset()
@@ -25,16 +121,11 @@ describe('prepareQuery', () => {
         }
       }
 
-      prepareQuery(options)(req, {}, next)
-
-      assert.deepEqual(req._ermQueryOptions, {
+      return assertPrepareQueryHasResult(options, req, {}, {
         query: {
           foo: new RegExp('bar', 'i')
         }
       })
-      sinon.assert.calledOnce(next)
-      sinon.assert.calledWithExactly(next)
-      sinon.assert.notCalled(options.onError)
     })
 
     it('converts ~ to undefined', () => {
@@ -46,14 +137,9 @@ describe('prepareQuery', () => {
 
       options.allowRegex = false
 
-      prepareQuery(options)(req, {}, next)
-
-      assert.deepEqual(req._ermQueryOptions, {
+      return assertPrepareQueryHasResult(options, req, {}, {
         query: {}
       })
-      sinon.assert.calledOnce(next)
-      sinon.assert.calledWithExactly(next)
-      sinon.assert.notCalled(options.onError)
     })
 
     it('converts $regex to undefined', () => {
@@ -65,16 +151,11 @@ describe('prepareQuery', () => {
 
       options.allowRegex = false
 
-      prepareQuery(options)(req, {}, next)
-
-      assert.deepEqual(req._ermQueryOptions, {
+      return assertPrepareQueryHasResult(options, req, {}, {
         query: {
           foo: {}
         }
       })
-      sinon.assert.calledOnce(next)
-      sinon.assert.calledWithExactly(next)
-      sinon.assert.notCalled(options.onError)
     })
 
     it('converts >= to $gte', () => {
@@ -84,16 +165,11 @@ describe('prepareQuery', () => {
         }
       }
 
-      prepareQuery(options)(req, {}, next)
-
-      assert.deepEqual(req._ermQueryOptions, {
+      return assertPrepareQueryHasResult(options, req, {}, {
         query: {
           foo: { $gte: 'bar' }
         }
       })
-      sinon.assert.calledOnce(next)
-      sinon.assert.calledWithExactly(next)
-      sinon.assert.notCalled(options.onError)
     })
 
     it('converts > to $gt', () => {
@@ -103,16 +179,11 @@ describe('prepareQuery', () => {
         }
       }
 
-      prepareQuery(options)(req, {}, next)
-
-      assert.deepEqual(req._ermQueryOptions, {
+      return assertPrepareQueryHasResult(options, req, {}, {
         query: {
           foo: { $gt: 'bar' }
         }
       })
-      sinon.assert.calledOnce(next)
-      sinon.assert.calledWithExactly(next)
-      sinon.assert.notCalled(options.onError)
     })
 
     it('converts <= to $lte', () => {
@@ -122,16 +193,11 @@ describe('prepareQuery', () => {
         }
       }
 
-      prepareQuery(options)(req, {}, next)
-
-      assert.deepEqual(req._ermQueryOptions, {
+      return assertPrepareQueryHasResult(options, req, {}, {
         query: {
           foo: { $lte: 'bar' }
         }
       })
-      sinon.assert.calledOnce(next)
-      sinon.assert.calledWithExactly(next)
-      sinon.assert.notCalled(options.onError)
     })
 
     it('converts < to $lt', () => {
@@ -141,16 +207,11 @@ describe('prepareQuery', () => {
         }
       }
 
-      prepareQuery(options)(req, {}, next)
-
-      assert.deepEqual(req._ermQueryOptions, {
+      return assertPrepareQueryHasResult(options, req, {}, {
         query: {
           foo: { $lt: 'bar' }
         }
       })
-      sinon.assert.calledOnce(next)
-      sinon.assert.calledWithExactly(next)
-      sinon.assert.notCalled(options.onError)
     })
 
     it('converts != to $ne', () => {
@@ -160,16 +221,11 @@ describe('prepareQuery', () => {
         }
       }
 
-      prepareQuery(options)(req, {}, next)
-
-      assert.deepEqual(req._ermQueryOptions, {
+      return assertPrepareQueryHasResult(options, req, {}, {
         query: {
           foo: { $ne: 'bar' }
         }
       })
-      sinon.assert.calledOnce(next)
-      sinon.assert.calledWithExactly(next)
-      sinon.assert.notCalled(options.onError)
     })
 
     // This feature was disabled because it requires MongoDB 3
@@ -180,16 +236,11 @@ describe('prepareQuery', () => {
         }
       }
 
-      prepareQuery(options)(req, {}, next)
-
-      assert.deepEqual(req._ermQueryOptions, {
+      return assertPrepareQueryHasResult(options, req, {}, {
         query: {
           foo: { $eq: 'bar' }
         }
       })
-      sinon.assert.calledOnce(next)
-      sinon.assert.calledWithExactly(next)
-      sinon.assert.notCalled(options.onError)
     })
 
     it('converts [] to $in', () => {
@@ -199,25 +250,16 @@ describe('prepareQuery', () => {
         }
       }
 
-      prepareQuery(options)(req, {}, next)
-
-      assert.deepEqual(req._ermQueryOptions, {
+      return assertPrepareQueryHasResult(options, req, {}, {
         query: {
           foo: { $in: ['bar'] }
         }
       })
-      sinon.assert.calledOnce(next)
-      sinon.assert.calledWithExactly(next)
-      sinon.assert.notCalled(options.onError)
     })
   })
 
   it('calls next when query is empty', () => {
-    prepareQuery(options)({}, {}, next)
-
-    sinon.assert.calledOnce(next)
-    sinon.assert.calledWithExactly(next)
-    sinon.assert.notCalled(options.onError)
+    return assertPrepareQueryHasResult(options, {}, {})
   })
 
   it('ignores keys that are not whitelisted and calls next', () => {
@@ -227,11 +269,7 @@ describe('prepareQuery', () => {
       }
     }
 
-    prepareQuery(options)(req, {}, next)
-
-    sinon.assert.calledOnce(next)
-    sinon.assert.calledWithExactly(next)
-    sinon.assert.notCalled(options.onError)
+    return assertPrepareQueryHasResult(options, req, {})
   })
 
   it('calls next when query key is valid json', () => {
@@ -241,14 +279,11 @@ describe('prepareQuery', () => {
       }
     }
 
-    prepareQuery(options)(req, {}, next)
-
-    assert.deepEqual(req._ermQueryOptions, {
-      query: JSON.parse(req.query.query)
-    })
-    sinon.assert.calledOnce(next)
-    sinon.assert.calledWithExactly(next)
-    sinon.assert.notCalled(options.onError)
+    return assertPrepareQueryHasResult(options, req, {},
+      {
+        query: JSON.parse(req.query.query)
+      }
+    )
   })
 
   it('calls onError when query key is invalid json', () => {
@@ -260,11 +295,7 @@ describe('prepareQuery', () => {
       }
     }
 
-    prepareQuery(options)(req, {}, next)
-
-    sinon.assert.calledOnce(options.onError)
-    sinon.assert.calledWithExactly(options.onError, new Error('invalid_json_query'), req, {}, next)
-    sinon.assert.notCalled(next)
+    return assertPrepareQueryThrowsError(options, req, {}, new Error('invalid_json_query'))
   })
 
   it('calls next when sort key is valid json', () => {
@@ -274,14 +305,11 @@ describe('prepareQuery', () => {
       }
     }
 
-    prepareQuery(options)(req, {}, next)
-
-    assert.deepEqual(req._ermQueryOptions, {
-      sort: JSON.parse(req.query.sort)
-    })
-    sinon.assert.calledOnce(next)
-    sinon.assert.calledWithExactly(next)
-    sinon.assert.notCalled(options.onError)
+    return assertPrepareQueryHasResult(options, req, {},
+      {
+        sort: JSON.parse(req.query.sort)
+      }
+    )
   })
 
   it('calls next when sort key is a string', () => {
@@ -291,12 +319,7 @@ describe('prepareQuery', () => {
       }
     }
 
-    prepareQuery(options)(req, {}, next)
-
-    assert.deepEqual(req._ermQueryOptions, req.query)
-    sinon.assert.calledOnce(next)
-    sinon.assert.calledWithExactly(next)
-    sinon.assert.notCalled(options.onError)
+    return assertPrepareQueryHasResult(options, req, {}, req.query)
   })
 
   it('calls next when skip key is a string', () => {
@@ -306,12 +329,7 @@ describe('prepareQuery', () => {
       }
     }
 
-    prepareQuery(options)(req, {}, next)
-
-    assert.deepEqual(req._ermQueryOptions, req.query)
-    sinon.assert.calledOnce(next)
-    sinon.assert.calledWithExactly(next)
-    sinon.assert.notCalled(options.onError)
+    return assertPrepareQueryHasResult(options, req, {}, req.query)
   })
 
   it('calls next when limit key is a string', () => {
@@ -321,12 +339,7 @@ describe('prepareQuery', () => {
       }
     }
 
-    prepareQuery(options)(req, {}, next)
-
-    assert.deepEqual(req._ermQueryOptions, req.query)
-    sinon.assert.calledOnce(next)
-    sinon.assert.calledWithExactly(next)
-    sinon.assert.notCalled(options.onError)
+    return assertPrepareQueryHasResult(options, req, {}, req.query)
   })
 
   it('calls next when distinct key is a string', () => {
@@ -336,12 +349,7 @@ describe('prepareQuery', () => {
       }
     }
 
-    prepareQuery(options)(req, {}, next)
-
-    assert.deepEqual(req._ermQueryOptions, req.query)
-    sinon.assert.calledOnce(next)
-    sinon.assert.calledWithExactly(next)
-    sinon.assert.notCalled(options.onError)
+    return assertPrepareQueryHasResult(options, req, {}, req.query)
   })
 
   it('calls next when populate key is a string', () => {
@@ -351,16 +359,13 @@ describe('prepareQuery', () => {
       }
     }
 
-    prepareQuery(options)(req, {}, next)
-
-    assert.deepEqual(req._ermQueryOptions, {
-      populate: [{
-        path: 'foo'
-      }]
-    })
-    sinon.assert.calledOnce(next)
-    sinon.assert.calledWithExactly(next)
-    sinon.assert.notCalled(options.onError)
+    return assertPrepareQueryHasResult(options, req, {},
+      {
+        populate: [{
+          path: 'foo'
+        }]
+      }
+    )
   })
 
   describe('select', () => {
@@ -371,16 +376,13 @@ describe('prepareQuery', () => {
         }
       }
 
-      prepareQuery(options)(req, {}, next)
-
-      assert.deepEqual(req._ermQueryOptions, {
-        select: {
-          foo: 1
+      return assertPrepareQueryHasResult(options, req, {},
+        {
+          select: {
+            foo: 1
+          }
         }
-      })
-      sinon.assert.calledOnce(next)
-      sinon.assert.calledWithExactly(next)
-      sinon.assert.notCalled(options.onError)
+      )
     })
 
     it('parses a string to exclude fields', () => {
@@ -390,16 +392,13 @@ describe('prepareQuery', () => {
         }
       }
 
-      prepareQuery(options)(req, {}, next)
-
-      assert.deepEqual(req._ermQueryOptions, {
-        select: {
-          foo: 0
+      return assertPrepareQueryHasResult(options, req, {},
+        {
+          select: {
+            foo: 0
+          }
         }
-      })
-      sinon.assert.calledOnce(next)
-      sinon.assert.calledWithExactly(next)
-      sinon.assert.notCalled(options.onError)
+      )
     })
 
     it('parses a comma separated list of fields to include', () => {
@@ -409,17 +408,14 @@ describe('prepareQuery', () => {
         }
       }
 
-      prepareQuery(options)(req, {}, next)
-
-      assert.deepEqual(req._ermQueryOptions, {
-        select: {
-          foo: 1,
-          bar: 1
+      return assertPrepareQueryHasResult(options, req, {},
+        {
+          select: {
+            foo: 1,
+            bar: 1
+          }
         }
-      })
-      sinon.assert.calledOnce(next)
-      sinon.assert.calledWithExactly(next)
-      sinon.assert.notCalled(options.onError)
+      )
     })
 
     it('parses a comma separated list of fields to exclude', () => {
@@ -429,17 +425,12 @@ describe('prepareQuery', () => {
         }
       }
 
-      prepareQuery(options)(req, {}, next)
-
-      assert.deepEqual(req._ermQueryOptions, {
+      return assertPrepareQueryHasResult(options, req, {}, {
         select: {
           foo: 0,
           bar: 0
         }
       })
-      sinon.assert.calledOnce(next)
-      sinon.assert.calledWithExactly(next)
-      sinon.assert.notCalled(options.onError)
     })
 
     it('parses a comma separated list of nested fields', () => {
@@ -449,17 +440,12 @@ describe('prepareQuery', () => {
         }
       }
 
-      prepareQuery(options)(req, {}, next)
-
-      assert.deepEqual(req._ermQueryOptions, {
+      return assertPrepareQueryHasResult(options, req, {}, {
         select: {
           'foo.bar': 1,
           'baz.qux.quux': 1
         }
       })
-      sinon.assert.calledOnce(next)
-      sinon.assert.calledWithExactly(next)
-      sinon.assert.notCalled(options.onError)
     })
   })
 
@@ -471,16 +457,11 @@ describe('prepareQuery', () => {
         }
       }
 
-      prepareQuery(options)(req, {}, next)
-
-      assert.deepEqual(req._ermQueryOptions, {
+      return assertPrepareQueryHasResult(options, req, {}, {
         populate: [{
           path: 'foo'
         }]
       })
-      sinon.assert.calledOnce(next)
-      sinon.assert.calledWithExactly(next)
-      sinon.assert.notCalled(options.onError)
     })
 
     it('parses a string to populate multiple paths', () => {
@@ -490,18 +471,13 @@ describe('prepareQuery', () => {
         }
       }
 
-      prepareQuery(options)(req, {}, next)
-
-      assert.deepEqual(req._ermQueryOptions, {
+      return assertPrepareQueryHasResult(options, req, {}, {
         populate: [{
           path: 'foo'
         }, {
           path: 'bar'
         }]
       })
-      sinon.assert.calledOnce(next)
-      sinon.assert.calledWithExactly(next)
-      sinon.assert.notCalled(options.onError)
     })
 
     it('accepts an object to populate a path', () => {
@@ -516,9 +492,7 @@ describe('prepareQuery', () => {
         }
       }
 
-      prepareQuery(options)(req, {}, next)
-
-      assert.deepEqual(req._ermQueryOptions, {
+      return assertPrepareQueryHasResult(options, req, {}, {
         populate: [{
           path: 'foo.bar',
           select: 'baz',
@@ -526,9 +500,6 @@ describe('prepareQuery', () => {
           options: { sort: 'baz' }
         }]
       })
-      sinon.assert.calledOnce(next)
-      sinon.assert.calledWithExactly(next)
-      sinon.assert.notCalled(options.onError)
     })
 
     it('parses a string to populate and select fields', () => {
@@ -539,17 +510,12 @@ describe('prepareQuery', () => {
         }
       }
 
-      prepareQuery(options)(req, {}, next)
-
-      assert.deepEqual(req._ermQueryOptions, {
+      return assertPrepareQueryHasResult(options, req, {}, {
         populate: [{
           path: 'foo',
           select: 'bar baz'
         }]
       })
-      sinon.assert.calledOnce(next)
-      sinon.assert.calledWithExactly(next)
-      sinon.assert.notCalled(options.onError)
     })
   })
 })
