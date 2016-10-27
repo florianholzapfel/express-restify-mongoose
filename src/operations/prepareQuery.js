@@ -112,12 +112,12 @@ const QUERY_OPTIONS_WHITELIST = ['distinct', 'limit', 'populate', 'query', 'sele
  *
  * The Promise is rejected if the query string has invalid an invalid 'query' value.
  *
- * @param {Object} options - erm options
+ * @param {boolean} allowRegex - whether or not regular expressions are allowed in the query string
  * @return {function(Object): function(Object): Promise}
  */
-module.exports = function (options) {
+module.exports = function (allowRegex) {
   return function (queryStringObject = {}) {
-    const promise = new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       const baseQueryOptions = {}
 
       for (let key in queryStringObject) {
@@ -129,7 +129,7 @@ module.exports = function (options) {
           try {
             baseQueryOptions[key] = JSON.parse(
               queryStringObject[key],
-              jsonQueryParser(options.allowRegex)
+              jsonQueryParser(allowRegex)
             )
           } catch (e) {
             return reject(new Error(`invalid_json_${key}`))
@@ -151,7 +151,5 @@ module.exports = function (options) {
 
       return resolve(parsedOptions)
     })
-
-    return promise
   }
 }
