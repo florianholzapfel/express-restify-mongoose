@@ -2,6 +2,8 @@
  * Generate RESTful URI paths for the an Express router.
  */
 
+const _ = require('lodash')
+
 /**
  * Given an array of URI paths, joins them together using forward slashes.
  *
@@ -22,7 +24,6 @@ function joinPathsAsURL (...paths) {
 
   return paths.join('/').replace(/\/+/gi, '/')
 }
-module.exports.joinPathsAsURL = joinPathsAsURL
 
 class RESTPathGenerator {
   constructor (apiPrefix = '', apiVersion = '', modelName) {
