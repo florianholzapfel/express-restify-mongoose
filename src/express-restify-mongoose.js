@@ -28,9 +28,7 @@ function ensureValueIsArray (value) {
     return value
   }
 
-  return value
-    ? [value]
-    : []
+  return value ? [value] : []
 }
 
 const restify = function (app, model, opts = {}) {
