@@ -1,3 +1,13 @@
+/**
+ * Returns Express middleware that calls the "access" function in options and adds the result to
+ * the request object (as "req.access")
+ *
+ * The access function in options ("options.access") gets passed the request.
+ *
+ * @param {Object} options - erm options
+ * @param {function(req: Object, done: function?)} options.access - tells us what the access level for this route is, based on the request
+ * @return {function(req, res, next)}
+ */
 module.exports = function (options) {
   const errorHandler = require('../errorHandler')(options)
 
@@ -16,8 +26,10 @@ module.exports = function (options) {
     }
 
     if (options.access.length > 1) {
+      // The handler passed in options is async, so pass it the handler
       options.access(req, handler)
     } else {
+      // The handler passed in options is synchronous
       handler(null, options.access(req))
     }
   }
