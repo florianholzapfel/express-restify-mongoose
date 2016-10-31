@@ -60,7 +60,7 @@ function fakeERM (onError = _.noop) {
  */
 const failIfErrorHandlerCalled = done => {
   return fakeERM(
-    (err, req, res, next) => done(new Error('should not call the onError() handler'))
+    () => done(new Error('should not call the onError() handler'))
   )
 }
 
@@ -75,7 +75,7 @@ function fakeRequest (shouldSucceed) {
   return {
     params: {},
     query: {},
-    shouldSucceed: shouldSucceed,
+    shouldSucceed: shouldSucceed
   }
 }
 
