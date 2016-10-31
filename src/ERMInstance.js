@@ -9,6 +9,10 @@ const _ = require('lodash')
  * @param {Object} excludedMap - Descendant keys to filter
  * @return {ERMInstance}
  * @constructor
+ *
+ * @property {Object} model
+ * @property {Object} options
+ * @property {Object} excludedMap
  */
 function ERMInstance (model, options, excludedMap) {
   if (_.isUndefined(this)) {
