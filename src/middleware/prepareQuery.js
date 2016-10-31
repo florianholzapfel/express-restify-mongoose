@@ -1,5 +1,5 @@
 module.exports = function (options) {
-  const prepareQueryAsPromise = require('../operations/prepareQuery')(options.allowRegex)
+  const prepareQueryAsPromise = require('../api/prepareQuery')(options.allowRegex)
   const errorHandler = require('../errorHandler')(options)
 
   return function (req, res, next) {

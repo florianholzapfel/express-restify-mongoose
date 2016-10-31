@@ -4,7 +4,7 @@ require('./unit/middleware/onError')
 require('./unit/middleware/outputFn')
 require('./unit/middleware/prepareOutput')
 
-require('./unit/operations/prepareQuery')
+require('./unit/api/prepareQuery')
 
 require('./unit/buildQuery')
 require('./unit/errorHandler')

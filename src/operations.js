@@ -1,12 +1,13 @@
-module.exports = function (model, options, excludedMap) {
-  const getItems = require('./operations/getItems')(model, options, excludedMap)
-  const getCount = require('./operations/getCount')(model, options)
-  const getShallow = require('./operations/getShallow')(model, options)
-  const deleteItems = require('./operations/deleteItems')(model, options)
-  const getItem = require('./operations/getItem')(model, options, excludedMap)
-  const deleteItem = require('./operations/deleteItem')(model, options)
-  const createObject = require('./operations/createObject')(model, options)
-  const modifyObject = require('./operations/modifyObject')(model, options)
+module.exports = function (ermInstance) {
+  const getItems = require('./api/getItems')(ermInstance.model, ermInstance.options, ermInstance.excludedMap)
+  const getCount = require('./api/getCount')(ermInstance.model, ermInstance.options)
+  const getShallow = require('./api/getShallow')(ermInstance.model, ermInstance.options)
+  const deleteItems = require('./api/deleteItems')(ermInstance.model, ermInstance.options)
+  const getItem = require('./api/getItem')(ermInstance.model, ermInstance.options, ermInstance.excludedMap)
+  const deleteItem = require('./api/deleteItem')(ermInstance.model, ermInstance.options)
+  const createObject = require('./api/createObject').getMiddleware(ermInstance)
+  const modifyObject = require('./api/modifyObject')(ermInstance.model, ermInstance.options)
 
   return { getItems, getCount, getItem, getShallow, createObject, modifyObject, deleteItems, deleteItem }
 }
+

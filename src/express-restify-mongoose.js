@@ -3,6 +3,7 @@ const _ = require('lodash')
 
 const Filter = require('./resource_filter')
 const RESTPathGenerator = require('./RESTPathGenerator')
+const ERMInstance = require('./ERMInstance')
 
 let customDefaults = null
 let excludedMap = {}
@@ -100,7 +101,9 @@ const restify = function (app, model, opts = {}) {
 
   options.name = options.name || model.modelName
 
-  const ops = require('./operations')(model, options, excludedMap)
+  const ermInstance = ERMInstance(model, options, excludedMap)
+
+  const ops = require('./operations')(ermInstance)
   const restPaths = new RESTPathGenerator(options.prefix, options.version, options.name)
 
   if (_.isUndefined(app.delete)) {
