@@ -36,6 +36,13 @@ function createObject (model, filter) {
   }
 }
 
+/**
+ * Given an ERM instance and an Express request, create a new object.
+ *
+ * @param {ERMInstance} ermInstance
+ * @param {Object} req - the Express request
+ * @return {Promise}
+ */
 function createObjectWithRequest (ermInstance, req) {
   const createObjectFromRequest = createObject(ermInstance.model, ermInstance.options.filter)
   return createObjectFromRequest(req.body, req._ermQueryOptions, req.access)
