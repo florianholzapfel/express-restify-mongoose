@@ -175,8 +175,8 @@ module.exports = function (model, options, excludedMap) {
           if (_.isArray(src[key])) {
             for (let j = 0; j < src[key].length; ++j) {
               if (typeof src[key][j] === 'object') {
-                dst[key] = dst[key] || {}
-                dst[key][j] = src[key][j]._id
+                dst[key] = dst[key] || []
+                dst[key].push(src[key][j]._id)
               }
             }
           } else if (_.isPlainObject(src[key])) {
