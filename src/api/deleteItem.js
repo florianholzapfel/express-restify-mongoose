@@ -44,7 +44,7 @@ const DELETE_SUCCESS = {
  */
 function deleteItemWithRequest (ermInstance, req) {
   if (ermInstance.options.findOneAndRemove) {
-    // We need to explicitly construct because options.contextFilter() takes a callback
+    // Explicit construction because contextFilter() takes a callback
     return new Promise((resolve, reject) => {
       ermInstance.options.contextFilter(
         ermInstance.model,
