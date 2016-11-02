@@ -1,5 +1,5 @@
-const getQueryBuilder = require('../buildQuery')
-const APIMethod = require('../APIMethod')
+const getQueryBuilder = require('../../buildQuery')
+const APIMethod = require('../../APIMethod')
 
 /**
  * Given global query options, a Mongoose context (just a ModelQuery), and a Mongo

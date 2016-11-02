@@ -1,4 +1,4 @@
-const isDistinctExcluded = require('./shared').isDistinctExcluded
+const isDistinctExcluded = require('./../shared').isDistinctExcluded
 const _ = require('lodash')
 
 /**
@@ -12,8 +12,8 @@ const _ = require('lodash')
  * @return {function(*=, *=, *=)}
  */
 function getItems (model, options, excludedMap) {
-  const buildQuery = require('../buildQuery')(options)
-  const errorHandler = require('../errorHandler')(options)
+  const buildQuery = require('../../buildQuery')(options)
+  const errorHandler = require('../../errorHandler')(options)
 
   return (req, res, next) => {
     if (isDistinctExcluded(options.filter, excludedMap, req)) {

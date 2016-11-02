@@ -1,4 +1,4 @@
-const APIMethod = require('../APIMethod')
+const APIMethod = require('../../APIMethod')
 
 /**
  * Returns a function that, given the body of an object, query options, and an access level, creates

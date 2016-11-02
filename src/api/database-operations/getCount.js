@@ -8,8 +8,8 @@
  * @return {function(*=, *=, *=)}
  */
 function getCount (model, options) {
-  const buildQuery = require('../buildQuery')(options)
-  const errorHandler = require('../errorHandler')(options)
+  const buildQuery = require('../../buildQuery')(options)
+  const errorHandler = require('../../errorHandler')(options)
 
   return (req, res, next) => {
     options.contextFilter(model, req, (filteredContext) => {

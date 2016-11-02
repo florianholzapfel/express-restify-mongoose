@@ -1,6 +1,6 @@
 const http = require('http')
-const findById = require('./shared').findById
-const APIMethod = require('../APIMethod')
+const findById = require('./../shared').findById
+const APIMethod = require('../../APIMethod')
 const Promise = require('bluebird')
 const _ = require('lodash')
 
@@ -16,16 +16,6 @@ const _ = require('lodash')
 function findOneAndRemove (query, documentId, idProperty) {
   return findById(query, documentId, idProperty)
     .findOneAndRemove()
-}
-
-/**
- * Given a mongoose document, removes the document.
- *
- * @param {Object} document
- * @return {Promise}
- */
-function removeDirectly (document) {
-  return document.remove()
 }
 
 const DELETE_SUCCESS = {
@@ -64,11 +54,12 @@ function deleteItemWithRequest (ermInstance, req) {
       )
     })
   } else {
-    if (!req.erm) {
+    // Not using findOneAndRemove(), so just remove the document directly.
+    if (!req.erm || !req.erm.document) {
       return Promise.reject(new Error('No document found'))
     }
 
-    return removeDirectly(req.erm.document)
+    return req.erm.document.remove()
       .then(_.constant(DELETE_SUCCESS))
   }
 }

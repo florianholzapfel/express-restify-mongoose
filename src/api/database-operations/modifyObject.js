@@ -1,10 +1,10 @@
-const findById = require('./shared').findById
+const findById = require('./../shared').findById
 const moredots = require('moredots')
 const _ = require('lodash')
 const http = require('http')
 
 function modifyObject (model, options) {
-  const errorHandler = require('../errorHandler')(options)
+  const errorHandler = require('../../errorHandler')(options)
 
   return (req, res, next) => {
     req.body = options.filter.filterObject(req.body || {}, {
