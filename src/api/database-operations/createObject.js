@@ -1,39 +1,43 @@
 const APIMethod = require('../../APIMethod')
 
 /**
- * Returns a function that, given the body of an object, query options, and an access level, creates
+ * Given the body of an object, query options, and an access level (all in state), creates
  * a new document in the database based on the object body and options.
  *
- * The document will be an instance of "model", with keys filtered according to "filter".
+ * The document will be an instance of the model in state, with keys filtered according to the
+ * filter in state.
  *
- * @param {Object} model - mongoose model to create instances of
- * @param {Filter} filter - resource filter to use for access level filtering, population options, etc.
- * @return {function(Object, Object, String): Promise}
+ * @param {ERMOperation} state - application state
+ * @param {Object} objectBody - body of the object to create
+ * @return {Promise}
  */
-function createObject (model, filter) {
-  return function (objectBody = {}, queryOptions, accessLevel) {
-    const filteredObject = filter.filterObject(
-      objectBody,
-      {
-        access: accessLevel,
-        populate: queryOptions.populate
-      }
-    )
+function createObject (state, objectBody = {}) {
+  const filter = state.options.filter
+  const model = state.model
+  const queryOptions = state.query
+  const accessLevel = state.accessLevel
 
-    if (model.schema.options._id) {
-      delete filteredObject._id
+  const filteredObject = filter.filterObject(
+    objectBody,
+    {
+      access: accessLevel,
+      populate: queryOptions.populate
     }
+  )
 
-    if (model.schema.options.versionKey) {
-      delete filteredObject[model.schema.options.versionKey]
-    }
-
-    return model.create(filteredObject)
-      .then(newDocument => model.populate(
-        newDocument,
-        queryOptions.populate || []
-      ))
+  if (model.schema.options._id) {
+    delete filteredObject._id
   }
+
+  if (model.schema.options.versionKey) {
+    delete filteredObject[model.schema.options.versionKey]
+  }
+
+  return model.create(filteredObject)
+    .then(newDocument => model.populate(
+      newDocument,
+      queryOptions.populate || []
+    ))
 }
 
 /**
@@ -44,15 +48,11 @@ function createObject (model, filter) {
  * @return {Promise}
  */
 function createObjectWithRequest (ermInstance, req) {
-  const createObjectFromRequest = createObject(ermInstance.model, ermInstance.options.filter)
-  return createObjectFromRequest(req.body, req._ermQueryOptions, req.access)
+  return createObject(ermInstance, req.body)
     .then(newDocument => {
-      return {
-        erm: {
-          result: newDocument,
-          statusCode: 201
-        }
-      }
+      return ermInstance
+        .setResult(newDocument)
+        .setStatusCode(201)
     })
 }
 

@@ -111,7 +111,9 @@ const restify = function (app, model, opts = {}) {
   }
 
   app.use((req, res, next) => {
-    req.erm = { model }
+    // At the start of each request, add our initial operation state
+    _.merge(req, initialOperationState.serializeToRequest())
+
     next()
   })
 

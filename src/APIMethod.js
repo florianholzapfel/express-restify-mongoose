@@ -1,17 +1,24 @@
 const _ = require('lodash')
+const ERMOperation = require('./ERMOperation')
 
 const privates = new WeakMap()
 
 /**
  * An APIMethod is a Promise-based operation with two components:
  *
- * 1) an "operation", a function that takes an ERMOperation as input and returns a
- *    Promise-returning function that takes arbitrary input and resolves to another ERMOperation
+ * 1) an "operation", a function that takes arbitrary input and can resolve to anything
  *
- * 2) a "bound operation" that takes an ERMOperation and an Express request as input and returns
- *    a Promise that resolves to
+ * 2) a "bound operation" (doOperationWithRequest) that takes an ERMOperation and an Express
+ *    request as input and returns a Promise that resolves to an ERMOperation
+ *
+ * APIMethods can be converted to Express middleware that automatically handles serializing
+ * ERMOperations to and from the Express request
  */
 class APIMethod {
+  /**
+   * @param {function: Promise} operation
+   * @param {function(ERMOperation, Object): Promise<ERMOperation>} doOperationWithRequest
+   */
   constructor (operation, doOperationWithRequest) {
     privates.set(this, {
       doOperationWithRequest,
@@ -29,16 +36,23 @@ class APIMethod {
     return privates.get(this).operation
   }
 
-  getMiddleware (ermInstance) {
-    const errorHandler = require('./errorHandler')(ermInstance.options)
+  /**
+   * @param {ERMOperation} initialState - initial ERM operation state used to generate the middleware - just needs to have "options" set
+   * @return {function(*=, *=, *=)}
+   */
+  getMiddleware (initialState) {
+    const errorHandler = require('./errorHandler')(initialState.options)
 
     return (req, res, next) => {
+      // Grab the current operation state from the request
+      const currentState = ERMOperation.deserializeFromRequest(req)
+
       // Do the operation. The operation returns a Promise, and whatever it resolves to will get
       // added to the request.
-      this.doOperationWithRequest(ermInstance, req)
-        .then(result => {
+      this.doOperationWithRequest(currentState, req)
+        .then(resultState => {
           // Add the result to the request object for the next middleware in the stack
-          _.merge(req, result)
+          _.merge(req, resultState.serializeToRequest())
 
           return next()
         })

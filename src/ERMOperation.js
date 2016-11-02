@@ -73,6 +73,9 @@ class ERMOperation {
     return context ? context.toConstructor()() : context
   }
 
+  /**
+   * @return {ERMOperation}
+   */
   setContext (newContext) {
     return updateERMInstanceField(this, 'context', newContext)
   }
@@ -84,6 +87,9 @@ class ERMOperation {
     return privates.get(this).accessLevel
   }
 
+  /**
+   * @return {ERMOperation}
+   */
   setAccessLevel (newAccessLevel) {
     return updateERMInstanceField(this, 'accessLevel', newAccessLevel)
   }
@@ -95,6 +101,9 @@ class ERMOperation {
     return privates.get(this).statusCode
   }
 
+  /**
+   * @return {ERMOperation}
+   */
   setStatusCode (newStatusCode) {
     return updateERMInstanceField(this, 'statusCode', newStatusCode)
   }
@@ -106,6 +115,9 @@ class ERMOperation {
     return privates.get(this).result
   }
 
+  /**
+   * @return {ERMOperation}
+   */
   setResult (newResult) {
     return updateERMInstanceField(this, 'result', newResult)
   }
@@ -117,6 +129,9 @@ class ERMOperation {
     return privates.get(this).document
   }
 
+  /**
+   * @return {ERMOperation}
+   */
   setDocument (newDocument) {
     return updateERMInstanceField(this, 'document', newDocument)
   }
@@ -128,6 +143,9 @@ class ERMOperation {
     return privates.get(this).query
   }
 
+  /**
+   * @return {ERMOperation}
+   */
   setQuery (newQuery) {
     return updateERMInstanceField(this, 'query', newQuery)
   }
@@ -139,6 +157,9 @@ class ERMOperation {
     return privates.get(this).options
   }
 
+  /**
+   * @return {ERMOperation}
+   */
   setOptions (newOptions) {
     return updateERMInstanceField(this, 'options', newOptions)
   }
@@ -150,6 +171,9 @@ class ERMOperation {
     return privates.get(this).model
   }
 
+  /**
+   * @return {ERMOperation}
+   */
   setModel (newModel) {
     return updateERMInstanceField(this, 'model', newModel)
   }
@@ -161,6 +185,9 @@ class ERMOperation {
     return privates.get(this).excludedMap
   }
 
+  /**
+   * @return {ERMOperation}
+   */
   setExcludedMap (newExcludedMap) {
     return updateERMInstanceField(this, 'excludedMap', newExcludedMap)
   }

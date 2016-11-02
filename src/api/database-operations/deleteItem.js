@@ -18,36 +18,39 @@ function findOneAndRemove (query, documentId, idProperty) {
     .findOneAndRemove()
 }
 
-const DELETE_SUCCESS = {
-  erm: {
-    statusCode: 204
-  }
+/**
+ * @param {ERMOperation} initialState
+ * @return {ERMOperation}
+ */
+function deleteSuccess (initialState) {
+  return initialState
+    .setStatusCode(204)
 }
 
 /**
  * Delete a single object.
  * Chooses between findOneAndRemove() and remove() based on the options.
  *
- * @param {ERMOperation} ermInstance
+ * @param {ERMOperation} state
  * @param {Object} req - the Express request
  * @return {Promise}
  */
-function deleteItemWithRequest (ermInstance, req) {
-  if (ermInstance.options.findOneAndRemove) {
+function deleteItemWithRequest (state, req) {
+  if (state.options.findOneAndRemove) {
     // Explicit construction because contextFilter() takes a callback
     return new Promise((resolve, reject) => {
-      ermInstance.options.contextFilter(
-        ermInstance.model,
+      state.options.contextFilter(
+        state.model,
         req,
         filteredContext => {
-          findOneAndRemove(filteredContext, req.params.id, ermInstance.options.idProperty)
+          findOneAndRemove(filteredContext, req.params.id, state.options.idProperty)
             .then(document => {
               if (!document) {
                 // The document wasn't found -- return 404
                 return reject(new Error(http.STATUS_CODES[404]))
               }
 
-              return resolve(DELETE_SUCCESS)
+              return resolve(deleteSuccess(state))
             })
             .catch(err => reject(err))
         }
@@ -55,12 +58,12 @@ function deleteItemWithRequest (ermInstance, req) {
     })
   } else {
     // Not using findOneAndRemove(), so just remove the document directly.
-    if (!req.erm || !req.erm.document) {
+    if (!state.document) {
       return Promise.reject(new Error('No document found'))
     }
 
-    return req.erm.document.remove()
-      .then(_.constant(DELETE_SUCCESS))
+    return state.document.remove()
+      .then(_.constant(deleteSuccess(state)))
   }
 }
 

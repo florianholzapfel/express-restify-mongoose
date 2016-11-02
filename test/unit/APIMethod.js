@@ -30,9 +30,7 @@ function operation (shouldSucceed) {
 function doOperationWithRequest (ermInstance, req) {
   return operation(req.shouldSucceed)
     .then(result => {
-      return {
-        _result: result
-      }
+      return ermInstance.setResult(result)
     })
 }
 
@@ -119,7 +117,7 @@ describe('APIMethod', () => {
       const req = fakeRequest(shouldSucceed)
 
       middleware(req, {}, () => {
-        assert.strictEqual(req._result, shouldSucceed)
+        assert.strictEqual(req.erm.result, shouldSucceed)
         done()
       })
     })

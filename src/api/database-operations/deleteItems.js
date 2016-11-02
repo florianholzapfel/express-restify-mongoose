@@ -23,23 +23,19 @@ function deleteItems (queryOptions, mongooseContext, query) {
 /**
  * Delete all of the items specified by a query in an Express request.
  *
- * @param {ERMOperation} ermInstance
+ * @param {ERMOperation} state
  * @param {Object} req
  * @return {Promise}
  */
-function deleteItemsWithRequest (ermInstance, req) {
+function deleteItemsWithRequest (state, req) {
   // Explicit construction because contextFilter() takes a callback
   return new Promise((resolve, reject) => {
-    ermInstance.options.contextFilter(
-      ermInstance.model,
+    state.options.contextFilter(
+      state.model,
       req,
       filteredContext => {
-        deleteItems(ermInstance.options, filteredContext, req._ermQueryOptions)
-          .then(resolve({
-            erm: {
-              statusCode: 204
-            }
-          }))
+        deleteItems(state.options, filteredContext, state.query)
+          .then(resolve(state.setStatusCode(204)))
           .catch(err => reject(err))
       }
     )
