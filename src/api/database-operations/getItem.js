@@ -2,40 +2,63 @@ const isDistinctExcluded = require('./../shared').isDistinctExcluded
 const findById = require('./../shared').findById
 const http = require('http')
 
+const APIMethod = require('../../APIMethod')
+const getQueryBuilder = require('../../buildQuery')
+
 /**
- * Given a model, erm options, and a list of excluded keys for model descendants, returns
- * Express middleware that builds a mongoose query to retrieve a _single_ item (specified by
- * its id), executes the query, and stores the result (a single document) in the request.
+ * Given an ERM operation, a mongoose context, and a document id to retrieve, retrieves the document.
  *
- * @param {Object} model
- * @param {Object} options
- * @param {Object} excludedMap
- * @return {function(*=, *=, *=)}
+ * @param {ERMOperation} state
+ * @param {ModelQuery} mongooseContext
+ * @param {String|ObjectId} documentId
+ * @return {Promise}
  */
-function getItem (model, options, excludedMap) {
-  const buildQuery = require('../../buildQuery')(options)
-  const errorHandler = require('../../errorHandler')(options)
+function getItem (state, mongooseContext, documentId) {
+  const buildQuery = getQueryBuilder(state.options)
 
-  return (req, res, next) => {
-    if (isDistinctExcluded(options.filter, excludedMap, req)) {
-      req.erm.result = []
-      req.erm.statusCode = 200
-      return next()
-    }
-
-    options.contextFilter(model, req, (filteredContext) => {
-      buildQuery(findById(filteredContext, req.params.id, options.idProperty), req._ermQueryOptions).then((item) => {
-        if (!item) {
-          return errorHandler(req, res, next)(new Error(http.STATUS_CODES[404]))
-        }
-
-        req.erm.result = item
-        req.erm.statusCode = 200
-
-        next()
-      }, errorHandler(req, res, next))
-    })
-  }
+  return buildQuery(
+    findById(mongooseContext, documentId, state.options.idProperty),
+    state.query
+  )
 }
 
-module.exports = getItem
+/**
+ * Retrieve a single document based on a request. Use the query and context filter specified in
+ * the ERM operation state.
+ *
+ * @param {ERMOperation} state
+ * @param {Object} req
+ * @return {Promise<ERMOperation>}
+ */
+function getItemWithRequest (state, req) {
+  if (isDistinctExcluded(state.options.filter, state.excludedMap, req)) {
+    return Promise.resolve(
+      state.setResult([]).setStatusCode(200)
+    )
+  }
+
+  return new Promise((resolve, reject) => {
+    state.options.contextFilter(
+      state.model,
+      req,
+      filteredContext => {
+        getItem(state, filteredContext, req.params.id)
+          .then(item => {
+            if (!item) {
+              return reject(new Error(http.STATUS_CODES[404]))
+            }
+
+            return resolve(
+              state.setResult(item).setStatusCode(200)
+            )
+          })
+          .catch(err => reject(err))
+      }
+    )
+  })
+}
+
+module.exports = new APIMethod(
+  getItem,
+  getItemWithRequest
+)
