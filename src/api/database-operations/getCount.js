@@ -1,32 +1,47 @@
-// const APIMethod = require('../../APIMethod')
+const APIMethod = require('../../APIMethod')
+const getQueryBuilder = require('../../buildQuery')
 
 /**
- * Given a model and erm options, returns Express middleware that builds a mongoose query to
- * count the total number of documents, executes the request, and then stores the count in
- * the request.
+ * Given global query options, a Mongoose context (just a ModelQuery), and a Mongo
+ * query, get the count of objects matching the context and query.
  *
- * @param {Object} model
- * @param {Object} options
- * @return {function(*=, *=, *=)}
+ * @param {Object} queryOptions - Global options to apply to all queries
+ * @param queryOptions.lean
+ * @param queryOptions.readPreference
+ * @param queryOptions.limit
+ *
+ * @param {ModelQuery} mongooseContext - The documents to query
+ * @param {Object} query - MongoDB query object to apply to the context
+ *
+ * @return {Promise}
  */
-function getCountMiddleware (model, options) {
-  const buildQuery = require('../../buildQuery')(options)
-  const errorHandler = require('../../errorHandler')(options)
-
-  return (req, res, next) => {
-    options.contextFilter(model, req, (filteredContext) => {
-      buildQuery(filteredContext.count().toConstructor()(), req._ermQueryOptions).then((count) => {
-        req.erm.result = { count: count }
-        req.erm.statusCode = 200
-
-        next()
-      }, errorHandler(req, res, next))
-    })
-  }
+function getCount (queryOptions, mongooseContext, query) {
+  const buildQuery = getQueryBuilder(queryOptions)
+  return buildQuery(mongooseContext.count().toConstructor()(), query)
 }
 
-// function getCount (queryOptions, mongooseContext, query) {
-//
-// }
+function getCountWithRequest (state, req) {
+  // Explicit construction because contextFilter() takes a callback
+  return new Promise((resolve, reject) => {
+    state.options.contextFilter(
+      state.model,
+      req,
+      filteredContext => {
+        getCount(state.options, filteredContext, state.query)
+          .then(count => {
+            return resolve(
+              state
+                .setResult({ count: count })
+                .setStatusCode(200)
+            )
+          })
+          .catch(err => reject(err))
+      }
+    )
+  })
+}
 
-module.exports = getCountMiddleware
+module.exports = new APIMethod(
+  getCount,
+  getCountWithRequest
+)
