@@ -35,7 +35,7 @@ function deleteItemsWithRequest (state, req) {
       req,
       filteredContext => {
         deleteItems(state.options, filteredContext, state.query)
-          .then(resolve(state.setStatusCode(204)))
+          .then(() => resolve(state.setStatusCode(204)))
           .catch(err => reject(err))
       }
     )
