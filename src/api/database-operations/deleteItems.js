@@ -17,13 +17,13 @@ const APIMethod = require('../../APIMethod')
  */
 function deleteItems (queryOptions, mongooseContext, query) {
   const buildQuery = getQueryBuilder(queryOptions)
-  return buildQuery(mongooseContext.remove(), query)
+  return buildQuery(mongooseContext.remove().toConstructor()(), query)
 }
 
 /**
  * Delete all of the items specified by a query in an Express request.
  *
- * @param {ERMInstance} ermInstance
+ * @param {ERMOperation} ermInstance
  * @param {Object} req
  * @return {Promise}
  */

@@ -1,7 +1,7 @@
 const assert = require('assert')
 const _ = require('lodash')
 const APIMethod = require('../../src/APIMethod')
-const ERMInstance = require('../../src/ERMInstance')
+const ERMOperation = require('../../src/ERMOperation')
 
 /**
  * The Promise-based API operation we're going to use for the tests.
@@ -43,12 +43,14 @@ function doOperationWithRequest (ermInstance, req) {
 const api = new APIMethod(operation, doOperationWithRequest)
 
 /**
- * Given an onError() handler, returns a fake ERMInstance with the supplied error handler
+ * Given an onError() handler, returns a fake ERMOperation with the supplied error handler
  * @param {function(err, req, res, next): void} onError function(): null
- * @return {ERMInstance}
+ * @return {ERMOperation}
  */
 function fakeERM (onError = _.noop) {
-  return ERMInstance({}, { onError: onError }, {})
+  return new ERMOperation({
+    options: { onError: onError }
+  })
 }
 
 /**
@@ -56,7 +58,7 @@ function fakeERM (onError = _.noop) {
  * fails the test if the error handler is called.
  *
  * @param {function} done - test completion callback
- * @return {ERMInstance}
+ * @return {ERMOperation}
  */
 const failIfErrorHandlerCalled = done => {
   return fakeERM(

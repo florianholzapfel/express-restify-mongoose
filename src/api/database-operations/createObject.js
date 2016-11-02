@@ -39,7 +39,7 @@ function createObject (model, filter) {
 /**
  * Given an ERM instance and an Express request, create a new object.
  *
- * @param {ERMInstance} ermInstance
+ * @param {ERMOperation} ermInstance
  * @param {Object} req - the Express request
  * @return {Promise}
  */

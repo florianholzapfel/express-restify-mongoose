@@ -28,7 +28,7 @@ const DELETE_SUCCESS = {
  * Delete a single object.
  * Chooses between findOneAndRemove() and remove() based on the options.
  *
- * @param {ERMInstance} ermInstance
+ * @param {ERMOperation} ermInstance
  * @param {Object} req - the Express request
  * @return {Promise}
  */

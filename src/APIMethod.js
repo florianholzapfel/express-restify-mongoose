@@ -2,6 +2,15 @@ const _ = require('lodash')
 
 const privates = new WeakMap()
 
+/**
+ * An APIMethod is a Promise-based operation with two components:
+ *
+ * 1) an "operation", a function that takes an ERMOperation as input and returns a
+ *    Promise-returning function that takes arbitrary input and resolves to another ERMOperation
+ *
+ * 2) a "bound operation" that takes an ERMOperation and an Express request as input and returns
+ *    a Promise that resolves to
+ */
 class APIMethod {
   constructor (operation, doOperationWithRequest) {
     privates.set(this, {
