@@ -32,6 +32,7 @@ function updateERMInstanceField (instance, field, newValue) {
  * @property {String} accessLevel - The permissions granted to whoever is doing the operation
  *
  * @property {Number} statusCode - The HTTP status code of the operation, if finished
+ * @property {Number} totalCount - Total count of documents in the operation, if finished
  * @property {Array|Object} result - The result of the operation, if applicable
  * @property {Object} document - If the operation operates on a single document, this gets set
  *
@@ -47,6 +48,7 @@ class ERMOperation {
           'context',
           'accessLevel',
           'statusCode',
+          'totalCount',
           'result',
           'document',
           'query',
@@ -109,7 +111,7 @@ class ERMOperation {
   }
 
   /**
-   * @return {Array}
+   * @return {Array|Object}
    */
   get result () {
     return privates.get(this).result
@@ -120,6 +122,20 @@ class ERMOperation {
    */
   setResult (newResult) {
     return updateERMInstanceField(this, 'result', newResult)
+  }
+
+  /**
+   * @return {Number}
+   */
+  get totalCount () {
+    return privates.get(this).totalCount
+  }
+
+  /**
+   * @return {ERMOperation}
+   */
+  setTotalCount (newTotalCount) {
+    return updateERMInstanceField(this, 'totalCount', newTotalCount)
   }
 
   /**
@@ -203,6 +219,7 @@ class ERMOperation {
       erm: {
         model: this.model,
         statusCode: this.statusCode,
+        totalCount: this.totalCount,
         result: this.result,
         document: this.document
       },
@@ -229,6 +246,7 @@ ERMOperation.deserializeFromRequest = function (req) {
   return new ERMOperation({
     model: reqErm.model,
     statusCode: reqErm.statusCode,
+    totalCount: reqErm.totalCount,
     result: reqErm.result,
     document: reqErm.document,
 
