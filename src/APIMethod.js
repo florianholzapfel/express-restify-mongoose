@@ -37,6 +37,15 @@ class APIMethod {
   }
 
   /**
+   * Given an initial ERMOperation (to grab options from), returns Express middleware that does
+   * the following:
+   *  - Deserialize the current ERMOperation state from the request
+   *  - Run the operation (using the request)
+   *  - Serialize the resultant ERMOperation back to the request
+   *
+   * This middleware is "atomic" in the sense that the request shouldn't be mutated (if the
+   * operation is well-behaved) until the operation is finished running.
+   *
    * @param {ERMOperation} initialState - initial ERM operation state used to generate the middleware - just needs to have "options" set
    * @return {function(*=, *=, *=)}
    */
