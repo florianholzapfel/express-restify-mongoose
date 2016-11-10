@@ -73,12 +73,17 @@ Filter.prototype.getExcluded = function (opts) {
 
 /**
  * Gets excluded keys for a given model and access.
+ *
  * @memberof Filter
+ *
+ * @param {String} field - the field to check
+ *
  * @param {Object} opts - Options.
  * @param {String} opts.access {public} - Access level (private, protected or public).
  * @param {Object} opts.excludedMap {} - Filtered keys for related models
  * @param {Object} opts.filteredKeys {} - Keys to filter for the current model
- * @returns {Array} - Keys to filter.
+ *
+ * @returns {boolean} - will the field be excluded
  */
 Filter.prototype.isExcluded = function (field, opts) {
   if (!field) {
