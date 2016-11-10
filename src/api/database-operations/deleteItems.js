@@ -1,6 +1,8 @@
 const getQueryBuilder = require('../../buildQuery')
 const APIMethod = require('../../APIMethod')
 
+const cloneMongooseQuery = require('../shared').cloneMongooseQuery
+
 /**
  * Given global query options, a Mongoose context (just a ModelQuery), and a Mongo
  * query, removes the documents in the context that match the Mongo query.
@@ -17,7 +19,7 @@ const APIMethod = require('../../APIMethod')
  */
 function deleteItems (queryOptions, mongooseContext, query) {
   const buildQuery = getQueryBuilder(queryOptions)
-  return buildQuery(mongooseContext.remove().toConstructor()(), query)
+  return buildQuery(cloneMongooseQuery(mongooseContext.remove()), query)
 }
 
 /**

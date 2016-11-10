@@ -1,5 +1,6 @@
 const APIMethod = require('../../APIMethod')
 const getQueryBuilder = require('../../buildQuery')
+const cloneMongooseQuery = require('../shared').cloneMongooseQuery
 
 /**
  * Given global query options, a Mongoose context (just a ModelQuery), and a Mongo
@@ -17,7 +18,7 @@ const getQueryBuilder = require('../../buildQuery')
  */
 function getCount (queryOptions, mongooseContext, query) {
   const buildQuery = getQueryBuilder(queryOptions)
-  return buildQuery(mongooseContext.count().toConstructor()(), query)
+  return buildQuery(cloneMongooseQuery(mongooseContext.count()), query)
 }
 
 function getCountWithRequest (state, req) {
