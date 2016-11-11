@@ -1,4 +1,5 @@
 const _ = require('lodash')
+const cloneMongooseQuery = require('./api/shared').cloneMongooseQuery
 
 const privates = new WeakMap()
 
@@ -72,7 +73,7 @@ class ERMOperation {
     const context = privates.get(this).context
 
     // If context is set, return a copy of it so no one can mutate our internal state
-    return context ? context.toConstructor()() : context
+    return context ? cloneMongooseQuery(context) : context
   }
 
   /**
