@@ -3,6 +3,46 @@ const moredots = require('moredots')
 const _ = require('lodash')
 const http = require('http')
 
+/**
+ * Given a document and the document's model, depopulate any populated fields in the document.
+ * Does NOT mutate the populated document.
+ */
+function depopulate (model, populatedDoc) {
+  return _.mapValues(
+    populatedDoc,
+    (valueAtKey, key) => {
+      const path = model.schema.path(key)
+      const casterIsObjectID = _.get(path, 'caster.instance') === 'ObjectID'
+      const pathIsObjectID = _.get(path, 'instance') === 'ObjectID'
+
+      if (casterIsObjectID && _.isArray(valueAtKey)) {
+        // We're dealing with an array of populated objects
+
+        // Convert the objects in the array to ObjectIDs
+        return valueAtKey.map(
+          element => typeof element === 'object'
+            ? element._id
+            : element
+        )
+      } else if (_.isPlainObject(valueAtKey)) {
+        // The value is an object, which mean's it's either a nested object (which will have its
+        // own paths to depopulate), or it's a populated value.
+
+        if (casterIsObjectID || pathIsObjectID) {
+          // The path is a populated value -- grab its id
+          return valueAtKey._id
+        } else {
+          // This path is a nested object -- recursively depopulate
+          return depopulate(model, valueAtKey)
+        }
+      } else {
+        // The path is a primitive or a non-plain-object (like a Buffer)
+        return valueAtKey
+      }
+    }
+  )
+}
+
 function modifyObject (model, options) {
   const errorHandler = require('../../errorHandler')(options)
 
@@ -18,40 +58,7 @@ function modifyObject (model, options) {
       delete req.body[model.schema.options.versionKey]
     }
 
-    function depopulate (src) {
-      let dst = {}
-
-      for (let key in src) {
-        const path = model.schema.path(key)
-
-        if (path && path.caster && path.caster.instance === 'ObjectID') {
-          if (_.isArray(src[key])) {
-            for (let j = 0; j < src[key].length; ++j) {
-              if (typeof src[key][j] === 'object') {
-                dst[key] = dst[key] || {}
-                dst[key][j] = src[key][j]._id
-              }
-            }
-          } else if (_.isPlainObject(src[key])) {
-            dst[key] = src[key]._id
-          }
-        } else if (_.isPlainObject(src[key])) {
-          if (path && path.instance === 'ObjectID') {
-            dst[key] = src[key]._id
-          } else {
-            dst[key] = depopulate(src[key])
-          }
-        }
-
-        if (_.isUndefined(dst[key])) {
-          dst[key] = src[key]
-        }
-      }
-
-      return dst
-    }
-
-    const cleanBody = moredots(depopulate(req.body))
+    const cleanBody = moredots(depopulate(model, req.body))
 
     if (options.findOneAndUpdate) {
       options.contextFilter(model, req, (filteredContext) => {
