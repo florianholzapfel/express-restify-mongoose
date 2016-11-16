@@ -36,7 +36,10 @@ function depopulate (model, populatedDoc) {
           return depopulate(model, valueAtKey)
         }
       } else {
-        // The path is a primitive or a non-plain-object (like a Buffer)
+        // The path is either:
+        //  a primitive
+        //  a non-plain-object (like a Buffer)
+        //  an array of non-populated values
         return valueAtKey
       }
     }
