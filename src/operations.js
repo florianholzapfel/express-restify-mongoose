@@ -6,7 +6,7 @@ module.exports = function (ermInstance) {
   const getItem = require('./api/database-operations/getItem').getMiddleware(ermInstance)
   const deleteItem = require('./api/database-operations/deleteItem').getMiddleware(ermInstance)
   const createObject = require('./api/database-operations/createObject').getMiddleware(ermInstance)
-  const modifyObject = require('./api/database-operations/modifyObject')(ermInstance.model, ermInstance.options)
+  const modifyObject = require('./api/database-operations/modifyObject').getMiddleware(ermInstance)
 
   return { getItems, getCount, getItem, getShallow, createObject, modifyObject, deleteItems, deleteItem }
 }
