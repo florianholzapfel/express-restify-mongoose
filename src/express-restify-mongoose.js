@@ -17,7 +17,7 @@ function getDefaults () {
     allowRegex: true,
     private: [],
     protected: [],
-    removeMethod: 'remove',
+    removeMethod: 'remove'
   })
 }
 
