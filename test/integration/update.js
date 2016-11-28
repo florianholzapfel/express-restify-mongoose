@@ -128,7 +128,7 @@ module.exports = function (createFn, setup, dismantle) {
             assert.equal(Object.keys(body).length, 5)
             assert.equal(body.name, 'MongoError')
             // Remove extra whitespace and allow code 11001 for MongoDB < 3
-            assert.ok(body.errmsg.indexOf('duplicate key') > -1)
+            assert.ok(body.errmsg.indexOf('duplicate') > -1)
             assert.ok(body.code === 11000 || body.code === 11001)
             assert.equal(body.ok, 0)
             done()
@@ -476,7 +476,7 @@ module.exports = function (createFn, setup, dismantle) {
             assert.ok(Object.keys(body).length === 6 || Object.keys(body).length === 8)
             assert.equal(body.name, 'MongoError')
             assert.equal(body.driver, true)
-            assert.ok(body.errmsg.indexOf('duplicate key') > -1)
+            assert.ok(body.errmsg.indexOf('duplicate') > -1)
             assert.ok(body.code === 11000 || body.code === 11001)
             done()
           })
