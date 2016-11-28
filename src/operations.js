@@ -80,7 +80,9 @@ module.exports = function (model, options, excludedMap) {
 
   function deleteItems (req, res, next) {
     options.contextFilter(model, req, (filteredContext) => {
-      buildQuery(filteredContext.remove(), req._ermQueryOptions).then(() => {
+      const removeMethod = filteredContext[options.removeMethod];
+
+      buildQuery(removeMethod(), req._ermQueryOptions).then(() => {
         req.erm.statusCode = 204
 
         next()
@@ -123,7 +125,9 @@ module.exports = function (model, options, excludedMap) {
         }, errorHandler(req, res, next))
       })
     } else {
-      req.erm.document.remove().then(() => {
+      const removeMethod = req.erm.document[options.removeMethod];
+
+      removeMethod().then(() => {
         req.erm.statusCode = 204
 
         next()
