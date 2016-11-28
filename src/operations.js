@@ -80,7 +80,7 @@ module.exports = function (model, options, excludedMap) {
 
   function deleteItems (req, res, next) {
     options.contextFilter(model, req, (filteredContext) => {
-      const removeMethod = filteredContext[options.removeMethod]
+      const removeMethod = filteredContext[options.removeMethod].bind(filteredContext)
 
       buildQuery(removeMethod(), req._ermQueryOptions).then(() => {
         req.erm.statusCode = 204
@@ -114,14 +114,19 @@ module.exports = function (model, options, excludedMap) {
   function deleteItem (req, res, next) {
     if (options.findOneAndRemove) {
       options.contextFilter(model, req, (filteredContext) => {
-        findById(filteredContext, req.params.id).findOneAndRemove().then((item) => {
+        findById(filteredContext, req.params.id).then((item) => {
           if (!item) {
             return errorHandler(req, res, next)(new Error(http.STATUS_CODES[404]))
           }
 
-          req.erm.statusCode = 204
+          const removeMethod = item[options.removeMethod].bind(filteredContext)
 
-          next()
+          removeMethod().then(() => {
+            req.erm.result = item
+            req.erm.statusCode = 204
+
+            next()
+          }, errorHandler(req, res, next))
         }, errorHandler(req, res, next))
       })
     } else {
@@ -129,9 +134,8 @@ module.exports = function (model, options, excludedMap) {
 
       removeMethod().then(() => {
         req.erm.statusCode = 204
-
         next()
-      }, errorHandler(req, res, next))
+      }).catch(errorHandler(req, res, next))
     }
   }
 
