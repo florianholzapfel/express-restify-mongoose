@@ -130,7 +130,7 @@ module.exports = function (model, options, excludedMap) {
         }, errorHandler(req, res, next))
       })
     } else {
-      const removeMethod = req.erm.document[options.removeMethod].bind(model)
+      const removeMethod = req.erm.document[options.removeMethod].bind(req.erm.document)
 
       removeMethod().then(() => {
         req.erm.statusCode = 204
