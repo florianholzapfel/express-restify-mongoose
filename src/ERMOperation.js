@@ -241,7 +241,7 @@ class ERMOperation {
  * @param {Object} req - the Express request
  * @return {ERMOperation}
  */
-ERMOperation.deserializeFromRequest = function (req) {
+ERMOperation.deserializeRequest = function (req) {
   const reqErm = req.erm || {}
 
   return new ERMOperation({
@@ -272,15 +272,15 @@ ERMOperation.deserializeFromRequest = function (req) {
  */
 ERMOperation.initialize = function (model, options, excludedMap) {
   if (_.isUndefined(model)) {
-    throw new Error('You must supply a model')
+    throw new Error('model must be specified')
   }
 
   if (_.isUndefined(options)) {
-    throw new Error('You must supply options')
+    throw new Error('options must be specified')
   }
 
   if (_.isUndefined(excludedMap)) {
-    throw new Error('You must supply an excludedMap')
+    throw new Error('excludedMap must be specified')
   }
 
   return new ERMOperation({

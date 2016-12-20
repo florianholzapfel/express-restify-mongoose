@@ -33,6 +33,7 @@ function getCountWithRequest (state, req) {
             return resolve(
               state
                 .setResult({ count: count })
+                .setTotalCount(count)
                 .setStatusCode(200)
             )
           })

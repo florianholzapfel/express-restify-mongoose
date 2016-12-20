@@ -54,7 +54,7 @@ class APIMethod {
 
     return (req, res, next) => {
       // Grab the current operation state from the request
-      const currentState = ERMOperation.deserializeFromRequest(req)
+      const currentState = ERMOperation.deserializeRequest(req)
 
       // Do the operation. The operation returns a Promise, and whatever it resolves to will get
       // added to the request.

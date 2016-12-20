@@ -104,7 +104,9 @@ function jsonQueryParser (allowRegex) {
   }
 }
 
-const QUERY_OPTIONS_WHITELIST = ['distinct', 'limit', 'populate', 'query', 'select', 'skip', 'sort']
+const QUERY_OPTIONS_WHITELIST = Object.freeze(
+  ['distinct', 'limit', 'populate', 'query', 'select', 'skip', 'sort']
+)
 
 /**
  * Given erm options, returns a function that takes a query string object (e.g. in Express

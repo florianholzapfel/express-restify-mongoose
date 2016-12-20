@@ -27,9 +27,9 @@ function joinPathsAsURL (...paths) {
 
 class RESTPathGenerator {
   constructor (apiPrefix = '', apiVersion = '', modelName) {
-    if (!_.isString(modelName)) {
-      throw new Error('modelName must be a string')
-    }
+    ensureString(apiPrefix, 'apiPrefix')
+    ensureString(apiVersion, 'apiVersion')
+    ensureString(modelName, 'modelName')
 
     this._apiPrefix = apiPrefix
     this._apiVersion = apiVersion
@@ -83,6 +83,22 @@ class RESTPathGenerator {
   get singleDocumentShallow () {
     return joinPathsAsURL(this._singleDocumentPath, 'shallow')
   }
+}
+
+/**
+ * Throws if a value isn't a string. Returns null if the value is a string.
+ * The second argument is used for error message.
+ *
+ * @param {String|*} value
+ * @param {String?} valueName
+ * @return {null}
+ */
+function ensureString (value, valueName = 'value') {
+  if (!_.isString(value)) {
+    throw new Error(`${valueName} must be a string`)
+  }
+
+  return null
 }
 
 module.exports = RESTPathGenerator

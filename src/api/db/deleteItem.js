@@ -2,7 +2,6 @@ const http = require('http')
 const findById = require('./../shared').findById
 const APIMethod = require('../../APIMethod')
 const Promise = require('bluebird')
-const _ = require('lodash')
 
 /**
  * Given a mongoose query, a document id, and the model's id property,
@@ -16,15 +15,6 @@ const _ = require('lodash')
 function findOneAndRemove (query, documentId, idProperty) {
   return findById(query, documentId, idProperty)
     .findOneAndRemove()
-}
-
-/**
- * @param {ERMOperation} initialState
- * @return {ERMOperation}
- */
-function deleteSuccess (initialState) {
-  return initialState
-    .setStatusCode(204)
 }
 
 /**
@@ -50,7 +40,7 @@ function deleteItemWithRequest (state, req) {
                 return reject(new Error(http.STATUS_CODES[404]))
               }
 
-              return resolve(deleteSuccess(state))
+              return resolve(state.setStatusCode(204))
             })
             .catch(err => reject(err))
         }
@@ -59,11 +49,11 @@ function deleteItemWithRequest (state, req) {
   } else {
     // Not using findOneAndRemove(), so just remove the document directly.
     if (!state.document) {
-      return Promise.reject(new Error('No document found'))
+      return Promise.reject(new Error(http.STATUS_CODES[404]))
     }
 
     return state.document.remove()
-      .then(_.constant(deleteSuccess(state)))
+      .then(() => state.setStatusCode(204))
   }
 }
 
