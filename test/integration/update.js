@@ -482,7 +482,6 @@ module.exports = function (createFn, setup, dismantle) {
               name: 'John'
             }
           }, (err, res, body) => {
-            console.log('body', body)
             assert.ok(!err)
             assert.equal(res.statusCode, 400)
             // Remove extra whitespace, allow 8 keys and code 11001 for MongoDB < 3
