@@ -110,7 +110,8 @@ module.exports = function (createFn, setup, dismantle) {
               message: 'Cast to number failed for value "not a number" at path "age"',
               name: 'CastError',
               path: 'age',
-              value: 'not a number'
+              value: 'not a number',
+              stringValue: `"not a number"`
             })
             done()
           })
@@ -456,7 +457,8 @@ module.exports = function (createFn, setup, dismantle) {
                   message: 'Cast to Number failed for value "not a number" at path "age"',
                   name: 'CastError',
                   path: 'age',
-                  value: 'not a number'
+                  value: 'not a number',
+                  stringValue: `"not a number"`
                 }
               }
             })
