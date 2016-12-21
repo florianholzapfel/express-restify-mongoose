@@ -126,12 +126,21 @@ module.exports = function (createFn, setup, dismantle) {
           }, (err, res, body) => {
             assert.ok(!err)
             assert.equal(res.statusCode, 400)
-            assert.equal(Object.keys(body).length, 5)
+            assert.ok(Object.keys(body).length === 5 || Object.keys(body).length === 6)
             assert.equal(body.name, 'MongoError')
             // Remove extra whitespace and allow code 11001 for MongoDB < 3
-            assert.equal(body.errmsg.replace(/\s+/g, ' ').replace('exception: ', ''), 'E11000 duplicate key error index: database.customers.$name_1 dup key: { : "John" }')
-            assert.equal(body.message.replace(/\s+/g, ' ').replace('exception: ', ''), 'E11000 duplicate key error index: database.customers.$name_1 dup key: { : "John" }')
+            assert.ok(
+              body.errmsg.replace(/\s+/g, ' ').replace('exception: ', '').match(
+                /E11000 duplicate key error (?:index|collection): database.customers(\.\$| index: )name_1 dup key: { : "John" }/
+              ) !== null
+            )
+            assert.ok(
+              body.message.replace(/\s+/g, ' ').replace('exception: ', '').match(
+                /E11000 duplicate key error (?:index|collection): database.customers(?:\.\$| index: )name_1 dup key: { : "John" }/
+              ) !== null
+            )
             assert.ok(body.code === 11000 || body.code === 11001)
+            assert.ok(!body.codeName || body.codeName === 'DuplicateKey') // codeName is optional
             assert.equal(body.ok, 0)
             done()
           })
@@ -473,14 +482,23 @@ module.exports = function (createFn, setup, dismantle) {
               name: 'John'
             }
           }, (err, res, body) => {
+            console.log('body', body)
             assert.ok(!err)
             assert.equal(res.statusCode, 400)
             // Remove extra whitespace, allow 8 keys and code 11001 for MongoDB < 3
             assert.ok(Object.keys(body).length === 6 || Object.keys(body).length === 8)
             assert.equal(body.name, 'MongoError')
             assert.equal(body.driver, true)
-            assert.equal(body.errmsg.replace(/\s+/g, ' '), 'E11000 duplicate key error index: database.customers.$name_1 dup key: { : "John" }')
-            assert.equal(body.message.replace(/\s+/g, ' '), 'E11000 duplicate key error index: database.customers.$name_1 dup key: { : "John" }')
+            assert.ok(
+              body.errmsg.replace(/\s+/g, ' ').replace('exception: ', '').match(
+                /E11000 duplicate key error (?:index|collection): database.customers(?:\.\$| index: )name_1 dup key: { : "John" }/
+              ) !== null
+            )
+            assert.ok(
+              body.message.replace(/\s+/g, ' ').replace('exception: ', '').match(
+                /E11000 duplicate key error (?:index|collection): database.customers(?:\.\$| index: )name_1 dup key: { : "John" }/
+              ) !== null
+            )
             assert.ok(body.code === 11000 || body.code === 11001)
             done()
           })
