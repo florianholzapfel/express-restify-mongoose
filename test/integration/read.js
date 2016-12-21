@@ -599,10 +599,11 @@ module.exports = function (createFn, setup, dismantle) {
             assert.equal(res.statusCode, 400)
             assert.deepEqual(body, {
               kind: 'number',
-              message: 'Cast to number failed for value "/2/i" at path "age"',
+              message: 'Cast to number failed for value "/2/i" at path "age" for model "Customer"',
               name: 'CastError',
               path: 'age',
-              value: {}
+              value: {},
+              stringValue: `"/2/i"`
             })
             done()
           })
