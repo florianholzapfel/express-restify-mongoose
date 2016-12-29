@@ -33,7 +33,7 @@
     "standard": "^8.0.0"
   },
   "engines": {
-    "node": ">=0.10"
+    "node": ">=4"
   },
   "homepage": "http://florianholzapfel.github.io/express-restify-mongoose/",
   "keywords": [
