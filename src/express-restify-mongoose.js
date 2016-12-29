@@ -10,13 +10,14 @@ function getDefaults () {
     version: '/v1',
     idProperty: '_id',
     findOneAndUpdate: true,
-    findOneAndRemove: true,
+    findOneAndRemove: false,
     lean: true,
     restify: false,
     runValidators: false,
     allowRegex: true,
     private: [],
-    protected: []
+    protected: [],
+    removeMethod: 'remove'
   })
 }
 

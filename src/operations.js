@@ -80,7 +80,9 @@ module.exports = function (model, options, excludedMap) {
 
   function deleteItems (req, res, next) {
     options.contextFilter(model, req, (filteredContext) => {
-      buildQuery(filteredContext.remove(), req._ermQueryOptions).then(() => {
+      const removeMethod = filteredContext[options.removeMethod].bind(filteredContext)
+
+      buildQuery(removeMethod(), req._ermQueryOptions).then(() => {
         req.erm.statusCode = 204
 
         next()
@@ -112,22 +114,28 @@ module.exports = function (model, options, excludedMap) {
   function deleteItem (req, res, next) {
     if (options.findOneAndRemove) {
       options.contextFilter(model, req, (filteredContext) => {
-        findById(filteredContext, req.params.id).findOneAndRemove().then((item) => {
+        findById(filteredContext, req.params.id).then((item) => {
           if (!item) {
             return errorHandler(req, res, next)(new Error(http.STATUS_CODES[404]))
           }
 
-          req.erm.statusCode = 204
+          const removeMethod = item[options.removeMethod].bind(filteredContext)
 
-          next()
+          removeMethod().then(() => {
+            req.erm.result = item
+            req.erm.statusCode = 204
+
+            next()
+          }, errorHandler(req, res, next))
         }, errorHandler(req, res, next))
       })
     } else {
-      req.erm.document.remove().then(() => {
-        req.erm.statusCode = 204
+      const removeMethod = req.erm.document[options.removeMethod].bind(req.erm.document)
 
+      removeMethod().then(() => {
+        req.erm.statusCode = 204
         next()
-      }, errorHandler(req, res, next))
+      }).catch(errorHandler(req, res, next))
     }
   }
 
