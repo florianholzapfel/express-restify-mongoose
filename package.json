@@ -46,7 +46,7 @@
     "model"
   ],
   "license": "MIT",
-  "main": "./lib/express-restify-mongoose",
+  "main": "./src/express-restify-mongoose",
   "name": "express-restify-mongoose",
   "readmeFilename": "README.md",
   "repository": {

@@ -1,7 +1,6 @@
 const util = require('util')
 const _ = require('lodash')
 const Filter = require('./resource_filter')
-const patcher = require('mongoose-json-patch')
 let customDefaults = null
 let excludedMap = {}
 
@@ -41,7 +40,6 @@ const restify = function (app, model, opts = {}) {
     throw new Error('"options.protected" must be an array of fields')
   }
 
-  model.schema.plugin(patcher)
   model.schema.eachPath((name, path) => {
     if (path.options.access) {
       switch (path.options.access.toLowerCase()) {
