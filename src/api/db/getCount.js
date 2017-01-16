@@ -32,9 +32,9 @@ function getCountWithRequest (state, req) {
           .then(count => {
             return resolve(
               state
-                .setResult({ count: count })
-                .setTotalCount(count)
-                .setStatusCode(200)
+                .set('result', { count: count })
+                .set('totalCount', count)
+                .set('statusCode', 200)
             )
           })
           .catch(err => reject(err))

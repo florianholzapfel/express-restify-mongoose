@@ -33,7 +33,7 @@ function getItem (state, mongooseContext, documentId) {
 function getItemWithRequest (state, req) {
   if (isDistinctExcluded(state.options.filter, state.excludedMap, req)) {
     return Promise.resolve(
-      state.setResult([]).setStatusCode(200)
+      state.set('result', []).set('statusCode', 200)
     )
   }
 
@@ -49,7 +49,7 @@ function getItemWithRequest (state, req) {
             }
 
             return resolve(
-              state.setResult(item).setStatusCode(200)
+              state.set('result', item).set('statusCode', 200)
             )
           })
           .catch(err => reject(err))

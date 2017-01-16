@@ -64,8 +64,8 @@ function getShallowWithRequest (state, req) {
 
             return resolve(
               state
-                .setResult(shallowItem)
-                .setStatusCode(200)
+                .set('result', shallowItem)
+                .set('statusCode', 200)
             )
           })
           .catch(err => reject(err))

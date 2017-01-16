@@ -164,8 +164,8 @@ function modifyObjectWithRequest (state, req) {
     })
     .then(populatedDocument => {
       return state
-        .setResult(populatedDocument)
-        .setStatusCode(200)
+        .set('result', populatedDocument)
+        .set('statusCode', 200)
     })
 }
 

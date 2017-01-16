@@ -34,10 +34,12 @@ function createObject (state, objectBody = {}) {
   }
 
   return model.create(filteredObject)
-    .then(newDocument => model.populate(
-      newDocument,
-      queryOptions.populate || []
-    ))
+    .then(newDocument => {
+      return model.populate(
+        newDocument,
+        queryOptions.populate || []
+      )
+    })
 }
 
 /**
@@ -51,8 +53,8 @@ function createObjectWithRequest (ermInstance, req) {
   return createObject(ermInstance, req.body)
     .then(newDocument => {
       return ermInstance
-        .setResult(newDocument)
-        .setStatusCode(201)
+        .set('result', newDocument)
+        .set('statusCode', 201)
     })
 }
 

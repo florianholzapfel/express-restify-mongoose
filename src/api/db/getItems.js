@@ -43,7 +43,7 @@ function getItemsWithRequest (state, req) {
   // If distinct is excluded, there won't be anything to return.
   if (isDistinctExcluded(state.options.filter, state.excludedMap, req)) {
     return Promise.resolve(
-      state.setResult([]).setStatusCode(200)
+      state.set('result', []).set('statusCode', 200)
     )
   }
 
@@ -54,14 +54,14 @@ function getItemsWithRequest (state, req) {
         getItems(state.options, filteredContext, state.query)
           .then(items => {
             // Find the items for all configurations, and set the status code
-            return state.setResult(items).setStatusCode(200)
+            return state.set('result', items).set('statusCode', 200)
           })
           .then(stateWithResult => {
             // If totalCountHeader is set and distinct isn't set, also get the total count
             if (stateWithResult.options.totalCountHeader && !stateWithResult.query.distinct) {
               return getTotalCountHeader(state, req)
                 .then(count => {
-                  return stateWithResult.setTotalCount(count)
+                  return stateWithResult.set('totalCount', count)
                 })
             }
 

@@ -30,7 +30,7 @@ function operation (shouldSucceed) {
 function doOperationWithRequest (ermInstance, req) {
   return operation(req.shouldSucceed)
     .then(result => {
-      return ermInstance.setResult(result)
+      return ermInstance.set('result', result)
     })
 }
 
@@ -60,7 +60,10 @@ function fakeERM (onError = _.noop) {
  */
 const failIfErrorHandlerCalled = done => {
   return fakeERM(
-    () => done(new Error('should not call the onError() handler'))
+    err => {
+      console.log(err)
+      done(new Error('should not call the onError() handler'))
+    }
   )
 }
 

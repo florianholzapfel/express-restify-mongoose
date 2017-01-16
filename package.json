@@ -6,6 +6,7 @@
   "dependencies": {
     "async": "~2.1.0",
     "bluebird": "~3.4.0",
+    "immutable-record": "^1.0.4",
     "is-coordinates": "~1.0.0",
     "lodash": "~4.16.0",
     "mongoose-detective": "~0.1.0",

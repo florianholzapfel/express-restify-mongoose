@@ -40,7 +40,7 @@ function deleteItemWithRequest (state, req) {
                 return reject(new Error(http.STATUS_CODES[404]))
               }
 
-              return resolve(state.setStatusCode(204))
+              return resolve(state.set('statusCode', 204))
             })
             .catch(err => reject(err))
         }
@@ -53,7 +53,7 @@ function deleteItemWithRequest (state, req) {
     }
 
     return state.document.remove()
-      .then(() => state.setStatusCode(204))
+      .then(() => state.set('statusCode', 204))
   }
 }
 
