@@ -20,6 +20,7 @@ module.exports = function (model, options, excludedMap) {
   }
 
   function getItems (req, res, next) {
+    let model = (req.erm && req.erm.model) || model
     if (isDistinctExcluded(req)) {
       req.erm.result = []
       req.erm.statusCode = 200
@@ -49,6 +50,7 @@ module.exports = function (model, options, excludedMap) {
   }
 
   function getCount (req, res, next) {
+    let model = (req.erm && req.erm.model) || model
     options.contextFilter(model, req, (filteredContext) => {
       buildQuery(filteredContext.count(), req._ermQueryOptions).then((count) => {
         req.erm.result = { count: count }
@@ -60,6 +62,7 @@ module.exports = function (model, options, excludedMap) {
   }
 
   function getShallow (req, res, next) {
+    let model = (req.erm && req.erm.model) || model
     options.contextFilter(model, req, (filteredContext) => {
       buildQuery(findById(filteredContext, req.params.id), req._ermQueryOptions).then((item) => {
         if (!item) {
@@ -79,6 +82,7 @@ module.exports = function (model, options, excludedMap) {
   }
 
   function deleteItems (req, res, next) {
+    let model = (req.erm && req.erm.model) || model
     options.contextFilter(model, req, (filteredContext) => {
       buildQuery(filteredContext.remove(), req._ermQueryOptions).then(() => {
         req.erm.statusCode = 204
@@ -89,6 +93,7 @@ module.exports = function (model, options, excludedMap) {
   }
 
   function getItem (req, res, next) {
+    let model = (req.erm && req.erm.model) || model
     if (isDistinctExcluded(req)) {
       req.erm.result = []
       req.erm.statusCode = 200
@@ -110,6 +115,7 @@ module.exports = function (model, options, excludedMap) {
   }
 
   function deleteItem (req, res, next) {
+    let model = (req.erm && req.erm.model) || model
     if (options.findOneAndRemove) {
       options.contextFilter(model, req, (filteredContext) => {
         findById(filteredContext, req.params.id).findOneAndRemove().then((item) => {
@@ -132,6 +138,7 @@ module.exports = function (model, options, excludedMap) {
   }
 
   function createObject (req, res, next) {
+    let model = (req.erm && req.erm.model) || model
     req.body = options.filter.filterObject(req.body || {}, {
       access: req.access,
       populate: req._ermQueryOptions.populate
@@ -154,6 +161,7 @@ module.exports = function (model, options, excludedMap) {
   }
 
   function modifyObject (req, res, next) {
+    let model = (req.erm && req.erm.model) || model
     req.body = options.filter.filterObject(req.body || {}, {
       access: req.access,
       populate: req._ermQueryOptions.populate

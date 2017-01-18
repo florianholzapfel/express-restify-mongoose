@@ -64,6 +64,8 @@ const restify = function (app, model, opts = {}) {
 
   excludedMap[model.modelName] = options.filter.filteredKeys
 
+  options.modelFactory = options.modelFactory || {}
+
   if (!_.isArray(options.preMiddleware)) {
     options.preMiddleware = options.preMiddleware ? [options.preMiddleware] : []
   }
@@ -130,7 +132,10 @@ const restify = function (app, model, opts = {}) {
   }
 
   app.use((req, res, next) => {
-    req.erm = { model }
+    let getModel = options.modelFactory && options.modelFactory.getModel
+    req.erm = {
+      model: _.isFunction(getModel) ? getModel() : model
+    }
     next()
   })
 
