@@ -8,7 +8,7 @@ const privates = new WeakMap()
  *
  * 1) an "operation", a function that takes arbitrary input and can resolve to anything
  *
- * 2) a "bound operation" (doOperationWithRequest) that takes an ERMOperation and an Express
+ * 2) a "bound operation" (doOperation) that takes an ERMOperation and an Express
  *    request as input and returns a Promise that resolves to an ERMOperation
  *
  * APIMethods can be converted to Express middleware that automatically handles serializing
@@ -16,24 +16,18 @@ const privates = new WeakMap()
  */
 class APIMethod {
   /**
-   * @param {function: Promise} operation
-   * @param {function(ERMOperation, Object): Promise<ERMOperation>} doOperationWithRequest
+   * @param {function(ERMOperation, Object): Promise<ERMOperation>} doOperation
    */
-  constructor (operation, doOperationWithRequest) {
+  constructor (doOperation) {
     privates.set(this, {
-      doOperationWithRequest,
-      operation
+      doOperation
     })
 
     this.getMiddleware = this.getMiddleware.bind(this)
   }
 
-  get doOperationWithRequest () {
-    return privates.get(this).doOperationWithRequest
-  }
-
-  get operation () {
-    return privates.get(this).operation
+  get doOperation () {
+    return privates.get(this).doOperation
   }
 
   /**
@@ -58,7 +52,7 @@ class APIMethod {
 
       // Do the operation. The operation returns a Promise, and whatever it resolves to will get
       // added to the request.
-      this.doOperationWithRequest(currentState, req)
+      this.doOperation(currentState, req)
         .then(resultState => {
           // Add the result to the request object for the next middleware in the stack
           _.merge(req, resultState.serializeToRequest())

@@ -27,7 +27,7 @@ function operation (shouldSucceed) {
  * @param {*} req.shouldSucceed - whether or not the operation should succeed
  * @return {Promise}
  */
-function doOperationWithRequest (ermInstance, req) {
+function doOperation (ermInstance, req) {
   return operation(req.shouldSucceed)
     .then(result => {
       return ermInstance.set('result', result)
@@ -38,7 +38,7 @@ function doOperationWithRequest (ermInstance, req) {
  * An APIMethod constructed using the operation
  * @type {APIMethod}
  */
-const api = new APIMethod(operation, doOperationWithRequest)
+const api = new APIMethod(doOperation)
 
 /**
  * Given an onError() handler, returns a fake ERMOperation with the supplied error handler
@@ -47,7 +47,11 @@ const api = new APIMethod(operation, doOperationWithRequest)
  */
 function fakeERM (onError = _.noop) {
   return new ERMOperation({
-    options: { onError: onError }
+    options: { onError: onError },
+
+    // Add required fields so it won't complain
+    model: Object.create(require('mongoose').Model),
+    excludedMap: {}
   })
 }
 
@@ -68,30 +72,30 @@ const failIfErrorHandlerCalled = done => {
 }
 
 /**
- * Given a value to supply to the operation, returns a mocked Express request object that has
- * the value in the correct place.
+ * Given a value to supply to the operation, returns a mocked Express request
+ * object that has the value in the correct place.
+ *
+ * Also attaches the initial ERM state to the request for use by middleware.
  *
  * @param {*} shouldSucceed - whether the operation should succeed
- * @return {{params: {}, query: {}, shouldSucceed: *}}
+ * @param {ERMOperation} initialState -
+ * @return {{}}
  */
-function fakeRequest (shouldSucceed) {
+function fakeRequest (shouldSucceed, initialState) {
   return {
     params: {},
     query: {},
-    shouldSucceed: shouldSucceed
+    shouldSucceed: shouldSucceed,
+    erm: { model: initialState.model },
+    _ermOptions: initialState.options,
+    _ermExcludedMap: initialState.excludedMap
   }
 }
 
 describe('APIMethod', () => {
-  describe('doOperationWithRequest', () => {
+  describe('doOperation', () => {
     it('returns the function passed to the constructor', () => {
-      assert.strictEqual(api.doOperationWithRequest, doOperationWithRequest)
-    })
-  })
-
-  describe('operation', () => {
-    it('returns the function passed to the constructor', () => {
-      assert.strictEqual(api.operation, operation)
+      assert.strictEqual(api.doOperation, doOperation)
     })
   })
 
@@ -105,7 +109,7 @@ describe('APIMethod', () => {
       const erm = failIfErrorHandlerCalled(done)
       const middleware = api.getMiddleware(erm)
 
-      const req = fakeRequest(true)
+      const req = fakeRequest(true, erm)
 
       middleware(req, {}, () => {
         done()
@@ -117,7 +121,7 @@ describe('APIMethod', () => {
       const middleware = api.getMiddleware(erm)
 
       const shouldSucceed = 'success'
-      const req = fakeRequest(shouldSucceed)
+      const req = fakeRequest(shouldSucceed, erm)
 
       middleware(req, {}, () => {
         assert.strictEqual(req.erm.result, shouldSucceed)
@@ -132,7 +136,7 @@ describe('APIMethod', () => {
       })
       const middleware = api.getMiddleware(erm)
 
-      const req = fakeRequest(false)
+      const req = fakeRequest(false, erm)
 
       middleware(req, {}, () => {
         done(new Error('should not call next()'))

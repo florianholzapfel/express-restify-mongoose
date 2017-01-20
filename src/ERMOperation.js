@@ -31,15 +31,18 @@ const OperationRecord = ImmutableRecord({
   },
 
   options: {
-    type: 'object'
+    type: 'object',
+    required: true
   },
 
   model: {
-    type: isModel
+    type: isModel,
+    required: true
   },
 
   excludedMap: {
-    type: 'object'
+    type: 'object',
+    required: true
   }
 }, 'ERMOperation')
 

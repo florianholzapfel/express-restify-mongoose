@@ -2,33 +2,7 @@ const isDistinctExcluded = require('./../shared').isDistinctExcluded
 const _ = require('lodash')
 
 const APIMethod = require('../../APIMethod')
-const getQueryBuilder = require('../../buildQuery')
-const cloneMongooseQuery = require('../shared').cloneMongooseQuery
-
-const getCount = require('./getCount')
-
-/**
- * Given global query options, a Mongoose context (just a ModelQuery), and a Mongo
- * query, get all of the documents matching the query in the context.
- *
- * @param {Object} queryOptions - Global options to apply to all queries
- * @param queryOptions.lean
- * @param queryOptions.readPreference
- * @param queryOptions.limit
- *
- * @param {ModelQuery} mongooseContext - The documents to query
- * @param {Object} query - MongoDB query object to apply to the context
- *
- * @return {Promise}
- */
-function getItems (queryOptions, mongooseContext, query) {
-  const buildQuery = getQueryBuilder(queryOptions)
-
-  return buildQuery(
-    cloneMongooseQuery(mongooseContext.find()),
-    query
-  )
-}
+const applyQueryToContext = require('../applyQueryToContext')
 
 /**
  * Get all of the items matching a query inside some consumer-provided context.
@@ -39,7 +13,7 @@ function getItems (queryOptions, mongooseContext, query) {
  * @param {Object} req
  * @return {Promise<ERMOperation>}
  */
-function getItemsWithRequest (state, req) {
+function doGetItems (state, req) {
   // If distinct is excluded, there won't be anything to return.
   if (isDistinctExcluded(state.options.filter, state.excludedMap, req)) {
     return Promise.resolve(
@@ -51,7 +25,7 @@ function getItemsWithRequest (state, req) {
     // Get the context based on the model and request
     state.options.contextFilter(state.model, req,
       filteredContext => {
-        getItems(state.options, filteredContext, state.query)
+        applyQueryToContext(state.options, filteredContext.find(), state.query)
           .then(items => {
             // Find the items for all configurations, and set the status code
             return state.set('result', items).set('statusCode', 200)
@@ -97,14 +71,11 @@ function getTotalCountHeader (state, req) {
   return new Promise((resolve, reject) => {
     return state.options.contextFilter(state.model, req,
       countFilteredContext => {
-        getCount.operation(state.options, countFilteredContext, noSkipOrLimit)
+        applyQueryToContext(state.options, countFilteredContext.count(), noSkipOrLimit)
           .then(count => resolve(count))
           .catch(err => reject(err))
       })
   })
 }
 
-module.exports = new APIMethod(
-  getItems,
-  getItemsWithRequest
-)
+module.exports = new APIMethod(doGetItems)

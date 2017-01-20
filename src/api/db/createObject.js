@@ -49,7 +49,7 @@ function createObject (state, objectBody = {}) {
  * @param {Object} req - the Express request
  * @return {Promise}
  */
-function createObjectWithRequest (ermInstance, req) {
+function doCreateObject (ermInstance, req) {
   return createObject(ermInstance, req.body)
     .then(newDocument => {
       return ermInstance
@@ -58,7 +58,4 @@ function createObjectWithRequest (ermInstance, req) {
     })
 }
 
-module.exports = new APIMethod(
-  createObject,
-  createObjectWithRequest
-)
+module.exports = new APIMethod(doCreateObject)

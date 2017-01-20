@@ -3,24 +3,7 @@ const findById = require('./../shared').findById
 const http = require('http')
 
 const APIMethod = require('../../APIMethod')
-const getQueryBuilder = require('../../buildQuery')
-
-/**
- * Given an ERM operation, a mongoose context, and a document id to retrieve, retrieves the document.
- *
- * @param {ERMOperation} state
- * @param {ModelQuery} mongooseContext
- * @param {String|ObjectId} documentId
- * @return {Promise}
- */
-function getItem (state, mongooseContext, documentId) {
-  const buildQuery = getQueryBuilder(state.options)
-
-  return buildQuery(
-    findById(mongooseContext, documentId, state.options.idProperty),
-    state.query
-  )
-}
+const applyQueryToContext = require('../applyQueryToContext')
 
 /**
  * Retrieve a single document based on a request. Use the query and context filter specified in
@@ -30,7 +13,7 @@ function getItem (state, mongooseContext, documentId) {
  * @param {Object} req
  * @return {Promise<ERMOperation>}
  */
-function getItemWithRequest (state, req) {
+function doGetItem (state, req) {
   if (isDistinctExcluded(state.options.filter, state.excludedMap, req)) {
     return Promise.resolve(
       state.set('result', []).set('statusCode', 200)
@@ -42,7 +25,13 @@ function getItemWithRequest (state, req) {
       state.model,
       req,
       filteredContext => {
-        getItem(state, filteredContext, req.params.id)
+        const documentContext = findById(
+          filteredContext,
+          req.params.id,
+          state.options.idProperty
+        )
+
+        applyQueryToContext(state.options, documentContext, state.query)
           .then(item => {
             if (!item) {
               return reject(new Error(http.STATUS_CODES[404]))
@@ -58,7 +47,4 @@ function getItemWithRequest (state, req) {
   })
 }
 
-module.exports = new APIMethod(
-  getItem,
-  getItemWithRequest
-)
+module.exports = new APIMethod(doGetItem)

@@ -1,34 +1,14 @@
 const APIMethod = require('../../APIMethod')
-const getQueryBuilder = require('../../buildQuery')
-const cloneMongooseQuery = require('../shared').cloneMongooseQuery
+const applyQueryToContext = require('../applyQueryToContext')
 
-/**
- * Given global query options, a Mongoose context (just a ModelQuery), and a Mongo
- * query, get the count of objects matching the context and query.
- *
- * @param {Object} queryOptions - Global options to apply to all queries
- * @param queryOptions.lean
- * @param queryOptions.readPreference
- * @param queryOptions.limit
- *
- * @param {ModelQuery} mongooseContext - The documents to query
- * @param {Object} query - MongoDB query object to apply to the context
- *
- * @return {Promise}
- */
-function getCount (queryOptions, mongooseContext, query) {
-  const buildQuery = getQueryBuilder(queryOptions)
-  return buildQuery(cloneMongooseQuery(mongooseContext.count()), query)
-}
-
-function getCountWithRequest (state, req) {
+function doGetCount (state, req) {
   // Explicit construction because contextFilter() takes a callback
   return new Promise((resolve, reject) => {
     state.options.contextFilter(
       state.model,
       req,
       filteredContext => {
-        getCount(state.options, filteredContext, state.query)
+        applyQueryToContext(state.options, filteredContext.count(), state.query)
           .then(count => {
             return resolve(
               state
@@ -43,7 +23,4 @@ function getCountWithRequest (state, req) {
   })
 }
 
-module.exports = new APIMethod(
-  getCount,
-  getCountWithRequest
-)
+module.exports = new APIMethod(doGetCount)

@@ -1,44 +1,28 @@
 const http = require('http')
 const findById = require('./../shared').findById
-const getQueryBuilder = require('../../buildQuery')
+const applyQueryToContext = require('../applyQueryToContext')
+const _ = require('lodash')
 
 const APIMethod = require('../../APIMethod')
 
 /**
- * Given global query options, a Mongoose context (just a ModelQuery), and a Mongo
- * query, shallowly retrieve a single document with the correct id (and id property) that is also in
- * the supplied context and query.
- *
- * This operation is similar to getItem(), except it flattens nested object properties of the
- * document into a single truthy value
- *
- * @param {Object} queryOptions - Global options to apply to all queries
- * @param queryOptions.lean
- * @param queryOptions.readPreference
- * @param queryOptions.limit
- *
- * @param {ModelQuery} mongooseContext - The documents to query
- * @param {Object} query - MongoDB query object to apply to the context
- *
- * @param {String} documentId - the document's id
- * @param {String} idProperty - the model's id property
- *
- * @return {Promise<Object>}
+ * Given an object, replaces all of its Object-type properties with the value true.
+ * @param {Object} document
+ * @return {Object}
  */
-function getShallow (queryOptions, mongooseContext, query, documentId, idProperty) {
-  const buildQuery = getQueryBuilder(queryOptions)
+function stripObjectProperties (document) {
+  if (_.isNil(document) || !_.isObject(document)) {
+    return document
+  }
 
-  return buildQuery(
-    findById(mongooseContext, documentId, idProperty),
-    query
-  ).then(item => {
-    // Strip object properties
-    for (let prop in item) {
-      item[prop] = typeof item[prop] === 'object' && prop !== '_id' ? true : item[prop]
+  return _.mapValues(
+    document,
+    (property, key) => {
+      return _.isObject(property) && key !== '_id'
+        ? true
+        : property
     }
-
-    return item
-  })
+  )
 }
 
 /**
@@ -50,12 +34,14 @@ function getShallow (queryOptions, mongooseContext, query, documentId, idPropert
  * @param {Object} req
  * @return {Promise<ERMOperation>}
  */
-function getShallowWithRequest (state, req) {
+function doGetShallow (state, req) {
   // Explicit construction because contextFilter() takes a callback
   return new Promise((resolve, reject) => {
     state.options.contextFilter(state.model, req,
       filteredContext => {
-        getShallow(state.options, filteredContext, state.query, req.params.id, state.options.idProperty)
+        const documentContext = findById(filteredContext, req.params.id, state.options.idProperty)
+        applyQueryToContext(state.options, documentContext, state.query)
+          .then(stripObjectProperties)
           .then(shallowItem => {
             // If the query succeeds but no document is found, return 404
             if (!shallowItem) {
@@ -74,7 +60,4 @@ function getShallowWithRequest (state, req) {
   })
 }
 
-module.exports = new APIMethod(
-  getShallow,
-  getShallowWithRequest
-)
+module.exports = new APIMethod(doGetShallow)

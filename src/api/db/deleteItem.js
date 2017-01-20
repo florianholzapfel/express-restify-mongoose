@@ -4,20 +4,6 @@ const APIMethod = require('../../APIMethod')
 const Promise = require('bluebird')
 
 /**
- * Given a mongoose query, a document id, and the model's id property,
- * removes the document specified by the id.
- *
- * @param {ModelQuery} query - the documents to search
- * @param {String} documentId - the document's id
- * @param {String} idProperty - the model's id property
- * @return {Promise}
- */
-function findOneAndRemove (query, documentId, idProperty) {
-  return findById(query, documentId, idProperty)
-    .findOneAndRemove()
-}
-
-/**
  * Delete a single object.
  * Chooses between findOneAndRemove() and remove() based on the options.
  *
@@ -25,7 +11,7 @@ function findOneAndRemove (query, documentId, idProperty) {
  * @param {Object} req - the Express request
  * @return {Promise}
  */
-function deleteItemWithRequest (state, req) {
+function doDeleteItem (state, req) {
   if (state.options.findOneAndRemove) {
     // Explicit construction because contextFilter() takes a callback
     return new Promise((resolve, reject) => {
@@ -33,7 +19,9 @@ function deleteItemWithRequest (state, req) {
         state.model,
         req,
         filteredContext => {
-          findOneAndRemove(filteredContext, req.params.id, state.options.idProperty)
+          // Find the document specified in the URL, searching only in the context.
+          findById(filteredContext, req.params.id, state.options.idProperty)
+            .findOneAndRemove()
             .then(document => {
               if (!document) {
                 // The document wasn't found -- return 404
@@ -57,7 +45,4 @@ function deleteItemWithRequest (state, req) {
   }
 }
 
-module.exports = new APIMethod(
-  findOneAndRemove,
-  deleteItemWithRequest
-)
+module.exports = new APIMethod(doDeleteItem)
