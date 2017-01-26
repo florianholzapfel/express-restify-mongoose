@@ -10,17 +10,8 @@ const applyQueryToContext = require('../applyQueryToContext')
  */
 function doDeleteItems (state, req) {
   // Explicit construction because contextFilter() takes a callback
-  return new Promise((resolve, reject) => {
-    state.options.contextFilter(
-      state.model,
-      req,
-      filteredContext => {
-        applyQueryToContext(state.options, filteredContext.remove(), state.query)
-          .then(() => resolve(state.set('statusCode', 204)))
-          .catch(err => reject(err))
-      }
-    )
-  })
+  return applyQueryToContext(state.options, state.context.remove(), state.query)
+    .then(() => state.set('statusCode', 204))
 }
 
 module.exports = new APIMethod(doDeleteItems)

@@ -18,21 +18,6 @@ module.exports.isDistinctExcluded = function (filter, excludedMap, req) {
 }
 
 /**
- * Given a mongoose model query, an id, and an id property, find the first document in
- * the query-so-far that has the particular id.
- *
- * @param {ModelQuery} filteredContext
- * @param {*} id
- * @param {String} idProperty
- * @return {ModelQuery}
- */
-module.exports.findById = function (filteredContext, id, idProperty) {
-  return filteredContext.findOne().and({
-    [idProperty]: id
-  })
-}
-
-/**
  * Given a mongoose query, clones the query so that changes to the query can be made without
  * modifying the original query.
  *

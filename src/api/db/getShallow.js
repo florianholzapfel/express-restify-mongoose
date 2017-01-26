@@ -1,5 +1,4 @@
 const http = require('http')
-const findById = require('./../shared').findById
 const applyQueryToContext = require('../applyQueryToContext')
 const _ = require('lodash')
 
@@ -35,29 +34,18 @@ function stripObjectProperties (document) {
  * @return {Promise<ERMOperation>}
  */
 function doGetShallow (state, req) {
-  // Explicit construction because contextFilter() takes a callback
-  return new Promise((resolve, reject) => {
-    state.options.contextFilter(state.model, req,
-      filteredContext => {
-        const documentContext = findById(filteredContext, req.params.id, state.options.idProperty)
-        applyQueryToContext(state.options, documentContext, state.query)
-          .then(stripObjectProperties)
-          .then(shallowItem => {
-            // If the query succeeds but no document is found, return 404
-            if (!shallowItem) {
-              return Promise.reject(new Error(http.STATUS_CODES[404]))
-            }
-
-            return resolve(
-              state
-                .set('result', shallowItem)
-                .set('statusCode', 200)
-            )
-          })
-          .catch(err => reject(err))
+  return applyQueryToContext(state.options, state.context, state.query)
+    .then(stripObjectProperties)
+    .then(shallowItem => {
+      // If the query succeeds but no document is found, return 404
+      if (!shallowItem) {
+        return Promise.reject(new Error(http.STATUS_CODES[404]))
       }
-    )
-  })
+
+      return state
+        .set('result', shallowItem)
+        .set('statusCode', 200)
+    })
 }
 
 module.exports = new APIMethod(doGetShallow)

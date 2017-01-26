@@ -1,4 +1,3 @@
-const findById = require('./../shared').findById
 const APIMethod = require('../../APIMethod')
 const moredots = require('moredots')
 const _ = require('lodash')
@@ -93,27 +92,14 @@ function doModifyObject (state, req) {
  * @return {Promise<Object>}
  */
 function performFindOneAndUpdate (state, req, updates) {
-  return new Promise(resolve => {
-    // Search for the URL id in the filtered context.
-    state.options.contextFilter(state.model, req, filteredContext => {
-      return resolve([
-        findById(
-          filteredContext,
-          req.params.id,
-          state.options.idProperty
-        )
-      ])
-    })
-  }).then(([documentContext]) => {
-    return documentContext.findOneAndUpdate(
-      {},
-      { $set: updates },
-      {
-        new: true,
-        runValidators: state.options.runValidators
-      }
-    ).exec()
-  })
+  return state.context.findOneAndUpdate(
+    {},
+    { $set: updates },
+    {
+      new: true,
+      runValidators: state.options.runValidators
+    }
+  ).exec()
 }
 
 /**
