@@ -15,7 +15,7 @@ const applyQueryToContext = require('../applyQueryToContext')
  */
 function doGetItems (state, req) {
   // If distinct is excluded, there won't be anything to return.
-  if (isDistinctExcluded(state.options.filter, state.excludedMap, req)) {
+  if (isDistinctExcluded(state)) {
     return Promise.resolve(
       state.set('result', []).set('statusCode', 200)
     )

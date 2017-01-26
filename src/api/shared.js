@@ -1,19 +1,16 @@
 const _ = require('lodash')
 
 /**
- * Given a filter, a list of excluded keys for model descendants, and an Express request
- * with the 'distinct' erm query option, returns true if the 'distinct' option
- * is excluded in the filter.
+ * Given a operation state, returns true if the 'distinct' option in the state's query
+ * is excluded by the state's filter.
  *
- * @param {Filter} filter
- * @param {Object} excludedMap
- * @param {Object} req
+ * @param {ERMOperation} state
  * @return {boolean}
  */
-module.exports.isDistinctExcluded = function (filter, excludedMap, req) {
-  return filter.isExcluded(req._ermQueryOptions['distinct'], {
-    access: req.access,
-    excludedMap: excludedMap
+module.exports.isDistinctExcluded = function (state) {
+  return state.options.filter.isExcluded(state.query.distinct, {
+    access: state.accessLevel,
+    excludedMap: state.excludedMap
   })
 }
 

@@ -13,7 +13,7 @@ const applyQueryToContext = require('../applyQueryToContext')
  * @return {Promise<ERMOperation>}
  */
 function doGetItem (state, req) {
-  if (isDistinctExcluded(state.options.filter, state.excludedMap, req)) {
+  if (isDistinctExcluded(state)) {
     return Promise.resolve(
       state.set('result', []).set('statusCode', 200)
     )
