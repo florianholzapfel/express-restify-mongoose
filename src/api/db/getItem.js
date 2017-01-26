@@ -1,5 +1,4 @@
 const isDistinctExcluded = require('./../shared').isDistinctExcluded
-const findById = require('./../shared').findById
 const http = require('http')
 
 const APIMethod = require('../../APIMethod')
@@ -20,31 +19,14 @@ function doGetItem (state, req) {
     )
   }
 
-  return new Promise((resolve, reject) => {
-    state.options.contextFilter(
-      state.model,
-      req,
-      filteredContext => {
-        const documentContext = findById(
-          filteredContext,
-          req.params.id,
-          state.options.idProperty
-        )
-
-        applyQueryToContext(state.options, documentContext, state.query)
-          .then(item => {
-            if (!item) {
-              return reject(new Error(http.STATUS_CODES[404]))
-            }
-
-            return resolve(
-              state.set('result', item).set('statusCode', 200)
-            )
-          })
-          .catch(err => reject(err))
+  return applyQueryToContext(state.options, state.context, state.query)
+    .then(item => {
+      if (!item) {
+        return Promise.reject(new Error(http.STATUS_CODES[404]))
       }
-    )
-  })
+
+      return state.set('result', item).set('statusCode', 200)
+    })
 }
 
 module.exports = new APIMethod(doGetItem)

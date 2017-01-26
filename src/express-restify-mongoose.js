@@ -36,9 +36,9 @@ const restify = function (app, model, opts = {}) {
   let options = {}
   _.assign(options, getDefaults(), opts)
 
+  const getContext = require('./api/getContext')
   const access = require('./middleware/access')
   const ensureContentType = require('./middleware/ensureContentType')(options)
-  const filterAndFindById = require('./middleware/filterAndFindById')(model, options)
   const onError = require('./middleware/onError')
   const outputFn = require('./middleware/outputFn')
   const prepareQuery = require('./middleware/prepareQuery')(options)
@@ -118,20 +118,90 @@ const restify = function (app, model, opts = {}) {
   })
 
   const accessMiddleware = options.access ? access(options) : []
+  const contextMiddleware = getContext.getMiddleware(initialOperationState)
 
-  app.get(restPaths.allDocuments, prepareQuery, options.preMiddleware, options.preRead, accessMiddleware, ops.getItems, prepareOutput)
-  app.get(restPaths.allDocumentsCount, prepareQuery, options.preMiddleware, options.preRead, accessMiddleware, ops.getCount, prepareOutput)
-  app.get(restPaths.singleDocument, prepareQuery, options.preMiddleware, options.preRead, accessMiddleware, ops.getItem, prepareOutput)
-  app.get(restPaths.singleDocumentShallow, prepareQuery, options.preMiddleware, options.preRead, accessMiddleware, ops.getShallow, prepareOutput)
+  function deprecatePrepareQuery (text) {
+    return util.deprecate(
+      prepareQuery,
+      `express-restify-mongoose: in a future major version, ${text} ` +
+      `Use PATCH instead.`
+    )
+  }
 
-  app.post(restPaths.allDocuments, prepareQuery, ensureContentType, options.preMiddleware, options.preCreate, accessMiddleware, ops.createObject, prepareOutput)
-  app.post(restPaths.singleDocument, util.deprecate(prepareQuery, 'express-restify-mongoose: in a future major version, the POST method to update resources will be removed. Use PATCH instead.'), ensureContentType, options.preMiddleware, options.findOneAndUpdate ? [] : filterAndFindById, options.preUpdate, accessMiddleware, ops.modifyObject, prepareOutput)
+  // Retrieval
 
-  app.put(restPaths.singleDocument, util.deprecate(prepareQuery, 'express-restify-mongoose: in a future major version, the PUT method will replace rather than update a resource. Use PATCH instead.'), ensureContentType, options.preMiddleware, options.findOneAndUpdate ? [] : filterAndFindById, options.preUpdate, accessMiddleware, ops.modifyObject, prepareOutput)
-  app.patch(restPaths.singleDocument, prepareQuery, ensureContentType, options.preMiddleware, options.findOneAndUpdate ? [] : filterAndFindById, options.preUpdate, accessMiddleware, ops.modifyObject, prepareOutput)
+  app.get(
+    restPaths.allDocuments, prepareQuery, options.preMiddleware, contextMiddleware,
+    options.preRead, accessMiddleware, ops.getItems,
+    prepareOutput
+  )
 
-  app.delete(restPaths.allDocuments, prepareQuery, options.preMiddleware, options.preDelete, ops.deleteItems, prepareOutput)
-  app.delete(restPaths.singleDocument, prepareQuery, options.preMiddleware, options.findOneAndRemove ? [] : filterAndFindById, options.preDelete, ops.deleteItem, prepareOutput)
+  app.get(
+    restPaths.allDocumentsCount, prepareQuery, options.preMiddleware, contextMiddleware,
+    options.preRead, accessMiddleware, ops.getCount,
+    prepareOutput
+  )
+
+  app.get(
+    restPaths.singleDocument, prepareQuery, options.preMiddleware, contextMiddleware,
+    options.preRead, accessMiddleware, ops.getItem,
+    prepareOutput
+  )
+
+  app.get(
+    restPaths.singleDocumentShallow, prepareQuery, options.preMiddleware, contextMiddleware,
+    options.preRead, accessMiddleware, ops.getShallow,
+    prepareOutput
+  )
+
+  // Creation
+
+  app.post(
+    restPaths.allDocuments, prepareQuery, ensureContentType, options.preMiddleware,
+    options.preCreate, accessMiddleware, ops.createObject,
+    prepareOutput
+  )
+
+  // Modification
+
+  app.post(
+    restPaths.singleDocument,
+    deprecatePrepareQuery('the POST method to update resources will be removed.'),
+    ensureContentType, options.preMiddleware, contextMiddleware,
+    options.preUpdate, accessMiddleware, ops.modifyObject,
+    prepareOutput
+  )
+
+  app.put(
+    restPaths.singleDocument,
+    deprecatePrepareQuery(`the PUT method will replace rather than update a resource.`),
+    ensureContentType, options.preMiddleware, contextMiddleware,
+    options.preUpdate, accessMiddleware, ops.modifyObject,
+    prepareOutput
+  )
+
+  app.patch(
+    restPaths.singleDocument,
+    prepareQuery, ensureContentType, options.preMiddleware, contextMiddleware,
+    options.preUpdate, accessMiddleware, ops.modifyObject,
+    prepareOutput
+  )
+
+  // Deletion
+
+  app.delete(
+    restPaths.allDocuments,
+    prepareQuery, options.preMiddleware, contextMiddleware,
+    options.preDelete, ops.deleteItems,
+    prepareOutput
+  )
+
+  app.delete(
+    restPaths.singleDocument,
+    prepareQuery, options.preMiddleware, contextMiddleware,
+    options.preDelete, ops.deleteItem,
+    prepareOutput
+  )
 
   return restPaths.allDocuments
 }

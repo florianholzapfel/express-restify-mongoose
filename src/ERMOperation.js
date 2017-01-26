@@ -5,7 +5,7 @@ const Model = require('mongoose').Model
 // Underlying record for the Operation class
 const OperationRecord = ImmutableRecord({
   context: {
-    type: 'object'
+    type: ctx => _.isFunction(ctx) || _.isObject(ctx)
   },
 
   accessLevel: {

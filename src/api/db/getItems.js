@@ -21,33 +21,22 @@ function doGetItems (state, req) {
     )
   }
 
-  return new Promise((resolve, reject) => {
-    // Get the context based on the model and request
-    state.options.contextFilter(state.model, req,
-      filteredContext => {
-        applyQueryToContext(state.options, filteredContext.find(), state.query)
-          .then(items => {
-            // Find the items for all configurations, and set the status code
-            return state.set('result', items).set('statusCode', 200)
+  return applyQueryToContext(state.options, state.context.find(), state.query)
+    .then(items => {
+      // Find the items for all configurations, and set the status code
+      return state.set('result', items).set('statusCode', 200)
+    })
+    .then(stateWithResult => {
+      // If totalCountHeader is set and distinct isn't set, also get the total count
+      if (stateWithResult.options.totalCountHeader && !stateWithResult.query.distinct) {
+        return getTotalCountHeader(state, req)
+          .then(count => {
+            return stateWithResult.set('totalCount', count)
           })
-          .then(stateWithResult => {
-            // If totalCountHeader is set and distinct isn't set, also get the total count
-            if (stateWithResult.options.totalCountHeader && !stateWithResult.query.distinct) {
-              return getTotalCountHeader(state, req)
-                .then(count => {
-                  return stateWithResult.set('totalCount', count)
-                })
-            }
-
-            return stateWithResult
-          })
-
-          // Pass the results to the outer promise
-          .then(stateWithResultAndCount => resolve(stateWithResultAndCount))
-          .catch(err => reject(err))
       }
-    )
-  })
+
+      return stateWithResult
+    })
 }
 
 /**
@@ -68,14 +57,7 @@ function getTotalCountHeader (state, req) {
     }
   )
 
-  return new Promise((resolve, reject) => {
-    return state.options.contextFilter(state.model, req,
-      countFilteredContext => {
-        applyQueryToContext(state.options, countFilteredContext.count(), noSkipOrLimit)
-          .then(count => resolve(count))
-          .catch(err => reject(err))
-      })
-  })
+  return applyQueryToContext(state.options, state.context.count(), noSkipOrLimit)
 }
 
 module.exports = new APIMethod(doGetItems)
