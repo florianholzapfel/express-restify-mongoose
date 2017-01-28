@@ -1,5 +1,6 @@
 const assert = require('assert')
 const sinon = require('sinon')
+const _ = require('lodash')
 
 describe('access', () => {
   const access = require('../../../lib/middleware/access')
@@ -56,25 +57,27 @@ describe('access', () => {
       assert.equal(req.access, 'private')
     })
 
-    it('calls onError', () => {
+    it('calls onError', done => {
       let req = {
         erm: {},
         params: {}
       }
-      let onError = sinon.spy()
       let err = new Error('Something bad happened')
 
       access({
         access: (req, cb) => {
           return cb(err, 'private')
         },
-        onError: onError
+        onError: (errInner, reqInner, res, nextInner) => {
+          assert.strictEqual(errInner, err)
+          assert.strictEqual(reqInner, req)
+          assert.ok(_.isEmpty(res))
+          assert.strictEqual(nextInner, next)
+          sinon.assert.notCalled(next)
+          assert.equal(req.access, undefined)
+          done()
+        }
       })(req, {}, next)
-
-      sinon.assert.calledOnce(onError)
-      sinon.assert.calledWithExactly(onError, err, req, {}, next)
-      sinon.assert.notCalled(next)
-      assert.equal(req.access, undefined)
     })
 
     it('throws an exception with unsupported parameter', () => {

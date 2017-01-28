@@ -14,7 +14,9 @@ module.exports = function (options) {
   return function (req, res, next) {
     const handler = function (err, access) {
       if (err) {
-        return errorHandler(req, res, next)(err)
+        return process.nextTick(
+          () => errorHandler(req, res, next)(err)
+        )
       }
 
       if (['public', 'private', 'protected'].indexOf(access) < 0) {
