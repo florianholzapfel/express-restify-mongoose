@@ -28,10 +28,10 @@ module.exports = function (options) {
     }
 
     if (options.access.length > 1) {
-      // The handler passed in options is async, so pass it the handler
+      // The handler provided in options is async, so pass it the callback handler
       options.access(req, handler)
     } else {
-      // The handler passed in options is synchronous
+      // The handler provided in options is synchronous
       handler(null, options.access(req))
     }
   }
