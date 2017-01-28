@@ -1,6 +1,7 @@
 const assert = require('assert')
 const _ = require('lodash')
-const APIMethod = require('../../src/APIMethod')
+const APIOperation = require('../../src/Transformation').APIOperation
+const Transformation = require('../../src/Transformation').Transformation
 const ERMOperation = require('../../src/ERMOperation')
 
 /**
@@ -19,26 +20,24 @@ function operation (shouldSucceed) {
 }
 
 /**
- * Given an erm instance and a request, performs the Promise-based operation using the
- * "shouldSucceed" property of the request as the argument for the operation.
+ * Given an erm instance, performs the Promise-based operation using the
+ * "result" property of the ERMOperation as the argument for the operation.
  *
- * @param {*?} ermInstance? - the erm instance (not used, but required for the function signature)
- * @param {Object} req - the request object
- * @param {*} req.shouldSucceed - whether or not the operation should succeed
+ * @param {ERMOperation} state - the erm instance
  * @return {Promise}
  */
-function doOperation (ermInstance, req) {
-  return operation(req.shouldSucceed)
+function doOperation (state) {
+  return operation(state.result)
     .then(result => {
-      return ermInstance.set('result', result)
+      return state.set('result', result)
     })
 }
 
 /**
- * An APIMethod constructed using the operation
- * @type {APIMethod}
+ * An APIOperation constructed using the operation
+ * @type {APIOperation}
  */
-const api = new APIMethod(doOperation)
+const api = new APIOperation(doOperation)
 
 /**
  * Given an onError() handler, returns a fake ERMOperation with the supplied error handler
@@ -62,7 +61,7 @@ function fakeERM (onError = _.noop) {
  * @param {function} done - test completion callback
  * @return {ERMOperation}
  */
-const failIfErrorHandlerCalled = done => {
+const failIfErrorHandlerCalled = (done) => {
   return fakeERM(
     err => {
       console.log(err)
@@ -85,17 +84,25 @@ function fakeRequest (shouldSucceed, initialState) {
   return {
     params: {},
     query: {},
-    shouldSucceed: shouldSucceed,
-    erm: { model: initialState.model },
+    erm: { model: initialState.model, result: shouldSucceed },
     _ermOptions: initialState.options,
     _ermExcludedMap: initialState.excludedMap
   }
 }
 
-describe('APIMethod', () => {
-  describe('doOperation', () => {
-    it('returns the function passed to the constructor', () => {
-      assert.strictEqual(api.doOperation, doOperation)
+describe('APIOperation', () => {
+  describe('operation', () => {
+    it('returns the function passed to the constructor, but unary', () => {
+      function passThrough () {
+        return Array.prototype.slice.call(arguments)
+      }
+
+      const passThroughOperation = new APIOperation(passThrough)
+      const unaryOperation = passThroughOperation.operation
+
+      const result = unaryOperation(1, 2, 3)
+      assert.ok(result.length === 1)
+      assert.ok(result[0] === 1)
     })
   })
 
@@ -141,6 +148,30 @@ describe('APIMethod', () => {
       middleware(req, {}, () => {
         done(new Error('should not call next()'))
       })
+    })
+  })
+
+  describe('Transformation', () => {
+    it('request is passed to the middleware', done => {
+      const resultValue = {}
+
+      // The transform function: make sure we're passed a state
+      // and a request.
+      function isRequestPassed (state, request) {
+        assert.ok(state instanceof ERMOperation)
+        assert.ok(_.isObject(request))
+        assert.strictEqual(request.erm.result, resultValue)
+        return Promise.resolve(state)
+      }
+
+      const requestTransform = new Transformation(isRequestPassed)
+      const erm = failIfErrorHandlerCalled(done)
+      const req = fakeRequest(resultValue, erm)
+
+      requestTransform
+        .getMiddleware(erm)(req, {}, () => {
+          done()
+        })
     })
   })
 })

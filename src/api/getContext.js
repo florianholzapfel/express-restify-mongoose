@@ -1,6 +1,6 @@
 const http = require('http')
 const _ = require('lodash')
-const APIMethod = require('../APIMethod')
+const Transformation = require('../Transformation').Transformation
 const Promise = require('bluebird')
 const cloneMongooseQuery = require('./shared').cloneMongooseQuery
 
@@ -42,4 +42,4 @@ function getContext (state, req) {
   })
 }
 
-module.exports = new APIMethod(getContext)
+module.exports = new Transformation(getContext)

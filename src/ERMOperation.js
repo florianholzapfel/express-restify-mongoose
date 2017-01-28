@@ -22,6 +22,14 @@ const OperationRecord = ImmutableRecord(
     },
 
     /**
+     * The request body, possibly transformed in preparation for the
+     * operation.
+     * @alias module:ERMOperation#body
+     * @type {*}
+     */
+    body: {},
+
+    /**
      * The permissions granted to whoever is doing the operation
      * @alias module:ERMOperation#accessLevel
      * @type {String}
@@ -134,6 +142,7 @@ class ERMOperation extends OperationRecord {
 
       _ermQueryOptions: this.query,
       _ermContext: this.context,
+      _ermBody: this.body,
       _ermOptions: this.options,
       _ermExcludedMap: this.excludedMap
     }
@@ -163,6 +172,7 @@ ERMOperation.deserializeRequest = function (req) {
 
       query: req._ermQueryOptions,
       context: req._ermContext,
+      body: req._ermBody,
       options: req._ermOptions,
       excludedMap: req._ermExcludedMap
     }, _.isUndefined)

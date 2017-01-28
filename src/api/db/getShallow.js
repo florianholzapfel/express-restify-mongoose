@@ -2,7 +2,7 @@ const http = require('http')
 const applyQueryToContext = require('../applyQueryToContext')
 const _ = require('lodash')
 
-const APIMethod = require('../../APIMethod')
+const APIOperation = require('../../Transformation').APIOperation
 
 /**
  * Given an object, replaces all of its Object-type properties with the value true.
@@ -30,10 +30,9 @@ function stripObjectProperties (document) {
  * Rejects with a 404 error if a document with that id isn't found in the context.
  *
  * @param {ERMOperation} state
- * @param {Object} req
  * @return {Promise<ERMOperation>}
  */
-function doGetShallow (state, req) {
+function doGetShallow (state) {
   return applyQueryToContext(state.options, state.context, state.query)
     .then(stripObjectProperties)
     .then(shallowItem => {
@@ -48,4 +47,4 @@ function doGetShallow (state, req) {
     })
 }
 
-module.exports = new APIMethod(doGetShallow)
+module.exports = new APIOperation(doGetShallow)

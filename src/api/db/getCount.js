@@ -1,7 +1,7 @@
-const APIMethod = require('../../APIMethod')
+const APIOperation = require('../../Transformation').APIOperation
 const applyQueryToContext = require('../applyQueryToContext')
 
-function doGetCount (state, req) {
+function doGetCount (state) {
   return applyQueryToContext(state.options, state.context.count(), state.query)
     .then(count => {
       return state
@@ -11,4 +11,4 @@ function doGetCount (state, req) {
     })
 }
 
-module.exports = new APIMethod(doGetCount)
+module.exports = new APIOperation(doGetCount)

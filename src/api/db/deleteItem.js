@@ -1,16 +1,15 @@
 const http = require('http')
-const APIMethod = require('../../APIMethod')
+const APIOperation = require('../../Transformation').APIOperation
 const Promise = require('bluebird')
 
 /**
  * Delete a single object.
  * Chooses between findOneAndRemove() and remove() based on the options.
  *
- * @param {ERMOperation} state
- * @param {Object} req - the Express request
+ * @param {module:ERMOperation} state
  * @return {Promise}
  */
-function doDeleteItem (state, req) {
+function doDeleteItem (state) {
   if (state.options.findOneAndRemove) {
     // Explicit construction because contextFilter() takes a callback
     return state.context.findOneAndRemove()
@@ -33,4 +32,4 @@ function doDeleteItem (state, req) {
   }
 }
 
-module.exports = new APIMethod(doDeleteItem)
+module.exports = new APIOperation(doDeleteItem)

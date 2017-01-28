@@ -1,4 +1,4 @@
-const APIMethod = require('../../APIMethod')
+const APIOperation = require('../../Transformation').APIOperation
 
 /**
  * Given the body of an object, query options, and an access level (all in state), creates
@@ -7,55 +7,25 @@ const APIMethod = require('../../APIMethod')
  * The document will be an instance of the model in state, with keys filtered according to the
  * filter in state.
  *
- * @param {ERMOperation} state - application state
- * @param {Object} objectBody - body of the object to create
+ * @param {module:ERMOperation} state - application state
  * @return {Promise}
  */
-function createObject (state, objectBody = {}) {
-  const filter = state.options.filter
+function createObject (state) {
   const model = state.model
   const queryOptions = state.query
-  const accessLevel = state.accessLevel
 
-  const filteredObject = filter.filterObject(
-    objectBody,
-    {
-      access: accessLevel,
-      populate: queryOptions.populate
-    }
-  )
-
-  if (model.schema.options._id) {
-    delete filteredObject._id
-  }
-
-  if (model.schema.options.versionKey) {
-    delete filteredObject[model.schema.options.versionKey]
-  }
-
-  return model.create(filteredObject)
+  return model.create(state.body)
     .then(newDocument => {
       return model.populate(
         newDocument,
         queryOptions.populate || []
       )
     })
-}
-
-/**
- * Given an ERM instance and an Express request, create a new object.
- *
- * @param {ERMOperation} ermInstance
- * @param {Object} req - the Express request
- * @return {Promise}
- */
-function doCreateObject (ermInstance, req) {
-  return createObject(ermInstance, req.body)
     .then(newDocument => {
-      return ermInstance
+      return state
         .set('result', newDocument)
         .set('statusCode', 201)
     })
 }
 
-module.exports = new APIMethod(doCreateObject)
+module.exports = new APIOperation(createObject)

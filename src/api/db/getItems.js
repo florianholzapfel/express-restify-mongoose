@@ -1,7 +1,7 @@
 const isDistinctExcluded = require('./../shared').isDistinctExcluded
 const _ = require('lodash')
 
-const APIMethod = require('../../APIMethod')
+const APIOperation = require('../../Transformation').APIOperation
 const applyQueryToContext = require('../applyQueryToContext')
 
 /**
@@ -13,7 +13,7 @@ const applyQueryToContext = require('../applyQueryToContext')
  * @param {Object} req
  * @return {Promise<ERMOperation>}
  */
-function doGetItems (state, req) {
+function doGetItems (state) {
   // If distinct is excluded, there won't be anything to return.
   if (isDistinctExcluded(state)) {
     return Promise.resolve(
@@ -29,7 +29,7 @@ function doGetItems (state, req) {
     .then(stateWithResult => {
       // If totalCountHeader is set and distinct isn't set, also get the total count
       if (stateWithResult.options.totalCountHeader && !stateWithResult.query.distinct) {
-        return getTotalCountHeader(state, req)
+        return getTotalCountHeader(state)
           .then(count => {
             return stateWithResult.set('totalCount', count)
           })
@@ -48,7 +48,7 @@ function doGetItems (state, req) {
  * @param {Object} req
  * @return {Promise<Number>}
  */
-function getTotalCountHeader (state, req) {
+function getTotalCountHeader (state) {
   const noSkipOrLimit = _.assign({},
     state.query,
     {
@@ -60,4 +60,4 @@ function getTotalCountHeader (state, req) {
   return applyQueryToContext(state.options, state.context.count(), noSkipOrLimit)
 }
 
-module.exports = new APIMethod(doGetItems)
+module.exports = new APIOperation(doGetItems)

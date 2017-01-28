@@ -37,6 +37,7 @@ const restify = function (app, model, opts = {}) {
   _.assign(options, getDefaults(), opts)
 
   const getContext = require('./api/getContext')
+  const filterRequestBody = require('./api/filterRequestBody')
   const access = require('./middleware/access')
   const ensureContentType = require('./middleware/ensureContentType')(options)
   const onError = require('./middleware/onError')
@@ -119,6 +120,7 @@ const restify = function (app, model, opts = {}) {
 
   const accessMiddleware = options.access ? access(options) : []
   const contextMiddleware = getContext.getMiddleware(initialOperationState)
+  const filterBodyMiddleware = filterRequestBody.getMiddleware(initialOperationState)
 
   function deprecatePrepareQuery (text) {
     return util.deprecate(
@@ -158,7 +160,7 @@ const restify = function (app, model, opts = {}) {
 
   app.post(
     restPaths.allDocuments, prepareQuery, ensureContentType, options.preMiddleware,
-    options.preCreate, accessMiddleware, ops.createObject,
+    options.preCreate, accessMiddleware, filterBodyMiddleware, ops.createObject,
     prepareOutput
   )
 
@@ -168,7 +170,7 @@ const restify = function (app, model, opts = {}) {
     restPaths.singleDocument,
     deprecatePrepareQuery('the POST method to update resources will be removed.'),
     ensureContentType, options.preMiddleware, contextMiddleware,
-    options.preUpdate, accessMiddleware, ops.modifyObject,
+    options.preUpdate, accessMiddleware, filterBodyMiddleware, ops.modifyObject,
     prepareOutput
   )
 
@@ -176,14 +178,14 @@ const restify = function (app, model, opts = {}) {
     restPaths.singleDocument,
     deprecatePrepareQuery(`the PUT method will replace rather than update a resource.`),
     ensureContentType, options.preMiddleware, contextMiddleware,
-    options.preUpdate, accessMiddleware, ops.modifyObject,
+    options.preUpdate, accessMiddleware, filterBodyMiddleware, ops.modifyObject,
     prepareOutput
   )
 
   app.patch(
     restPaths.singleDocument,
     prepareQuery, ensureContentType, options.preMiddleware, contextMiddleware,
-    options.preUpdate, accessMiddleware, ops.modifyObject,
+    options.preUpdate, accessMiddleware, filterBodyMiddleware, ops.modifyObject,
     prepareOutput
   )
 

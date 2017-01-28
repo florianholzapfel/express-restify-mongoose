@@ -1,4 +1,4 @@
-const APIMethod = require('../../APIMethod')
+const APIOperation = require('../../Transformation').APIOperation
 const moredots = require('moredots')
 const _ = require('lodash')
 const http = require('http')
@@ -46,29 +46,18 @@ function depopulate (model, populatedDoc) {
   )
 }
 
-function doModifyObject (state, req) {
-  let accessFilteredBody = state.options.filter.filterObject(req.body || {}, {
-    access: state.accessLevel,
-    populate: state.query.populate
-  })
-
-  delete accessFilteredBody._id
-
-  if (state.model.schema.options.versionKey) {
-    delete accessFilteredBody[state.model.schema.options.versionKey]
-  }
-
-  // HACK: consumer hooks might depend on us removing the _id and version key
-  // Ideally, we don't mutate the request body.
-  req.body = accessFilteredBody
-
-  const cleanBody = moredots(depopulate(state.model, accessFilteredBody))
+function doModifyObject (state) {
+  // Depopulate the filtered body
+  const depopulated = moredots(depopulate(
+    state.model,
+    state.body
+  ))
 
   const updateDocument = state.options.findOneAndUpdate
     ? performFindOneAndUpdate
     : performUpdateAndSave
 
-  return updateDocument(state, req, cleanBody)
+  return updateDocument(state, depopulated)
     .then(doc => state.model.populate(doc, state.query.populate || []))
     .then(populatedDocument => {
       if (!populatedDocument) {
@@ -86,12 +75,11 @@ function doModifyObject (state, req) {
  * and then apply updates to it using findOneAndUpdate().
  *
  * @param {ERMOperation} state - current ERM state
- * @param {Object} req - Express request
  * @param {Object} updates - object that specifies what updates to make to the document
  *
  * @return {Promise<Object>}
  */
-function performFindOneAndUpdate (state, req, updates) {
+function performFindOneAndUpdate (state, updates) {
   return state.context.findOneAndUpdate(
     {},
     { $set: updates },
@@ -108,12 +96,11 @@ function performFindOneAndUpdate (state, req, updates) {
  * Uses set(key, value) -> save() to apply the updates.
  *
  * @param {ERMOperation} state - current ERM state
- * @param {Object} req - Express request
  * @param {Object} updates - object that specifies what updates to make to the document
  *
  * @return {Promise<Object>}
  */
-function performUpdateAndSave (state, req, updates) {
+function performUpdateAndSave (state, updates) {
   const document = state.document
   for (let key in updates) {
     document.set(key, updates[key])
@@ -122,4 +109,4 @@ function performUpdateAndSave (state, req, updates) {
   return document.save()
 }
 
-module.exports = new APIMethod(doModifyObject)
+module.exports = new APIOperation(doModifyObject)

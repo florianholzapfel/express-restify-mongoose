@@ -1,18 +1,17 @@
 const isDistinctExcluded = require('./../shared').isDistinctExcluded
 const http = require('http')
 
-const APIMethod = require('../../APIMethod')
+const APIOperation = require('../../Transformation').APIOperation
 const applyQueryToContext = require('../applyQueryToContext')
 
 /**
  * Retrieve a single document based on a request. Use the query and context filter specified in
  * the ERM operation state.
  *
- * @param {ERMOperation} state
- * @param {Object} req
+ * @param {module:ERMOperation} state
  * @return {Promise<ERMOperation>}
  */
-function doGetItem (state, req) {
+function doGetItem (state) {
   if (isDistinctExcluded(state)) {
     return Promise.resolve(
       state.set('result', []).set('statusCode', 200)
@@ -27,6 +26,10 @@ function doGetItem (state, req) {
 
       return state.set('result', item).set('statusCode', 200)
     })
+    .catch(err => {
+      console.log('err', err)
+      return Promise.reject(err)
+    })
 }
 
-module.exports = new APIMethod(doGetItem)
+module.exports = new APIOperation(doGetItem)
