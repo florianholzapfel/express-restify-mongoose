@@ -1,4 +1,6 @@
 const sinon = require('sinon')
+const assert = require('assert')
+const _ = require('lodash')
 
 describe('prepareOutput', () => {
   const prepareOutput = require('../../../lib/middleware/prepareOutput')
@@ -195,5 +197,80 @@ describe('prepareOutput', () => {
     sinon.assert.calledWithExactly(onError, err, req, {}, next)
     sinon.assert.notCalled(outputFn)
     sinon.assert.notCalled(next)
+  })
+
+  describe(`asynchronous outputFn`, () => {
+    it(`calls outputFn -> postProcess if no errors`, done => {
+      let expressRequest = {
+        method: 'GET',
+        erm: {}
+      }
+
+      let options = {
+        onError: () => done(new Error(`Should not call onError()`)),
+
+        // Should be called before postProcess
+        outputFn: (req, res, next) => {
+          assert.strictEqual(req.method, expressRequest.method)
+          assert.ok(_.isEmpty(res))
+          req.calledOutput = true
+          return next()
+        },
+
+        postProcess: (req, res, next) => {
+          assert.ok(req.calledOutput === true)
+          return next()
+        }
+      }
+
+      prepareOutput(options)(expressRequest, {}, done)
+    })
+
+    it(`outputFn errors are handled`, done => {
+      let expressRequest = {
+        method: 'GET',
+        params: {},
+        erm: {}
+      }
+
+      const outputError = new Error('outputFn error')
+
+      let options = {
+        onError: (err, req, res, next) => {
+          assert.strictEqual(
+            err.cause, outputError,
+            `The outputFn error should propagate to the onError handler`
+          )
+          return next()
+        },
+
+        outputFn: (req, res, next) => next(outputError),
+
+        postProcess: _.noop
+      }
+
+      prepareOutput(options)(expressRequest, {}, done)
+    })
+
+    it(`postProcess errors are handled`, done => {
+      let expressRequest = {
+        method: 'GET',
+        params: {},
+        erm: {}
+      }
+
+      const postProcessError = new Error('outputFn error')
+
+      let options = {
+        onError: () => done(new Error(`Should not call onError()`)),
+        outputFn: (req, res, next) => next(),
+        postProcess: (req, res, next) => next(postProcessError)
+      }
+
+      prepareOutput(options)(expressRequest, {}, err => {
+        assert.strictEqual(err, postProcessError)
+        done()
+      })
+    })
   })
 })
