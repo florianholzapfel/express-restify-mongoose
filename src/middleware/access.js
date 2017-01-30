@@ -1,3 +1,5 @@
+const Promise = require('bluebird')
+
 /**
  * Returns Express middleware that calls the "access" function in options and adds the result to
  * the request object (as "req.access")
@@ -12,27 +14,27 @@ module.exports = function (options) {
   const errorHandler = require('../errorHandler')(options)
 
   return function (req, res, next) {
-    const handler = function (err, access) {
-      if (err) {
-        return process.nextTick(
-          () => errorHandler(req, res, next)(err)
-        )
-      }
+    // Returns a Promise whose fulfillment value is the access level for the request
+    const getAccess = options.access.length > 1
+      ? Promise.promisify(options.access) // options.access is async
+      : Promise.method(options.access) // options.access is synchronous
 
-      if (['public', 'private', 'protected'].indexOf(access) < 0) {
-        throw new Error('Unsupported access, must be "private", "protected" or "public"')
-      }
+    return getAccess(req)
+      .then(access => {
+        if (['public', 'private', 'protected'].indexOf(access) < 0) {
+          return Promise.reject(new Error('Unsupported access, must be "private", "protected" or "public"'))
+        }
 
-      req.access = access
-      next()
-    }
+        req.access = access
+        return next()
+      })
+      .catch(err => {
+        // Error was thrown by consumer code -- we pass the cause directly to the error handler.
+        if (err.isOperational && err.cause) {
+          return errorHandler(req, res, next)(err.cause)
+        }
 
-    if (options.access.length > 1) {
-      // The handler provided in options is async, so pass it the callback handler
-      options.access(req, handler)
-    } else {
-      // The handler provided in options is synchronous
-      handler(null, options.access(req))
-    }
+        return errorHandler(req, res, next)(err)
+      })
   }
 }
