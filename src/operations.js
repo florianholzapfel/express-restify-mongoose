@@ -84,7 +84,7 @@ module.exports = function (model, options, excludedMap) {
   function deleteItems (req, res, next) {
     let model = (req.erm && req.erm.model) || model
     options.contextFilter(model, req, (filteredContext) => {
-      buildQuery(filteredContext.remove(), req._ermQueryOptions).then(() => {
+      buildQuery(filteredContext.remove({}), req._ermQueryOptions).then(() => {
         req.erm.statusCode = 204
 
         next()
