@@ -153,6 +153,26 @@ module.exports = function (model, options, excludedMap) {
     }, errorHandler(req, res, next))
   }
 
+  function patchObject (req, res, next) {
+    let ct = req.headers['content-type']
+    if (ct === 'application/json') {
+      modifyObject(req, res, next);
+      return;
+    }
+
+    req.erm.document.patch(req.body, (err) => {
+      if (!err) {
+        let item = req.erm.document
+        model.populate(item, req._ermQueryOptions.populate || []).then((item) => {
+          req.erm.result = item
+          req.erm.statusCode = 200
+
+          next()
+        }, errorHandler(req, res, next))
+      } else errorHandler(req, res, next)(err)
+    });
+  }
+
   function modifyObject (req, res, next) {
     req.body = options.filter.filterObject(req.body || {}, {
       access: req.access,
@@ -200,7 +220,7 @@ module.exports = function (model, options, excludedMap) {
 
     const cleanBody = moredots(depopulate(req.body))
 
-    if (options.findOneAndUpdate) {
+    if (options.findOneAndUpdate && req.method !== 'PATCH') {
       options.contextFilter(model, req, (filteredContext) => {
         findById(filteredContext, req.params.id).findOneAndUpdate({}, {
           $set: cleanBody
@@ -232,5 +252,5 @@ module.exports = function (model, options, excludedMap) {
     }
   }
 
-  return { getItems, getCount, getItem, getShallow, createObject, modifyObject, deleteItems, deleteItem }
+  return { getItems, getCount, getItem, getShallow, createObject, patchObject, modifyObject, deleteItems, deleteItem }
 }
