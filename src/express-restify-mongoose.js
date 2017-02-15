@@ -20,7 +20,17 @@ function getDefaults () {
   })
 }
 
-const restify = function (app, model, opts = {}) {
+function setFilterFor (model, filteredKeys) {
+  const filter = new Filter({
+    model, excludedMap, filteredKeys
+  })
+
+  excludedMap[model.modelName] = filter.filteredKeys
+
+  return excludedMap
+}
+
+function serve (app, model, opts = {}) {
   let options = {}
   _.assign(options, getDefaults(), opts)
 
@@ -157,5 +167,5 @@ module.exports = {
   defaults: function (options) {
     customDefaults = options
   },
-  serve: restify
+  serve: serve
 }
