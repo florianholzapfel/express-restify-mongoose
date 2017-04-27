@@ -69,8 +69,7 @@
     "test-cov-unit": "istanbul cover node_modules/mocha/bin/_mocha -- --compilers js:babel-core/register -R spec ./test/unit.js",
     "test-cov-express": "istanbul cover node_modules/mocha/bin/_mocha -- --compilers js:babel-core/register -R spec ./test/express.js --timeout 10s",
     "test-cov-restify": "istanbul cover node_modules/mocha/bin/_mocha -- --compilers js:babel-core/register -R spec ./test/restify.js --timeout 10s",
-    "report-coverage": "cat ./coverage/lcov.info | coveralls",
-    "postinstall": "cd node_modules/express-restify-mongoose && npm run compile"
+    "report-coverage": "cat ./coverage/lcov.info | coveralls"
   },
   "files": [
     "CHANGELOG.md",
