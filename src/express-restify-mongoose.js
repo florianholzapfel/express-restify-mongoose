@@ -32,11 +32,11 @@ const restify = function (app, model, opts = {}) {
   const prepareQuery = require('./middleware/prepareQuery')(options)
   const prepareOutput = require('./middleware/prepareOutput')(options, excludedMap)
 
-  if (!_.isArray(options.private)) {
+  if (!Array.isArray(options.private)) {
     throw new Error('"options.private" must be an array of fields')
   }
 
-  if (!_.isArray(options.protected)) {
+  if (!Array.isArray(options.protected)) {
     throw new Error('"options.protected" must be an array of fields')
   }
 
@@ -64,23 +64,23 @@ const restify = function (app, model, opts = {}) {
 
   excludedMap[model.modelName] = options.filter.filteredKeys
 
-  if (!_.isArray(options.preMiddleware)) {
+  if (!Array.isArray(options.preMiddleware)) {
     options.preMiddleware = options.preMiddleware ? [options.preMiddleware] : []
   }
 
-  if (!_.isArray(options.preCreate)) {
+  if (!Array.isArray(options.preCreate)) {
     options.preCreate = options.preCreate ? [options.preCreate] : []
   }
 
-  if (!_.isArray(options.preRead)) {
+  if (!Array.isArray(options.preRead)) {
     options.preRead = options.preRead ? [options.preRead] : []
   }
 
-  if (!_.isArray(options.preUpdate)) {
+  if (!Array.isArray(options.preUpdate)) {
     options.preUpdate = options.preUpdate ? [options.preUpdate] : []
   }
 
-  if (!_.isArray(options.preDelete)) {
+  if (!Array.isArray(options.preDelete)) {
     options.preDelete = options.preDelete ? [options.preDelete] : []
   }
 
@@ -88,19 +88,19 @@ const restify = function (app, model, opts = {}) {
     options.contextFilter = (model, req, done) => done(model)
   }
 
-  if (!_.isArray(options.postCreate)) {
+  if (!Array.isArray(options.postCreate)) {
     options.postCreate = options.postCreate ? [options.postCreate] : []
   }
 
-  if (!_.isArray(options.postRead)) {
+  if (!Array.isArray(options.postRead)) {
     options.postRead = options.postRead ? [options.postRead] : []
   }
 
-  if (!_.isArray(options.postUpdate)) {
+  if (!Array.isArray(options.postUpdate)) {
     options.postUpdate = options.postUpdate ? [options.postUpdate] : []
   }
 
-  if (!_.isArray(options.postDelete)) {
+  if (!Array.isArray(options.postDelete)) {
     options.postDelete = options.postDelete ? [options.postDelete] : []
   }
 

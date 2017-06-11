@@ -834,8 +834,8 @@ module.exports = function (createFn, setup, dismantle) {
           message: 'Cast to string failed for value "{}" at path "name" for model "Customer"',
           name: 'CastError',
           path: 'name',
-          value: {},
-          stringValue: `"{}"`
+          stringValue: '"{}"',
+          value: {}
         })
         done()
       })
