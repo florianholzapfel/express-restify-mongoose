@@ -745,7 +745,7 @@ module.exports = function (createFn, setup, dismantle) {
         assert.deepEqual(body, {
           name: 'ValidationError',
           _message: 'Customer validation failed',
-          message: 'Customer validation failed: age: Cast to Number failed for value "not a number" at path "age"',
+          message: 'Customer validation failed: name: Path `name` is required.',
           errors: {
             name: {
               kind: 'required',

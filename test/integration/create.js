@@ -137,6 +137,7 @@ module.exports = function (createFn, setup, dismantle) {
         assert.deepEqual(body, {
           name: 'ValidationError',
           message: 'Customer validation failed: name: Path `name` is required.',
+          _message: 'Customer validation failed',
           errors: {
             name: {
               kind: 'required',
@@ -339,6 +340,7 @@ module.exports = function (createFn, setup, dismantle) {
               message: 'Cast to ObjectID failed for value "invalid-id" at path "customer"',
               name: 'CastError',
               path: 'customer',
+              stringValue: '"invalid-id"',
               value: 'invalid-id'
             },
             products: {
@@ -346,6 +348,7 @@ module.exports = function (createFn, setup, dismantle) {
               message: 'Cast to Array failed for value "[ \'invalid-id\', \'invalid-id\' ]" at path "products"',
               name: 'CastError',
               path: 'products',
+              stringValue: '"[ \'invalid-id\', \'invalid-id\' ]"',
               value: ['invalid-id', 'invalid-id']
             }
           }
