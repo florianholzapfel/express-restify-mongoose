@@ -130,12 +130,13 @@ module.exports = function (createFn, setup, dismantle) {
         url: `${testUrl}/api/v1/Customer`,
         json: {}
       }, (err, res, body) => {
+        console.info(err, res, body)
         assert.ok(!err)
         assert.equal(res.statusCode, 400)
         assert.equal(body.name, 'ValidationError')
         assert.deepEqual(body, {
           name: 'ValidationError',
-          message: 'Customer validation failed',
+          message: 'Customer validation failed: name: Path `name` is required.',
           errors: {
             name: {
               kind: 'required',
@@ -330,23 +331,22 @@ module.exports = function (createFn, setup, dismantle) {
         assert.equal(res.statusCode, 400)
         assert.deepEqual(body, {
           name: 'ValidationError',
-          message: 'Invoice validation failed',
+          _message: 'Invoice validation failed',
+          message: "Invoice validation failed: products: Cast to Array failed for value \"[ 'invalid-id', 'invalid-id' ]\" at path \"products\", customer: Cast to ObjectID failed for value \"invalid-id\" at path \"customer\"",
           errors: {
             customer: {
               kind: 'ObjectID',
               message: 'Cast to ObjectID failed for value "invalid-id" at path "customer"',
               name: 'CastError',
               path: 'customer',
-              value: 'invalid-id',
-              stringValue: '"invalid-id"'
+              value: 'invalid-id'
             },
             products: {
               kind: 'Array',
               message: 'Cast to Array failed for value "[ \'invalid-id\', \'invalid-id\' ]" at path "products"',
               name: 'CastError',
               path: 'products',
-              value: ['invalid-id', 'invalid-id'],
-              stringValue: `"[ 'invalid-id', 'invalid-id' ]"`
+              value: ['invalid-id', 'invalid-id']
             }
           }
         })

@@ -831,11 +831,10 @@ module.exports = function (createFn, setup, dismantle) {
         assert.equal(res.statusCode, 400)
         assert.deepEqual(body, {
           kind: 'string',
-          message: 'Cast to string failed for value "{}" at path "name" for model "Customer"',
+          message: 'Cast to string failed for value "{}" at path "name"',
           name: 'CastError',
           path: 'name',
-          value: {},
-          stringValue: `"{}"`
+          value: {}
         })
         done()
       })

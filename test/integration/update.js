@@ -110,8 +110,7 @@ module.exports = function (createFn, setup, dismantle) {
               message: 'Cast to number failed for value "not a number" at path "age"',
               name: 'CastError',
               path: 'age',
-              value: 'not a number',
-              stringValue: `"not a number"`
+              value: 'not a number'
             })
             done()
           })
@@ -459,15 +458,15 @@ module.exports = function (createFn, setup, dismantle) {
             assert.equal(res.statusCode, 400)
             assert.deepEqual(body, {
               name: 'ValidationError',
-              message: 'Customer validation failed',
+              _message: 'Customer validation failed',
+              message: 'Customer validation failed: age: Cast to Number failed for value "not a number" at path "age"',
               errors: {
                 age: {
                   kind: 'Number',
                   message: 'Cast to Number failed for value "not a number" at path "age"',
                   name: 'CastError',
                   path: 'age',
-                  value: 'not a number',
-                  stringValue: `"not a number"`
+                  value: 'not a number'
                 }
               }
             })
