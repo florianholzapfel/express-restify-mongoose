@@ -4,9 +4,9 @@
     "name": "Florian Holzapfel"
   },
   "dependencies": {
-    "async": "~2.1.0",
-    "bluebird": "~3.4.0",
-    "is-coordinates": "~1.0.0",
+    "async": "~2.4.0",
+    "bluebird": "~3.5.0",
+    "is-coordinates": "~2.0.0",
     "lodash": "~4.17.0",
     "mongoose-detective": "~0.1.0",
     "moredots": "~0.1.0",
