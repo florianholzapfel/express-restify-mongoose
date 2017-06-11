@@ -744,19 +744,23 @@ module.exports = function (createFn, setup, dismantle) {
     })
 
     describe('select', () => {
-      it('GET /Customer?select=["name"] 400 - yields an error', (done) => {
+      it('GET /Customer?select=["name"] 200 - select an array of fields', (done) => {
         request.get({
           url: `${testUrl}/api/v1/Customer`,
           qs: {
-            select: ['name']
+            select: ['name', 'favorites']
           },
           json: true
         }, (err, res, body) => {
           assert.ok(!err)
-          assert.equal(res.statusCode, 400)
-          assert.deepEqual(body, {
-            name: 'TypeError',
-            message: 'Invalid select() argument. Must be string or object.'
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 3)
+          body.forEach((item) => {
+            assert.equal(Object.keys(item).length, 3)
+            assert.ok(item._id)
+            assert.ok(item.name)
+            assert.ok(item.favorites)
+            assert.ok(typeof item.favorites === 'object')
           })
           done()
         })

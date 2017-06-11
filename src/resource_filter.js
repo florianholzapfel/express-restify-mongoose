@@ -3,12 +3,16 @@ const detective = require('mongoose-detective')
 const weedout = require('weedout')
 
 /**
- * Represents a filter.
+ * A wrapper around a Mongoose model that exposes utilities for filtering document keys
+ * based on various filter criteria.
+ *
  * @constructor
  * @param {Object} opts - Options
- * @param {Object} opts.model - Mongoose model
- * @param {Object} opts.excludedMap {} - Filtered keys for related models
- * @param {Object} opts.filteredKeys {} - Keys to filter for the current model
+ * @param {Object} opts.model - Base Mongoose model
+ * @param {Object} opts.excludedMap {} - Filtered keys for related models (i.e. models that inherit from the base model)
+ * @param {Object} opts.filteredKeys {} - Keys to filter for the base model.
+ * @param {Array<String>} opts.filteredKeys.private [] - The base model's private keys.
+ * @param {Array<String>} opts.filteredKeys.protected [] - The base model's protected keys.
  */
 function Filter (opts) {
   this.model = opts.model
@@ -33,11 +37,18 @@ function Filter (opts) {
 
 /**
  * Gets excluded keys for a given model and access.
+ *
+ * If opts.modelName is not provided, returns the excluded keys of the Filter's base model.
+ *
  * @memberof Filter
- * @param {Object} - Options.
+ * @param {Object} opts - Options.
+ *
  * @param {String} opts.access {public} - Access level (private, protected or public).
- * @param {Object} opts.excludedMap {} - Filtered keys for related models
  * @param {Object} opts.filteredKeys {} - Keys to filter for the current model
+ *
+ * @param {Object} [opts.excludedMap] {} - A mapping of descendant model names to excluded keys for the descendant models
+ * @param {String} [opts.modelName] - The model name of a descendant document
+ *
  * @returns {Array} - Keys to filter.
  */
 Filter.prototype.getExcluded = function (opts) {
@@ -60,6 +71,20 @@ Filter.prototype.getExcluded = function (opts) {
   return opts.access === 'protected' ? entry.private : entry.private.concat(entry.protected)
 }
 
+/**
+ * Gets excluded keys for a given model and access.
+ *
+ * @memberof Filter
+ *
+ * @param {String} field - the field to check
+ *
+ * @param {Object} opts - Options.
+ * @param {String} opts.access {public} - Access level (private, protected or public).
+ * @param {Object} opts.excludedMap {} - Filtered keys for related models
+ * @param {Object} opts.filteredKeys {} - Keys to filter for the current model
+ *
+ * @returns {boolean} - will the field be excluded
+ */
 Filter.prototype.isExcluded = function (field, opts) {
   if (!field) {
     return false
@@ -76,10 +101,12 @@ Filter.prototype.isExcluded = function (field, opts) {
 }
 
 /**
- * Removes excluded keys from a document.
+ * Given a document and a list of keys to exclude, removes the keys
+ * from the document.
+ *
  * @memberof Filter
- * @param {Object} - Source document.
- * @param {Array} - Keys to filter.
+ * @param {Object} item - Source document.
+ * @param {Array} excluded - Keys to remove from the document.
  * @returns {Object} - Filtered document.
  */
 Filter.prototype.filterItem = function (item, excluded) {
@@ -107,8 +134,8 @@ Filter.prototype.filterItem = function (item, excluded) {
 /**
  * Removes excluded keys from a document with populated subdocuments.
  * @memberof Filter
- * @param {Object} - Source document.
- * @param {Object} - Keys to filter.
+ * @param {Object} item - Source document.
+ * @param {Object} opts - Keys to filter.
  * @param {Array} opts.populate - Paths to populated subdocuments.
  * @param {String} opts.access - Access level (private, protected or public).
  * @param {Object} opts.excludedMap {} - Filtered keys for related models
@@ -149,12 +176,13 @@ Filter.prototype.filterPopulatedItem = function (item, opts) {
 
 /**
  * Removes excluded keys from a document.
+ *
  * @memberof Filter
  * @access public
- * @param {Object} - Source document.
- * @param {Object} - Options.
+ * @param {Object} resource - Source document.
+ * @param {Object} opts - Options.
  * @param {String} opts.access {public} - Access level (private, protected or public).
- * @param {Object} opts.excludedMap {} - Filtered keys for related models
+ * @param {Object} [opts.excludedMap] {} - Filtered keys for related models
  * @param {Array} opts.populate - Paths to populated subdocuments.
  * @returns {Object} - Filtered document.
  */
