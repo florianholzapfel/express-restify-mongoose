@@ -83,7 +83,7 @@ Filter.prototype.isExcluded = function (field, opts) {
  * @returns {Object} - Filtered document.
  */
 Filter.prototype.filterItem = function (item, excluded) {
-  if (_.isArray(item)) {
+  if (Array.isArray(item)) {
     return item.map((i) => this.filterItem(i, excluded))
   }
 
@@ -115,7 +115,7 @@ Filter.prototype.filterItem = function (item, excluded) {
  * @returns {Object} - Filtered document.
  */
 Filter.prototype.filterPopulatedItem = function (item, opts) {
-  if (_.isArray(item)) {
+  if (Array.isArray(item)) {
     return item.map((i) => this.filterPopulatedItem(i, opts))
   }
 
