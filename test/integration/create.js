@@ -142,6 +142,7 @@ module.exports = function (createFn, setup, dismantle) {
           _message: 'Customer validation failed',
           errors: {
             name: {
+              $isValidatorError: true,
               kind: 'required',
               message: 'Path `name` is required.',
               name: 'ValidatorError',
