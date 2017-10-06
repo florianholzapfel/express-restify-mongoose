@@ -160,8 +160,8 @@ Filter.prototype.filterPopulatedItem = function (item, opts) {
  * @param {Array} opts.populate - Paths to populated subdocuments.
  * @returns {Object} - Filtered document.
  */
-Filter.prototype.filterObject = function (resource, opts = {}) {
-  opts = _.defaults(opts, {
+Filter.prototype.filterObject = function (resource, opts) {
+  opts = _.defaults(opts || {}, {
     access: 'public',
     excludedMap: {},
     filteredKeys: this.filteredKeys,
