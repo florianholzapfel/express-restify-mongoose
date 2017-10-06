@@ -1,3 +1,5 @@
+'use strict'
+
 const util = require('util')
 const _ = require('lodash')
 const Filter = require('./resource_filter')
@@ -20,9 +22,9 @@ function getDefaults () {
   })
 }
 
-const restify = function (app, model, opts = {}) {
+const restify = function (app, model, opts) {
   let options = {}
-  _.assign(options, getDefaults(), opts)
+  _.assign(options, getDefaults(), opts || {})
 
   const access = require('./middleware/access')
   const ensureContentType = require('./middleware/ensureContentType')(options)

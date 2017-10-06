@@ -1,9 +1,11 @@
+'use strict'
+
 const assert = require('assert')
 const CastError = require('mongoose/lib/error/cast')
 const sinon = require('sinon')
 
 describe('errorHandler', () => {
-  const errorHandler = require('../../lib/errorHandler')
+  const errorHandler = require('../../src/errorHandler')
 
   it('is a function', () => {
     assert.equal(typeof errorHandler, 'function')

@@ -1,7 +1,9 @@
+'use strict'
+
 const sinon = require('sinon')
 
 describe('outputFn', () => {
-  const outputFn = require('../../../lib/middleware/outputFn')
+  const outputFn = require('../../../src/middleware/outputFn')
 
   let res = {
     sendStatus: function () {},

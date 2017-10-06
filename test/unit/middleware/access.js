@@ -1,8 +1,10 @@
+'use strict'
+
 const assert = require('assert')
 const sinon = require('sinon')
 
 describe('access', () => {
-  const access = require('../../../lib/middleware/access')
+  const access = require('../../../src/middleware/access')
 
   let next = sinon.spy()
 

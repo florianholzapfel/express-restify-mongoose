@@ -1,8 +1,10 @@
+'use strict'
+
 const assert = require('assert')
 const sinon = require('sinon')
 
 describe('prepareQuery', () => {
-  const prepareQuery = require('../../../lib/middleware/prepareQuery')
+  const prepareQuery = require('../../../src/middleware/prepareQuery')
 
   let options = {
     onError: sinon.spy(),

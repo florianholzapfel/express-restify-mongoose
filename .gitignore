@@ -2,7 +2,6 @@ tmp
 node_modules
 npm-debug.log
 /.idea
-lib
 nbproject
 coverage
 .DS_Store
