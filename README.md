@@ -1,32 +1,37 @@
-# express-restify-mongoose
+# express-restify-mongoose-patch
 
 Easily create a flexible REST interface for mongoose models.
+This module is intended to be only temporary implementation enabling RFC6902 (JSON patch).
+It works exactly as the original express-restify-mongoose module.
+A pull request is pending on the original module, as soon as it will be accepted this module will be deleted.
 
-[![Build Status](https://travis-ci.org/florianholzapfel/express-restify-mongoose.png)](https://travis-ci.org/florianholzapfel/express-restify-mongoose)
-[![Coverage Status](https://coveralls.io/repos/florianholzapfel/express-restify-mongoose/badge.svg?branch=master&service=github)](https://coveralls.io/github/florianholzapfel/express-restify-mongoose?branch=master)
-[![NPM version](https://badge.fury.io/js/express-restify-mongoose.png)](http://badge.fury.io/js/express-restify-mongoose)
-[![Dependencies](https://david-dm.org/florianholzapfel/express-restify-mongoose.png)](https://david-dm.org/florianholzapfel/express-restify-mongoose)
-[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://github.com/feross/standard)
+The original idea came out from this discussion: https://github.com/florianholzapfel/express-restify-mongoose/issues/224
+
+## Caveats
+
+* mongoose-json-patch must be pluged by the user in schema definition. I tried to plug it addressing model.schema inside express-restify-mongoose module without success.
+* The structure of this module is a chain of middlewares and it was too hard for me to distinguish the behavior between PATCH with application/json and the one with application/json-patch+json. So in my implementation PATCH with application/json doesn't use findOneAndUpdate even if the correspondent option is true because I needed to run the filterAndFindById instead.
+* To use this implementation bodyParser.json has to accept application/json-patch+json content type so in the application must be declared something like:
+```
+router.use (bodyParser.json({strict:false, type: (req) => {
+var ct = req.headers['content-type'];
+return (ct === 'application/json-patch+json') || (ct === 'application/json');
+}}));
+```
+otherwise req.body will be empty and won't be applied any patch.
+
 
 ## Getting started
 
 > **From 1.0.0 onwards, the library is only compatible with mongoose >= 4. For mongoose 3.x compatibility, use the 0.7.x branch.**
 
 ```sh
-npm install express-restify-mongoose --save
+npm install express-restify-mongoose-patch --save
 ```
 
 ## Documentation
 
 [https://florianholzapfel.github.io/express-restify-mongoose/](https://florianholzapfel.github.io/express-restify-mongoose/)
-
-## Contributing
-
-Found a bug or have a suggestion to make? Have a took at [issues or open a new one](https://github.com/florianholzapfel/express-restify-mongoose/issues).
-
-Everyone is welcome to contribute code by [creating a pull request](https://github.com/florianholzapfel/express-restify-mongoose/pulls), just make sure to follow [standard style](https://github.com/feross/standard).
-
-Many thanks to all [contributors](https://github.com/florianholzapfel/express-restify-mongoose/graphs/contributors)!
 
 ## License (MIT)
 
