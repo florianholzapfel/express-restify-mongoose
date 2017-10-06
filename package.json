@@ -24,7 +24,7 @@
     "express": "^4.13.0",
     "in-publish": "^2.0.0",
     "istanbul": "1.1.0-alpha.1",
-    "method-override": "^2.3.0",
+    "method-override": "^2.3.10",
     "mocha": "^4.0.0",
     "request": "^2.69.0",
     "restify": "^4.3.0",
