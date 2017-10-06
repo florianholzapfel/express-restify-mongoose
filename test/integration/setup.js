@@ -129,7 +129,9 @@ module.exports = function () {
     }
 
     if (opts.connect) {
-      mongoose.connect('mongodb://localhost/database', callback)
+      mongoose.connect('mongodb://localhost:3001/database', {
+        useMongoClient: true
+      }, callback)
     } else if (_.isFunction(callback)) {
       callback()
     }
