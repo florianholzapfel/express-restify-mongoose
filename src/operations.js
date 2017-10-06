@@ -1,3 +1,5 @@
+'use strict'
+
 const _ = require('lodash')
 const http = require('http')
 const moredots = require('moredots')

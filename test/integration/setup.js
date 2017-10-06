@@ -1,3 +1,5 @@
+'use strict'
+
 const _ = require('lodash')
 const async = require('async')
 const mongoose = require('mongoose')
@@ -129,7 +131,7 @@ module.exports = function () {
     }
 
     if (opts.connect) {
-      mongoose.connect('mongodb://localhost:3001/database', {
+      mongoose.connect('mongodb://localhost/database', {
         useMongoClient: true
       }, callback)
     } else if (_.isFunction(callback)) {

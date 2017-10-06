@@ -1,8 +1,10 @@
+'use strict'
+
 const assert = require('assert')
 const sinon = require('sinon')
 
 describe('ensureContentType', () => {
-  const ensureContentType = require('../../../lib/middleware/ensureContentType')
+  const ensureContentType = require('../../../src/middleware/ensureContentType')
 
   let onError = sinon.spy()
   let next = sinon.spy()

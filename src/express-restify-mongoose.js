@@ -1,3 +1,5 @@
+'use strict'
+
 const util = require('util')
 const _ = require('lodash')
 const Filter = require('./resource_filter')

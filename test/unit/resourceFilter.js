@@ -1,7 +1,9 @@
+'use strict'
+
 const assert = require('assert')
 
 describe('resourceFilter', () => {
-  const Filter = require('../../lib/resource_filter')
+  const Filter = require('../../src/resource_filter')
 
   describe('getExcluded', () => {
     const filter = new Filter({})

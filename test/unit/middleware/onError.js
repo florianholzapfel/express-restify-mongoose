@@ -1,7 +1,9 @@
+'use strict'
+
 const sinon = require('sinon')
 
 describe('onError', () => {
-  const onError = require('../../../lib/middleware/onError')
+  const onError = require('../../../src/middleware/onError')
 
   const req = {
     erm: {

@@ -1,3 +1,5 @@
+'use strict'
+
 require('./unit/middleware/access')
 require('./unit/middleware/ensureContentType')
 require('./unit/middleware/onError')

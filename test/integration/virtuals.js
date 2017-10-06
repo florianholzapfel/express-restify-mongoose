@@ -1,8 +1,10 @@
+'use strict'
+
 const assert = require('assert')
 const request = require('request')
 
 module.exports = function (createFn, setup, dismantle) {
-  const erm = require('../../lib/express-restify-mongoose')
+  const erm = require('../../src/express-restify-mongoose')
   const db = require('./setup')()
 
   const testPort = 30023
