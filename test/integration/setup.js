@@ -1,5 +1,5 @@
 const _ = require('lodash')
-const async = require('async')
+const asyncSeries = require('async/series')
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const util = require('util')
@@ -136,7 +136,7 @@ module.exports = function () {
   }
 
   function reset (callback) {
-    async.series([
+    asyncSeries([
       function (cb) {
         mongoose.models.Customer.remove(cb)
       },
