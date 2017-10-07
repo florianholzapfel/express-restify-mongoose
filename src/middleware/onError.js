@@ -1,3 +1,5 @@
+'use strict'
+
 const serializeError = require('serialize-error')
 
 module.exports = function (isExpress) {

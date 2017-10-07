@@ -1,3 +1,5 @@
+'use strict'
+
 const _ = require('lodash')
 const detective = require('mongoose-detective')
 const weedout = require('weedout')
@@ -83,7 +85,7 @@ Filter.prototype.isExcluded = function (field, opts) {
  * @returns {Object} - Filtered document.
  */
 Filter.prototype.filterItem = function (item, excluded) {
-  if (_.isArray(item)) {
+  if (Array.isArray(item)) {
     return item.map((i) => this.filterItem(i, excluded))
   }
 
@@ -115,7 +117,7 @@ Filter.prototype.filterItem = function (item, excluded) {
  * @returns {Object} - Filtered document.
  */
 Filter.prototype.filterPopulatedItem = function (item, opts) {
-  if (_.isArray(item)) {
+  if (Array.isArray(item)) {
     return item.map((i) => this.filterPopulatedItem(i, opts))
   }
 
@@ -158,8 +160,8 @@ Filter.prototype.filterPopulatedItem = function (item, opts) {
  * @param {Array} opts.populate - Paths to populated subdocuments.
  * @returns {Object} - Filtered document.
  */
-Filter.prototype.filterObject = function (resource, opts = {}) {
-  opts = _.defaults(opts, {
+Filter.prototype.filterObject = function (resource, opts) {
+  opts = _.defaults(opts || {}, {
     access: 'public',
     excludedMap: {},
     filteredKeys: this.filteredKeys,

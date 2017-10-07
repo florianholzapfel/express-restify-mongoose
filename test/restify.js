@@ -1,3 +1,5 @@
+'use strict'
+
 const restify = require('restify')
 
 const createTests = require('./integration/create')

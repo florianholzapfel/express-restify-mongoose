@@ -1,10 +1,12 @@
+'use strict'
+
 const assert = require('assert')
 const mongoose = require('mongoose')
 const request = require('request')
 const sinon = require('sinon')
 
 module.exports = function (createFn, setup, dismantle) {
-  const erm = require('../../lib/express-restify-mongoose')
+  const erm = require('../../src/express-restify-mongoose')
   const db = require('./setup')()
 
   const testPort = 30023
@@ -744,9 +746,11 @@ module.exports = function (createFn, setup, dismantle) {
         assert.equal(res.statusCode, 400)
         assert.deepEqual(body, {
           name: 'ValidationError',
-          message: 'Customer validation failed',
+          _message: 'Customer validation failed',
+          message: 'Customer validation failed: name: Path `name` is required.',
           errors: {
             name: {
+              $isValidatorError: true,
               kind: 'required',
               message: 'Path `name` is required.',
               name: 'ValidatorError',

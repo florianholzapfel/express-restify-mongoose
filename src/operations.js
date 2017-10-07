@@ -1,3 +1,5 @@
+'use strict'
+
 const _ = require('lodash')
 const http = require('http')
 const moredots = require('moredots')
@@ -172,7 +174,7 @@ module.exports = function (model, options, excludedMap) {
         const path = model.schema.path(key)
 
         if (path && path.caster && path.caster.instance === 'ObjectID') {
-          if (_.isArray(src[key])) {
+          if (Array.isArray(src[key])) {
             for (let j = 0; j < src[key].length; ++j) {
               if (typeof src[key][j] === 'object') {
                 dst[key] = dst[key] || []

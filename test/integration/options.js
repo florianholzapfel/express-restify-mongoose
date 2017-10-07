@@ -1,9 +1,11 @@
+'use strict'
+
 const assert = require('assert')
 const request = require('request')
 const sinon = require('sinon')
 
 module.exports = function (createFn, setup, dismantle) {
-  const erm = require('../../lib/express-restify-mongoose')
+  const erm = require('../../src/express-restify-mongoose')
   const db = require('./setup')()
 
   const testPort = 30023
@@ -831,9 +833,10 @@ module.exports = function (createFn, setup, dismantle) {
         assert.equal(res.statusCode, 400)
         assert.deepEqual(body, {
           kind: 'string',
-          message: 'Cast to string failed for value "{}" at path "name"',
+          message: 'Cast to string failed for value "{}" at path "name" for model "Customer"',
           name: 'CastError',
           path: 'name',
+          stringValue: '"{}"',
           value: {}
         })
         done()

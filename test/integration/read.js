@@ -1,9 +1,11 @@
+'use strict'
+
 const assert = require('assert')
 const mongoose = require('mongoose')
 const request = require('request')
 
 module.exports = function (createFn, setup, dismantle) {
-  const erm = require('../../lib/express-restify-mongoose')
+  const erm = require('../../src/express-restify-mongoose')
   const db = require('./setup')()
 
   const testPort = 30023
@@ -599,9 +601,10 @@ module.exports = function (createFn, setup, dismantle) {
             assert.equal(res.statusCode, 400)
             assert.deepEqual(body, {
               kind: 'number',
-              message: 'Cast to number failed for value "/2/i" at path "age"',
+              message: 'Cast to number failed for value "/2/i" at path "age" for model "Customer"',
               name: 'CastError',
               path: 'age',
+              stringValue: '"/2/i"',
               value: {}
             })
             done()
@@ -743,7 +746,7 @@ module.exports = function (createFn, setup, dismantle) {
     })
 
     describe('select', () => {
-      it('GET /Customer?select=["name"] 400 - yields an error', (done) => {
+      it('GET /Customer?select=["name"] 200 - only include', (done) => {
         request.get({
           url: `${testUrl}/api/v1/Customer`,
           qs: {
@@ -752,10 +755,12 @@ module.exports = function (createFn, setup, dismantle) {
           json: true
         }, (err, res, body) => {
           assert.ok(!err)
-          assert.equal(res.statusCode, 400)
-          assert.deepEqual(body, {
-            name: 'TypeError',
-            message: 'Invalid select() argument. Must be string or object.'
+          assert.equal(res.statusCode, 200)
+          assert.equal(body.length, 3)
+          body.forEach((item) => {
+            assert.equal(Object.keys(item).length, 2)
+            assert.ok(item._id)
+            assert.ok(item.name)
           })
           done()
         })

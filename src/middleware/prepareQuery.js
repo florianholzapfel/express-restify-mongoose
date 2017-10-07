@@ -1,3 +1,5 @@
+'use strict'
+
 const _ = require('lodash')
 const isCoordinates = require('is-coordinates')
 
@@ -30,7 +32,7 @@ module.exports = function (options) {
       } else if (value[0] === '=') {
         return { $eq: value.substr(1) } */
       }
-    } else if (_.isArray(value) && key[0] !== '$' && key !== 'coordinates' && !isCoordinates(value)) {
+    } else if (Array.isArray(value) && key[0] !== '$' && key !== 'coordinates' && !isCoordinates(value)) {
       return { $in: value }
     }
 
@@ -87,7 +89,7 @@ module.exports = function (options) {
             }
           }
         }
-      } else if (!_.isArray(queryOptions.populate)) {
+      } else if (!Array.isArray(queryOptions.populate)) {
         queryOptions.populate = [queryOptions.populate]
       }
     }
