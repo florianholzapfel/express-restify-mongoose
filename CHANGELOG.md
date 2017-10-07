@@ -1,6 +1,10 @@
 Changelog
 =========
 
+### 4.2.0
+
+* removed `compile` step, code now runs natively on Node 4+ and `babel` is only used for coverage
+
 ### 4.1.1
 
 * fixed `distinct` queries when `options.totalCountHeader` is enabled
