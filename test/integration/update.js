@@ -63,10 +63,11 @@ module.exports = function (createFn, setup, dismantle) {
 
             return db.models.Customer.create({
               name: 'Jane',
-              purchases: [
-                {item: products[0]._id, number: 1},
-                {item: products[1]._id, number: 3}
-              ],
+              purchases: [{
+                item: products[0]._id, number: 1
+              }, {
+                item: products[1]._id, number: 3
+              }],
               returns: [products[0]._id, products[1]._id]
             })
           }).then((customer) => {
@@ -448,10 +449,11 @@ module.exports = function (createFn, setup, dismantle) {
 
             return db.models.Customer.create({
               name: 'Jane',
-              purchases: [
-                {item: products[0]._id, number: 1},
-                {item: products[1]._id, number: 3}
-              ],
+              purchases: [{
+                item: products[0]._id, number: 1
+              }, {
+                item: products[1]._id, number: 3
+              }],
               returns: [products[0]._id, products[1]._id]
             })
           }).then((customer) => {
