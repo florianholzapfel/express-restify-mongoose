@@ -60,6 +60,17 @@ module.exports = function (createFn, setup, dismantle) {
             })
           }).then((createdInvoice) => {
             invoice = createdInvoice
+
+            return db.models.Customer.create({
+              name: 'Jane',
+              purchases: [
+                {item: products[0]._id, number: 1},
+                {item: products[1]._id, number: 3}
+              ],
+              returns: [products[0]._id, products[1]._id]
+            })
+          }).then((customer) => {
+            customers.push(customer)
             server = app.listen(testPort, done)
           }, (err) => {
             done(err)
@@ -333,6 +344,28 @@ module.exports = function (createFn, setup, dismantle) {
               done(err)
             })
           })
+
+          it(`${method} /Customer/:id 200 - update with reduced count of populated returns`, (done) => {
+            db.models.Customer.findOne({name: 'Jane'}).populate('purchases returns').exec().then((customer) => {
+              customer.returns = [customer.returns[1]]
+              request({ method,
+                url: `${testUrl}/api/v1/Customer/${customer._id}`,
+                qs: {
+                  populate: 'returns,purchases.item'
+                },
+                json: customer
+              }, (err, res, body) => {
+                assert.ok(!err)
+                assert.equal(res.statusCode, 200)
+                assert.ok(body.returns)
+                assert.equal(body.returns.length, 1)
+                assert.equal(body.returns[0]._id, products[1]._id)
+                done()
+              })
+            }, (err) => {
+              done(err)
+            })
+          })
         })
       })
 
@@ -412,6 +445,17 @@ module.exports = function (createFn, setup, dismantle) {
             })
           }).then((createdInvoice) => {
             invoice = createdInvoice
+
+            return db.models.Customer.create({
+              name: 'Jane',
+              purchases: [
+                {item: products[0]._id, number: 1},
+                {item: products[1]._id, number: 3}
+              ],
+              returns: [products[0]._id, products[1]._id]
+            })
+          }).then((customer) => {
+            customers.push(customer)
             server = app.listen(testPort, done)
           }, (err) => {
             done(err)
@@ -692,6 +736,28 @@ module.exports = function (createFn, setup, dismantle) {
                 assert.equal(body.products[0].name, invoice.products[0].name)
                 assert.equal(body.products[1]._id, invoice.products[1]._id.toHexString())
                 assert.equal(body.products[1].name, invoice.products[1].name)
+                done()
+              })
+            }, (err) => {
+              done(err)
+            })
+          })
+
+          it(`${method} /Customer/:id 200 - update with reduced count of populated returns`, (done) => {
+            db.models.Customer.findOne({name: 'Jane'}).populate('purchases returns').exec().then((customer) => {
+              customer.returns = [customer.returns[1]]
+              request({ method,
+                url: `${testUrl}/api/v1/Customer/${customer._id}`,
+                qs: {
+                  populate: 'returns,purchases.item'
+                },
+                json: customer
+              }, (err, res, body) => {
+                assert.ok(!err)
+                assert.equal(res.statusCode, 200)
+                assert.ok(body.returns)
+                assert.equal(body.returns.length, 1)
+                assert.equal(body.returns[0]._id, products[1]._id)
                 done()
               })
             }, (err) => {
