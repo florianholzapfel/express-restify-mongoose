@@ -1,3 +1,5 @@
+'use strict'
+
 module.exports = function (isExpress) {
   return function output (req, res) {
     if (isExpress) {

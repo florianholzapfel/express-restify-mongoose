@@ -1,3 +1,5 @@
+'use strict'
+
 module.exports = function (options) {
   const errorHandler = require('../errorHandler')(options)
 

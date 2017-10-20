@@ -1,5 +1,7 @@
+'use strict'
+
 const _ = require('lodash')
-const async = require('async')
+const asyncSeries = require('async/series')
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const util = require('util')
@@ -129,14 +131,16 @@ module.exports = function () {
     }
 
     if (opts.connect) {
-      mongoose.connect('mongodb://localhost/database', callback)
+      mongoose.connect('mongodb://localhost/database', {
+        useMongoClient: true
+      }, callback)
     } else if (_.isFunction(callback)) {
       callback()
     }
   }
 
   function reset (callback) {
-    async.series([
+    asyncSeries([
       function (cb) {
         mongoose.models.Customer.remove(cb)
       },

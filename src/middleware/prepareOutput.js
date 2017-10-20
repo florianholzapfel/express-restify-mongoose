@@ -1,5 +1,7 @@
+'use strict'
+
 const _ = require('lodash')
-const async = require('async')
+const asyncEachSeries = require('async/eachSeries')
 
 module.exports = function (options, excludedMap) {
   const errorHandler = require('../errorHandler')(options)
@@ -27,7 +29,7 @@ module.exports = function (options, excludedMap) {
         break
     }
 
-    async.eachSeries(postMiddleware, (middleware, cb) => {
+    asyncEachSeries(postMiddleware, (middleware, cb) => {
       middleware(req, res, cb)
     }, (err) => {
       if (err) {
