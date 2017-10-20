@@ -3,12 +3,6 @@
     "email": "flo.holzapfel@gmail.com",
     "name": "Florian Holzapfel"
   },
-  "contributors": [
-    {
-      "name": "Gautham Ramachandran",
-      "email": "gautham2r@gmail.com"
-    }
-  ],
   "dependencies": {
     "async": "~2.5.0",
     "bluebird": "~3.5.0",
