@@ -22,20 +22,20 @@ module.exports = function (model, options, excludedMap) {
   }
 
   function getItems (req, res, next) {
-    let model = (req.erm && req.erm.model) || model
+    let contextModel = (req.erm && req.erm.model) || model
     if (isDistinctExcluded(req)) {
       req.erm.result = []
       req.erm.statusCode = 200
       return next()
     }
 
-    options.contextFilter(model, req, (filteredContext) => {
+    options.contextFilter(contextModel, req, (filteredContext) => {
       buildQuery(filteredContext.find(), req._ermQueryOptions).then((items) => {
         req.erm.result = items
         req.erm.statusCode = 200
 
         if (options.totalCountHeader && !req._ermQueryOptions['distinct']) {
-          options.contextFilter(model, req, (countFilteredContext) => {
+          options.contextFilter(contextModel, req, (countFilteredContext) => {
             buildQuery(countFilteredContext.count(), _.assign(req._ermQueryOptions, {
               skip: 0,
               limit: 0
@@ -52,8 +52,8 @@ module.exports = function (model, options, excludedMap) {
   }
 
   function getCount (req, res, next) {
-    let model = (req.erm && req.erm.model) || model
-    options.contextFilter(model, req, (filteredContext) => {
+    let contextModel = (req.erm && req.erm.model) || model
+    options.contextFilter(contextModel, req, (filteredContext) => {
       buildQuery(filteredContext.count(), req._ermQueryOptions).then((count) => {
         req.erm.result = { count: count }
         req.erm.statusCode = 200
@@ -64,8 +64,8 @@ module.exports = function (model, options, excludedMap) {
   }
 
   function getShallow (req, res, next) {
-    let model = (req.erm && req.erm.model) || model
-    options.contextFilter(model, req, (filteredContext) => {
+    let contextModel = (req.erm && req.erm.model) || model
+    options.contextFilter(contextModel, req, (filteredContext) => {
       buildQuery(findById(filteredContext, req.params.id), req._ermQueryOptions).then((item) => {
         if (!item) {
           return errorHandler(req, res, next)(new Error(http.STATUS_CODES[404]))
@@ -84,8 +84,8 @@ module.exports = function (model, options, excludedMap) {
   }
 
   function deleteItems (req, res, next) {
-    let model = (req.erm && req.erm.model) || model
-    options.contextFilter(model, req, (filteredContext) => {
+    let contextModel = (req.erm && req.erm.model) || model
+    options.contextFilter(contextModel, req, (filteredContext) => {
       buildQuery(filteredContext.remove({}), req._ermQueryOptions).then(() => {
         req.erm.statusCode = 204
 
@@ -95,14 +95,14 @@ module.exports = function (model, options, excludedMap) {
   }
 
   function getItem (req, res, next) {
-    let model = (req.erm && req.erm.model) || model
+    let contextModel = (req.erm && req.erm.model) || model
     if (isDistinctExcluded(req)) {
       req.erm.result = []
       req.erm.statusCode = 200
       return next()
     }
 
-    options.contextFilter(model, req, (filteredContext) => {
+    options.contextFilter(contextModel, req, (filteredContext) => {
       buildQuery(findById(filteredContext, req.params.id), req._ermQueryOptions).then((item) => {
         if (!item) {
           return errorHandler(req, res, next)(new Error(http.STATUS_CODES[404]))
@@ -117,9 +117,9 @@ module.exports = function (model, options, excludedMap) {
   }
 
   function deleteItem (req, res, next) {
-    let model = (req.erm && req.erm.model) || model
+    let contextModel = (req.erm && req.erm.model) || model
     if (options.findOneAndRemove) {
-      options.contextFilter(model, req, (filteredContext) => {
+      options.contextFilter(contextModel, req, (filteredContext) => {
         findById(filteredContext, req.params.id).findOneAndRemove().then((item) => {
           if (!item) {
             return errorHandler(req, res, next)(new Error(http.STATUS_CODES[404]))
@@ -140,21 +140,21 @@ module.exports = function (model, options, excludedMap) {
   }
 
   function createObject (req, res, next) {
-    let model = (req.erm && req.erm.model) || model
+    let contextModel = (req.erm && req.erm.model) || model
     req.body = options.filter.filterObject(req.body || {}, {
       access: req.access,
       populate: req._ermQueryOptions.populate
     })
 
-    if (model.schema.options._id) {
+    if (contextModel.schema.options._id) {
       delete req.body._id
     }
 
-    if (model.schema.options.versionKey) {
-      delete req.body[model.schema.options.versionKey]
+    if (contextModel.schema.options.versionKey) {
+      delete req.body[contextModel.schema.options.versionKey]
     }
 
-    model.create(req.body).then((item) => model.populate(item, req._ermQueryOptions.populate || [])).then((item) => {
+    contextModel.create(req.body).then((item) => contextModel.populate(item, req._ermQueryOptions.populate || [])).then((item) => {
       req.erm.result = item
       req.erm.statusCode = 201
 
@@ -163,7 +163,7 @@ module.exports = function (model, options, excludedMap) {
   }
 
   function modifyObject (req, res, next) {
-    let model = (req.erm && req.erm.model) || model
+    let contextModel = (req.erm && req.erm.model) || model
     req.body = options.filter.filterObject(req.body || {}, {
       access: req.access,
       populate: req._ermQueryOptions.populate
@@ -171,15 +171,15 @@ module.exports = function (model, options, excludedMap) {
 
     delete req.body._id
 
-    if (model.schema.options.versionKey) {
-      delete req.body[model.schema.options.versionKey]
+    if (contextModel.schema.options.versionKey) {
+      delete req.body[contextModel.schema.options.versionKey]
     }
 
     function depopulate (src) {
       let dst = {}
 
       for (let key in src) {
-        const path = model.schema.path(key)
+        const path = contextModel.schema.path(key)
 
         if (path && path.caster && path.caster.instance === 'ObjectID') {
           if (Array.isArray(src[key])) {
@@ -211,13 +211,13 @@ module.exports = function (model, options, excludedMap) {
     const cleanBody = moredots(depopulate(req.body))
 
     if (options.findOneAndUpdate) {
-      options.contextFilter(model, req, (filteredContext) => {
+      options.contextFilter(contextModel, req, (filteredContext) => {
         findById(filteredContext, req.params.id).findOneAndUpdate({}, {
           $set: cleanBody
         }, {
           new: true,
           runValidators: options.runValidators
-        }).exec().then((item) => model.populate(item, req._ermQueryOptions.populate || [])).then((item) => {
+        }).exec().then((item) => contextModel.populate(item, req._ermQueryOptions.populate || [])).then((item) => {
           if (!item) {
             return errorHandler(req, res, next)(new Error(http.STATUS_CODES[404]))
           }
@@ -233,7 +233,7 @@ module.exports = function (model, options, excludedMap) {
         req.erm.document.set(key, cleanBody[key])
       }
 
-      req.erm.document.save().then((item) => model.populate(item, req._ermQueryOptions.populate || [])).then((item) => {
+      req.erm.document.save().then((item) => contextModel.populate(item, req._ermQueryOptions.populate || [])).then((item) => {
         req.erm.result = item
         req.erm.statusCode = 200
 
