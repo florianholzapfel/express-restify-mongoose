@@ -1,13 +1,14 @@
 'use strict'
 
+const clone = require('lodash.clone')
+const defaults = require('lodash.defaults')
 const util = require('util')
-const _ = require('lodash')
 const Filter = require('./resource_filter')
 let customDefaults = null
 let excludedMap = {}
 
 function getDefaults () {
-  return _.defaults(_.clone(customDefaults) || {}, {
+  return defaults(clone(customDefaults) || {}, {
     prefix: '/api',
     version: '/v1',
     idProperty: '_id',
@@ -23,8 +24,7 @@ function getDefaults () {
 }
 
 const restify = function (app, model, opts) {
-  let options = {}
-  _.assign(options, getDefaults(), opts || {})
+  const options = Object.assign({}, getDefaults(), opts || {})
 
   const access = require('./middleware/access')
   const ensureContentType = require('./middleware/ensureContentType')(options)
@@ -127,7 +127,7 @@ const restify = function (app, model, opts) {
   const uriCount = uriItems + '/count'
   const uriShallow = uriItem + '/shallow'
 
-  if (_.isUndefined(app.delete)) {
+  if (typeof app.delete === 'undefined') {
     app.delete = app.del
   }
 

@@ -1,6 +1,5 @@
 'use strict'
 
-const _ = require('lodash')
 const asyncEachSeries = require('async/eachSeries')
 
 module.exports = function (options, excludedMap) {
@@ -48,7 +47,7 @@ module.exports = function (options, excludedMap) {
       }
 
       if (options.totalCountHeader && req.erm.totalCount) {
-        res.header(_.isString(options.totalCountHeader) ? options.totalCountHeader : 'X-Total-Count', req.erm.totalCount)
+        res.header(typeof options.totalCountHeader === 'string' ? options.totalCountHeader : 'X-Total-Count', req.erm.totalCount)
       }
 
       options.outputFn(req, res)

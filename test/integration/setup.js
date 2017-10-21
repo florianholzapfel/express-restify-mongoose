@@ -1,7 +1,7 @@
 'use strict'
 
-const _ = require('lodash')
 const asyncSeries = require('async/series')
+const defaults = require('lodash.defaults')
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const util = require('util')
@@ -97,12 +97,12 @@ module.exports = function () {
   })
 
   function initialize (opts, callback) {
-    if (_.isFunction(opts)) {
+    if (typeof opts === 'function') {
       callback = opts
       opts = {}
     }
 
-    _.defaults(opts, {
+    defaults(opts, {
       connect: true
     })
 
@@ -134,7 +134,7 @@ module.exports = function () {
       mongoose.connect('mongodb://localhost/database', {
         useMongoClient: true
       }, callback)
-    } else if (_.isFunction(callback)) {
+    } else if (typeof callback === 'function') {
       callback()
     }
   }

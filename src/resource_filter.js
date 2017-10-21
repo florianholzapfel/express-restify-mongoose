@@ -1,7 +1,11 @@
 'use strict'
 
-const _ = require('lodash')
+const defaults = require('lodash.defaults')
 const detective = require('mongoose-detective')
+const get = require('lodash.get')
+const has = require('lodash.has')
+const isPlainObject = require('lodash.isplainobject')
+const map = require('lodash.map')
 const weedout = require('weedout')
 
 /**
@@ -15,7 +19,7 @@ const weedout = require('weedout')
 function Filter (opts) {
   this.model = opts.model
 
-  this.filteredKeys = _.isPlainObject(opts.filteredKeys) ? {
+  this.filteredKeys = isPlainObject(opts.filteredKeys) ? {
     private: opts.filteredKeys.private || [],
     protected: opts.filteredKeys.protected || []
   } : {
@@ -23,7 +27,7 @@ function Filter (opts) {
     protected: []
   }
 
-  if (this.model && this.model.discriminators && _.isPlainObject(opts.excludedMap)) {
+  if (this.model && this.model.discriminators && isPlainObject(opts.excludedMap)) {
     for (let modelName in this.model.discriminators) {
       if (opts.excludedMap[modelName]) {
         this.filteredKeys.private = this.filteredKeys.private.concat(opts.excludedMap[modelName].private)
@@ -50,7 +54,7 @@ Filter.prototype.getExcluded = function (opts) {
   let entry = opts.excludedMap && opts.modelName ? opts.excludedMap[opts.modelName] : null
 
   if (!entry) {
-    entry = _.isPlainObject(opts.filteredKeys) ? {
+    entry = isPlainObject(opts.filteredKeys) ? {
       private: opts.filteredKeys.private || [],
       protected: opts.filteredKeys.protected || []
     } : {
@@ -67,7 +71,7 @@ Filter.prototype.isExcluded = function (field, opts) {
     return false
   }
 
-  opts = _.defaults(opts, {
+  opts = defaults(opts, {
     access: 'public',
     excludedMap: {},
     filteredKeys: this.filteredKeys,
@@ -90,7 +94,7 @@ Filter.prototype.filterItem = function (item, excluded) {
   }
 
   if (item && excluded) {
-    if (_.isFunction(item.toObject)) {
+    if (typeof item.toObject === 'function') {
       item = item.toObject()
     }
 
@@ -132,16 +136,16 @@ Filter.prototype.filterPopulatedItem = function (item, opts) {
       modelName: detective(this.model, opts.populate[i].path)
     })
 
-    if (_.has(item, opts.populate[i].path)) {
-      this.filterItem(_.get(item, opts.populate[i].path), excluded)
+    if (has(item, opts.populate[i].path)) {
+      this.filterItem(get(item, opts.populate[i].path), excluded)
     } else {
       const pathToArray = opts.populate[i].path.split('.').slice(0, -1).join('.')
 
-      if (_.has(item, pathToArray)) {
-        const array = _.get(item, pathToArray)
+      if (has(item, pathToArray)) {
+        const array = get(item, pathToArray)
         const pathToObject = opts.populate[i].path.split('.').slice(-1).join('.')
 
-        this.filterItem(_.map(array, pathToObject), excluded)
+        this.filterItem(map(array, pathToObject), excluded)
       }
     }
   }
@@ -161,7 +165,7 @@ Filter.prototype.filterPopulatedItem = function (item, opts) {
  * @returns {Object} - Filtered document.
  */
 Filter.prototype.filterObject = function (resource, opts) {
-  opts = _.defaults(opts || {}, {
+  opts = defaults(opts || {}, {
     access: 'public',
     excludedMap: {},
     filteredKeys: this.filteredKeys,
