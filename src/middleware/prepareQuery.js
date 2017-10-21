@@ -1,6 +1,5 @@
 'use strict'
 
-const _ = require('lodash')
 const isCoordinates = require('is-coordinates')
 
 module.exports = function (options) {
@@ -11,7 +10,7 @@ module.exports = function (options) {
       return undefined
     }
 
-    if (_.isString(value)) {
+    if (typeof value === 'string') {
       if (value[0] === '~') { // parse RegExp
         return options.allowRegex ? new RegExp(value.substr(1), 'i') : undefined
       } else if (value[0] === '>') {
@@ -40,7 +39,7 @@ module.exports = function (options) {
   }
 
   function parseQueryOptions (queryOptions) {
-    if (queryOptions.select && _.isString(queryOptions.select)) {
+    if (queryOptions.select && typeof queryOptions.select === 'string') {
       let select = queryOptions.select.split(',')
       queryOptions.select = {}
 
@@ -54,7 +53,7 @@ module.exports = function (options) {
     }
 
     if (queryOptions.populate) {
-      if (_.isString(queryOptions.populate)) {
+      if (typeof queryOptions.populate === 'string') {
         let populate = queryOptions.populate.split(',')
         queryOptions.populate = []
 
