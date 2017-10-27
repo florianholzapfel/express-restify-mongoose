@@ -6,6 +6,7 @@
   "dependencies": {
     "async": "~2.5.0",
     "bluebird": "~3.5.0",
+    "ensure-array": "0.0.5",
     "is-coordinates": "~2.0.0",
     "lodash.clone": "~4.5.0",
     "lodash.defaults": "~4.2.0",
