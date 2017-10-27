@@ -10,28 +10,7 @@ module.exports = function (options) {
       return undefined
     }
 
-    if (typeof value === 'string') {
-      if (value[0] === '~') { // parse RegExp
-        return options.allowRegex ? new RegExp(value.substr(1), 'i') : undefined
-      } else if (value[0] === '>') {
-        if (value[1] === '=') {
-          return { $gte: value.substr(2) }
-        } else {
-          return { $gt: value.substr(1) }
-        }
-      } else if (value[0] === '<') {
-        if (value[1] === '=') {
-          return { $lte: value.substr(2) }
-        } else {
-          return { $lt: value.substr(1) }
-        }
-      } else if (value[0] === '!' && value[1] === '=') {
-        return { $ne: value.substr(2) }
-      /* This feature was disabled because it requires MongoDB 3
-      } else if (value[0] === '=') {
-        return { $eq: value.substr(1) } */
-      }
-    } else if (Array.isArray(value) && key[0] !== '$' && key !== 'coordinates' && !isCoordinates(value)) {
+    if (Array.isArray(value) && key[0] !== '$' && key !== 'coordinates' && !isCoordinates(value)) {
       return { $in: value }
     }
 
