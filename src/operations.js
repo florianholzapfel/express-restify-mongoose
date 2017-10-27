@@ -15,7 +15,7 @@ module.exports = function (model, options, excludedMap) {
   }
 
   function isDistinctExcluded (req) {
-    return options.filter.isExcluded(req._ermQueryOptions['distinct'], {
+    return options.filter.isExcluded(req.erm.query['distinct'], {
       access: req.access,
       excludedMap: excludedMap
     })
@@ -29,13 +29,13 @@ module.exports = function (model, options, excludedMap) {
     }
 
     options.contextFilter(model, req, (filteredContext) => {
-      buildQuery(filteredContext.find(), req._ermQueryOptions).then((items) => {
+      buildQuery(filteredContext.find(), req.erm.query).then((items) => {
         req.erm.result = items
         req.erm.statusCode = 200
 
-        if (options.totalCountHeader && !req._ermQueryOptions['distinct']) {
+        if (options.totalCountHeader && !req.erm.query['distinct']) {
           options.contextFilter(model, req, (countFilteredContext) => {
-            buildQuery(countFilteredContext.count(), Object.assign(req._ermQueryOptions, {
+            buildQuery(countFilteredContext.count(), Object.assign(req.erm.query, {
               skip: 0,
               limit: 0
             })).then((count) => {
@@ -52,7 +52,7 @@ module.exports = function (model, options, excludedMap) {
 
   function getCount (req, res, next) {
     options.contextFilter(model, req, (filteredContext) => {
-      buildQuery(filteredContext.count(), req._ermQueryOptions).then((count) => {
+      buildQuery(filteredContext.count(), req.erm.query).then((count) => {
         req.erm.result = { count: count }
         req.erm.statusCode = 200
 
@@ -63,7 +63,7 @@ module.exports = function (model, options, excludedMap) {
 
   function getShallow (req, res, next) {
     options.contextFilter(model, req, (filteredContext) => {
-      buildQuery(findById(filteredContext, req.params.id), req._ermQueryOptions).then((item) => {
+      buildQuery(findById(filteredContext, req.params.id), req.erm.query).then((item) => {
         if (!item) {
           return errorHandler(req, res, next)(new Error(http.STATUS_CODES[404]))
         }
@@ -82,7 +82,7 @@ module.exports = function (model, options, excludedMap) {
 
   function deleteItems (req, res, next) {
     options.contextFilter(model, req, (filteredContext) => {
-      buildQuery(filteredContext.remove(), req._ermQueryOptions).then(() => {
+      buildQuery(filteredContext.remove(), req.erm.query).then(() => {
         req.erm.statusCode = 204
 
         next()
@@ -98,7 +98,7 @@ module.exports = function (model, options, excludedMap) {
     }
 
     options.contextFilter(model, req, (filteredContext) => {
-      buildQuery(findById(filteredContext, req.params.id), req._ermQueryOptions).then((item) => {
+      buildQuery(findById(filteredContext, req.params.id), req.erm.query).then((item) => {
         if (!item) {
           return errorHandler(req, res, next)(new Error(http.STATUS_CODES[404]))
         }
@@ -136,7 +136,7 @@ module.exports = function (model, options, excludedMap) {
   function createObject (req, res, next) {
     req.body = options.filter.filterObject(req.body || {}, {
       access: req.access,
-      populate: req._ermQueryOptions.populate
+      populate: req.erm.query.populate
     })
 
     if (model.schema.options._id) {
@@ -147,7 +147,7 @@ module.exports = function (model, options, excludedMap) {
       delete req.body[model.schema.options.versionKey]
     }
 
-    model.create(req.body).then((item) => model.populate(item, req._ermQueryOptions.populate || [])).then((item) => {
+    model.create(req.body).then((item) => model.populate(item, req.erm.query.populate || [])).then((item) => {
       req.erm.result = item
       req.erm.statusCode = 201
 
@@ -158,7 +158,7 @@ module.exports = function (model, options, excludedMap) {
   function modifyObject (req, res, next) {
     req.body = options.filter.filterObject(req.body || {}, {
       access: req.access,
-      populate: req._ermQueryOptions.populate
+      populate: req.erm.query.populate
     })
 
     delete req.body._id
@@ -209,7 +209,7 @@ module.exports = function (model, options, excludedMap) {
         }, {
           new: true,
           runValidators: options.runValidators
-        }).exec().then((item) => model.populate(item, req._ermQueryOptions.populate || [])).then((item) => {
+        }).exec().then((item) => model.populate(item, req.erm.query.populate || [])).then((item) => {
           if (!item) {
             return errorHandler(req, res, next)(new Error(http.STATUS_CODES[404]))
           }
@@ -225,7 +225,7 @@ module.exports = function (model, options, excludedMap) {
         req.erm.document.set(key, cleanBody[key])
       }
 
-      req.erm.document.save().then((item) => model.populate(item, req._ermQueryOptions.populate || [])).then((item) => {
+      req.erm.document.save().then((item) => model.populate(item, req.erm.query.populate || [])).then((item) => {
         req.erm.result = item
         req.erm.statusCode = 200
 
