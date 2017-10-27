@@ -98,8 +98,7 @@ module.exports = function (options) {
 
   return function (req, res, next) {
     const whitelist = ['distinct', 'limit', 'populate', 'query', 'select', 'skip', 'sort']
-
-    req._ermQueryOptions = {}
+    const query = {}
 
     for (let key in req.query) {
       if (whitelist.indexOf(key) === -1) {
@@ -108,24 +107,25 @@ module.exports = function (options) {
 
       if (key === 'query') {
         try {
-          req._ermQueryOptions[key] = JSON.parse(req.query[key], jsonQueryParser)
+          query[key] = JSON.parse(req.query[key], jsonQueryParser)
         } catch (e) {
           return errorHandler(req, res, next)(new Error(`invalid_json_${key}`))
         }
       } else if (key === 'populate' || key === 'select' || key === 'sort') {
         try {
-          req._ermQueryOptions[key] = JSON.parse(req.query[key])
+          query[key] = JSON.parse(req.query[key])
         } catch (e) {
-          req._ermQueryOptions[key] = req.query[key]
+          query[key] = req.query[key]
         }
       } else if (key === 'limit' || key === 'skip') {
-        req._ermQueryOptions[key] = parseInt(req.query[key], 10)
+        query[key] = parseInt(req.query[key], 10)
       } else {
-        req._ermQueryOptions[key] = req.query[key]
+        query[key] = req.query[key]
       }
     }
 
-    req._ermQueryOptions = parseQueryOptions(req._ermQueryOptions)
+    req.erm = req.erm || {}
+    req.erm.query = parseQueryOptions(query)
 
     next()
   }

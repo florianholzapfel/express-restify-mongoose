@@ -40,7 +40,7 @@ module.exports = function (options, excludedMap) {
         let opts = {
           access: req.access,
           excludedMap: excludedMap,
-          populate: req._ermQueryOptions ? req._ermQueryOptions.populate : null
+          populate: req.erm && req.erm.query ? req.erm.query.populate : null
         }
 
         req.erm.result = options.filter ? options.filter.filterObject(req.erm.result, opts) : req.erm.result
