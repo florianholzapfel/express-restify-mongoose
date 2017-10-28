@@ -123,9 +123,7 @@ module.exports = function (createFn, setup, dismantle) {
           name: 'Mike'
         }]).then((createdCustomers) => {
           server = app.listen(testPort, done)
-        }, (err) => {
-          done(err)
-        })
+        }).catch(done)
       })
     })
 
@@ -226,9 +224,7 @@ module.exports = function (createFn, setup, dismantle) {
           name: 'Mike'
         }]).then((createdCustomers) => {
           server = app.listen(testPort, done)
-        }, (err) => {
-          done(err)
-        })
+        }).catch(done)
       })
     })
 
@@ -276,9 +272,7 @@ module.exports = function (createFn, setup, dismantle) {
           name: 'Mike'
         }]).then((createdCustomers) => {
           server = app.listen(testPort, done)
-        }, (err) => {
-          done(err)
-        })
+        }).catch(done)
       })
     })
 
@@ -326,9 +320,7 @@ module.exports = function (createFn, setup, dismantle) {
           name: 'Mike'
         }]).then((createdCustomers) => {
           server = app.listen(testPort, done)
-        }, (err) => {
-          done(err)
-        })
+        }).catch(done)
       })
     })
 
@@ -530,9 +522,7 @@ module.exports = function (createFn, setup, dismantle) {
           }).then((createdCustomer) => {
             customer = createdCustomer
             server = app.listen(testPort, done)
-          }, (err) => {
-            done(err)
-          })
+          }).catch(done)
         })
       })
 
@@ -620,9 +610,7 @@ module.exports = function (createFn, setup, dismantle) {
         }).then((createdCustomer) => {
           customer = createdCustomer
           server = app.listen(testPort, done)
-        }, (err) => {
-          done(err)
-        })
+        }).catch(done)
       })
     })
 
@@ -694,9 +682,7 @@ module.exports = function (createFn, setup, dismantle) {
         }).then((createdCustomer) => {
           customer = createdCustomer
           server = app.listen(testPort, done)
-        }, (err) => {
-          done(err)
-        })
+        }).catch(done)
       })
     })
 
@@ -740,9 +726,7 @@ module.exports = function (createFn, setup, dismantle) {
         }).then((createdCustomer) => {
           customer = createdCustomer
           server = app.listen(testPort, done)
-        }, (err) => {
-          done(err)
-        })
+        }).catch(done)
       })
     })
 
@@ -809,9 +793,7 @@ module.exports = function (createFn, setup, dismantle) {
           name: 'Bob'
         }).then((createdCustomer) => {
           server = app.listen(testPort, done)
-        }, (err) => {
-          done(err)
-        })
+        }).catch(done)
       })
     })
 
