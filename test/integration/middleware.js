@@ -1183,4 +1183,58 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
   })
+
+  describe('postProcess (async outputFn)', () => {
+    let app = createFn()
+    let server
+    let options = {
+      outputFn: (req, res) => {
+        if (app.isRestify) {
+          res.send(200)
+        } else {
+          res.sendStatus(200)
+        }
+
+        return Promise.resolve()
+      },
+      postProcess: sinon.spy((req, res, next) => {
+        next()
+      }),
+      restify: app.isRestify
+    }
+
+    beforeEach((done) => {
+      setup((err) => {
+        if (err) {
+          return done(err)
+        }
+
+        erm.serve(app, db.models.Customer, options)
+
+        server = app.listen(testPort, done)
+      })
+    })
+
+    afterEach((done) => {
+      options.postProcess.reset()
+      dismantle(app, server, done)
+    })
+
+    it('GET /Customer 200', (done) => {
+      request.get({
+        url: `${testUrl}/api/v1/Customer`,
+        json: true
+      }, (err, res, body) => {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 200)
+        sinon.assert.calledOnce(options.postProcess)
+        let args = options.postProcess.args[0]
+        assert.equal(args.length, 3)
+        assert.deepEqual(args[0].erm.result, [])
+        assert.equal(args[0].erm.statusCode, 200)
+        assert.equal(typeof args[2], 'function')
+        done()
+      })
+    })
+  })
 }
