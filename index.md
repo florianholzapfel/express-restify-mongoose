@@ -571,9 +571,9 @@ postDelete: (req, res, next) => {
 ```
 
 #### outputFn
-<span class="label label-primary" title="type">(req, res) => {}</span>
+<span class="label label-primary" title="type">(req, res) => {}</span><span class="label label-info">4.3 (Promise support)</span>
 
-Function used to output the result. The filtered object is available on `req.erm.result`.
+Function used to output the result. The filtered object is available on `req.erm.result`. Using the async version allows handling errors through [onError](#onerror).
 
 ##### Examples
 
@@ -585,6 +585,32 @@ outputFn: (req, res) => {
   const statusCode = req.erm.statusCode // 200 or 201
 
   res.status(statusCode).json(result)
+}
+```
+
+Async (using promises)
+
+```js
+outputFn: async (req, res) => {
+  return performAsyncLogic().then() => {
+    const result = req.erm.result         // filtered object
+    const statusCode = req.erm.statusCode // 200 or 201
+
+    return res.status(statusCode).json(result)
+  })
+}
+```
+
+Async (using async/await)
+
+```js
+outputFn: async (req, res) => {
+  const asyncLogicResult = await performAsyncLogic()
+
+  const result = req.erm.result         // filtered object
+  const statusCode = req.erm.statusCode // 200 or 201
+
+  return res.status(statusCode).json(result)
 }
 ```
 
