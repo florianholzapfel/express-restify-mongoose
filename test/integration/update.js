@@ -73,9 +73,7 @@ module.exports = function (createFn, setup, dismantle) {
           }).then((customer) => {
             customers.push(customer)
             server = app.listen(testPort, done)
-          }, (err) => {
-            done(err)
-          })
+          }).catch(done)
         })
       })
 
@@ -295,9 +293,7 @@ module.exports = function (createFn, setup, dismantle) {
                 assert.equal(body.customer, invoice.customer._id)
                 done()
               })
-            }, (err) => {
-              done(err)
-            })
+            }).catch(done)
           })
 
           it(`${method} /Invoice/:id 200 - update with populated products`, (done) => {
@@ -315,9 +311,7 @@ module.exports = function (createFn, setup, dismantle) {
                 assert.deepEqual(body.products, [invoice.products[0]._id.toHexString(), invoice.products[1]._id.toHexString()])
                 done()
               })
-            }, (err) => {
-              done(err)
-            })
+            }).catch(done)
           })
 
           it(`${method} /Invoice/:id?populate=customer,products 200 - update with populated customer`, (done) => {
@@ -341,9 +335,7 @@ module.exports = function (createFn, setup, dismantle) {
                 assert.equal(body.products[1].name, invoice.products[1].name)
                 done()
               })
-            }, (err) => {
-              done(err)
-            })
+            }).catch(done)
           })
 
           it(`${method} /Customer/:id 200 - update with reduced count of populated returns`, (done) => {
@@ -363,9 +355,7 @@ module.exports = function (createFn, setup, dismantle) {
                 assert.equal(body.returns[0]._id, products[1]._id)
                 done()
               })
-            }, (err) => {
-              done(err)
-            })
+            }).catch(done)
           })
         })
       })
@@ -459,9 +449,7 @@ module.exports = function (createFn, setup, dismantle) {
           }).then((customer) => {
             customers.push(customer)
             server = app.listen(testPort, done)
-          }, (err) => {
-            done(err)
-          })
+          }).catch(done)
         })
       })
 
@@ -694,9 +682,7 @@ module.exports = function (createFn, setup, dismantle) {
                 assert.equal(body.customer, invoice.customer._id)
                 done()
               })
-            }, (err) => {
-              done(err)
-            })
+            }).catch(done)
           })
 
           it(`${method} /Invoice/:id 200 - update with populated products`, (done) => {
@@ -714,9 +700,7 @@ module.exports = function (createFn, setup, dismantle) {
                 assert.deepEqual(body.products, [invoice.products[0]._id.toHexString(), invoice.products[1]._id.toHexString()])
                 done()
               })
-            }, (err) => {
-              done(err)
-            })
+            }).catch(done)
           })
 
           it(`${method} /Invoice/:id?populate=customer,products 200 - update with populated customer`, (done) => {
@@ -740,9 +724,7 @@ module.exports = function (createFn, setup, dismantle) {
                 assert.equal(body.products[1].name, invoice.products[1].name)
                 done()
               })
-            }, (err) => {
-              done(err)
-            })
+            }).catch(done)
           })
 
           it(`${method} /Customer/:id 200 - update with reduced count of populated returns`, (done) => {
@@ -762,9 +744,7 @@ module.exports = function (createFn, setup, dismantle) {
                 assert.equal(body.returns[0]._id, products[1]._id)
                 done()
               })
-            }, (err) => {
-              done(err)
-            })
+            }).catch(done)
           })
         })
       })

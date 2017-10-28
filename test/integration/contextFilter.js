@@ -46,9 +46,7 @@ module.exports = function (createFn, setup, dismantle) {
         }]).then((createdCustomers) => {
           customers = createdCustomers
           server = app.listen(testPort, done)
-        }, (err) => {
-          done(err)
-        })
+        }).catch(done)
       })
     })
 
