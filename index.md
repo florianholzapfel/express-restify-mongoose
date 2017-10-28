@@ -363,14 +363,14 @@ Whether to use `.findOneAndUpdate()` or `.findById()` and then `.save()`, allowi
 Whether to use `.findOneAndRemove()` or `.findById()` and then `.remove()`, allowing document middleware to be called. For more information regarding mongoose middleware, [read the docs](http://mongoosejs.com/docs/middleware.html).
 
 #### preMiddleware
-<span class="label label-primary" title="type">function (req, res, next)</span>
+<span class="label label-primary" title="type">(req, res, next) => {}</span>
 
 Middleware that runs before [preCreate](#preCreate), [preRead](#preRead), [preUpdate](#preUpdate) and [preDelete](#preDelete).
 
 ##### Example
 
 ```js
-preMiddleware: function (req, res, next) {
+preMiddleware: (req, res, next) => {
   performAsyncLogic((err) => {
     next(err)
   })
@@ -378,12 +378,12 @@ preMiddleware: function (req, res, next) {
 ```
 
 #### preCreate
-<span class="label label-primary" title="type">function (req, res, next)</span>
+<span class="label label-primary" title="type">(req, res, next) => {}</span>
 
 Middleware that runs before creating a resource.
 
 ```js
-preCreate: function (req, res, next) {
+preCreate: (req, res, next) => {
   performAsyncLogic((err) => {
     next(err)
   })
@@ -391,12 +391,12 @@ preCreate: function (req, res, next) {
 ```
 
 #### preRead
-<span class="label label-primary" title="type">function (req, res, next)</span>
+<span class="label label-primary" title="type">(req, res, next) => {}</span>
 
 Middleware that runs before reading a resource.
 
 ```js
-preRead: function (req, res, next) {
+preRead: (req, res, next) => {
   performAsyncLogic((err) => {
     next(err)
   })
@@ -404,12 +404,12 @@ preRead: function (req, res, next) {
 ```
 
 #### preUpdate
-<span class="label label-primary" title="type">function (req, res, next)</span>
+<span class="label label-primary" title="type">(req, res, next) => {}</span>
 
 Middleware that runs before updating a resource.
 
 ```js
-preUpdate: function (req, res, next) {
+preUpdate: (req, res, next) => {
   performAsyncLogic((err) => {
     next(err)
   })
@@ -420,7 +420,7 @@ When `findOneAndUpdate: false`, the document is available which is useful for au
 
 ```js
 findOneAndUpdate: false,
-preUpdate: function (req, res, next) {
+preUpdate: (req, res, next) => {
   if (req.erm.document.user !== req.user._id) {
     return res.sendStatus(401)
   }
@@ -432,12 +432,12 @@ preUpdate: function (req, res, next) {
 ```
 
 #### preDelete
-<span class="label label-primary" title="type">function (req, res, next)</span>
+<span class="label label-primary" title="type">(req, res, next) => {}</span>
 
 Middleware that runs before deleting a resource.
 
 ```js
-preDelete: function (req, res, next) {
+preDelete: (req, res, next) => {
   performAsyncLogic((err) => {
     next(err)
   })
@@ -448,22 +448,22 @@ When `findOneAndRemove: false`, the document is available which is useful for au
 
 ```js
 findOneAndRemove: false,
-preDelete: function (req, res, next) {
+preDelete: (req, res, next) => {
   if (req.erm.document.user !== req.user._id) {
     return res.sendStatus(401)
   }
 
   req.erm.document.deletedAt = new Date()
-  req.erm.document.save().then(function (doc) {
+  req.erm.document.save().then((doc) => {
     res.sendStatus(204)
-  }, function (err) {
+  }).catch((err) => {
     options.onError(err, req, res, next)
   })
 }
 ```
 
 #### access
-<span class="label label-primary" title="type">function (req[, done])</span>
+<span class="label label-primary" title="type">(req[, done]) => {}</span>
 
 Returns or yields 'private', 'protected' or 'public'. It is called on GET, POST and PUT requests and filters out the fields defined in [private](#private) and [protected](#protected).
 
@@ -472,7 +472,7 @@ Returns or yields 'private', 'protected' or 'public'. It is called on GET, POST 
 Sync
 
 ```js
-access: function (req) {
+access: (req) => {
   if (req.isAuthenticated()) {
     return req.user.isAdmin ? 'private' : 'protected'
   } else {
@@ -484,22 +484,22 @@ access: function (req) {
 Async
 
 ```js
-access: function (req, done) {
-  performAsyncLogic(function (err, result) {
+access: (req, done) => {
+  performAsyncLogic((err, result) => {
     done(err, result ? 'public' : 'private')
   })
 }
 ```
 
 #### contextFilter
-<span class="label label-primary" title="type">function (model, req, done)</span>
+<span class="label label-primary" title="type">(model, req, done) => {}</span>
 
 Allows request specific filtering.
 
 ##### Example
 
 ```js
-contextFilter: function (model, req, done) {
+contextFilter: (model, req, done) => {
   done(model.find({
     user: req.user._id
   }))
@@ -507,12 +507,12 @@ contextFilter: function (model, req, done) {
 ```
 
 #### postCreate
-<span class="label label-primary" title="type">function (req, res, next)</span>
+<span class="label label-primary" title="type">(req, res, next) => {}</span>
 
 Middleware that runs after successfully creating a resource. The unfiltered document is available on `req.erm.result`.
 
 ```js
-postCreate: function (req, res, next) {
+postCreate: (req, res, next) => {
   const result = req.erm.result         // unfiltered document or object
   const statusCode = req.erm.statusCode // 201
 
@@ -523,12 +523,12 @@ postCreate: function (req, res, next) {
 ```
 
 #### postRead
-<span class="label label-primary" title="type">function (req, res, next)</span>
+<span class="label label-primary" title="type">(req, res, next) => {}</span>
 
 Middleware that runs after successfully reading a resource. The unfiltered document(s), or object(s) when `lean: false`, is available on `req.erm.result`.
 
 ```js
-postRead: function (req, res, next) {
+postRead: (req, res, next) => {
   const result = req.erm.result         // unfiltered document, object or array
   const statusCode = req.erm.statusCode // 200
 
@@ -539,12 +539,12 @@ postRead: function (req, res, next) {
 ```
 
 #### postUpdate
-<span class="label label-primary" title="type">function (req, res, next)</span>
+<span class="label label-primary" title="type">(req, res, next) => {}</span>
 
 Middleware that runs after successfully updating a resource. The unfiltered document, or object when `lean: false`, is available on `req.erm.result`.
 
 ```js
-postUpdate: function (req, res, next) {
+postUpdate: (req, res, next) => {
   const result = req.erm.result         // unfiltered document or object
   const statusCode = req.erm.statusCode // 200
 
@@ -555,12 +555,12 @@ postUpdate: function (req, res, next) {
 ```
 
 #### postDelete
-<span class="label label-primary" title="type">function (req, res, next)</span>
+<span class="label label-primary" title="type">(req, res, next) => {}</span>
 
 Middleware that runs after successfully deleting a resource.
 
 ```js
-postDelete: function (req, res, next) {
+postDelete: (req, res, next) => {
   const result = req.erm.result         // undefined
   const statusCode = req.erm.statusCode // 204
 
@@ -571,14 +571,16 @@ postDelete: function (req, res, next) {
 ```
 
 #### outputFn
-<span class="label label-primary" title="type">function (req, res)</span>
+<span class="label label-primary" title="type">(req, res) => {}</span>
 
 Function used to output the result. The filtered object is available on `req.erm.result`.
 
-##### Example
+##### Examples
+
+Sync
 
 ```js
-outputFn: function (req, res) {
+outputFn: (req, res) => {
   const result = req.erm.result         // filtered object
   const statusCode = req.erm.statusCode // 200 or 201
 
@@ -587,14 +589,14 @@ outputFn: function (req, res) {
 ```
 
 #### postProcess
-<span class="label label-primary" title="type">function (req, res, next)</span>
+<span class="label label-primary" title="type">(req, res, next) => {}</span>
 
 Middleware that is called after output, useful for logging. The filtered object is available on `req.erm.result`.
 
 > Not guaranteed to execute after output if async operations are performed inside `outputFn`
 
 ```js
-postProcess: function (req, res, next) {
+postProcess: (req, res, next) => {
   const result = req.erm.result         // filtered object
   const statusCode = req.erm.statusCode // 200 or 201
 
@@ -603,7 +605,7 @@ postProcess: function (req, res, next) {
 ```
 
 #### onError
-<span class="label label-primary" title="type">function (err, req, res, next)</span><span class="label label-success" title="default">serialize the entire error, except stack</span>
+<span class="label label-primary" title="type">(err, req, res, next) => {}</span><span class="label label-success" title="default">serialize the entire error, except stack</span>
 
 > Leaving this as default may leak information about your database
 
@@ -612,7 +614,7 @@ Function used to output an error.
 ##### Example
 
 ```js
-onError: function (err, req, res, next) {
+onError: (err, req, res, next) => {
   const statusCode = req.erm.statusCode // 400 or 404
 
   res.status(statusCode).json({
