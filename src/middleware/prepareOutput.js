@@ -50,9 +50,15 @@ module.exports = function (options, excludedMap) {
         res.header(typeof options.totalCountHeader === 'string' ? options.totalCountHeader : 'X-Total-Count', req.erm.totalCount)
       }
 
-      options.outputFn(req, res)
+      const promise = options.outputFn(req, res)
 
-      if (options.postProcess) {
+      if (promise && typeof promise.then === 'function') {
+        promise.then(() => {
+          if (options.postProcess) {
+            options.postProcess(req, res, next)
+          }
+        }).catch(errorHandler(req, res, next))
+      } else if (options.postProcess) {
         options.postProcess(req, res, next)
       }
     })
