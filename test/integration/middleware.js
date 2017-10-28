@@ -1143,9 +1143,7 @@ module.exports = function (createFn, setup, dismantle) {
     let app = createFn()
     let server
     let options = {
-      postProcess: sinon.spy((req, res, next) => {
-        next()
-      }),
+      postProcess: sinon.spy(),
       restify: app.isRestify
     }
 
@@ -1175,10 +1173,9 @@ module.exports = function (createFn, setup, dismantle) {
         assert.equal(res.statusCode, 200)
         sinon.assert.calledOnce(options.postProcess)
         let args = options.postProcess.args[0]
-        assert.equal(args.length, 3)
+        assert.equal(args.length, 2)
         assert.deepEqual(args[0].erm.result, [])
         assert.equal(args[0].erm.statusCode, 200)
-        assert.equal(typeof args[2], 'function')
         done()
       })
     })
@@ -1197,9 +1194,7 @@ module.exports = function (createFn, setup, dismantle) {
 
         return Promise.resolve()
       },
-      postProcess: sinon.spy((req, res, next) => {
-        next()
-      }),
+      postProcess: sinon.spy(),
       restify: app.isRestify
     }
 
@@ -1229,10 +1224,9 @@ module.exports = function (createFn, setup, dismantle) {
         assert.equal(res.statusCode, 200)
         sinon.assert.calledOnce(options.postProcess)
         let args = options.postProcess.args[0]
-        assert.equal(args.length, 3)
+        assert.equal(args.length, 2)
         assert.deepEqual(args[0].erm.result, [])
         assert.equal(args[0].erm.statusCode, 200)
-        assert.equal(typeof args[2], 'function')
         done()
       })
     })
