@@ -365,7 +365,7 @@ Whether to use `.findOneAndRemove()` or `.findById()` and then `.remove()`, allo
 #### preMiddleware
 <span class="label label-primary" title="type">function (req, res, next)</span>
 
-Middleware that runs before [preCreate](#preCreate), [preRead](#preRead), [preUpdate](#preUpdate) and [preDelete](#preDelete). 
+Middleware that runs before [preCreate](#preCreate), [preRead](#preRead), [preUpdate](#preUpdate) and [preDelete](#preDelete).
 
 ##### Example
 
@@ -541,7 +541,7 @@ postRead: function (req, res, next) {
 #### postUpdate
 <span class="label label-primary" title="type">function (req, res, next)</span>
 
-Middleware that runs after successfully updating a resource. The unfiltered document, or object when `lean: false`, is available on `req.erm.result`. 
+Middleware that runs after successfully updating a resource. The unfiltered document, or object when `lean: false`, is available on `req.erm.result`.
 
 ```js
 postUpdate: function (req, res, next) {
