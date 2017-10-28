@@ -55,10 +55,10 @@ module.exports = function (options, excludedMap) {
       if (options.postProcess) {
         if (promise && typeof promise.then === 'function') {
           promise.then(() => {
-            options.postProcess(req, res, next)
+            options.postProcess(req, res)
           }).catch(errorHandler(req, res, next))
         } else {
-          options.postProcess(req, res, next)
+          options.postProcess(req, res)
         }
       }
     })
