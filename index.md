@@ -591,7 +591,7 @@ outputFn: (req, res) => {
 Async (using promises)
 
 ```js
-outputFn: async (req, res) => {
+outputFn: (req, res) => {
   return performAsyncLogic().then() => {
     const result = req.erm.result         // filtered object
     const statusCode = req.erm.statusCode // 200 or 201
