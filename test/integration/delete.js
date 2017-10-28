@@ -39,9 +39,7 @@ module.exports = function (createFn, setup, dismantle) {
           }]).then((createdCustomers) => {
             customer = createdCustomers[0]
             server = app.listen(testPort, done)
-          }, (err) => {
-            done(err)
-          })
+          }).catch(done)
         })
       })
 
@@ -139,9 +137,7 @@ module.exports = function (createFn, setup, dismantle) {
           }]).then((createdCustomers) => {
             customer = createdCustomers[0]
             server = app.listen(testPort, done)
-          }, (err) => {
-            done(err)
-          })
+          }).catch(done)
         })
       })
 

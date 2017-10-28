@@ -88,9 +88,7 @@ module.exports = function (createFn, setup, dismantle) {
           }])
         }).then((createdInvoices) => {
           server = app.listen(testPort, done)
-        }, (err) => {
-          done(err)
-        })
+        }).catch(done)
       })
     })
 
