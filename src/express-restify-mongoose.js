@@ -1,13 +1,15 @@
 'use strict'
 
+const clone = require('lodash.clone')
+const defaults = require('lodash.defaults')
+const ensureArray = require('ensure-array')
 const util = require('util')
-const _ = require('lodash')
 const Filter = require('./resource_filter')
 let customDefaults = null
 let excludedMap = {}
 
 function getDefaults () {
-  return _.defaults(_.clone(customDefaults) || {}, {
+  return defaults(clone(customDefaults) || {}, {
     prefix: '/api',
     version: '/v1',
     idProperty: '_id',
@@ -23,8 +25,7 @@ function getDefaults () {
 }
 
 const restify = function (app, model, opts) {
-  let options = {}
-  _.assign(options, getDefaults(), opts || {})
+  const options = Object.assign({}, getDefaults(), opts || {})
 
   const access = require('./middleware/access')
   const ensureContentType = require('./middleware/ensureContentType')(options)
@@ -66,47 +67,20 @@ const restify = function (app, model, opts) {
 
   excludedMap[model.modelName] = options.filter.filteredKeys
 
-  options.modelFactory = options.modelFactory || {}
-
-  if (!Array.isArray(options.preMiddleware)) {
-    options.preMiddleware = options.preMiddleware ? [options.preMiddleware] : []
-  }
-
-  if (!Array.isArray(options.preCreate)) {
-    options.preCreate = options.preCreate ? [options.preCreate] : []
-  }
-
-  if (!Array.isArray(options.preRead)) {
-    options.preRead = options.preRead ? [options.preRead] : []
-  }
-
-  if (!Array.isArray(options.preUpdate)) {
-    options.preUpdate = options.preUpdate ? [options.preUpdate] : []
-  }
-
-  if (!Array.isArray(options.preDelete)) {
-    options.preDelete = options.preDelete ? [options.preDelete] : []
-  }
+  options.preMiddleware = ensureArray(options.preMiddleware)
+  options.preCreate = ensureArray(options.preCreate)
+  options.preRead = ensureArray(options.preRead)
+  options.preUpdate = ensureArray(options.preUpdate)
+  options.preDelete = ensureArray(options.preDelete)
 
   if (!options.contextFilter) {
     options.contextFilter = (model, req, done) => done(model)
   }
 
-  if (!Array.isArray(options.postCreate)) {
-    options.postCreate = options.postCreate ? [options.postCreate] : []
-  }
-
-  if (!Array.isArray(options.postRead)) {
-    options.postRead = options.postRead ? [options.postRead] : []
-  }
-
-  if (!Array.isArray(options.postUpdate)) {
-    options.postUpdate = options.postUpdate ? [options.postUpdate] : []
-  }
-
-  if (!Array.isArray(options.postDelete)) {
-    options.postDelete = options.postDelete ? [options.postDelete] : []
-  }
+  options.postCreate = ensureArray(options.postCreate)
+  options.postRead = ensureArray(options.postRead)
+  options.postUpdate = ensureArray(options.postUpdate)
+  options.postDelete = ensureArray(options.postDelete)
 
   if (!options.onError) {
     options.onError = onError(!options.restify)
@@ -129,7 +103,7 @@ const restify = function (app, model, opts) {
   const uriCount = uriItems + '/count'
   const uriShallow = uriItem + '/shallow'
 
-  if (_.isUndefined(app.delete)) {
+  if (typeof app.delete === 'undefined') {
     app.delete = app.del
   }
 

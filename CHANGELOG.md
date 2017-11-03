@@ -1,6 +1,14 @@
 Changelog
 =========
 
+### 4.3.0
+
+* added support for async `outputFn` by returning a Promise
+
+### 4.2.2
+
+* removed dependency on lodash, use specific modules and native methods when possible [#352](https://github.com/florianholzapfel/express-restify-mongoose/pull/352)
+
 ### 4.2.1
 
 * fixed issue [#294](https://github.com/florianholzapfel/express-restify-mongoose/issues/294)

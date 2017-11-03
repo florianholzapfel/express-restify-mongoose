@@ -1,6 +1,6 @@
 'use strict'
 
-const _ = require('lodash')
+const isPlainObject = require('lodash.isplainobject')
 const http = require('http')
 const moredots = require('moredots')
 
@@ -35,8 +35,8 @@ module.exports = function (model, options, excludedMap) {
         req.erm.statusCode = 200
 
         if (options.totalCountHeader && !req._ermQueryOptions['distinct']) {
-          options.contextFilter(contextModel, req, (countFilteredContext) => {
-            buildQuery(countFilteredContext.count(), _.assign(req._ermQueryOptions, {
+          options.contextFilter(model, req, (countFilteredContext) => {
+            buildQuery(countFilteredContext.count(), Object.assign(req._ermQueryOptions, {
               skip: 0,
               limit: 0
             })).then((count) => {
@@ -189,10 +189,10 @@ module.exports = function (model, options, excludedMap) {
                 dst[key].push(src[key][j]._id)
               }
             }
-          } else if (_.isPlainObject(src[key])) {
+          } else if (isPlainObject(src[key])) {
             dst[key] = src[key]._id
           }
-        } else if (_.isPlainObject(src[key])) {
+        } else if (isPlainObject(src[key])) {
           if (path && path.instance === 'ObjectID') {
             dst[key] = src[key]._id
           } else {
@@ -200,7 +200,7 @@ module.exports = function (model, options, excludedMap) {
           }
         }
 
-        if (_.isUndefined(dst[key])) {
+        if (typeof dst[key] === 'undefined') {
           dst[key] = src[key]
         }
       }
