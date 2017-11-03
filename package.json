@@ -12,6 +12,7 @@
     "lodash.defaults": "~4.2.0",
     "lodash.get": "~4.4.2",
     "lodash.has": "~4.5.2",
+    "lodash.isfunction": "^3.0.8",
     "lodash.isplainobject": "~4.0.6",
     "lodash.map": "~4.6.0",
     "mongoose-detective": "~0.1.0",
