@@ -7,22 +7,22 @@ module.exports = function (options, excludedMap) {
 
   return function (req, res, next) {
     const postMiddleware = (() => {
-		switch (req.method.toLowerCase()) {
-		  case 'get':
-			return options.postRead
-		  case 'post':
-			if (req.erm.statusCode === 201) {
-			  return options.postCreate
-			}
+      switch (req.method.toLowerCase()) {
+        case 'get':
+          return options.postRead
+        case 'post':
+          if (req.erm.statusCode === 201) {
+            return options.postCreate
+          }
 
-			return options.postUpdate
-		  case 'put':
-		  case 'patch':
-			return options.postUpdate
-		  case 'delete':
-			return options.postDelete
-		}
-	})();
+          return options.postUpdate
+        case 'put':
+        case 'patch':
+          return options.postUpdate
+        case 'delete':
+          return options.postDelete
+      }
+    })()
 
     asyncEachSeries(postMiddleware, (middleware, cb) => {
       middleware(req, res, cb)
