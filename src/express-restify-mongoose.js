@@ -1,6 +1,5 @@
 'use strict'
 
-const clone = require('lodash.clone')
 const defaults = require('lodash.defaults')
 const ensureArray = require('ensure-array')
 const util = require('util')
@@ -9,7 +8,7 @@ let customDefaults = null
 let excludedMap = {}
 
 function getDefaults () {
-  return defaults(clone(customDefaults) || {}, {
+  return defaults(Object.assign({}, customDefaults) || {}, {
     prefix: '/api',
     version: '/v1',
     idProperty: '_id',
