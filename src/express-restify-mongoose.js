@@ -6,7 +6,7 @@ const ensureArray = require('ensure-array')
 const util = require('util')
 const Filter = require('./resource_filter')
 let customDefaults = null
-let excludedMap = {}
+const excludedMap = {}
 
 function getDefaults () {
   return defaults(clone(customDefaults) || {}, {

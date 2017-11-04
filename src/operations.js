@@ -68,7 +68,7 @@ module.exports = function (model, options, excludedMap) {
           return errorHandler(req, res, next)(new Error(http.STATUS_CODES[404]))
         }
 
-        for (let prop in item) {
+        for (const prop in item) {
           item[prop] = typeof item[prop] === 'object' && prop !== '_id' ? true : item[prop]
         }
 
@@ -168,9 +168,9 @@ module.exports = function (model, options, excludedMap) {
     }
 
     function depopulate (src) {
-      let dst = {}
+      const dst = {}
 
-      for (let key in src) {
+      for (const key in src) {
         const path = model.schema.path(key)
 
         if (path && path.caster && path.caster.instance === 'ObjectID') {
@@ -221,7 +221,7 @@ module.exports = function (model, options, excludedMap) {
         }, errorHandler(req, res, next))
       })
     } else {
-      for (let key in cleanBody) {
+      for (const key in cleanBody) {
         req.erm.document.set(key, cleanBody[key])
       }
 

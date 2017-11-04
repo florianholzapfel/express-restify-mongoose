@@ -28,7 +28,7 @@ function Filter (opts) {
   }
 
   if (this.model && this.model.discriminators && isPlainObject(opts.excludedMap)) {
-    for (let modelName in this.model.discriminators) {
+    for (const modelName in this.model.discriminators) {
       if (opts.excludedMap[modelName]) {
         this.filteredKeys.private = this.filteredKeys.private.concat(opts.excludedMap[modelName].private)
         this.filteredKeys.protected = this.filteredKeys.protected.concat(opts.excludedMap[modelName].protected)
@@ -172,7 +172,7 @@ Filter.prototype.filterObject = function (resource, opts) {
     modelName: this.model.modelName
   })
 
-  let filtered = this.filterItem(resource, this.getExcluded(opts))
+  const filtered = this.filterItem(resource, this.getExcluded(opts))
 
   if (opts.populate) {
     this.filterPopulatedItem(filtered, opts)
