@@ -5,7 +5,6 @@ const detective = require('mongoose-detective')
 const get = require('lodash.get')
 const has = require('lodash.has')
 const isPlainObject = require('lodash.isplainobject')
-const map = require('lodash.map')
 const weedout = require('weedout')
 
 /**
@@ -145,7 +144,9 @@ Filter.prototype.filterPopulatedItem = function (item, opts) {
         const array = get(item, pathToArray)
         const pathToObject = opts.populate[i].path.split('.').slice(-1).join('.')
 
-        this.filterItem(map(array, pathToObject), excluded)
+        if (Array.isArray(array)) {
+          this.filterItem(array.map(element => get(element, pathToObject)), excluded)
+        }
       }
     }
   }

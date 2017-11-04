@@ -11,7 +11,6 @@
     "lodash.get": "~4.4.2",
     "lodash.has": "~4.5.2",
     "lodash.isplainobject": "~4.0.6",
-    "lodash.map": "~4.6.0",
     "mongoose-detective": "~0.1.0",
     "moredots": "~0.1.0",
     "serialize-error": "~2.1.0",
