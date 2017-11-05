@@ -175,7 +175,7 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customer?limit=foo 200 - evaluates to NaN', (done) => {
+      it('GET /Customer?limit=foo 400 - evaluates to NaN', (done) => {
         request.get({
           url: `${testUrl}/api/v1/Customer`,
           qs: {
@@ -184,8 +184,11 @@ module.exports = function (createFn, setup, dismantle) {
           json: true
         }, (err, res, body) => {
           assert.ok(!err)
-          assert.equal(res.statusCode, 200)
-          assert.equal(body.length, 3)
+          assert.equal(res.statusCode, 400)
+          assert.deepEqual(body, {
+            name: 'Error',
+            message: 'invalid_limit_value'
+          })
           done()
         })
       })
@@ -207,7 +210,7 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customer?skip=foo 200 - evaluates to NaN', (done) => {
+      it('GET /Customer?skip=foo 400 - evaluates to NaN', (done) => {
         request.get({
           url: `${testUrl}/api/v1/Customer`,
           qs: {
@@ -216,8 +219,11 @@ module.exports = function (createFn, setup, dismantle) {
           json: true
         }, (err, res, body) => {
           assert.ok(!err)
-          assert.equal(res.statusCode, 200)
-          assert.equal(body.length, 3)
+          assert.equal(res.statusCode, 400)
+          assert.deepEqual(body, {
+            name: 'Error',
+            message: 'invalid_skip_value'
+          })
           done()
         })
       })

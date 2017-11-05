@@ -98,6 +98,10 @@ module.exports = function (options) {
         }
       } else if (key === 'limit' || key === 'skip') {
         query[key] = parseInt(req.query[key], 10)
+
+        if (`${query[key]}` !== `${req.query[key]}`) {
+          return errorHandler(req, res, next)(new Error(`invalid_${key}_value`))
+        }
       } else {
         query[key] = req.query[key]
       }
