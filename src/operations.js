@@ -30,10 +30,19 @@ module.exports = function (model, options, excludedMap) {
 
     options.contextFilter(model, req, (filteredContext) => {
       buildQuery(filteredContext.find(), req._ermQueryOptions).then((items) => {
+        var totalCountHeader;
         req.erm.result = items
         req.erm.statusCode = 200
 
-        if (options.totalCountHeader && !req._ermQueryOptions['distinct']) {
+        if (req.query.totalCountHeader === 'true') {
+          totalCountHeader = true;
+        } else if (req.query.totalCountHeader === 'false') {
+          totalCountHeader = false;
+        } else {
+          totalCountHeader = options.totalCountHeader;
+        }
+
+        if (totalCountHeader && !req._ermQueryOptions['distinct']) {
           options.contextFilter(model, req, (countFilteredContext) => {
             buildQuery(countFilteredContext.count(), Object.assign(req._ermQueryOptions, {
               skip: 0,
