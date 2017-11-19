@@ -4,8 +4,8 @@
     "name": "Florian Holzapfel"
   },
   "dependencies": {
-    "async": "~2.5.0",
-    "ensure-array": "0.0.5",
+    "async": "~2.6.0",
+    "ensure-array": "~1.0.0",
     "is-coordinates": "~2.0.0",
     "lodash.defaults": "~4.2.0",
     "lodash.get": "~4.4.2",
@@ -24,7 +24,7 @@
     "babel-preset-es2015": "^6.24.0",
     "babel-register": "^6.26.0",
     "body-parser": "^1.15.0",
-    "express": "^4.13.0",
+    "express": "^4.16.0",
     "in-publish": "^2.0.0",
     "istanbul": "1.1.0-alpha.1",
     "method-override": "^2.3.10",
