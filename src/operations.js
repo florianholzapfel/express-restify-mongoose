@@ -139,7 +139,7 @@ module.exports = function (model, options, excludedMap) {
       populate: req.erm.query.populate
     })
 
-    if (model.schema.options._id) {
+    if (req.body._id === null) {
       delete req.body._id
     }
 
