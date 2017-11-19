@@ -70,7 +70,39 @@ module.exports = function (createFn, setup, dismantle) {
       })
     })
 
-    it('POST /Customer 201 - ignore _id', (done) => {
+    it('POST /Customer 201 - generate _id (undefined)', (done) => {
+      request.post({
+        url: `${testUrl}/api/v1/Customer`,
+        json: {
+          _id: undefined,
+          name: 'John'
+        }
+      }, (err, res, body) => {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 201)
+        assert.ok(body._id)
+        assert.equal(body.name, 'John')
+        done()
+      })
+    })
+
+    it('POST /Customer 201 - generate _id (null)', (done) => {
+      request.post({
+        url: `${testUrl}/api/v1/Customer`,
+        json: {
+          _id: null,
+          name: 'John'
+        }
+      }, (err, res, body) => {
+        assert.ok(!err)
+        assert.equal(res.statusCode, 201)
+        assert.ok(body._id)
+        assert.equal(body.name, 'John')
+        done()
+      })
+    })
+
+    it('POST /Customer 201 - use provided _id', (done) => {
       request.post({
         url: `${testUrl}/api/v1/Customer`,
         json: {
@@ -81,7 +113,7 @@ module.exports = function (createFn, setup, dismantle) {
         assert.ok(!err)
         assert.equal(res.statusCode, 201)
         assert.ok(body._id)
-        assert.ok(body._id !== randomId)
+        assert.ok(body._id === randomId)
         assert.equal(body.name, 'John')
         done()
       })
@@ -130,7 +162,6 @@ module.exports = function (createFn, setup, dismantle) {
         url: `${testUrl}/api/v1/Customer`,
         json: {}
       }, (err, res, body) => {
-        console.info(err, res, body)
         assert.ok(!err)
         assert.equal(res.statusCode, 400)
         assert.equal(body.name, 'ValidationError')
