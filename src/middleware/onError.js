@@ -9,7 +9,7 @@ module.exports = function (isExpress) {
     delete serializedErr.stack
 
     if (serializedErr.errors) {
-      for (let key in serializedErr.errors) {
+      for (const key in serializedErr.errors) {
         delete serializedErr.errors[key].reason
         delete serializedErr.errors[key].stack
       }

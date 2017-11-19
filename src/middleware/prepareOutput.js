@@ -6,27 +6,23 @@ module.exports = function (options, excludedMap) {
   const errorHandler = require('../errorHandler')(options)
 
   return function (req, res, next) {
-    let postMiddleware
+    const postMiddleware = (() => {
+      switch (req.method.toLowerCase()) {
+        case 'get':
+          return options.postRead
+        case 'post':
+          if (req.erm.statusCode === 201) {
+            return options.postCreate
+          }
 
-    switch (req.method.toLowerCase()) {
-      case 'get':
-        postMiddleware = options.postRead
-        break
-      case 'post':
-        if (req.erm.statusCode === 201) {
-          postMiddleware = options.postCreate
-        } else {
-          postMiddleware = options.postUpdate
-        }
-        break
-      case 'put':
-      case 'patch':
-        postMiddleware = options.postUpdate
-        break
-      case 'delete':
-        postMiddleware = options.postDelete
-        break
-    }
+          return options.postUpdate
+        case 'put':
+        case 'patch':
+          return options.postUpdate
+        case 'delete':
+          return options.postDelete
+      }
+    })()
 
     asyncEachSeries(postMiddleware, (middleware, cb) => {
       middleware(req, res, cb)
@@ -37,7 +33,7 @@ module.exports = function (options, excludedMap) {
 
       // TODO: this will, but should not, filter /count queries
       if (req.erm.result) {
-        let opts = {
+        const opts = {
           access: req.access,
           excludedMap: excludedMap,
           populate: req.erm && req.erm.query ? req.erm.query.populate : null

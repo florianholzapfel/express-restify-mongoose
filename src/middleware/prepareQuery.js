@@ -19,7 +19,7 @@ module.exports = function (options) {
 
   function parseQueryOptions (queryOptions) {
     if (queryOptions.select && typeof queryOptions.select === 'string') {
-      let select = queryOptions.select.split(',')
+      const select = queryOptions.select.split(',')
       queryOptions.select = {}
 
       for (let i = 0, length = select.length; i < length; i++) {
@@ -33,7 +33,7 @@ module.exports = function (options) {
 
     if (queryOptions.populate) {
       if (typeof queryOptions.populate === 'string') {
-        let populate = queryOptions.populate.split(',')
+        const populate = queryOptions.populate.split(',')
         queryOptions.populate = []
 
         for (let i = 0, length = populate.length; i < length; i++) {
@@ -41,7 +41,7 @@ module.exports = function (options) {
             path: populate[i]
           })
 
-          for (let key in queryOptions.select) {
+          for (const key in queryOptions.select) {
             if (key.indexOf(populate[i] + '.') === 0) {
               if (queryOptions.populate[i].select) {
                 queryOptions.populate[i].select += ' '
@@ -79,7 +79,7 @@ module.exports = function (options) {
     const whitelist = ['distinct', 'limit', 'populate', 'query', 'select', 'skip', 'sort']
     const query = {}
 
-    for (let key in req.query) {
+    for (const key in req.query) {
       if (whitelist.indexOf(key) === -1) {
         continue
       }
