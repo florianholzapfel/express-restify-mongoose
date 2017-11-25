@@ -107,7 +107,12 @@ const restify = function (app, model, opts) {
   }
 
   app.use((req, res, next) => {
-    req.erm = { model }
+    const getModel = options.modelFactory && options.modelFactory.getModel
+
+    req.erm = {
+      model: typeof getModel === 'function' ? getModel() : model
+    }
+
     next()
   })
 
