@@ -6,11 +6,12 @@ module.exports = function (model, options) {
   const errorHandler = require('../errorHandler')(options)
 
   return function (req, res, next) {
+    let contextModel = (req.erm && req.erm.model) || model
     if (!req.params.id) {
       return next()
     }
 
-    options.contextFilter(model, req, (filteredContext) => {
+    options.contextFilter(contextModel, req, (filteredContext) => {
       filteredContext.findOne().and({
         [options.idProperty]: req.params.id
       }).lean(false).read(options.readPreference).exec().then((doc) => {

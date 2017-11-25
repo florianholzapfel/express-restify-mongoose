@@ -1,6 +1,7 @@
 'use strict'
 
 const defaults = require('lodash.defaults')
+const isFunction = require('lodash.isfunction')
 const ensureArray = require('ensure-array')
 const util = require('util')
 const Filter = require('./resource_filter')
@@ -107,7 +108,10 @@ const restify = function (app, model, opts) {
   }
 
   app.use((req, res, next) => {
-    req.erm = { model }
+    const getModel = options.modelFactory && options.modelFactory.getModel
+    req.erm = {
+      model: isFunction(getModel) ? getModel() : model
+    }
     next()
   })
 
