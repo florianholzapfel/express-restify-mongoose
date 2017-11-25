@@ -10,7 +10,7 @@
     "lodash.get": "~4.4.2",
     "lodash.has": "~4.5.2",
     "lodash.isplainobject": "~4.0.6",
-    "mongoose-detective": "~0.1.0",
+    "mongoose-detective": "~1.0.0",
     "moredots": "~1.0.1",
     "run-series": "~1.1.4",
     "serialize-error": "~2.1.0",
