@@ -1,16 +1,15 @@
 'use strict'
 
-const clone = require('lodash.clone')
 const defaults = require('lodash.defaults')
 const isFunction = require('lodash.isfunction')
 const ensureArray = require('ensure-array')
 const util = require('util')
 const Filter = require('./resource_filter')
 let customDefaults = null
-let excludedMap = {}
+const excludedMap = {}
 
 function getDefaults () {
-  return defaults(clone(customDefaults) || {}, {
+  return defaults(Object.assign({}, customDefaults) || {}, {
     prefix: '/api',
     version: '/v1',
     idProperty: '_id',

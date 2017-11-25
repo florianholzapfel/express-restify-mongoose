@@ -1,7 +1,5 @@
 'use strict'
 
-const Promise = require('bluebird')
-
 module.exports = function (options) {
   return function (query, queryOptions) {
     const promise = new Promise((resolve, reject) => {
