@@ -14,7 +14,7 @@
     "moredots": "~0.1.0",
     "run-series": "~1.1.4",
     "serialize-error": "~2.1.0",
-    "weedout": "~0.1.0"
+    "weedout": "~1.0.1"
   },
   "peerDependencies": {
     "mongoose": "^4.0.0"
