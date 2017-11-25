@@ -1,6 +1,5 @@
 'use strict'
 
-const asyncSeries = require('async/series')
 const defaults = require('lodash.defaults')
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
@@ -140,23 +139,13 @@ module.exports = function () {
   }
 
   function reset (callback) {
-    asyncSeries([
-      function (cb) {
-        mongoose.models.Customer.remove(cb)
-      },
-      function (cb) {
-        mongoose.models.Invoice.remove(cb)
-      },
-      function (cb) {
-        mongoose.models.Product.remove(cb)
-      },
-      function (cb) {
-        mongoose.models.RepeatCustomer.remove(cb)
-      },
-      function (cb) {
-        mongoose.models.Account.remove(cb)
-      }
-    ], callback)
+    Promise.all([
+      mongoose.models.Customer.remove().exec(),
+      mongoose.models.Invoice.remove().exec(),
+      mongoose.models.Product.remove().exec(),
+      mongoose.models.RepeatCustomer.remove().exec(),
+      mongoose.models.Account.remove().exec()
+    ]).then(() => callback()).catch(callback)
   }
 
   function close (callback) {

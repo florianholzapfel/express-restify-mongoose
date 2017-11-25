@@ -1,6 +1,6 @@
 'use strict'
 
-const asyncEachSeries = require('async/eachSeries')
+const runSeries = require('run-series')
 
 module.exports = function (options, excludedMap) {
   const errorHandler = require('../errorHandler')(options)
@@ -24,9 +24,7 @@ module.exports = function (options, excludedMap) {
       }
     })()
 
-    asyncEachSeries(postMiddleware, (middleware, cb) => {
-      middleware(req, res, cb)
-    }, (err) => {
+    const callback = (err) => {
       if (err) {
         return errorHandler(req, res, next)(err)
       }
@@ -57,6 +55,16 @@ module.exports = function (options, excludedMap) {
           options.postProcess(req, res)
         }
       }
-    })
+    }
+
+    if (!postMiddleware || postMiddleware.length === 0) {
+      return callback()
+    }
+
+    runSeries(postMiddleware.map((middleware, i) => {
+      return (cb) => {
+        middleware(req, res, cb)
+      }
+    }), callback)
   }
 }

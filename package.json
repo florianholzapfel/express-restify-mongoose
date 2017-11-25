@@ -4,7 +4,6 @@
     "name": "Florian Holzapfel"
   },
   "dependencies": {
-    "async": "~2.6.0",
     "ensure-array": "~1.0.0",
     "is-coordinates": "~2.0.0",
     "lodash.defaults": "~4.2.0",
@@ -13,6 +12,7 @@
     "lodash.isplainobject": "~4.0.6",
     "mongoose-detective": "~0.1.0",
     "moredots": "~0.1.0",
+    "run-series": "~1.1.4",
     "serialize-error": "~2.1.0",
     "weedout": "~0.1.0"
   },
