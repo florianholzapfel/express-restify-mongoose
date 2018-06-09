@@ -48,7 +48,6 @@ restify.serve(router, mongoose.model('Customer', new mongoose.Schema({
   comment: { type: String }
 })))
 
-
 app.use(router)
 
 app.listen(3000, () => {
