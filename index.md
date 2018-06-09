@@ -147,6 +147,15 @@ GET /Customer?query={"age":"!=12"}
 
 ### Populate
 
+[Population](http://mongoosejs.com/docs/populate.html) is the process of automatically replacing the specified paths in the document with document(s) from other collection(s).
+
+```js
+restify.serve(router, mongoose.model('Invoice', new mongoose.Schema({
+  customer: [{ type: mongoose.Schema.Types.ObjectId }],
+  products: [{ type: mongoose.Schema.Types.ObjectId }]
+})))
+```
+
 Works with create, read and update operations.
 
 ```
