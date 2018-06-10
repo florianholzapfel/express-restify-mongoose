@@ -6,7 +6,8 @@ module.exports = function (model, options) {
   const errorHandler = require('../errorHandler')(options)
 
   return function (req, res, next) {
-    let contextModel = (req.erm && req.erm.model) || model
+    const contextModel = (req.erm && req.erm.model) || model
+
     if (!req.params.id) {
       return next()
     }

@@ -1,7 +1,7 @@
 'use strict'
 
-module.exports = function (options) {
-  return function (query, queryOptions) {
+module.exports = function(options) {
+  return function(query, queryOptions) {
     const promise = new Promise((resolve, reject) => {
       if (!queryOptions) {
         return resolve(query)

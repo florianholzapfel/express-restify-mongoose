@@ -175,7 +175,7 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customer?limit=foo 200 - evaluates to NaN', (done) => {
+      it('GET /Customer?limit=foo 400 - evaluates to NaN', (done) => {
         request.get({
           url: `${testUrl}/api/v1/Customer`,
           qs: {
@@ -184,8 +184,11 @@ module.exports = function (createFn, setup, dismantle) {
           json: true
         }, (err, res, body) => {
           assert.ok(!err)
-          assert.equal(res.statusCode, 200)
-          assert.equal(body.length, 3)
+          assert.equal(res.statusCode, 400)
+          assert.deepEqual(body, {
+            name: 'Error',
+            message: 'invalid_limit_value'
+          })
           done()
         })
       })
@@ -207,7 +210,7 @@ module.exports = function (createFn, setup, dismantle) {
         })
       })
 
-      it('GET /Customer?skip=foo 200 - evaluates to NaN', (done) => {
+      it('GET /Customer?skip=foo 400 - evaluates to NaN', (done) => {
         request.get({
           url: `${testUrl}/api/v1/Customer`,
           qs: {
@@ -216,8 +219,11 @@ module.exports = function (createFn, setup, dismantle) {
           json: true
         }, (err, res, body) => {
           assert.ok(!err)
-          assert.equal(res.statusCode, 200)
-          assert.equal(body.length, 3)
+          assert.equal(res.statusCode, 400)
+          assert.deepEqual(body, {
+            name: 'Error',
+            message: 'invalid_skip_value'
+          })
           done()
         })
       })
@@ -397,24 +403,6 @@ module.exports = function (createFn, setup, dismantle) {
           })
         })
 
-        it('GET /Customer?query={"name":"~^J"} 200 - name starting with', (done) => {
-          request.get({
-            url: `${testUrl}/api/v1/Customer`,
-            qs: {
-              query: JSON.stringify({
-                name: '~^J'
-              })
-            },
-            json: true
-          }, (err, res, body) => {
-            assert.ok(!err)
-            assert.equal(res.statusCode, 200)
-            assert.equal(body.length, 1)
-            assert.ok(body[0].name[0] === 'J')
-            done()
-          })
-        })
-
         it('GET /Customer?query={"name":{"$regex":"^J"}} 200 - name starting with', (done) => {
           request.get({
             url: `${testUrl}/api/v1/Customer`,
@@ -429,118 +417,6 @@ module.exports = function (createFn, setup, dismantle) {
             assert.equal(res.statusCode, 200)
             assert.equal(body.length, 1)
             assert.ok(body[0].name[0] === 'J')
-            done()
-          })
-        })
-
-        it('GET /Customer?query={"name":">=John"} 200 - greater than or equal', (done) => {
-          request.get({
-            url: `${testUrl}/api/v1/Customer`,
-            qs: {
-              query: JSON.stringify({
-                name: '>=John'
-              })
-            },
-            json: true
-          }, (err, res, body) => {
-            assert.ok(!err)
-            assert.equal(res.statusCode, 200)
-            assert.equal(body.length, 2)
-            assert.ok(body[0].name >= 'John')
-            assert.ok(body[1].name >= 'John')
-            done()
-          })
-        })
-
-        it('GET /Customer?query={"name":">John"} 200 - greater than', (done) => {
-          request.get({
-            url: `${testUrl}/api/v1/Customer`,
-            qs: {
-              query: JSON.stringify({
-                name: '>John'
-              })
-            },
-            json: true
-          }, (err, res, body) => {
-            assert.ok(!err)
-            assert.equal(res.statusCode, 200)
-            assert.equal(body.length, 1)
-            assert.ok(body[0].name > 'John')
-            done()
-          })
-        })
-
-        it('GET /Customer?query={"name":"<=John"} 200 - lower than or equal', (done) => {
-          request.get({
-            url: `${testUrl}/api/v1/Customer`,
-            qs: {
-              query: JSON.stringify({
-                name: '<=John'
-              })
-            },
-            json: true
-          }, (err, res, body) => {
-            assert.ok(!err)
-            assert.equal(res.statusCode, 200)
-            assert.equal(body.length, 2)
-            assert.ok(body[0].name[0] <= 'John')
-            assert.ok(body[1].name[0] <= 'John')
-            done()
-          })
-        })
-
-        it('GET /Customer?query={"name":"<John"} 200 - lower than', (done) => {
-          request.get({
-            url: `${testUrl}/api/v1/Customer`,
-            qs: {
-              query: JSON.stringify({
-                name: '<John'
-              })
-            },
-            json: true
-          }, (err, res, body) => {
-            assert.ok(!err)
-            assert.equal(res.statusCode, 200)
-            assert.equal(body.length, 1)
-            assert.ok(body[0].name[0] < 'John')
-            done()
-          })
-        })
-
-        it('GET /Customer?query={"name":"!=John"} 200 - not equal', (done) => {
-          request.get({
-            url: `${testUrl}/api/v1/Customer`,
-            qs: {
-              query: JSON.stringify({
-                name: '!=John'
-              })
-            },
-            json: true
-          }, (err, res, body) => {
-            assert.ok(!err)
-            assert.equal(res.statusCode, 200)
-            assert.equal(body.length, 2)
-            assert.notEqual(body[0].name, 'John')
-            assert.notEqual(body[1].name, 'John')
-            done()
-          })
-        })
-
-        // This feature was disabled because it requires MongoDB 3
-        it.skip('GET /Customer?query={"name":"=John"} 200 - equal', (done) => {
-          request.get({
-            url: `${testUrl}/api/v1/Customer`,
-            qs: {
-              query: JSON.stringify({
-                name: '=John'
-              })
-            },
-            json: true
-          }, (err, res, body) => {
-            assert.ok(!err)
-            assert.equal(res.statusCode, 200)
-            assert.equal(body.length, 1)
-            assert.ok(body[0].name === 'John')
             done()
           })
         })
@@ -573,142 +449,6 @@ module.exports = function (createFn, setup, dismantle) {
             qs: {
               query: JSON.stringify({
                 age: 24
-              })
-            },
-            json: true
-          }, (err, res, body) => {
-            assert.ok(!err)
-            assert.equal(res.statusCode, 200)
-            assert.equal(body.length, 1)
-            assert.equal(body[0].age, 24)
-            done()
-          })
-        })
-
-        it('GET /Customer?query={"age":"~2"} 400 - regex on number field', (done) => {
-          request.get({
-            url: `${testUrl}/api/v1/Customer`,
-            qs: {
-              query: JSON.stringify({
-                age: '~2'
-              })
-            },
-            json: true
-          }, (err, res, body) => {
-            assert.ok(!err)
-            assert.equal(res.statusCode, 400)
-            assert.deepEqual(body, {
-              kind: 'number',
-              message: 'Cast to number failed for value "/2/i" at path "age" for model "Customer"',
-              name: 'CastError',
-              path: 'age',
-              stringValue: '"/2/i"',
-              value: {}
-            })
-            done()
-          })
-        })
-
-        it('GET /Customer?query={"age":">=24"} 200 - greater than or equal', (done) => {
-          request.get({
-            url: `${testUrl}/api/v1/Customer`,
-            qs: {
-              query: JSON.stringify({
-                age: '>=24'
-              })
-            },
-            json: true
-          }, (err, res, body) => {
-            assert.ok(!err)
-            assert.equal(res.statusCode, 200)
-            assert.equal(body.length, 2)
-            assert.ok(body[0].age >= 24)
-            assert.ok(body[1].age >= 24)
-            done()
-          })
-        })
-
-        it('GET /Customer?query={"age":">24"} 200 - greater than', (done) => {
-          request.get({
-            url: `${testUrl}/api/v1/Customer`,
-            qs: {
-              query: JSON.stringify({
-                age: '>24'
-              })
-            },
-            json: true
-          }, (err, res, body) => {
-            assert.ok(!err)
-            assert.equal(res.statusCode, 200)
-            assert.equal(body.length, 1)
-            assert.ok(body[0].age > 24)
-            done()
-          })
-        })
-
-        it('GET /Customer?query={"age":"<=24"} 200 - lower than or equal', (done) => {
-          request.get({
-            url: `${testUrl}/api/v1/Customer`,
-            qs: {
-              query: JSON.stringify({
-                age: '<=24'
-              })
-            },
-            json: true
-          }, (err, res, body) => {
-            assert.ok(!err)
-            assert.equal(res.statusCode, 200)
-            assert.equal(body.length, 2)
-            assert.ok(body[0].age <= 24)
-            assert.ok(body[1].age <= 24)
-            done()
-          })
-        })
-
-        it('GET /Customer?query={"age":"<24"} 200 - lower than', (done) => {
-          request.get({
-            url: `${testUrl}/api/v1/Customer`,
-            qs: {
-              query: JSON.stringify({
-                age: '<24'
-              })
-            },
-            json: true
-          }, (err, res, body) => {
-            assert.ok(!err)
-            assert.equal(res.statusCode, 200)
-            assert.equal(body.length, 1)
-            assert.equal(body[0].age, 12)
-            done()
-          })
-        })
-
-        it('GET /Customer?query={"age":"!=24"} 200 - not equal', (done) => {
-          request.get({
-            url: `${testUrl}/api/v1/Customer`,
-            qs: {
-              query: JSON.stringify({
-                age: '!=24'
-              })
-            },
-            json: true
-          }, (err, res, body) => {
-            assert.ok(!err)
-            assert.equal(res.statusCode, 200)
-            assert.equal(body.length, 2)
-            assert.notEqual(body[0].age, 24)
-            assert.notEqual(body[1].age, 24)
-            done()
-          })
-        })
-
-        // This feature was disabled because it requires MongoDB 3
-        it.skip('GET /Customer?query={"age":"=24"} 200 - equal', (done) => {
-          request.get({
-            url: `${testUrl}/api/v1/Customer`,
-            qs: {
-              query: JSON.stringify({
-                age: '=24'
               })
             },
             json: true

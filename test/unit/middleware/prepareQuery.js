@@ -20,44 +20,6 @@ describe('prepareQuery', () => {
   })
 
   describe('jsonQueryParser', () => {
-    it('converts ~ to a case insensitive regex', () => {
-      let req = {
-        query: {
-          query: '{"foo":"~bar"}'
-        }
-      }
-
-      prepareQuery(options)(req, {}, next)
-
-      assert.deepEqual(req._ermQueryOptions, {
-        query: {
-          foo: new RegExp('bar', 'i')
-        }
-      })
-      sinon.assert.calledOnce(next)
-      sinon.assert.calledWithExactly(next)
-      sinon.assert.notCalled(options.onError)
-    })
-
-    it('converts ~ to undefined', () => {
-      let req = {
-        query: {
-          query: '{"foo":"~bar"}'
-        }
-      }
-
-      options.allowRegex = false
-
-      prepareQuery(options)(req, {}, next)
-
-      assert.deepEqual(req._ermQueryOptions, {
-        query: {}
-      })
-      sinon.assert.calledOnce(next)
-      sinon.assert.calledWithExactly(next)
-      sinon.assert.notCalled(options.onError)
-    })
-
     it('converts $regex to undefined', () => {
       let req = {
         query: {
@@ -69,124 +31,9 @@ describe('prepareQuery', () => {
 
       prepareQuery(options)(req, {}, next)
 
-      assert.deepEqual(req._ermQueryOptions, {
+      assert.deepEqual(req.erm.query, {
         query: {
           foo: {}
-        }
-      })
-      sinon.assert.calledOnce(next)
-      sinon.assert.calledWithExactly(next)
-      sinon.assert.notCalled(options.onError)
-    })
-
-    it('converts >= to $gte', () => {
-      let req = {
-        query: {
-          query: '{"foo":">=bar"}'
-        }
-      }
-
-      prepareQuery(options)(req, {}, next)
-
-      assert.deepEqual(req._ermQueryOptions, {
-        query: {
-          foo: { $gte: 'bar' }
-        }
-      })
-      sinon.assert.calledOnce(next)
-      sinon.assert.calledWithExactly(next)
-      sinon.assert.notCalled(options.onError)
-    })
-
-    it('converts > to $gt', () => {
-      let req = {
-        query: {
-          query: '{"foo":">bar"}'
-        }
-      }
-
-      prepareQuery(options)(req, {}, next)
-
-      assert.deepEqual(req._ermQueryOptions, {
-        query: {
-          foo: { $gt: 'bar' }
-        }
-      })
-      sinon.assert.calledOnce(next)
-      sinon.assert.calledWithExactly(next)
-      sinon.assert.notCalled(options.onError)
-    })
-
-    it('converts <= to $lte', () => {
-      let req = {
-        query: {
-          query: '{"foo":"<=bar"}'
-        }
-      }
-
-      prepareQuery(options)(req, {}, next)
-
-      assert.deepEqual(req._ermQueryOptions, {
-        query: {
-          foo: { $lte: 'bar' }
-        }
-      })
-      sinon.assert.calledOnce(next)
-      sinon.assert.calledWithExactly(next)
-      sinon.assert.notCalled(options.onError)
-    })
-
-    it('converts < to $lt', () => {
-      let req = {
-        query: {
-          query: '{"foo":"<bar"}'
-        }
-      }
-
-      prepareQuery(options)(req, {}, next)
-
-      assert.deepEqual(req._ermQueryOptions, {
-        query: {
-          foo: { $lt: 'bar' }
-        }
-      })
-      sinon.assert.calledOnce(next)
-      sinon.assert.calledWithExactly(next)
-      sinon.assert.notCalled(options.onError)
-    })
-
-    it('converts != to $ne', () => {
-      let req = {
-        query: {
-          query: '{"foo":"!=bar"}'
-        }
-      }
-
-      prepareQuery(options)(req, {}, next)
-
-      assert.deepEqual(req._ermQueryOptions, {
-        query: {
-          foo: { $ne: 'bar' }
-        }
-      })
-      sinon.assert.calledOnce(next)
-      sinon.assert.calledWithExactly(next)
-      sinon.assert.notCalled(options.onError)
-    })
-
-    // This feature was disabled because it requires MongoDB 3
-    it.skip('converts = to $eq', () => {
-      let req = {
-        query: {
-          query: '{"foo":"=bar"}'
-        }
-      }
-
-      prepareQuery(options)(req, {}, next)
-
-      assert.deepEqual(req._ermQueryOptions, {
-        query: {
-          foo: { $eq: 'bar' }
         }
       })
       sinon.assert.calledOnce(next)
@@ -203,7 +50,7 @@ describe('prepareQuery', () => {
 
       prepareQuery(options)(req, {}, next)
 
-      assert.deepEqual(req._ermQueryOptions, {
+      assert.deepEqual(req.erm.query, {
         query: {
           foo: { $in: ['bar'] }
         }
@@ -245,7 +92,7 @@ describe('prepareQuery', () => {
 
     prepareQuery(options)(req, {}, next)
 
-    assert.deepEqual(req._ermQueryOptions, {
+    assert.deepEqual(req.erm.query, {
       query: JSON.parse(req.query.query)
     })
     sinon.assert.calledOnce(next)
@@ -278,7 +125,7 @@ describe('prepareQuery', () => {
 
     prepareQuery(options)(req, {}, next)
 
-    assert.deepEqual(req._ermQueryOptions, {
+    assert.deepEqual(req.erm.query, {
       sort: JSON.parse(req.query.sort)
     })
     sinon.assert.calledOnce(next)
@@ -295,7 +142,7 @@ describe('prepareQuery', () => {
 
     prepareQuery(options)(req, {}, next)
 
-    assert.deepEqual(req._ermQueryOptions, req.query)
+    assert.deepEqual(req.erm.query, req.query)
     sinon.assert.calledOnce(next)
     sinon.assert.calledWithExactly(next)
     sinon.assert.notCalled(options.onError)
@@ -310,7 +157,7 @@ describe('prepareQuery', () => {
 
     prepareQuery(options)(req, {}, next)
 
-    assert.deepEqual(req._ermQueryOptions, req.query)
+    assert.deepEqual(req.erm.query, req.query)
     sinon.assert.calledOnce(next)
     sinon.assert.calledWithExactly(next)
     sinon.assert.notCalled(options.onError)
@@ -325,7 +172,7 @@ describe('prepareQuery', () => {
 
     prepareQuery(options)(req, {}, next)
 
-    assert.deepEqual(req._ermQueryOptions, req.query)
+    assert.deepEqual(req.erm.query, req.query)
     sinon.assert.calledOnce(next)
     sinon.assert.calledWithExactly(next)
     sinon.assert.notCalled(options.onError)
@@ -340,7 +187,7 @@ describe('prepareQuery', () => {
 
     prepareQuery(options)(req, {}, next)
 
-    assert.deepEqual(req._ermQueryOptions, req.query)
+    assert.deepEqual(req.erm.query, req.query)
     sinon.assert.calledOnce(next)
     sinon.assert.calledWithExactly(next)
     sinon.assert.notCalled(options.onError)
@@ -355,7 +202,7 @@ describe('prepareQuery', () => {
 
     prepareQuery(options)(req, {}, next)
 
-    assert.deepEqual(req._ermQueryOptions, {
+    assert.deepEqual(req.erm.query, {
       populate: [{
         path: 'foo'
       }]
@@ -375,7 +222,7 @@ describe('prepareQuery', () => {
 
       prepareQuery(options)(req, {}, next)
 
-      assert.deepEqual(req._ermQueryOptions, {
+      assert.deepEqual(req.erm.query, {
         select: {
           foo: 1
         }
@@ -394,7 +241,7 @@ describe('prepareQuery', () => {
 
       prepareQuery(options)(req, {}, next)
 
-      assert.deepEqual(req._ermQueryOptions, {
+      assert.deepEqual(req.erm.query, {
         select: {
           foo: 0
         }
@@ -413,7 +260,7 @@ describe('prepareQuery', () => {
 
       prepareQuery(options)(req, {}, next)
 
-      assert.deepEqual(req._ermQueryOptions, {
+      assert.deepEqual(req.erm.query, {
         select: {
           foo: 1,
           bar: 1
@@ -433,7 +280,7 @@ describe('prepareQuery', () => {
 
       prepareQuery(options)(req, {}, next)
 
-      assert.deepEqual(req._ermQueryOptions, {
+      assert.deepEqual(req.erm.query, {
         select: {
           foo: 0,
           bar: 0
@@ -453,7 +300,7 @@ describe('prepareQuery', () => {
 
       prepareQuery(options)(req, {}, next)
 
-      assert.deepEqual(req._ermQueryOptions, {
+      assert.deepEqual(req.erm.query, {
         select: {
           'foo.bar': 1,
           'baz.qux.quux': 1
@@ -475,7 +322,7 @@ describe('prepareQuery', () => {
 
       prepareQuery(options)(req, {}, next)
 
-      assert.deepEqual(req._ermQueryOptions, {
+      assert.deepEqual(req.erm.query, {
         populate: [{
           path: 'foo'
         }]
@@ -494,7 +341,7 @@ describe('prepareQuery', () => {
 
       prepareQuery(options)(req, {}, next)
 
-      assert.deepEqual(req._ermQueryOptions, {
+      assert.deepEqual(req.erm.query, {
         populate: [{
           path: 'foo'
         }, {
@@ -520,7 +367,7 @@ describe('prepareQuery', () => {
 
       prepareQuery(options)(req, {}, next)
 
-      assert.deepEqual(req._ermQueryOptions, {
+      assert.deepEqual(req.erm.query, {
         populate: [{
           path: 'foo.bar',
           select: 'baz',
@@ -543,7 +390,7 @@ describe('prepareQuery', () => {
 
       prepareQuery(options)(req, {}, next)
 
-      assert.deepEqual(req._ermQueryOptions, {
+      assert.deepEqual(req.erm.query, {
         populate: [{
           path: 'foo',
           select: 'bar baz'

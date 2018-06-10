@@ -4,18 +4,17 @@
     "name": "Florian Holzapfel"
   },
   "dependencies": {
-    "async": "~2.5.0",
-    "ensure-array": "0.0.5",
+    "ensure-array": "~1.0.0",
     "is-coordinates": "~2.0.0",
     "lodash.defaults": "~4.2.0",
     "lodash.get": "~4.4.2",
     "lodash.has": "~4.5.2",
-    "lodash.isfunction": "^3.0.8",
     "lodash.isplainobject": "~4.0.6",
-    "mongoose-detective": "~0.1.0",
-    "moredots": "~0.1.0",
+    "mongoose-detective": "~1.0.0",
+    "moredots": "~1.0.1",
+    "run-series": "~1.1.8",
     "serialize-error": "~2.1.0",
-    "weedout": "~0.1.0"
+    "weedout": "~1.0.1"
   },
   "peerDependencies": {
     "mongoose": "^4.0.0"
@@ -24,19 +23,22 @@
   "devDependencies": {
     "babel-preset-es2015": "^6.24.0",
     "babel-register": "^6.26.0",
-    "body-parser": "^1.15.0",
-    "express": "^4.13.0",
+    "body-parser": "^1.18.3",
+    "eslint": "^4.19.1",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-plugin-prettier": "^2.6.0",
+    "express": "^4.16.3",
     "in-publish": "^2.0.0",
     "istanbul": "1.1.0-alpha.1",
     "method-override": "^2.3.10",
-    "mocha": "^4.0.0",
-    "request": "^2.69.0",
-    "restify": "^4.3.0",
-    "sinon": "^1.17.0",
-    "standard": "^10.0.0"
+    "mocha": "^4.1.0",
+    "prettier": "^1.13.5",
+    "request": "^2.87.0",
+    "restify": "^4.3.4",
+    "sinon": "^1.17.0"
   },
   "engines": {
-    "node": ">=4"
+    "node": ">=6"
   },
   "homepage": "http://florianholzapfel.github.io/express-restify-mongoose/",
   "keywords": [
@@ -59,7 +61,7 @@
     "url": "https://github.com/florianholzapfel/express-restify-mongoose/issues"
   },
   "scripts": {
-    "lint": "standard",
+    "lint": "eslint **/*.js",
     "prepublish": "in-publish && npm test || not-in-publish",
     "pretest": "npm run lint",
     "test": "npm run test-unit && npm run test-filter && npm run test-express && npm run test-restify",
@@ -79,15 +81,5 @@
     "README.md",
     "src/"
   ],
-  "standard": {
-    "globals": [
-      "describe",
-      "before",
-      "beforeEach",
-      "after",
-      "afterEach",
-      "it"
-    ]
-  },
   "version": "4.3.0"
 }

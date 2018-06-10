@@ -15,16 +15,18 @@ const weedout = require('weedout')
  * @param {Object} opts.excludedMap {} - Filtered keys for related models
  * @param {Object} opts.filteredKeys {} - Keys to filter for the current model
  */
-function Filter (opts) {
+function Filter(opts) {
   this.model = opts.model
 
-  this.filteredKeys = isPlainObject(opts.filteredKeys) ? {
-    private: opts.filteredKeys.private || [],
-    protected: opts.filteredKeys.protected || []
-  } : {
-    private: [],
-    protected: []
-  }
+  this.filteredKeys = isPlainObject(opts.filteredKeys)
+    ? {
+        private: opts.filteredKeys.private || [],
+        protected: opts.filteredKeys.protected || []
+      }
+    : {
+        private: [],
+        protected: []
+      }
 
   if (this.model && this.model.discriminators && isPlainObject(opts.excludedMap)) {
     for (const modelName in this.model.discriminators) {
@@ -45,7 +47,7 @@ function Filter (opts) {
  * @param {Object} opts.filteredKeys {} - Keys to filter for the current model
  * @returns {Array} - Keys to filter.
  */
-Filter.prototype.getExcluded = function (opts) {
+Filter.prototype.getExcluded = function(opts) {
   if (opts.access === 'private') {
     return []
   }
@@ -53,19 +55,21 @@ Filter.prototype.getExcluded = function (opts) {
   let entry = opts.excludedMap && opts.modelName ? opts.excludedMap[opts.modelName] : null
 
   if (!entry) {
-    entry = isPlainObject(opts.filteredKeys) ? {
-      private: opts.filteredKeys.private || [],
-      protected: opts.filteredKeys.protected || []
-    } : {
-      private: [],
-      protected: []
-    }
+    entry = isPlainObject(opts.filteredKeys)
+      ? {
+          private: opts.filteredKeys.private || [],
+          protected: opts.filteredKeys.protected || []
+        }
+      : {
+          private: [],
+          protected: []
+        }
   }
 
   return opts.access === 'protected' ? entry.private : entry.private.concat(entry.protected)
 }
 
-Filter.prototype.isExcluded = function (field, opts) {
+Filter.prototype.isExcluded = function(field, opts) {
   if (!field) {
     return false
   }
@@ -87,9 +91,9 @@ Filter.prototype.isExcluded = function (field, opts) {
  * @param {Array} - Keys to filter.
  * @returns {Object} - Filtered document.
  */
-Filter.prototype.filterItem = function (item, excluded) {
+Filter.prototype.filterItem = function(item, excluded) {
   if (Array.isArray(item)) {
-    return item.map((i) => this.filterItem(i, excluded))
+    return item.map(i => this.filterItem(i, excluded))
   }
 
   if (item && excluded) {
@@ -119,9 +123,9 @@ Filter.prototype.filterItem = function (item, excluded) {
  * @param {Object} opts.excludedMap {} - Filtered keys for related models
  * @returns {Object} - Filtered document.
  */
-Filter.prototype.filterPopulatedItem = function (item, opts) {
+Filter.prototype.filterPopulatedItem = function(item, opts) {
   if (Array.isArray(item)) {
-    return item.map((i) => this.filterPopulatedItem(i, opts))
+    return item.map(i => this.filterPopulatedItem(i, opts))
   }
 
   for (let i = 0; i < opts.populate.length; i++) {
@@ -138,11 +142,17 @@ Filter.prototype.filterPopulatedItem = function (item, opts) {
     if (has(item, opts.populate[i].path)) {
       this.filterItem(get(item, opts.populate[i].path), excluded)
     } else {
-      const pathToArray = opts.populate[i].path.split('.').slice(0, -1).join('.')
+      const pathToArray = opts.populate[i].path
+        .split('.')
+        .slice(0, -1)
+        .join('.')
 
       if (has(item, pathToArray)) {
         const array = get(item, pathToArray)
-        const pathToObject = opts.populate[i].path.split('.').slice(-1).join('.')
+        const pathToObject = opts.populate[i].path
+          .split('.')
+          .slice(-1)
+          .join('.')
 
         if (Array.isArray(array)) {
           this.filterItem(array.map(element => get(element, pathToObject)), excluded)
@@ -165,7 +175,7 @@ Filter.prototype.filterPopulatedItem = function (item, opts) {
  * @param {Array} opts.populate - Paths to populated subdocuments.
  * @returns {Object} - Filtered document.
  */
-Filter.prototype.filterObject = function (resource, opts) {
+Filter.prototype.filterObject = function(resource, opts) {
   opts = defaults(opts || {}, {
     access: 'public',
     excludedMap: {},

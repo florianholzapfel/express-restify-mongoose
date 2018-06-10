@@ -1,14 +1,13 @@
 'use strict'
 
 const defaults = require('lodash.defaults')
-const isFunction = require('lodash.isfunction')
 const ensureArray = require('ensure-array')
 const util = require('util')
 const Filter = require('./resource_filter')
 let customDefaults = null
 const excludedMap = {}
 
-function getDefaults () {
+function getDefaults() {
   return defaults(Object.assign({}, customDefaults) || {}, {
     prefix: '/api',
     version: '/v1',
@@ -24,7 +23,7 @@ function getDefaults () {
   })
 }
 
-const restify = function (app, model, opts) {
+const restify = function(app, model, opts) {
   const options = Object.assign({}, getDefaults(), opts || {})
 
   const access = require('./middleware/access')
@@ -109,9 +108,11 @@ const restify = function (app, model, opts) {
 
   app.use((req, res, next) => {
     const getModel = options.modelFactory && options.modelFactory.getModel
+
     req.erm = {
-      model: isFunction(getModel) ? getModel() : model
+      model: typeof getModel === 'function' ? getModel() : model
     }
+
     next()
   })
 
@@ -135,7 +136,7 @@ const restify = function (app, model, opts) {
 }
 
 module.exports = {
-  defaults: function (options) {
+  defaults: function(options) {
     customDefaults = options
   },
   serve: restify
