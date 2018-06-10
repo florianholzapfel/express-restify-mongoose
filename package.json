@@ -12,7 +12,7 @@
     "lodash.isplainobject": "~4.0.6",
     "mongoose-detective": "~1.0.0",
     "moredots": "~1.0.1",
-    "run-series": "~1.1.4",
+    "run-series": "~1.1.8",
     "serialize-error": "~2.1.0",
     "weedout": "~1.0.1"
   },
@@ -23,16 +23,16 @@
   "devDependencies": {
     "babel-preset-es2015": "^6.24.0",
     "babel-register": "^6.26.0",
-    "body-parser": "^1.15.0",
-    "express": "^4.16.0",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
     "in-publish": "^2.0.0",
     "istanbul": "1.1.0-alpha.1",
     "method-override": "^2.3.10",
-    "mocha": "^4.0.0",
-    "request": "^2.69.0",
-    "restify": "^4.3.0",
+    "mocha": "^4.1.0",
+    "request": "^2.87.0",
+    "restify": "^4.3.4",
     "sinon": "^1.17.0",
-    "standard": "^10.0.0"
+    "standard": "^11.0.0"
   },
   "engines": {
     "node": ">=6"
