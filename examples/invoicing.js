@@ -6,9 +6,12 @@ var mongoose = require('mongoose')
 var Schema = mongoose.Schema
 var restify = require('..')
 
-mongoose.connect('mongodb://localhost/database', {
-  useMongoClient: true
-})
+mongoose.connect(
+  'mongodb://localhost/database',
+  {
+    useMongoClient: true
+  }
+)
 
 var Customer = new Schema({
   name: { type: String, required: true },
@@ -29,6 +32,6 @@ app.use(methodOverride('X-HTTP-Method-Override'))
 restify.serve(app, CustomerModel)
 restify.serve(app, InvoiceModel)
 
-http.createServer(app).listen(3000, function () {
+http.createServer(app).listen(3000, function() {
   console.log('Express server listening on port 3000')
 })

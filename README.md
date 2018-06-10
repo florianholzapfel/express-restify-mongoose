@@ -6,7 +6,6 @@ Easily create a flexible REST interface for mongoose models.
 [![Coverage Status](https://coveralls.io/repos/florianholzapfel/express-restify-mongoose/badge.svg?branch=master&service=github)](https://coveralls.io/github/florianholzapfel/express-restify-mongoose?branch=master)
 [![NPM version](https://badge.fury.io/js/express-restify-mongoose.png)](http://badge.fury.io/js/express-restify-mongoose)
 [![Dependencies](https://david-dm.org/florianholzapfel/express-restify-mongoose.png)](https://david-dm.org/florianholzapfel/express-restify-mongoose)
-[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://github.com/feross/standard)
 
 ## Getting started
 

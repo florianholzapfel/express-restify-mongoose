@@ -7,7 +7,7 @@ const Filter = require('./resource_filter')
 let customDefaults = null
 const excludedMap = {}
 
-function getDefaults () {
+function getDefaults() {
   return defaults(Object.assign({}, customDefaults) || {}, {
     prefix: '/api',
     version: '/v1',
@@ -23,7 +23,7 @@ function getDefaults () {
   })
 }
 
-const restify = function (app, model, opts) {
+const restify = function(app, model, opts) {
   const options = Object.assign({}, getDefaults(), opts || {})
 
   const access = require('./middleware/access')
@@ -136,7 +136,7 @@ const restify = function (app, model, opts) {
 }
 
 module.exports = {
-  defaults: function (options) {
+  defaults: function(options) {
     customDefaults = options
   },
   serve: restify

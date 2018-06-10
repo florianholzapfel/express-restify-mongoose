@@ -17,7 +17,7 @@ const virtualsTests = require('./integration/virtuals')
 
 const db = require('./integration/setup')()
 
-function Express () {
+function Express() {
   let app = express()
   app.use(bodyParser.json())
   app.use(bodyParser.urlencoded({ extended: true }))
@@ -25,8 +25,8 @@ function Express () {
   return app
 }
 
-function setup (callback) {
-  db.initialize((err) => {
+function setup(callback) {
+  db.initialize(err => {
     if (err) {
       return callback(err)
     }
@@ -35,8 +35,8 @@ function setup (callback) {
   })
 }
 
-function dismantle (app, server, callback) {
-  db.close((err) => {
+function dismantle(app, server, callback) {
+  db.close(err => {
     if (err) {
       return callback(err)
     }
@@ -49,7 +49,7 @@ function dismantle (app, server, callback) {
   })
 }
 
-function runTests (createFn) {
+function runTests(createFn) {
   describe(createFn.name, () => {
     createTests(createFn, setup, dismantle)
     readTests(createFn, setup, dismantle)
