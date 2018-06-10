@@ -3,6 +3,7 @@ Changelog
 
 ### 5.0.0
 
+* dropped support for Node 4 and added support for Node 10
 * removed query operator parsing [#285](https://github.com/florianholzapfel/express-restify-mongoose/issues/285)
 * moved request query in req.erm.query [#299](https://github.com/florianholzapfel/express-restify-mongoose/issues/299) [#353](https://github.com/florianholzapfel/express-restify-mongoose/issues/353)
 * removed `next` from postProcess [#334](https://github.com/florianholzapfel/express-restify-mongoose/issues/334)
