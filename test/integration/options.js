@@ -466,6 +466,61 @@ module.exports = function (createFn, setup, dismantle) {
     })
   })
 
+  describe('generateMethods', () => {
+    let app = createFn()
+    let server
+
+    before(done => {
+      setup(err => {
+        if (err) {
+          return done(err)
+        }
+
+        erm.serve(app, db.models.Customer, {
+          generateMethods: ['get'],
+          restify: app.isRestify
+        })
+
+        server = app.listen(testPort, done)
+      })
+    })
+
+    after(done => {
+      dismantle(app, server, done)
+    })
+
+    it('GET /Customer 200', done => {
+      request.get(
+        {
+          url: `${testUrl}/api/v1/Customer`
+        },
+        (err, { statusCode }, body) => {
+          if (err) return done(err)
+          assert.equal(statusCode, 200)
+          done()
+        }
+      )
+    })
+
+    it('PUT /Customer 404', done => {
+      request(
+        {
+          method: 'PUT',
+          url: `${testUrl}/api/v1/Customer`
+        },
+        (err, { statusCode }, body) => {
+          if (err) return done(err)
+          if (app.isRestify) {
+            assert.equal(statusCode, 405)
+          } else {
+            assert.equal(statusCode, 404)
+          }
+          done()
+        }
+      )
+    })
+  })
+
   describe('version', () => {
     describe('v8', () => {
       let app = createFn()
@@ -621,7 +676,8 @@ module.exports = function (createFn, setup, dismantle) {
 
     updateMethods.forEach((method) => {
       it(`${method} /Customer/:id 200`, (done) => {
-        request({ method,
+        request({
+          method,
           url: `${testUrl}/api/v1/Customer/${customer._id}`,
           json: {
             age: 12
@@ -748,7 +804,8 @@ module.exports = function (createFn, setup, dismantle) {
 
     updateMethods.forEach((method) => {
       it(`${method} /Customer/:name 200`, (done) => {
-        request({ method,
+        request({
+          method,
           url: `${testUrl}/api/v1/Customer/${customer.name}`,
           json: {
             age: 12
