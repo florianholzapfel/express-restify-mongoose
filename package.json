@@ -32,6 +32,7 @@
     "istanbul": "1.1.0-alpha.1",
     "method-override": "^2.3.10",
     "mocha": "^4.1.0",
+    "mongoose": "^4.0.0",
     "prettier": "^1.13.5",
     "request": "^2.87.0",
     "restify": "^4.3.4",
