@@ -1,6 +1,13 @@
 {
-  "extends": ["plugin:prettier/recommended"],
+  "extends": [
+    "plugin:prettier/recommended"
+  ],
   "parserOptions": {
     "ecmaVersion": 6
+  },
+  "rules": {
+    "arrow-parens": [
+      "off"
+    ]
   }
 }
