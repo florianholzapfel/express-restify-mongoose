@@ -17,6 +17,7 @@ describe('prepareOutput', () => {
     onError.reset()
     outputFn.reset()
     outputFnPromise.reset()
+    postProcess.reset()
     next.reset()
   })
 
@@ -39,7 +40,27 @@ describe('prepareOutput', () => {
     sinon.assert.notCalled(next)
   })
 
-  it('calls outputFn with default options and no post* middleware (async)', () => {
+  it('calls outputFn with default options and no post* middleware and next when restify option', () => {
+    let req = {
+      method: 'GET',
+      erm: {}
+    }
+
+    let options = {
+      restify: true,
+      onError: onError,
+      outputFn: outputFn
+    }
+
+    prepareOutput(options)(req, {}, next)
+
+    sinon.assert.calledOnce(outputFn)
+    sinon.assert.calledWithExactly(outputFn, req, {})
+    sinon.assert.notCalled(onError)
+    sinon.assert.calledOnce(next)
+  })
+
+  it('calls outputFn with default options and no post* middleware (async)', (done) => {
     let req = {
       method: 'GET',
       erm: {}
@@ -52,10 +73,37 @@ describe('prepareOutput', () => {
 
     prepareOutput(options)(req, {}, next)
 
-    sinon.assert.calledOnce(outputFnPromise)
-    sinon.assert.calledWithExactly(outputFnPromise, req, {})
-    sinon.assert.notCalled(onError)
-    sinon.assert.notCalled(next)
+    outputFnPromise().then(() => {
+      sinon.assert.calledTwice(outputFnPromise)
+      sinon.assert.calledWithExactly(outputFnPromise, req, {})
+      sinon.assert.notCalled(onError)
+      sinon.assert.notCalled(next)
+      done()
+    })
+
+  })
+
+  it('calls outputFn with default options and no post* middleware and next when restify option (async)', (done) => {
+    let req = {
+      method: 'GET',
+      erm: {}
+    }
+
+    let options = {
+      restify: true,
+      onError: onError,
+      outputFn: outputFnPromise
+    }
+
+    prepareOutput(options)(req, {}, next)
+
+    outputFnPromise().then(() => {
+      sinon.assert.calledTwice(outputFnPromise)
+      sinon.assert.calledWithExactly(outputFnPromise, req, {})
+      sinon.assert.notCalled(onError)
+      sinon.assert.calledOnce(next)
+      done()
+    });
   })
 
   it('calls postProcess with default options and no post* middleware', () => {
@@ -80,7 +128,30 @@ describe('prepareOutput', () => {
     sinon.assert.notCalled(next)
   })
 
-  it('calls postProcess with default options and no post* middleware (async outputFn)', () => {
+  it('calls postProcess with default options and no post* middleware and next when restify option', () => {
+    let req = {
+      method: 'GET',
+      erm: {}
+    }
+
+    let options = {
+      restify: true,
+      onError: onError,
+      outputFn: outputFn,
+      postProcess: postProcess
+    }
+
+    prepareOutput(options)(req, {}, next)
+
+    sinon.assert.calledOnce(outputFn)
+    sinon.assert.calledWithExactly(outputFn, req, {})
+    sinon.assert.calledOnce(postProcess)
+    sinon.assert.calledWithExactly(postProcess, req, {})
+    sinon.assert.notCalled(onError)
+    sinon.assert.calledOnce(next)
+  })
+
+  it('calls postProcess with default options and no post* middleware (async)', (done) => {
     let req = {
       method: 'GET',
       erm: {}
@@ -94,11 +165,40 @@ describe('prepareOutput', () => {
 
     prepareOutput(options)(req, {}, next)
 
-    sinon.assert.calledOnce(outputFnPromise)
-    sinon.assert.calledWithExactly(outputFnPromise, req, {})
-    sinon.assert.calledOnce(postProcess)
-    sinon.assert.calledWithExactly(postProcess, req, {})
-    sinon.assert.notCalled(onError)
-    sinon.assert.notCalled(next)
+    outputFnPromise().then(() => {
+      sinon.assert.calledTwice(outputFnPromise)
+      sinon.assert.calledWithExactly(outputFnPromise, req, {})
+      sinon.assert.calledOnce(postProcess)
+      sinon.assert.calledWithExactly(postProcess, req, {})
+      sinon.assert.notCalled(onError)
+      sinon.assert.notCalled(next)
+      done()
+    });
+  })
+
+  it('calls postProcess with default options and no post* middleware and next with restify option (async)', (done) => {
+    let req = {
+      method: 'GET',
+      erm: {}
+    }
+
+    let options = {
+      restify: true,
+      onError: onError,
+      outputFn: outputFnPromise,
+      postProcess: postProcess
+    }
+
+    prepareOutput(options)(req, {}, next)
+
+    outputFnPromise().then(() => {
+      sinon.assert.calledTwice(outputFnPromise)
+      sinon.assert.calledWithExactly(outputFnPromise, req, {})
+      sinon.assert.calledOnce(postProcess)
+      sinon.assert.calledWithExactly(postProcess, req, {})
+      sinon.assert.notCalled(onError)
+      sinon.assert.calledOnce(next)
+      done()
+    });
   })
 })
