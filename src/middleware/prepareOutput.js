@@ -50,14 +50,20 @@ module.exports = function (options, excludedMap) {
         if (promise && typeof promise.then === 'function') {
           promise.then(() => {
             options.postProcess(req, res);
-            next();
+            if (options.restify) {
+              next();
+            }
           }).catch(errorHandler(req, res, next))
         } else {
           options.postProcess(req, res);
-          next();
+          if (options.restify) {
+            next();
+          }
         }
       } else {
-        next();
+        if (options.restify) {
+          next();
+        }
       }
     }
 
