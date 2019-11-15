@@ -4,7 +4,7 @@ const assert = require('assert')
 const mongoose = require('mongoose')
 const request = require('request')
 
-module.exports = function(createFn, setup, dismantle) {
+module.exports = function (createFn, setup, dismantle) {
   const erm = require('../../src/express-restify-mongoose')
   const db = require('./setup')()
 
@@ -176,13 +176,13 @@ module.exports = function(createFn, setup, dismantle) {
                 body.errmsg
                   .replace(/\s+/g, ' ')
                   .replace('exception: ', '')
-                  .match(/E11000 duplicate key error (?:index|collection): database.customers(\.\$| index: )name_1 dup key: { name: "John" }/) !== null
+                  .match(/E11000 duplicate key error (?:index|collection): database.customers(\.\$| index: )name_1 dup key: { (?:name|): "John" }/) !== null
               )
               assert.ok(
                 body.message
                   .replace(/\s+/g, ' ')
                   .replace('exception: ', '')
-                  .match(/E11000 duplicate key error (?:index|collection): database.customers(?:\.\$| index: )name_1 dup key: { name: "John" }/) !== null
+                  .match(/E11000 duplicate key error (?:index|collection): database.customers(?:\.\$| index: )name_1 dup key: { (?:name|): "John" }/) !== null
               )
               assert.ok(body.code === 11000 || body.code === 11001)
               assert.ok(!body.codeName || body.codeName === 'DuplicateKey') // codeName is optional
@@ -664,13 +664,13 @@ module.exports = function(createFn, setup, dismantle) {
                 body.errmsg
                   .replace(/\s+/g, ' ')
                   .replace('exception: ', '')
-                  .match(/E11000 duplicate key error (?:index|collection): database.customers(?:\.\$| index: )name_1 dup key: { name: "John" }/) !== null
+                  .match(/E11000 duplicate key error (?:index|collection): database.customers(?:\.\$| index: )name_1 dup key: { (?:name|): "John" }/) !== null
               )
               assert.ok(
                 body.message
                   .replace(/\s+/g, ' ')
                   .replace('exception: ', '')
-                  .match(/E11000 duplicate key error (?:index|collection): database.customers(?:\.\$| index: )name_1 dup key: { name: "John" }/) !== null
+                  .match(/E11000 duplicate key error (?:index|collection): database.customers(?:\.\$| index: )name_1 dup key: { (?:name|): "John" }/) !== null
               )
               assert.ok(body.code === 11000 || body.code === 11001)
               assert.ok(!body.writeErrors || body.writeErrors.length === 1)
