@@ -145,7 +145,7 @@ module.exports = function(createFn, setup, dismantle) {
     })
 
     afterEach(done => {
-      options.preMiddleware.reset()
+      options.preMiddleware.resetHistory()
       dismantle(app, server, done)
     })
 
@@ -364,7 +364,7 @@ module.exports = function(createFn, setup, dismantle) {
     })
 
     afterEach(done => {
-      options.preCreate.reset()
+      options.preCreate.resetHistory()
       dismantle(app, server, done)
     })
 
@@ -422,7 +422,7 @@ module.exports = function(createFn, setup, dismantle) {
     })
 
     afterEach(done => {
-      options.preRead.reset()
+      options.preRead.resetHistory()
       dismantle(app, server, done)
     })
 
@@ -538,7 +538,7 @@ module.exports = function(createFn, setup, dismantle) {
     })
 
     afterEach(done => {
-      options.preUpdate.reset()
+      options.preUpdate.resetHistory()
       dismantle(app, server, done)
     })
 
@@ -638,7 +638,7 @@ module.exports = function(createFn, setup, dismantle) {
     })
 
     afterEach(done => {
-      options.preDelete.reset()
+      options.preDelete.resetHistory()
       dismantle(app, server, done)
     })
 
@@ -803,7 +803,7 @@ module.exports = function(createFn, setup, dismantle) {
     })
 
     afterEach(done => {
-      options.postCreate.reset()
+      options.postCreate.resetHistory()
       dismantle(app, server, done)
     })
 
@@ -897,7 +897,7 @@ module.exports = function(createFn, setup, dismantle) {
     })
 
     afterEach(done => {
-      options.postRead.reset()
+      options.postRead.resetHistory()
       dismantle(app, server, done)
     })
 
@@ -1043,7 +1043,7 @@ module.exports = function(createFn, setup, dismantle) {
     })
 
     afterEach(done => {
-      options.postUpdate.reset()
+      options.postUpdate.resetHistory()
       dismantle(app, server, done)
     })
 
@@ -1179,7 +1179,7 @@ module.exports = function(createFn, setup, dismantle) {
     })
 
     afterEach(done => {
-      options.postDelete.reset()
+      options.postDelete.resetHistory()
       dismantle(app, server, done)
     })
 
@@ -1278,7 +1278,7 @@ module.exports = function(createFn, setup, dismantle) {
     })
 
     afterEach(done => {
-      options.postCreate.reset()
+      options.postCreate.resetHistory()
       dismantle(app, server, done)
     })
 
@@ -1328,7 +1328,7 @@ module.exports = function(createFn, setup, dismantle) {
     })
 
     afterEach(done => {
-      options.postProcess.reset()
+      options.postProcess.resetHistory()
       dismantle(app, server, done)
     })
 
@@ -1382,7 +1382,7 @@ module.exports = function(createFn, setup, dismantle) {
     })
 
     afterEach(done => {
-      options.postProcess.reset()
+      options.postProcess.resetHistory()
       dismantle(app, server, done)
     })
 

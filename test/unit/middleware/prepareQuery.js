@@ -14,9 +14,9 @@ describe('prepareQuery', () => {
   let next = sinon.spy()
 
   afterEach(() => {
-    options.onError.reset()
+    options.onError.resetHistory()
     options.allowRegex = true
-    next.reset()
+    next.resetHistory()
   })
 
   describe('jsonQueryParser', () => {
@@ -112,7 +112,7 @@ describe('prepareQuery', () => {
     prepareQuery(options)(req, {}, next)
 
     sinon.assert.calledOnce(options.onError)
-    sinon.assert.calledWithExactly(options.onError, new Error('invalid_json_query'), req, {}, next)
+    sinon.assert.calledWithExactly(options.onError, sinon.match.instanceOf(Error) /*new Error('invalid_json_query')*/, req, {}, next)
     sinon.assert.notCalled(next)
   })
 

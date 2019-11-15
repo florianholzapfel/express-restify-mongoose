@@ -14,10 +14,10 @@ describe('prepareOutput', () => {
   let next = sinon.spy()
 
   afterEach(() => {
-    onError.reset()
-    outputFn.reset()
-    outputFnPromise.reset()
-    next.reset()
+    onError.resetHistory()
+    outputFn.resetHistory()
+    outputFnPromise.resetHistory()
+    next.resetHistory()
   })
 
   it('calls outputFn with default options and no post* middleware', () => {

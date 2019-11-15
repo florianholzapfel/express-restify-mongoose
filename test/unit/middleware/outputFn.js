@@ -20,10 +20,10 @@ describe('outputFn', () => {
   let send = sinon.spy(res, 'send')
 
   afterEach(() => {
-    sendStatus.reset()
-    status.reset()
-    json.reset()
-    send.reset()
+    sendStatus.resetHistory()
+    status.resetHistory()
+    json.resetHistory()
+    send.resetHistory()
   })
 
   describe('express', () => {

@@ -735,8 +735,8 @@ module.exports = function(createFn, setup, dismantle) {
             sinon.assert.calledOnce(options.preUpdate[0])
             sinon.assert.calledOnce(options.preUpdate[1])
 
-            options.preUpdate[0].reset()
-            options.preUpdate[1].reset()
+            options.preUpdate[0].resetHistory()
+            options.preUpdate[1].resetHistory()
 
             done()
           }

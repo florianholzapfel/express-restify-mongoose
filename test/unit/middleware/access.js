@@ -9,7 +9,7 @@ describe('access', () => {
   let next = sinon.spy()
 
   afterEach(() => {
-    next.reset()
+    next.resetHistory()
   })
 
   describe('returns (sync)', () => {

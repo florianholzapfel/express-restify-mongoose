@@ -18,7 +18,7 @@ describe('buildQuery', () => {
 
   afterEach(() => {
     for (let key in query) {
-      query[key].reset()
+      query[key].resetHistory()
     }
   })
 

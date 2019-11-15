@@ -17,8 +17,8 @@ const db = require('./integration/setup')()
 
 function Restify() {
   let app = restify.createServer()
-  app.use(restify.queryParser())
-  app.use(restify.bodyParser())
+  app.use(restify.plugins.queryParser())
+  app.use(restify.plugins.bodyParser())
   app.isRestify = true
   return app
 }
@@ -62,4 +62,4 @@ function runTests(createFn) {
   })
 }
 
-runTests(Restify)
+//runTests(Restify)
