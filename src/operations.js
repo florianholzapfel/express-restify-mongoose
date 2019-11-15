@@ -236,6 +236,7 @@ module.exports = function(model, options, excludedMap) {
             },
             {
               new: true,
+              upsert: options.upsert,
               runValidators: options.runValidators
             }
           )

@@ -19,7 +19,8 @@ function getDefaults() {
     runValidators: false,
     allowRegex: true,
     private: [],
-    protected: []
+    protected: [],
+    upsert: false
   })
 }
 
