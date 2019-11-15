@@ -13,7 +13,7 @@ describe('onError', () => {
 
   let res = {
     setHeader: () => {},
-    status: function () {
+    status: function() {
       return this
     },
     send: () => {}

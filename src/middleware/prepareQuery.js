@@ -2,10 +2,10 @@
 
 const isCoordinates = require('is-coordinates')
 
-module.exports = function (options) {
+module.exports = function(options) {
   const errorHandler = require('../errorHandler')(options)
 
-  function jsonQueryParser (key, value) {
+  function jsonQueryParser(key, value) {
     if (key === '$regex' && !options.allowRegex) {
       return undefined
     }
@@ -17,7 +17,7 @@ module.exports = function (options) {
     return value
   }
 
-  function parseQueryOptions (queryOptions) {
+  function parseQueryOptions(queryOptions) {
     if (queryOptions.select && typeof queryOptions.select === 'string') {
       const select = queryOptions.select.split(',')
       queryOptions.select = {}
@@ -75,7 +75,7 @@ module.exports = function (options) {
     return queryOptions
   }
 
-  return function (req, res, next) {
+  return function(req, res, next) {
     const whitelist = ['distinct', 'limit', 'populate', 'query', 'select', 'skip', 'sort']
     const query = {}
 

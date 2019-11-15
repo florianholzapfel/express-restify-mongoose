@@ -1,7 +1,7 @@
 'use strict'
 
-module.exports = function (isExpress) {
-  return function output (req, res) {
+module.exports = function(isExpress) {
+  return function output(req, res) {
     if (isExpress) {
       if (req.erm.result) {
         res.status(req.erm.statusCode).json(req.erm.result)

@@ -1,9 +1,9 @@
 'use strict'
 
-module.exports = function (options) {
+module.exports = function(options) {
   const errorHandler = require('../errorHandler')(options)
 
-  return function ensureContentType (req, res, next) {
+  return function ensureContentType(req, res, next) {
     const ct = req.headers['content-type']
 
     if (!ct) {

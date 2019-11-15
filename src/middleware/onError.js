@@ -2,8 +2,8 @@
 
 const serializeError = require('serialize-error')
 
-module.exports = function (isExpress) {
-  return function (err, req, res, next) {
+module.exports = function(isExpress) {
+  return function(err, req, res, next) {
     const serializedErr = serializeError(err)
 
     delete serializedErr.stack

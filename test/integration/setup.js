@@ -5,7 +5,7 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const util = require('util')
 
-module.exports = function () {
+module.exports = function() {
   const ProductSchema = new Schema({
     name: { type: String, required: true },
     department: {
@@ -15,7 +15,7 @@ module.exports = function () {
     price: { type: Number }
   })
 
-  const BaseCustomerSchema = function () {
+  const BaseCustomerSchema = function() {
     Schema.apply(this, arguments)
 
     this.add({
@@ -32,10 +32,12 @@ module.exports = function () {
           number: { type: Number }
         }
       },
-      purchases: [{
-        item: { type: Schema.Types.ObjectId, ref: 'Product' },
-        number: { type: Number }
-      }],
+      purchases: [
+        {
+          item: { type: Schema.Types.ObjectId, ref: 'Product' },
+          number: { type: Number }
+        }
+      ],
       returns: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
       creditCard: { type: String, access: 'protected' },
       ssn: { type: String, access: 'private' },
@@ -45,25 +47,31 @@ module.exports = function () {
 
   util.inherits(BaseCustomerSchema, Schema)
 
-  const CustomerSchema = new BaseCustomerSchema({}, {
-    toObject: { virtuals: true },
-    toJSON: { virtuals: true }
-  })
+  const CustomerSchema = new BaseCustomerSchema(
+    {},
+    {
+      toObject: { virtuals: true },
+      toJSON: { virtuals: true }
+    }
+  )
 
-  CustomerSchema.virtual('info').get(function () {
+  CustomerSchema.virtual('info').get(function() {
     return this.name + ' is awesome'
   })
 
-  const InvoiceSchema = new Schema({
-    customer: { type: Schema.Types.ObjectId, ref: 'Customer' },
-    amount: { type: Number },
-    receipt: { type: String },
-    products: [{ type: Schema.Types.ObjectId, ref: 'Product' }]
-  }, {
-    toObject: { virtuals: true },
-    toJSON: { virtuals: true },
-    versionKey: '__version'
-  })
+  const InvoiceSchema = new Schema(
+    {
+      customer: { type: Schema.Types.ObjectId, ref: 'Customer' },
+      amount: { type: Number },
+      receipt: { type: String },
+      products: [{ type: Schema.Types.ObjectId, ref: 'Product' }]
+    },
+    {
+      toObject: { virtuals: true },
+      toJSON: { virtuals: true },
+      versionKey: '__version'
+    }
+  )
 
   const RepeatCustomerSchema = new BaseCustomerSchema({
     account: { type: Schema.Types.ObjectId, ref: 'Account' },
@@ -82,20 +90,20 @@ module.exports = function () {
     postSaveError: Boolean
   })
 
-  HooksSchema.pre('save', true, function (next, done) {
+  HooksSchema.pre('save', true, function(next, done) {
     next()
     setTimeout(() => {
       done(this.preSaveError ? new Error('AsyncPreSaveError') : null)
     }, 42)
   })
 
-  HooksSchema.post('save', function (doc, next) {
+  HooksSchema.post('save', function(doc, next) {
     setTimeout(() => {
       next(doc.postSaveError ? new Error('AsyncPostSaveError') : null)
     }, 42)
   })
 
-  function initialize (opts, callback) {
+  function initialize(opts, callback) {
     if (typeof opts === 'function') {
       callback = opts
       opts = {}
@@ -130,25 +138,25 @@ module.exports = function () {
     }
 
     if (opts.connect) {
-      mongoose.connect('mongodb://localhost/database', {
-        useMongoClient: true
-      }, callback)
+      mongoose.connect(
+        'mongodb://localhost/database',
+        {
+          useMongoClient: true
+        },
+        callback
+      )
     } else if (typeof callback === 'function') {
       callback()
     }
   }
 
-  function reset (callback) {
-    Promise.all([
-      mongoose.models.Customer.remove().exec(),
-      mongoose.models.Invoice.remove().exec(),
-      mongoose.models.Product.remove().exec(),
-      mongoose.models.RepeatCustomer.remove().exec(),
-      mongoose.models.Account.remove().exec()
-    ]).then(() => callback()).catch(callback)
+  function reset(callback) {
+    Promise.all([mongoose.models.Customer.remove().exec(), mongoose.models.Invoice.remove().exec(), mongoose.models.Product.remove().exec(), mongoose.models.RepeatCustomer.remove().exec(), mongoose.models.Account.remove().exec()])
+      .then(() => callback())
+      .catch(callback)
   }
 
-  function close (callback) {
+  function close(callback) {
     mongoose.connection.close(callback)
   }
 

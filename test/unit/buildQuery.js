@@ -23,7 +23,7 @@ describe('buildQuery', () => {
   })
 
   it('does not call any methods and returns a query object', () => {
-    return buildQuery({})(query).then((result) => {
+    return buildQuery({})(query).then(result => {
       for (let key in query) {
         sinon.assert.notCalled(query[key])
       }
@@ -38,7 +38,7 @@ describe('buildQuery', () => {
         query: 'foo'
       }
 
-      return buildQuery({})(query, queryOptions).then((result) => {
+      return buildQuery({})(query, queryOptions).then(result => {
         sinon.assert.calledOnce(query.where)
         sinon.assert.calledWithExactly(query.where, queryOptions.query)
         sinon.assert.notCalled(query.skip)
@@ -58,7 +58,7 @@ describe('buildQuery', () => {
         skip: '1'
       }
 
-      return buildQuery({})(query, queryOptions).then((result) => {
+      return buildQuery({})(query, queryOptions).then(result => {
         sinon.assert.calledOnce(query.skip)
         sinon.assert.calledWithExactly(query.skip, queryOptions.skip)
         sinon.assert.notCalled(query.where)
@@ -78,7 +78,7 @@ describe('buildQuery', () => {
         limit: '1'
       }
 
-      return buildQuery({})(query, queryOptions).then((result) => {
+      return buildQuery({})(query, queryOptions).then(result => {
         sinon.assert.calledOnce(query.limit)
         sinon.assert.calledWithExactly(query.limit, queryOptions.limit)
         sinon.assert.notCalled(query.where)
@@ -100,7 +100,7 @@ describe('buildQuery', () => {
         limit: '2'
       }
 
-      return buildQuery(options)(query, queryOptions).then((result) => {
+      return buildQuery(options)(query, queryOptions).then(result => {
         sinon.assert.calledOnce(query.limit)
         sinon.assert.calledWithExactly(query.limit, options.limit)
         sinon.assert.notCalled(query.where)
@@ -120,7 +120,7 @@ describe('buildQuery', () => {
 
       query.op = 'count'
 
-      return buildQuery({})(query, queryOptions).then((result) => {
+      return buildQuery({})(query, queryOptions).then(result => {
         delete query.op
 
         for (let key in query) {
@@ -142,7 +142,7 @@ describe('buildQuery', () => {
 
       query.op = 'count'
 
-      return buildQuery(options)(query, queryOptions).then((result) => {
+      return buildQuery(options)(query, queryOptions).then(result => {
         delete query.op
 
         for (let key in query) {
@@ -162,7 +162,7 @@ describe('buildQuery', () => {
         distinct: 'name'
       }
 
-      return buildQuery(options)(query, queryOptions).then((result) => {
+      return buildQuery(options)(query, queryOptions).then(result => {
         for (let key in query) {
           if (key === 'distinct') continue
           sinon.assert.notCalled(query[key])
@@ -180,7 +180,7 @@ describe('buildQuery', () => {
         sort: 'foo'
       }
 
-      return buildQuery({})(query, queryOptions).then((result) => {
+      return buildQuery({})(query, queryOptions).then(result => {
         sinon.assert.calledOnce(query.sort)
         sinon.assert.calledWithExactly(query.sort, queryOptions.sort)
         sinon.assert.notCalled(query.where)
@@ -203,7 +203,7 @@ describe('buildQuery', () => {
         }
       }
 
-      return buildQuery({})(query, queryOptions).then((result) => {
+      return buildQuery({})(query, queryOptions).then(result => {
         sinon.assert.calledOnce(query.select)
         sinon.assert.calledWithExactly(query.select, {
           foo: 1,
@@ -223,22 +223,26 @@ describe('buildQuery', () => {
   describe('populate', () => {
     it('accepts an object wrapped in an array to populate a path', () => {
       let queryOptions = {
-        populate: [{
-          path: 'foo.bar',
-          select: 'baz',
-          match: { 'qux': 'quux' },
-          options: { sort: 'baz' }
-        }]
+        populate: [
+          {
+            path: 'foo.bar',
+            select: 'baz',
+            match: { qux: 'quux' },
+            options: { sort: 'baz' }
+          }
+        ]
       }
 
-      return buildQuery({})(query, queryOptions).then((result) => {
+      return buildQuery({})(query, queryOptions).then(result => {
         sinon.assert.calledOnce(query.populate)
-        sinon.assert.calledWithExactly(query.populate, [{
-          path: 'foo.bar',
-          select: 'baz',
-          match: { 'qux': 'quux' },
-          options: { sort: 'baz' }
-        }])
+        sinon.assert.calledWithExactly(query.populate, [
+          {
+            path: 'foo.bar',
+            select: 'baz',
+            match: { qux: 'quux' },
+            options: { sort: 'baz' }
+          }
+        ])
         sinon.assert.notCalled(query.where)
         sinon.assert.notCalled(query.skip)
         sinon.assert.notCalled(query.limit)
@@ -256,7 +260,7 @@ describe('buildQuery', () => {
         distinct: 'foo'
       }
 
-      return buildQuery({})(query, queryOptions).then((result) => {
+      return buildQuery({})(query, queryOptions).then(result => {
         sinon.assert.calledOnce(query.distinct)
         sinon.assert.calledWithExactly(query.distinct, 'foo')
         sinon.assert.notCalled(query.where)

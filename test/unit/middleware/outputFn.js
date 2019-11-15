@@ -6,12 +6,12 @@ describe('outputFn', () => {
   const outputFn = require('../../../src/middleware/outputFn')
 
   let res = {
-    sendStatus: function () {},
-    status: function () {
+    sendStatus: function() {},
+    status: function() {
       return this
     },
-    json: function () {},
-    send: function () {}
+    json: function() {},
+    send: function() {}
   }
 
   let sendStatus = sinon.spy(res, 'sendStatus')
@@ -28,11 +28,14 @@ describe('outputFn', () => {
 
   describe('express', () => {
     it('sends status code and message', () => {
-      outputFn(true)({
-        erm: {
-          statusCode: 200
-        }
-      }, res)
+      outputFn(true)(
+        {
+          erm: {
+            statusCode: 200
+          }
+        },
+        res
+      )
 
       sinon.assert.calledOnce(sendStatus)
       sinon.assert.calledWithExactly(sendStatus, 200)
@@ -66,11 +69,14 @@ describe('outputFn', () => {
 
   describe('restify', () => {
     it('sends status code', () => {
-      outputFn(false)({
-        erm: {
-          statusCode: 200
-        }
-      }, res)
+      outputFn(false)(
+        {
+          erm: {
+            statusCode: 200
+          }
+        },
+        res
+      )
 
       sinon.assert.calledOnce(send)
       sinon.assert.calledWithExactly(send, 200, undefined)

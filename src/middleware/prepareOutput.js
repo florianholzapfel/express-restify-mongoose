@@ -2,10 +2,10 @@
 
 const runSeries = require('run-series')
 
-module.exports = function (options, excludedMap) {
+module.exports = function(options, excludedMap) {
   const errorHandler = require('../errorHandler')(options)
 
-  return function (req, res, next) {
+  return function(req, res, next) {
     const postMiddleware = (() => {
       switch (req.method.toLowerCase()) {
         case 'get':
@@ -24,7 +24,7 @@ module.exports = function (options, excludedMap) {
       }
     })()
 
-    const callback = (err) => {
+    const callback = err => {
       if (err) {
         return errorHandler(req, res, next)(err)
       }
@@ -48,9 +48,11 @@ module.exports = function (options, excludedMap) {
 
       if (options.postProcess) {
         if (promise && typeof promise.then === 'function') {
-          promise.then(() => {
-            options.postProcess(req, res)
-          }).catch(errorHandler(req, res, next))
+          promise
+            .then(() => {
+              options.postProcess(req, res)
+            })
+            .catch(errorHandler(req, res, next))
         } else {
           options.postProcess(req, res)
         }
@@ -61,10 +63,13 @@ module.exports = function (options, excludedMap) {
       return callback()
     }
 
-    runSeries(postMiddleware.map((middleware, i) => {
-      return (cb) => {
-        middleware(req, res, cb)
-      }
-    }), callback)
+    runSeries(
+      postMiddleware.map((middleware, i) => {
+        return cb => {
+          middleware(req, res, cb)
+        }
+      }),
+      callback
+    )
   }
 }
