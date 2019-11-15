@@ -6,12 +6,9 @@ var mongoose = require('mongoose')
 var Schema = mongoose.Schema
 var restify = require('..')
 
-mongoose.connect(
-  'mongodb://localhost/database',
-  {
-    useMongoClient: true
-  }
-)
+mongoose.connect('mongodb://localhost/database', {
+  useMongoClient: true
+})
 
 var Customer = new Schema({
   name: { type: String, required: true },

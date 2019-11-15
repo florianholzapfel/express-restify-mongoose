@@ -155,7 +155,10 @@ Filter.prototype.filterPopulatedItem = function(item, opts) {
           .join('.')
 
         if (Array.isArray(array)) {
-          this.filterItem(array.map(element => get(element, pathToObject)), excluded)
+          this.filterItem(
+            array.map(element => get(element, pathToObject)),
+            excluded
+          )
         }
       }
     }

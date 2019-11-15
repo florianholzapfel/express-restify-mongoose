@@ -28,12 +28,9 @@ var restify = require('../..')
 var bodyParser = require('body-parser')
 var methodOverride = require('method-override')
 var mongoose = require('mongoose')
-mongoose.connect(
-  'mongodb://localhost/todos',
-  {
-    useMongoClient: true
-  }
-)
+mongoose.connect('mongodb://localhost/todos', {
+  useMongoClient: true
+})
 
 var ToDoSchema = new mongoose.Schema({
   text: { type: String, required: true },
