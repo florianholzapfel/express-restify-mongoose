@@ -80,6 +80,7 @@
     "CHANGELOG.md",
     "LICENSE",
     "README.md",
+    "index.d.ts",
     "src/"
   ],
   "version": "5.1.0"
