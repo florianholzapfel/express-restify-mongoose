@@ -62,7 +62,7 @@
     "url": "https://github.com/florianholzapfel/express-restify-mongoose/issues"
   },
   "scripts": {
-    "lint": "eslint **/*.js",
+    "lint": "eslint '**/*.js'",
     "prepublish": "in-publish && npm test || not-in-publish",
     "pretest": "npm run lint",
     "test": "npm run test-unit && npm run test-filter && npm run test-express && npm run test-restify",
