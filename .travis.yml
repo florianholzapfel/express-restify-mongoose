@@ -7,7 +7,7 @@ services:
   - "mongodb"
 sudo: false
 before_install:
-  - npm i mongoose@^4.0.0
+  - npm i mongoose@^5.8.10
 script:
   - npm run lint
   - npm run test-ci
