@@ -9,7 +9,7 @@ Easily create a flexible REST interface for mongoose models.
 
 ## Getting started
 
-> **From 1.0.0 onwards, the library is only compatible with mongoose >= 4. For mongoose 3.x compatibility, use the 0.7.x branch.**
+> **From 6.0.0 onwards, the library is only compatible with mongoose >= 5.8. From 1.0.0 onwards, the library is only compatible with mongoose >= 4. For mongoose 3.x compatibility, use the 0.7.x branch.**
 
 ```sh
 npm install express-restify-mongoose --save

@@ -213,7 +213,7 @@ module.exports = function(createFn, setup, dismantle) {
           assert.ok(!err)
           assert.equal(res.statusCode, 204)
 
-          db.models.Customer.count((err, count) => {
+          db.models.Customer.countDocuments((err, count) => {
             assert.ok(!err)
             assert.equal(count, 2)
             done()

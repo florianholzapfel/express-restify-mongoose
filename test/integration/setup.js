@@ -5,6 +5,11 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const util = require('util')
 
+mongoose.set('useNewUrlParser', true)
+mongoose.set('useFindAndModify', false)
+mongoose.set('useCreateIndex', true)
+mongoose.set('useUnifiedTopology', true)
+
 module.exports = function() {
   const ProductSchema = new Schema({
     name: { type: String, required: true },
@@ -15,37 +20,37 @@ module.exports = function() {
     price: { type: Number }
   })
 
-  const BaseCustomerSchema = function() {
-    Schema.apply(this, arguments)
+  class BaseCustomerSchema extends Schema {
+    constructor(definition, options) {
+      const def = Object.assign(definition, {
+        account: { type: Schema.Types.ObjectId, ref: 'Account' },
+        name: { type: String, required: true, unique: true },
+        comment: { type: String },
+        address: { type: String },
+        age: { type: Number },
+        favorites: {
+          animal: { type: String },
+          color: { type: String },
+          purchase: {
+            item: { type: Schema.Types.ObjectId, ref: 'Product' },
+            number: { type: Number }
+          }
+        },
+        purchases: [
+          {
+            item: { type: Schema.Types.ObjectId, ref: 'Product' },
+            number: { type: Number }
+          }
+        ],
+        returns: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
+        creditCard: { type: String, access: 'protected' },
+        ssn: { type: String, access: 'private' },
+        coordinates: { type: [Number], index: '2dsphere' }
+      })
 
-    this.add({
-      account: { type: Schema.Types.ObjectId, ref: 'Account' },
-      name: { type: String, required: true, unique: true },
-      comment: { type: String },
-      address: { type: String },
-      age: { type: Number },
-      favorites: {
-        animal: { type: String },
-        color: { type: String },
-        purchase: {
-          item: { type: Schema.Types.ObjectId, ref: 'Product' },
-          number: { type: Number }
-        }
-      },
-      purchases: [
-        {
-          item: { type: Schema.Types.ObjectId, ref: 'Product' },
-          number: { type: Number }
-        }
-      ],
-      returns: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
-      creditCard: { type: String, access: 'protected' },
-      ssn: { type: String, access: 'private' },
-      coordinates: { type: [Number], index: '2dsphere' }
-    })
+      super(def, options)
+    }
   }
-
-  util.inherits(BaseCustomerSchema, Schema)
 
   const CustomerSchema = new BaseCustomerSchema(
     {},
@@ -138,20 +143,16 @@ module.exports = function() {
     }
 
     if (opts.connect) {
-      mongoose.connect(
-        'mongodb://localhost/database',
-        {
-          useMongoClient: true
-        },
-        callback
-      )
+      mongoose.connect('mongodb://localhost/database').then(function() {
+        callback()
+      })
     } else if (typeof callback === 'function') {
       callback()
     }
   }
 
   function reset(callback) {
-    Promise.all([mongoose.models.Customer.remove().exec(), mongoose.models.Invoice.remove().exec(), mongoose.models.Product.remove().exec(), mongoose.models.RepeatCustomer.remove().exec(), mongoose.models.Account.remove().exec()])
+    Promise.all([mongoose.models.Customer.deleteMany().exec(), mongoose.models.Invoice.deleteMany().exec(), mongoose.models.Product.deleteMany().exec(), mongoose.models.RepeatCustomer.deleteMany().exec(), mongoose.models.Account.deleteMany().exec()])
       .then(() => callback())
       .catch(callback)
   }

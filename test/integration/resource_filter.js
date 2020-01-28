@@ -334,11 +334,11 @@ describe('Resource filter', () => {
       })
 
       after(done => {
-        db.models.Customer.remove(err => {
+        db.models.Customer.deleteMany(err => {
           assert(!err, err)
-          db.models.Invoice.remove(err => {
+          db.models.Invoice.deleteMany(err => {
             assert(!err, err)
-            db.models.Product.remove(done)
+            db.models.Product.deleteMany(done)
           })
         })
       })
@@ -544,8 +544,8 @@ describe('Resource filter', () => {
     })
 
     after(done => {
-      db.models.Account.remove(() => {
-        db.models.Customer.remove(done)
+      db.models.Account.deleteMany(() => {
+        db.models.Customer.deleteMany(done)
       })
     })
 

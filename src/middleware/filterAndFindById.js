@@ -19,7 +19,7 @@ module.exports = function(model, options) {
           [options.idProperty]: req.params.id
         })
         .lean(false)
-        .read(options.readPreference)
+        .read(options.readPreference || 'p')
         .exec()
         .then(doc => {
           if (!doc) {

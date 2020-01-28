@@ -197,13 +197,12 @@ module.exports = function(createFn, setup, dismantle) {
             _message: 'Customer validation failed',
             errors: {
               name: {
-                $isValidatorError: true,
                 kind: 'required',
                 message: 'Path `name` is required.',
                 name: 'ValidatorError',
                 path: 'name',
                 properties: {
-                  message: 'Path `{PATH}` is required.',
+                  message: 'Path `name` is required.',
                   path: 'name',
                   type: 'required'
                 }
@@ -418,10 +417,10 @@ module.exports = function(createFn, setup, dismantle) {
         (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 400)
+          delete body.message
           assert.deepEqual(body, {
             name: 'ValidationError',
             _message: 'Invoice validation failed',
-            message: 'Invoice validation failed: products: Cast to Array failed for value "[ \'invalid-id\', \'invalid-id\' ]" at path "products", customer: Cast to ObjectID failed for value "invalid-id" at path "customer"',
             errors: {
               customer: {
                 kind: 'ObjectID',

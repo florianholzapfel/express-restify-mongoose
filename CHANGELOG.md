@@ -1,6 +1,11 @@
 Changelog
 =========
 
+### 6.0.0
+> **This release requires mongoose ~5.8**
+
+* updated mongoose to version 5.8
+
 ### 5.0.0
 
 * dropped support for Node 4 and added support for Node 10

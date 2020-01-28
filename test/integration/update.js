@@ -144,6 +144,7 @@ module.exports = function(createFn, setup, dismantle) {
             (err, res, body) => {
               assert.ok(!err)
               assert.equal(res.statusCode, 400)
+              delete body.reason
               assert.deepEqual(body, {
                 kind: 'number',
                 message: 'Cast to number failed for value "not a number" at path "age"',
