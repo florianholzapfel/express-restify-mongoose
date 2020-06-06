@@ -41,5 +41,5 @@ declare module 'express-restify-mongoose' {
 
     export function serve(router: express.Router, mongooseModel: mongoose.Model<any>, options?: Options): string;
 
-    export function defaults(options: Options);
+    export function defaults(options: Options): void;
 }

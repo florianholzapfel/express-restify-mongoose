@@ -77,6 +77,7 @@
     "test-cov-restify": "istanbul cover node_modules/mocha/bin/_mocha -- --require babel-register -R spec ./test/restify.js --timeout 10s",
     "report-coverage": "cat ./coverage/lcov.info | coveralls"
   },
+  "types": "./index.d.ts",
   "files": [
     "CHANGELOG.md",
     "LICENSE",
