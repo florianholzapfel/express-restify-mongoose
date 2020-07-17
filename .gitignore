@@ -5,3 +5,5 @@ npm-debug.log
 nbproject
 coverage
 .DS_Store
+db/
+
