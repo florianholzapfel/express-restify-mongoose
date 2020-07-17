@@ -11,7 +11,7 @@
     "lodash.get": "~4.4.2",
     "lodash.has": "~4.5.2",
     "lodash.isplainobject": "~4.0.6",
-    "mongoose": "^5.8.10",
+    "mongoose": "^5.9.24",
     "mongoose-detective": "~1.0.0",
     "moredots": "~1.0.1",
     "run-series": "~1.1.8",
@@ -19,7 +19,7 @@
     "weedout": "~1.0.1"
   },
   "peerDependencies": {
-    "mongoose": "^4.0.0"
+    "mongoose": "^5.8.10"
   },
   "description": "Easily create a flexible REST interface for mongoose models",
   "devDependencies": {
