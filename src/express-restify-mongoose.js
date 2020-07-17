@@ -24,7 +24,7 @@ function getDefaults() {
   })
 }
 
-const restify = function(app, model, opts) {
+const restify = function (app, model, opts) {
   const options = Object.assign({}, getDefaults(), opts || {})
 
   const access = require('./middleware/access')
@@ -137,7 +137,7 @@ const restify = function(app, model, opts) {
 }
 
 module.exports = {
-  defaults: function(options) {
+  defaults: function (options) {
     customDefaults = options
   },
   serve: restify,
