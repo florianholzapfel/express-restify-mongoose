@@ -21,12 +21,12 @@ describe('errorHandler', () => {
 
   it('sets statusCode 400 and calls onError', () => {
     const options = {
-      onError: sinon.spy()
+      onError: sinon.spy(),
     }
 
     const req = {
       erm: {},
-      params: {}
+      params: {},
     }
 
     const err = new Error('Something went wrong')
@@ -40,14 +40,14 @@ describe('errorHandler', () => {
   it('sets statusCode 400 and calls onError', () => {
     const options = {
       onError: sinon.spy(),
-      idProperty: '42'
+      idProperty: '42',
     }
 
     const req = {
       erm: {},
       params: {
-        id: '42'
-      }
+        id: '42',
+      },
     }
 
     const err = new Error('Something went wrong')
@@ -61,14 +61,14 @@ describe('errorHandler', () => {
   it('sets statusCode 404 and calls onError', () => {
     const options = {
       onError: sinon.spy(),
-      idProperty: '_id'
+      idProperty: '_id',
     }
 
     const req = {
       erm: {},
       params: {
-        id: '42'
-      }
+        id: '42',
+      },
     }
 
     const err = new CastError('type', '42', '_id')

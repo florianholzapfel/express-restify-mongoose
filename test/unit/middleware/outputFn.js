@@ -6,12 +6,12 @@ describe('outputFn', () => {
   const outputFn = require('../../../src/middleware/outputFn')
 
   let res = {
-    sendStatus: function() {},
-    status: function() {
+    sendStatus: function () {},
+    status: function () {
       return this
     },
-    json: function() {},
-    send: function() {}
+    json: function () {},
+    send: function () {},
   }
 
   let sendStatus = sinon.spy(res, 'sendStatus')
@@ -31,8 +31,8 @@ describe('outputFn', () => {
       outputFn(true)(
         {
           erm: {
-            statusCode: 200
-          }
+            statusCode: 200,
+          },
         },
         res
       )
@@ -49,9 +49,9 @@ describe('outputFn', () => {
         erm: {
           statusCode: 201,
           result: {
-            name: 'Bob'
-          }
-        }
+            name: 'Bob',
+          },
+        },
       }
 
       outputFn(true)(req, res)
@@ -60,7 +60,7 @@ describe('outputFn', () => {
       sinon.assert.calledWithExactly(status, 201)
       sinon.assert.calledOnce(json)
       sinon.assert.calledWithExactly(json, {
-        name: 'Bob'
+        name: 'Bob',
       })
       sinon.assert.notCalled(sendStatus)
       sinon.assert.notCalled(send)
@@ -72,8 +72,8 @@ describe('outputFn', () => {
       outputFn(false)(
         {
           erm: {
-            statusCode: 200
-          }
+            statusCode: 200,
+          },
         },
         res
       )
@@ -90,16 +90,16 @@ describe('outputFn', () => {
         erm: {
           statusCode: 201,
           result: {
-            name: 'Bob'
-          }
-        }
+            name: 'Bob',
+          },
+        },
       }
 
       outputFn(false)(req, res)
 
       sinon.assert.calledOnce(send)
       sinon.assert.calledWithExactly(send, 201, {
-        name: 'Bob'
+        name: 'Bob',
       })
       sinon.assert.notCalled(sendStatus)
       sinon.assert.notCalled(status)

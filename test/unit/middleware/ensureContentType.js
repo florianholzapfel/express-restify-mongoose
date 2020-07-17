@@ -18,7 +18,7 @@ describe('ensureContentType', () => {
     let req = {
       erm: {},
       headers: {},
-      params: {}
+      params: {},
     }
 
     ensureContentType({ onError })(req, {}, next)
@@ -33,9 +33,9 @@ describe('ensureContentType', () => {
     let req = {
       erm: {},
       headers: {
-        'content-type': 'invalid/type'
+        'content-type': 'invalid/type',
       },
-      params: {}
+      params: {},
     }
 
     ensureContentType({ onError })(req, {}, next)
@@ -49,9 +49,9 @@ describe('ensureContentType', () => {
   it('calls next', () => {
     let req = {
       headers: {
-        'content-type': 'application/json'
+        'content-type': 'application/json',
       },
-      params: {}
+      params: {},
     }
 
     ensureContentType({ onError })(req, {}, next)

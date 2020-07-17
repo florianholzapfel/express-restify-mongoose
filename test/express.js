@@ -26,7 +26,7 @@ function Express() {
 }
 
 function setup(callback) {
-  db.initialize(err => {
+  db.initialize((err) => {
     if (err) {
       return callback(err)
     }
@@ -36,7 +36,7 @@ function setup(callback) {
 }
 
 function dismantle(app, server, callback) {
-  db.close(err => {
+  db.close((err) => {
     if (err) {
       return callback(err)
     }

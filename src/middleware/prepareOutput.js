@@ -2,10 +2,10 @@
 
 const runSeries = require('run-series')
 
-module.exports = function(options, excludedMap) {
+module.exports = function (options, excludedMap) {
   const errorHandler = require('../errorHandler')(options)
 
-  return function(req, res, next) {
+  return function (req, res, next) {
     const postMiddleware = (() => {
       switch (req.method.toLowerCase()) {
         case 'get':
@@ -24,7 +24,7 @@ module.exports = function(options, excludedMap) {
       }
     })()
 
-    const callback = err => {
+    const callback = (err) => {
       if (err) {
         return errorHandler(req, res, next)(err)
       }
@@ -34,7 +34,7 @@ module.exports = function(options, excludedMap) {
         const opts = {
           access: req.access,
           excludedMap: excludedMap,
-          populate: req.erm && req.erm.query ? req.erm.query.populate : null
+          populate: req.erm && req.erm.query ? req.erm.query.populate : null,
         }
 
         req.erm.result = options.filter ? options.filter.filterObject(req.erm.result, opts) : req.erm.result
@@ -65,7 +65,7 @@ module.exports = function(options, excludedMap) {
 
     runSeries(
       postMiddleware.map((middleware, i) => {
-        return cb => {
+        return (cb) => {
           middleware(req, res, cb)
         }
       }),

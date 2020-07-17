@@ -10,14 +10,14 @@ mongoose.set('useFindAndModify', false)
 mongoose.set('useCreateIndex', true)
 mongoose.set('useUnifiedTopology', true)
 
-module.exports = function() {
+module.exports = function () {
   const ProductSchema = new Schema({
     name: { type: String, required: true },
     department: {
       name: { type: String },
-      code: { type: Number }
+      code: { type: Number },
     },
-    price: { type: Number }
+    price: { type: Number },
   })
 
   class BaseCustomerSchema extends Schema {
@@ -33,19 +33,19 @@ module.exports = function() {
           color: { type: String },
           purchase: {
             item: { type: Schema.Types.ObjectId, ref: 'Product' },
-            number: { type: Number }
-          }
+            number: { type: Number },
+          },
         },
         purchases: [
           {
             item: { type: Schema.Types.ObjectId, ref: 'Product' },
-            number: { type: Number }
-          }
+            number: { type: Number },
+          },
         ],
         returns: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
         creditCard: { type: String, access: 'protected' },
         ssn: { type: String, access: 'private' },
-        coordinates: { type: [Number], index: '2dsphere' }
+        coordinates: { type: [Number], index: '2dsphere' },
       })
 
       super(def, options)
@@ -56,11 +56,11 @@ module.exports = function() {
     {},
     {
       toObject: { virtuals: true },
-      toJSON: { virtuals: true }
+      toJSON: { virtuals: true },
     }
   )
 
-  CustomerSchema.virtual('info').get(function() {
+  CustomerSchema.virtual('info').get(function () {
     return this.name + ' is awesome'
   })
 
@@ -69,12 +69,12 @@ module.exports = function() {
       customer: { type: Schema.Types.ObjectId, ref: 'Customer' },
       amount: { type: Number },
       receipt: { type: String },
-      products: [{ type: Schema.Types.ObjectId, ref: 'Product' }]
+      products: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
     },
     {
       toObject: { virtuals: true },
       toJSON: { virtuals: true },
-      versionKey: '__version'
+      versionKey: '__version',
     }
   )
 
@@ -82,27 +82,27 @@ module.exports = function() {
     account: { type: Schema.Types.ObjectId, ref: 'Account' },
     visits: { type: Number },
     status: { type: String },
-    job: { type: String }
+    job: { type: String },
   })
 
   const AccountSchema = new Schema({
     accountNumber: String,
-    points: Number
+    points: Number,
   })
 
   const HooksSchema = new Schema({
     preSaveError: Boolean,
-    postSaveError: Boolean
+    postSaveError: Boolean,
   })
 
-  HooksSchema.pre('save', true, function(next, done) {
+  HooksSchema.pre('save', true, function (next, done) {
     next()
     setTimeout(() => {
       done(this.preSaveError ? new Error('AsyncPreSaveError') : null)
     }, 42)
   })
 
-  HooksSchema.post('save', function(doc, next) {
+  HooksSchema.post('save', function (doc, next) {
     setTimeout(() => {
       next(doc.postSaveError ? new Error('AsyncPostSaveError') : null)
     }, 42)
@@ -115,7 +115,7 @@ module.exports = function() {
     }
 
     defaults(opts, {
-      connect: true
+      connect: true,
     })
 
     if (!mongoose.models.Customer) {
@@ -143,7 +143,7 @@ module.exports = function() {
     }
 
     if (opts.connect) {
-      mongoose.connect('mongodb://localhost/database').then(function() {
+      mongoose.connect('mongodb://localhost/database').then(function () {
         callback()
       })
     } else if (typeof callback === 'function') {
@@ -165,6 +165,6 @@ module.exports = function() {
     initialize: initialize,
     models: mongoose.models,
     reset: reset,
-    close: close
+    close: close,
   }
 }

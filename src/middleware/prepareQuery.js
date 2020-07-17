@@ -2,7 +2,7 @@
 
 const isCoordinates = require('is-coordinates')
 
-module.exports = function(options) {
+module.exports = function (options) {
   const errorHandler = require('../errorHandler')(options)
 
   function jsonQueryParser(key, value) {
@@ -38,7 +38,7 @@ module.exports = function(options) {
 
         for (let i = 0, length = populate.length; i < length; i++) {
           queryOptions.populate.push({
-            path: populate[i]
+            path: populate[i],
           })
 
           for (const key in queryOptions.select) {
@@ -75,7 +75,7 @@ module.exports = function(options) {
     return queryOptions
   }
 
-  return function(req, res, next) {
+  return function (req, res, next) {
     const whitelist = ['distinct', 'limit', 'populate', 'query', 'select', 'skip', 'sort']
     const query = {}
 

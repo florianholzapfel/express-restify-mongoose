@@ -23,12 +23,12 @@ describe('prepareOutput', () => {
   it('calls outputFn with default options and no post* middleware', () => {
     let req = {
       method: 'GET',
-      erm: {}
+      erm: {},
     }
 
     let options = {
       onError: onError,
-      outputFn: outputFn
+      outputFn: outputFn,
     }
 
     prepareOutput(options)(req, {}, next)
@@ -42,12 +42,12 @@ describe('prepareOutput', () => {
   it('calls outputFn with default options and no post* middleware (async)', () => {
     let req = {
       method: 'GET',
-      erm: {}
+      erm: {},
     }
 
     let options = {
       onError: onError,
-      outputFn: outputFnPromise
+      outputFn: outputFnPromise,
     }
 
     prepareOutput(options)(req, {}, next)
@@ -61,13 +61,13 @@ describe('prepareOutput', () => {
   it('calls postProcess with default options and no post* middleware', () => {
     let req = {
       method: 'GET',
-      erm: {}
+      erm: {},
     }
 
     let options = {
       onError: onError,
       outputFn: outputFn,
-      postProcess: postProcess
+      postProcess: postProcess,
     }
 
     prepareOutput(options)(req, {}, next)
@@ -83,13 +83,13 @@ describe('prepareOutput', () => {
   it('calls postProcess with default options and no post* middleware (async outputFn)', () => {
     let req = {
       method: 'GET',
-      erm: {}
+      erm: {},
     }
 
     let options = {
       onError: onError,
       outputFn: outputFnPromise,
-      postProcess: postProcess
+      postProcess: postProcess,
     }
 
     prepareOutput(options)(req, {}, next)

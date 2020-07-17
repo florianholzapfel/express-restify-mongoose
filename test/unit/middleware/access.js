@@ -19,7 +19,7 @@ describe('access', () => {
       access({
         access: () => {
           return 'private'
-        }
+        },
       })(req, {}, next)
 
       sinon.assert.calledOnce(next)
@@ -34,7 +34,7 @@ describe('access', () => {
         access({
           access: () => {
             return 'foo'
-          }
+          },
         })(req, {}, next)
       }, 'Unsupported access, must be "public", "private" or "protected"')
 
@@ -50,7 +50,7 @@ describe('access', () => {
       access({
         access: (req, cb) => {
           return cb(null, 'private')
-        }
+        },
       })(req, {}, next)
 
       sinon.assert.calledOnce(next)
@@ -61,7 +61,7 @@ describe('access', () => {
     it('calls onError', () => {
       let req = {
         erm: {},
-        params: {}
+        params: {},
       }
       let onError = sinon.spy()
       let err = new Error('Something bad happened')
@@ -70,7 +70,7 @@ describe('access', () => {
         access: (req, cb) => {
           return cb(err, 'private')
         },
-        onError: onError
+        onError: onError,
       })(req, {}, next)
 
       sinon.assert.calledOnce(onError)
@@ -86,7 +86,7 @@ describe('access', () => {
         access({
           access: (req, cb) => {
             return cb(null, 'foo')
-          }
+          },
         })(req, {}, next)
       }, 'Unsupported access, must be "public", "private" or "protected"')
 

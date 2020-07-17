@@ -3,7 +3,7 @@
 const assert = require('assert')
 const request = require('request')
 
-module.exports = function(createFn, setup, dismantle) {
+module.exports = function (createFn, setup, dismantle) {
   const erm = require('../../src/express-restify-mongoose')
   const db = require('./setup')()
 
@@ -22,8 +22,8 @@ module.exports = function(createFn, setup, dismantle) {
       let repeatCustomer
       let repeatCustomerInvoice
 
-      beforeEach(done => {
-        setup(err => {
+      beforeEach((done) => {
+        setup((err) => {
           if (err) {
             return done(err)
           }
@@ -34,7 +34,7 @@ module.exports = function(createFn, setup, dismantle) {
             access: () => {
               return 'private'
             },
-            restify: app.isRestify
+            restify: app.isRestify,
           })
 
           erm.serve(app, db.models.Customer, {
@@ -43,7 +43,7 @@ module.exports = function(createFn, setup, dismantle) {
             access: (req, done) => {
               done(null, 'private')
             },
-            restify: app.isRestify
+            restify: app.isRestify,
           })
 
           erm.serve(app, db.models.Invoice, {
@@ -52,7 +52,7 @@ module.exports = function(createFn, setup, dismantle) {
             access: () => {
               return 'private'
             },
-            restify: app.isRestify
+            restify: app.isRestify,
           })
 
           erm.serve(app, db.models.Product, {
@@ -61,7 +61,7 @@ module.exports = function(createFn, setup, dismantle) {
             access: () => {
               return 'private'
             },
-            restify: app.isRestify
+            restify: app.isRestify,
           })
 
           erm.serve(app, db.models.Account, {
@@ -70,17 +70,17 @@ module.exports = function(createFn, setup, dismantle) {
             access: () => {
               return 'private'
             },
-            restify: app.isRestify
+            restify: app.isRestify,
           })
 
           db.models.Product.create({
             name: 'Bobsleigh',
             price: 42,
             department: {
-              code: 51
-            }
+              code: 51,
+            },
           })
-            .then(createdProduct => {
+            .then((createdProduct) => {
               product = createdProduct
 
               return db.models.Customer.create({
@@ -92,36 +92,36 @@ module.exports = function(createFn, setup, dismantle) {
                   color: 'Black',
                   purchase: {
                     item: product._id,
-                    number: 1
-                  }
+                    number: 1,
+                  },
                 },
                 purchases: [
                   {
                     item: product._id,
-                    number: 2
-                  }
+                    number: 2,
+                  },
                 ],
-                returns: [product._id]
+                returns: [product._id],
               })
             })
-            .then(createdCustomer => {
+            .then((createdCustomer) => {
               customer = createdCustomer
 
               return db.models.Invoice.create({
                 customer: customer._id,
                 amount: 100,
-                receipt: 'A'
+                receipt: 'A',
               })
             })
-            .then(createdInvoice => {
+            .then((createdInvoice) => {
               invoice = createdInvoice
 
               return db.models.Account.create({
                 accountNumber: '123XYZ',
-                points: 244
+                points: 244,
               })
             })
-            .then(createdAccount => {
+            .then((createdAccount) => {
               account = createdAccount
 
               return db.models.RepeatCustomer.create({
@@ -129,19 +129,19 @@ module.exports = function(createFn, setup, dismantle) {
                 name: 'Mike',
                 visits: 24,
                 status: 'Awesome',
-                job: 'Hunter'
+                job: 'Hunter',
               })
             })
-            .then(createdRepeatCustomer => {
+            .then((createdRepeatCustomer) => {
               repeatCustomer = createdRepeatCustomer
 
               return db.models.Invoice.create({
                 customer: repeatCustomer._id,
                 amount: 200,
-                receipt: 'B'
+                receipt: 'B',
               })
             })
-            .then(createdRepeatCustomerInvoice => {
+            .then((createdRepeatCustomerInvoice) => {
               repeatCustomerInvoice = createdRepeatCustomerInvoice
               server = app.listen(testPort, done)
             })
@@ -149,15 +149,15 @@ module.exports = function(createFn, setup, dismantle) {
         })
       })
 
-      afterEach(done => {
+      afterEach((done) => {
         dismantle(app, server, done)
       })
 
-      it('GET /Customer 200', done => {
+      it('GET /Customer 200', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Customer`,
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -172,22 +172,22 @@ module.exports = function(createFn, setup, dismantle) {
               color: 'Black',
               purchase: {
                 item: product._id.toHexString(),
-                number: 1
-              }
+                number: 1,
+              },
             })
             done()
           }
         )
       })
 
-      it('GET /Customer?distinct=age 200', done => {
+      it('GET /Customer?distinct=age 200', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Customer`,
             qs: {
-              distinct: 'age'
+              distinct: 'age',
             },
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -199,14 +199,14 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it('GET /Customer?distinct=comment 200', done => {
+      it('GET /Customer?distinct=comment 200', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Customer`,
             qs: {
-              distinct: 'comment'
+              distinct: 'comment',
             },
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -218,11 +218,11 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it('GET /Customer/:id 200', done => {
+      it('GET /Customer/:id 200', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Customer/${customer._id}`,
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -236,22 +236,22 @@ module.exports = function(createFn, setup, dismantle) {
               color: 'Black',
               purchase: {
                 item: product._id.toHexString(),
-                number: 1
-              }
+                number: 1,
+              },
             })
             done()
           }
         )
       })
 
-      it('GET /Customer/:id?distinct=age 200', done => {
+      it('GET /Customer/:id?distinct=age 200', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Customer/${customer._id}`,
             qs: {
-              distinct: 'age'
+              distinct: 'age',
             },
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -263,14 +263,14 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it('GET /Customer/:id?distinct=comment 200', done => {
+      it('GET /Customer/:id?distinct=comment 200', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Customer/${customer._id}`,
             qs: {
-              distinct: 'comment'
+              distinct: 'comment',
             },
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -282,14 +282,14 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it('GET /Customer?populate=favorites.purchase.item,purchases.item,returns 200', done => {
+      it('GET /Customer?populate=favorites.purchase.item,purchases.item,returns 200', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Customer`,
             qs: {
-              populate: 'favorites.purchase.item,purchases.item,returns'
+              populate: 'favorites.purchase.item,purchases.item,returns',
             },
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -308,11 +308,11 @@ module.exports = function(createFn, setup, dismantle) {
                   name: 'Bobsleigh',
                   price: 42,
                   department: {
-                    code: 51
-                  }
+                    code: 51,
+                  },
                 },
-                number: 1
-              }
+                number: 1,
+              },
             })
             assert.equal(body[0].purchases.length, 1)
             assert.ok(body[0].purchases[0].item)
@@ -320,28 +320,28 @@ module.exports = function(createFn, setup, dismantle) {
             assert.equal(body[0].purchases[0].item.name, 'Bobsleigh')
             assert.equal(body[0].purchases[0].item.price, 42)
             assert.deepEqual(body[0].purchases[0].item.department, {
-              code: 51
+              code: 51,
             })
             assert.equal(body[0].purchases[0].number, 2)
             assert.equal(body[0].returns.length, 1)
             assert.equal(body[0].returns[0].name, 'Bobsleigh')
             assert.equal(body[0].returns[0].price, 42)
             assert.deepEqual(body[0].returns[0].department, {
-              code: 51
+              code: 51,
             })
             done()
           }
         )
       })
 
-      it('GET /Customer/:id?populate=favorites.purchase.item,purchases.item,returns 200', done => {
+      it('GET /Customer/:id?populate=favorites.purchase.item,purchases.item,returns 200', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Customer/${customer._id}`,
             qs: {
-              populate: 'favorites.purchase.item,purchases.item,returns'
+              populate: 'favorites.purchase.item,purchases.item,returns',
             },
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -359,11 +359,11 @@ module.exports = function(createFn, setup, dismantle) {
                   name: 'Bobsleigh',
                   price: 42,
                   department: {
-                    code: 51
-                  }
+                    code: 51,
+                  },
                 },
-                number: 1
-              }
+                number: 1,
+              },
             })
             assert.equal(body.purchases.length, 1)
             assert.ok(body.purchases[0].item)
@@ -371,28 +371,28 @@ module.exports = function(createFn, setup, dismantle) {
             assert.equal(body.purchases[0].item.name, 'Bobsleigh')
             assert.equal(body.purchases[0].item.price, 42)
             assert.deepEqual(body.purchases[0].item.department, {
-              code: 51
+              code: 51,
             })
             assert.equal(body.purchases[0].number, 2)
             assert.equal(body.returns.length, 1)
             assert.equal(body.returns[0].name, 'Bobsleigh')
             assert.equal(body.returns[0].price, 42)
             assert.deepEqual(body.returns[0].department, {
-              code: 51
+              code: 51,
             })
             done()
           }
         )
       })
 
-      it('GET /Invoice?populate=customer 200', done => {
+      it('GET /Invoice?populate=customer 200', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Invoice`,
             qs: {
-              populate: 'customer'
+              populate: 'customer',
             },
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -410,22 +410,22 @@ module.exports = function(createFn, setup, dismantle) {
               color: 'Black',
               purchase: {
                 item: product._id.toHexString(),
-                number: 1
-              }
+                number: 1,
+              },
             })
             done()
           }
         )
       })
 
-      it('GET /Invoice/:id?populate=customer 200', done => {
+      it('GET /Invoice/:id?populate=customer 200', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
             qs: {
-              populate: 'customer'
+              populate: 'customer',
             },
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -442,16 +442,16 @@ module.exports = function(createFn, setup, dismantle) {
               color: 'Black',
               purchase: {
                 item: product._id.toHexString(),
-                number: 1
-              }
+                number: 1,
+              },
             })
             done()
           }
         )
       })
 
-      updateMethods.forEach(method => {
-        it(`${method} /Customer/:id - saves all fields`, done => {
+      updateMethods.forEach((method) => {
+        it(`${method} /Customer/:id - saves all fields`, (done) => {
           request(
             {
               method,
@@ -464,10 +464,10 @@ module.exports = function(createFn, setup, dismantle) {
                   animal: 'Jaguar',
                   color: 'Jade',
                   purchase: {
-                    number: 2
-                  }
-                }
-              }
+                    number: 2,
+                  },
+                },
+              },
             },
             (err, res, body) => {
               assert.ok(!err)
@@ -481,15 +481,15 @@ module.exports = function(createFn, setup, dismantle) {
                 color: 'Jade',
                 purchase: {
                   item: product._id.toHexString(),
-                  number: 2
-                }
+                  number: 2,
+                },
               })
               done()
             }
           )
         })
 
-        it(`${method} /Customer/:id - saves all fields (falsy values)`, done => {
+        it(`${method} /Customer/:id - saves all fields (falsy values)`, (done) => {
           request(
             {
               method,
@@ -501,10 +501,10 @@ module.exports = function(createFn, setup, dismantle) {
                   animal: '',
                   color: '',
                   purchase: {
-                    number: 0
-                  }
-                }
-              }
+                    number: 0,
+                  },
+                },
+              },
             },
             (err, res, body) => {
               assert.ok(!err)
@@ -518,8 +518,8 @@ module.exports = function(createFn, setup, dismantle) {
                 color: '',
                 purchase: {
                   item: product._id.toHexString(),
-                  number: 0
-                }
+                  number: 0,
+                },
               })
               done()
             }
@@ -527,11 +527,11 @@ module.exports = function(createFn, setup, dismantle) {
         })
       })
 
-      it('GET /RepeatCustomer 200 - discriminator', done => {
+      it('GET /RepeatCustomer 200 - discriminator', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/RepeatCustomer`,
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -547,14 +547,14 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it('GET /RepeatCustomer/:id?populate=account 200 - populate discriminator field from base schema', done => {
+      it('GET /RepeatCustomer/:id?populate=account 200 - populate discriminator field from base schema', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/RepeatCustomer/${repeatCustomer._id}`,
             qs: {
-              populate: 'account'
+              populate: 'account',
             },
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -572,14 +572,14 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it('GET /Invoice/:id?populate=customer 200 - populated discriminator', done => {
+      it('GET /Invoice/:id?populate=customer 200 - populated discriminator', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Invoice/${repeatCustomerInvoice._id}`,
             qs: {
-              populate: 'customer'
+              populate: 'customer',
             },
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -607,8 +607,8 @@ module.exports = function(createFn, setup, dismantle) {
       let repeatCustomer
       let repeatCustomerInvoice
 
-      beforeEach(done => {
-        setup(err => {
+      beforeEach((done) => {
+        setup((err) => {
           if (err) {
             return done(err)
           }
@@ -619,7 +619,7 @@ module.exports = function(createFn, setup, dismantle) {
             access: () => {
               return 'protected'
             },
-            restify: app.isRestify
+            restify: app.isRestify,
           })
 
           erm.serve(app, db.models.Customer, {
@@ -628,7 +628,7 @@ module.exports = function(createFn, setup, dismantle) {
             access: (req, done) => {
               done(null, 'protected')
             },
-            restify: app.isRestify
+            restify: app.isRestify,
           })
 
           erm.serve(app, db.models.Invoice, {
@@ -637,7 +637,7 @@ module.exports = function(createFn, setup, dismantle) {
             access: () => {
               return 'protected'
             },
-            restify: app.isRestify
+            restify: app.isRestify,
           })
 
           erm.serve(app, db.models.Product, {
@@ -646,7 +646,7 @@ module.exports = function(createFn, setup, dismantle) {
             access: () => {
               return 'protected'
             },
-            restify: app.isRestify
+            restify: app.isRestify,
           })
 
           erm.serve(app, db.models.Account, {
@@ -655,17 +655,17 @@ module.exports = function(createFn, setup, dismantle) {
             access: () => {
               return 'protected'
             },
-            restify: app.isRestify
+            restify: app.isRestify,
           })
 
           db.models.Product.create({
             name: 'Bobsleigh',
             price: 42,
             department: {
-              code: 51
-            }
+              code: 51,
+            },
           })
-            .then(createdProduct => {
+            .then((createdProduct) => {
               product = createdProduct
 
               return db.models.Customer.create({
@@ -677,36 +677,36 @@ module.exports = function(createFn, setup, dismantle) {
                   color: 'Black',
                   purchase: {
                     item: product._id,
-                    number: 1
-                  }
+                    number: 1,
+                  },
                 },
                 purchases: [
                   {
                     item: product._id,
-                    number: 2
-                  }
+                    number: 2,
+                  },
                 ],
-                returns: [product._id]
+                returns: [product._id],
               })
             })
-            .then(createdCustomer => {
+            .then((createdCustomer) => {
               customer = createdCustomer
 
               return db.models.Invoice.create({
                 customer: customer._id,
                 amount: 100,
-                receipt: 'A'
+                receipt: 'A',
               })
             })
-            .then(createdInvoice => {
+            .then((createdInvoice) => {
               invoice = createdInvoice
 
               return db.models.Account.create({
                 accountNumber: '123XYZ',
-                points: 244
+                points: 244,
               })
             })
-            .then(createdAccount => {
+            .then((createdAccount) => {
               account = createdAccount
 
               return db.models.RepeatCustomer.create({
@@ -714,19 +714,19 @@ module.exports = function(createFn, setup, dismantle) {
                 name: 'Mike',
                 visits: 24,
                 status: 'Awesome',
-                job: 'Hunter'
+                job: 'Hunter',
               })
             })
-            .then(createdRepeatCustomer => {
+            .then((createdRepeatCustomer) => {
               repeatCustomer = createdRepeatCustomer
 
               return db.models.Invoice.create({
                 customer: repeatCustomer._id,
                 amount: 200,
-                receipt: 'B'
+                receipt: 'B',
               })
             })
-            .then(createdRepeatCustomerInvoice => {
+            .then((createdRepeatCustomerInvoice) => {
               repeatCustomerInvoice = createdRepeatCustomerInvoice
               server = app.listen(testPort, done)
             })
@@ -734,15 +734,15 @@ module.exports = function(createFn, setup, dismantle) {
         })
       })
 
-      afterEach(done => {
+      afterEach((done) => {
         dismantle(app, server, done)
       })
 
-      it('GET /Customer 200', done => {
+      it('GET /Customer 200', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Customer`,
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -754,22 +754,22 @@ module.exports = function(createFn, setup, dismantle) {
             assert.deepEqual(body[0].favorites, {
               color: 'Black',
               purchase: {
-                item: product._id.toHexString()
-              }
+                item: product._id.toHexString(),
+              },
             })
             done()
           }
         )
       })
 
-      it('GET /Customer?distinct=age 200', done => {
+      it('GET /Customer?distinct=age 200', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Customer`,
             qs: {
-              distinct: 'age'
+              distinct: 'age',
             },
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -780,14 +780,14 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it('GET /Customer?distinct=comment 200', done => {
+      it('GET /Customer?distinct=comment 200', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Customer`,
             qs: {
-              distinct: 'comment'
+              distinct: 'comment',
             },
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -799,11 +799,11 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it('GET /Customer/:id 200', done => {
+      it('GET /Customer/:id 200', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Customer/${customer._id}`,
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -814,22 +814,22 @@ module.exports = function(createFn, setup, dismantle) {
             assert.deepEqual(body.favorites, {
               color: 'Black',
               purchase: {
-                item: product._id.toHexString()
-              }
+                item: product._id.toHexString(),
+              },
             })
             done()
           }
         )
       })
 
-      it('GET /Customer/:id?distinct=age 200', done => {
+      it('GET /Customer/:id?distinct=age 200', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Customer/${customer._id}`,
             qs: {
-              distinct: 'age'
+              distinct: 'age',
             },
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -840,14 +840,14 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it('GET /Customer/:id?distinct=comment 200', done => {
+      it('GET /Customer/:id?distinct=comment 200', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Customer/${customer._id}`,
             qs: {
-              distinct: 'comment'
+              distinct: 'comment',
             },
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -859,14 +859,14 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it('GET /Customer?populate=favorites.purchase.item,purchases.item,returns 200', done => {
+      it('GET /Customer?populate=favorites.purchase.item,purchases.item,returns 200', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Customer`,
             qs: {
-              populate: 'favorites.purchase.item,purchases.item,returns'
+              populate: 'favorites.purchase.item,purchases.item,returns',
             },
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -883,9 +883,9 @@ module.exports = function(createFn, setup, dismantle) {
                   _id: product._id.toHexString(),
                   name: 'Bobsleigh',
                   price: 42,
-                  department: {}
-                }
-              }
+                  department: {},
+                },
+              },
             })
             assert.equal(body[0].purchases.length, 1)
             assert.ok(body[0].purchases[0].item)
@@ -903,14 +903,14 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it('GET /Customer/:id?populate=favorites.purchase.item,purchases.item,returns 200', done => {
+      it('GET /Customer/:id?populate=favorites.purchase.item,purchases.item,returns 200', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Customer/${customer._id}`,
             qs: {
-              populate: 'favorites.purchase.item,purchases.item,returns'
+              populate: 'favorites.purchase.item,purchases.item,returns',
             },
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -926,9 +926,9 @@ module.exports = function(createFn, setup, dismantle) {
                   _id: product._id.toHexString(),
                   name: 'Bobsleigh',
                   price: 42,
-                  department: {}
-                }
-              }
+                  department: {},
+                },
+              },
             })
             assert.equal(body.purchases.length, 1)
             assert.ok(body.purchases[0].item)
@@ -946,14 +946,14 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it('GET /Invoice?populate=customer 200', done => {
+      it('GET /Invoice?populate=customer 200', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Invoice`,
             qs: {
-              populate: 'customer'
+              populate: 'customer',
             },
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -968,22 +968,22 @@ module.exports = function(createFn, setup, dismantle) {
             assert.deepEqual(body[0].customer.favorites, {
               color: 'Black',
               purchase: {
-                item: product._id.toHexString()
-              }
+                item: product._id.toHexString(),
+              },
             })
             done()
           }
         )
       })
 
-      it('GET /Invoice/:id?populate=customer 200', done => {
+      it('GET /Invoice/:id?populate=customer 200', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
             qs: {
-              populate: 'customer'
+              populate: 'customer',
             },
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -997,16 +997,16 @@ module.exports = function(createFn, setup, dismantle) {
             assert.deepEqual(body.customer.favorites, {
               color: 'Black',
               purchase: {
-                item: product._id.toHexString()
-              }
+                item: product._id.toHexString(),
+              },
             })
             done()
           }
         )
       })
 
-      updateMethods.forEach(method => {
-        it(`${method} /Customer/:id - saves protected and public fields`, done => {
+      updateMethods.forEach((method) => {
+        it(`${method} /Customer/:id - saves protected and public fields`, (done) => {
           request(
             {
               method,
@@ -1019,10 +1019,10 @@ module.exports = function(createFn, setup, dismantle) {
                   animal: 'Jaguar',
                   color: 'Jade',
                   purchase: {
-                    number: 2
-                  }
-                }
-              }
+                    number: 2,
+                  },
+                },
+              },
             },
             (err, res, body) => {
               assert.ok(!err)
@@ -1033,8 +1033,8 @@ module.exports = function(createFn, setup, dismantle) {
               assert.deepEqual(body.favorites, {
                 color: 'Jade',
                 purchase: {
-                  item: product._id.toHexString()
-                }
+                  item: product._id.toHexString(),
+                },
               })
 
               db.models.Customer.findById(customer._id, (err, customer) => {
@@ -1045,8 +1045,8 @@ module.exports = function(createFn, setup, dismantle) {
                   color: 'Jade',
                   purchase: {
                     item: product._id,
-                    number: 1
-                  }
+                    number: 1,
+                  },
                 })
                 done()
               })
@@ -1054,7 +1054,7 @@ module.exports = function(createFn, setup, dismantle) {
           )
         })
 
-        it(`${method} /Customer/:id - saves protected and public fields (falsy values)`, done => {
+        it(`${method} /Customer/:id - saves protected and public fields (falsy values)`, (done) => {
           request(
             {
               method,
@@ -1066,10 +1066,10 @@ module.exports = function(createFn, setup, dismantle) {
                   animal: '',
                   color: '',
                   purchase: {
-                    number: 0
-                  }
-                }
-              }
+                    number: 0,
+                  },
+                },
+              },
             },
             (err, res, body) => {
               assert.ok(!err)
@@ -1080,8 +1080,8 @@ module.exports = function(createFn, setup, dismantle) {
               assert.deepEqual(body.favorites, {
                 color: '',
                 purchase: {
-                  item: product._id.toHexString()
-                }
+                  item: product._id.toHexString(),
+                },
               })
 
               db.models.Customer.findById(customer._id, (err, customer) => {
@@ -1092,8 +1092,8 @@ module.exports = function(createFn, setup, dismantle) {
                   color: '',
                   purchase: {
                     item: product._id,
-                    number: 1
-                  }
+                    number: 1,
+                  },
                 })
                 done()
               })
@@ -1102,11 +1102,11 @@ module.exports = function(createFn, setup, dismantle) {
         })
       })
 
-      it('GET /RepeatCustomer 200 - discriminator', done => {
+      it('GET /RepeatCustomer 200 - discriminator', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/RepeatCustomer`,
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -1120,14 +1120,14 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it('GET /RepeatCustomer/:id?populate=account 200 - populate discriminator field from base schema', done => {
+      it('GET /RepeatCustomer/:id?populate=account 200 - populate discriminator field from base schema', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/RepeatCustomer/${repeatCustomer._id}`,
             qs: {
-              populate: 'account'
+              populate: 'account',
             },
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -1145,14 +1145,14 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it('GET /Invoice/:id?populate=customer 200 - populated discriminator', done => {
+      it('GET /Invoice/:id?populate=customer 200 - populated discriminator', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Invoice/${repeatCustomerInvoice._id}`,
             qs: {
-              populate: 'customer'
+              populate: 'customer',
             },
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -1180,8 +1180,8 @@ module.exports = function(createFn, setup, dismantle) {
       let repeatCustomer
       let repeatCustomerInvoice
 
-      beforeEach(done => {
-        setup(err => {
+      beforeEach((done) => {
+        setup((err) => {
           if (err) {
             return done(err)
           }
@@ -1189,41 +1189,41 @@ module.exports = function(createFn, setup, dismantle) {
           erm.serve(app, db.models.RepeatCustomer, {
             private: ['job'],
             protected: ['status'],
-            restify: app.isRestify
+            restify: app.isRestify,
           })
 
           erm.serve(app, db.models.Customer, {
             private: ['age', 'favorites.animal', 'favorites.purchase.number', 'purchases.number', 'privateDoes.notExist'],
             protected: ['comment', 'favorites.color', 'protectedDoes.notExist'],
-            restify: app.isRestify
+            restify: app.isRestify,
           })
 
           erm.serve(app, db.models.Invoice, {
             private: ['amount'],
             protected: ['receipt'],
-            restify: app.isRestify
+            restify: app.isRestify,
           })
 
           erm.serve(app, db.models.Product, {
             private: ['department.code'],
             protected: ['price'],
-            restify: app.isRestify
+            restify: app.isRestify,
           })
 
           erm.serve(app, db.models.Account, {
             private: ['accountNumber'],
             protected: ['points'],
-            restify: app.isRestify
+            restify: app.isRestify,
           })
 
           db.models.Product.create({
             name: 'Bobsleigh',
             price: 42,
             department: {
-              code: 51
-            }
+              code: 51,
+            },
           })
-            .then(createdProduct => {
+            .then((createdProduct) => {
               product = createdProduct
 
               return db.models.Customer.create({
@@ -1235,36 +1235,36 @@ module.exports = function(createFn, setup, dismantle) {
                   color: 'Black',
                   purchase: {
                     item: product._id,
-                    number: 1
-                  }
+                    number: 1,
+                  },
                 },
                 purchases: [
                   {
                     item: product._id,
-                    number: 2
-                  }
+                    number: 2,
+                  },
                 ],
-                returns: [product._id]
+                returns: [product._id],
               })
             })
-            .then(createdCustomer => {
+            .then((createdCustomer) => {
               customer = createdCustomer
 
               return db.models.Invoice.create({
                 customer: customer._id,
                 amount: 100,
-                receipt: 'A'
+                receipt: 'A',
               })
             })
-            .then(createdInvoice => {
+            .then((createdInvoice) => {
               invoice = createdInvoice
 
               return db.models.Account.create({
                 accountNumber: '123XYZ',
-                points: 244
+                points: 244,
               })
             })
-            .then(createdAccount => {
+            .then((createdAccount) => {
               account = createdAccount
 
               return db.models.RepeatCustomer.create({
@@ -1272,19 +1272,19 @@ module.exports = function(createFn, setup, dismantle) {
                 name: 'Mike',
                 visits: 24,
                 status: 'Awesome',
-                job: 'Hunter'
+                job: 'Hunter',
               })
             })
-            .then(createdRepeatCustomer => {
+            .then((createdRepeatCustomer) => {
               repeatCustomer = createdRepeatCustomer
 
               return db.models.Invoice.create({
                 customer: repeatCustomer._id,
                 amount: 200,
-                receipt: 'B'
+                receipt: 'B',
               })
             })
-            .then(createdRepeatCustomerInvoice => {
+            .then((createdRepeatCustomerInvoice) => {
               repeatCustomerInvoice = createdRepeatCustomerInvoice
               server = app.listen(testPort, done)
             })
@@ -1292,15 +1292,15 @@ module.exports = function(createFn, setup, dismantle) {
         })
       })
 
-      afterEach(done => {
+      afterEach((done) => {
         dismantle(app, server, done)
       })
 
-      it('GET /Customer 200', done => {
+      it('GET /Customer 200', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Customer`,
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -1312,22 +1312,22 @@ module.exports = function(createFn, setup, dismantle) {
             assert.equal(body[0].purchases.length, 1)
             assert.deepEqual(body[0].favorites, {
               purchase: {
-                item: product._id.toHexString()
-              }
+                item: product._id.toHexString(),
+              },
             })
             done()
           }
         )
       })
 
-      it('GET /Customer?distinct=age 200', done => {
+      it('GET /Customer?distinct=age 200', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Customer`,
             qs: {
-              distinct: 'age'
+              distinct: 'age',
             },
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -1338,14 +1338,14 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it('GET /Customer?distinct=comment 200', done => {
+      it('GET /Customer?distinct=comment 200', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Customer`,
             qs: {
-              distinct: 'comment'
+              distinct: 'comment',
             },
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -1356,11 +1356,11 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it('GET /Customer/:id 200', done => {
+      it('GET /Customer/:id 200', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Customer/${customer._id}`,
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -1371,22 +1371,22 @@ module.exports = function(createFn, setup, dismantle) {
             assert.equal(body.purchases.length, 1)
             assert.deepEqual(body.favorites, {
               purchase: {
-                item: product._id.toHexString()
-              }
+                item: product._id.toHexString(),
+              },
             })
             done()
           }
         )
       })
 
-      it('GET /Customer/:id?distinct=age 200', done => {
+      it('GET /Customer/:id?distinct=age 200', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Customer/${customer._id}`,
             qs: {
-              distinct: 'age'
+              distinct: 'age',
             },
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -1397,14 +1397,14 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it('GET /Customer/:id?distinct=comment 200', done => {
+      it('GET /Customer/:id?distinct=comment 200', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Customer/${customer._id}`,
             qs: {
-              distinct: 'comment'
+              distinct: 'comment',
             },
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -1415,14 +1415,14 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it('GET /Customer?populate=favorites.purchase.item,purchases.item,returns 200', done => {
+      it('GET /Customer?populate=favorites.purchase.item,purchases.item,returns 200', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Customer`,
             qs: {
-              populate: 'favorites.purchase.item,purchases.item,returns'
+              populate: 'favorites.purchase.item,purchases.item,returns',
             },
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -1437,9 +1437,9 @@ module.exports = function(createFn, setup, dismantle) {
                   __v: 0,
                   _id: product._id.toHexString(),
                   name: 'Bobsleigh',
-                  department: {}
-                }
-              }
+                  department: {},
+                },
+              },
             })
             assert.equal(body[0].purchases.length, 1)
             assert.ok(body[0].purchases[0].item)
@@ -1457,14 +1457,14 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it('GET /Customer/:id?populate=favorites.purchase.item,purchases.item,returns 200', done => {
+      it('GET /Customer/:id?populate=favorites.purchase.item,purchases.item,returns 200', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Customer/${customer._id}`,
             qs: {
-              populate: 'favorites.purchase.item,purchases.item,returns'
+              populate: 'favorites.purchase.item,purchases.item,returns',
             },
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -1478,9 +1478,9 @@ module.exports = function(createFn, setup, dismantle) {
                   __v: 0,
                   _id: product._id.toHexString(),
                   name: 'Bobsleigh',
-                  department: {}
-                }
-              }
+                  department: {},
+                },
+              },
             })
             assert.equal(body.purchases.length, 1)
             assert.ok(body.purchases[0].item)
@@ -1498,14 +1498,14 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it('GET /Invoice?populate=customer 200', done => {
+      it('GET /Invoice?populate=customer 200', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Invoice`,
             qs: {
-              populate: 'customer'
+              populate: 'customer',
             },
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -1519,22 +1519,22 @@ module.exports = function(createFn, setup, dismantle) {
             assert.equal(body[0].customer.comment, undefined)
             assert.deepEqual(body[0].customer.favorites, {
               purchase: {
-                item: product._id.toHexString()
-              }
+                item: product._id.toHexString(),
+              },
             })
             done()
           }
         )
       })
 
-      it('GET /Invoice/:id?populate=customer 200', done => {
+      it('GET /Invoice/:id?populate=customer 200', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
             qs: {
-              populate: 'customer'
+              populate: 'customer',
             },
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -1547,16 +1547,16 @@ module.exports = function(createFn, setup, dismantle) {
             assert.equal(body.customer.comment, undefined)
             assert.deepEqual(body.customer.favorites, {
               purchase: {
-                item: product._id.toHexString()
-              }
+                item: product._id.toHexString(),
+              },
             })
             done()
           }
         )
       })
 
-      updateMethods.forEach(method => {
-        it(`${method} /Customer/:id - saves public fields`, done => {
+      updateMethods.forEach((method) => {
+        it(`${method} /Customer/:id - saves public fields`, (done) => {
           request(
             {
               method,
@@ -1569,10 +1569,10 @@ module.exports = function(createFn, setup, dismantle) {
                   animal: 'Jaguar',
                   color: 'Jade',
                   purchase: {
-                    number: 2
-                  }
-                }
-              }
+                    number: 2,
+                  },
+                },
+              },
             },
             (err, res, body) => {
               assert.ok(!err)
@@ -1582,8 +1582,8 @@ module.exports = function(createFn, setup, dismantle) {
               assert.equal(body.comment, undefined)
               assert.deepEqual(body.favorites, {
                 purchase: {
-                  item: product._id.toHexString()
-                }
+                  item: product._id.toHexString(),
+                },
               })
 
               db.models.Customer.findById(customer._id, (err, customer) => {
@@ -1595,8 +1595,8 @@ module.exports = function(createFn, setup, dismantle) {
                   color: 'Black',
                   purchase: {
                     item: product._id,
-                    number: 1
-                  }
+                    number: 1,
+                  },
                 })
                 done()
               })
@@ -1604,7 +1604,7 @@ module.exports = function(createFn, setup, dismantle) {
           )
         })
 
-        it(`${method} /Customer/:id - saves public fields (falsy values)`, done => {
+        it(`${method} /Customer/:id - saves public fields (falsy values)`, (done) => {
           request(
             {
               method,
@@ -1616,10 +1616,10 @@ module.exports = function(createFn, setup, dismantle) {
                   animal: '',
                   color: '',
                   purchase: {
-                    number: 0
-                  }
-                }
-              }
+                    number: 0,
+                  },
+                },
+              },
             },
             (err, res, body) => {
               assert.ok(!err)
@@ -1629,8 +1629,8 @@ module.exports = function(createFn, setup, dismantle) {
               assert.equal(body.comment, undefined)
               assert.deepEqual(body.favorites, {
                 purchase: {
-                  item: product._id.toHexString()
-                }
+                  item: product._id.toHexString(),
+                },
               })
 
               db.models.Customer.findById(customer._id, (err, customer) => {
@@ -1642,8 +1642,8 @@ module.exports = function(createFn, setup, dismantle) {
                   color: 'Black',
                   purchase: {
                     item: product._id,
-                    number: 1
-                  }
+                    number: 1,
+                  },
                 })
                 done()
               })
@@ -1652,11 +1652,11 @@ module.exports = function(createFn, setup, dismantle) {
         })
       })
 
-      it('GET /RepeatCustomer 200 - discriminator', done => {
+      it('GET /RepeatCustomer 200 - discriminator', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/RepeatCustomer`,
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -1670,14 +1670,14 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it('GET /RepeatCustomer/:id?populate=account 200 - populate discriminator field from base schema', done => {
+      it('GET /RepeatCustomer/:id?populate=account 200 - populate discriminator field from base schema', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/RepeatCustomer/${repeatCustomer._id}`,
             qs: {
-              populate: 'account'
+              populate: 'account',
             },
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -1695,14 +1695,14 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it('GET /Invoice/:id?populate=customer 200 - populated discriminator', done => {
+      it('GET /Invoice/:id?populate=customer 200 - populated discriminator', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Invoice/${repeatCustomerInvoice._id}`,
             qs: {
-              populate: 'customer'
+              populate: 'customer',
             },
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -1724,8 +1724,8 @@ module.exports = function(createFn, setup, dismantle) {
       let app = createFn()
       let server
 
-      beforeEach(done => {
-        setup(err => {
+      beforeEach((done) => {
+        setup((err) => {
           if (err) {
             return done(err)
           }
@@ -1735,29 +1735,29 @@ module.exports = function(createFn, setup, dismantle) {
               let err = new Error('Something went wrong')
               done(err)
             },
-            restify: app.isRestify
+            restify: app.isRestify,
           })
 
           server = app.listen(testPort, done)
         })
       })
 
-      afterEach(done => {
+      afterEach((done) => {
         dismantle(app, server, done)
       })
 
-      it('GET /Customer 500', done => {
+      it('GET /Customer 500', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Customer`,
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
             assert.equal(res.statusCode, 400)
             assert.deepEqual(body, {
               name: 'Error',
-              message: 'Something went wrong'
+              message: 'Something went wrong',
             })
             done()
           }

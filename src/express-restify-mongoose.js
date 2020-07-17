@@ -20,11 +20,11 @@ function getDefaults() {
     allowRegex: true,
     private: [],
     protected: [],
-    upsert: false
+    upsert: false,
   })
 }
 
-const restify = function(app, model, opts) {
+const restify = function (app, model, opts) {
   const options = Object.assign({}, getDefaults(), opts || {})
 
   const access = require('./middleware/access')
@@ -61,8 +61,8 @@ const restify = function(app, model, opts) {
     excludedMap,
     filteredKeys: {
       private: options.private,
-      protected: options.protected
-    }
+      protected: options.protected,
+    },
   })
 
   excludedMap[model.modelName] = options.filter.filteredKeys
@@ -111,7 +111,7 @@ const restify = function(app, model, opts) {
     const getModel = options.modelFactory && options.modelFactory.getModel
 
     req.erm = {
-      model: typeof getModel === 'function' ? getModel() : model
+      model: typeof getModel === 'function' ? getModel() : model,
     }
 
     next()
@@ -137,8 +137,8 @@ const restify = function(app, model, opts) {
 }
 
 module.exports = {
-  defaults: function(options) {
+  defaults: function (options) {
     customDefaults = options
   },
-  serve: restify
+  serve: restify,
 }

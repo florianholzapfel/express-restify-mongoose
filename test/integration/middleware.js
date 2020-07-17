@@ -5,7 +5,7 @@ const mongoose = require('mongoose')
 const request = require('request')
 const sinon = require('sinon')
 
-module.exports = function(createFn, setup, dismantle) {
+module.exports = function (createFn, setup, dismantle) {
   const erm = require('../../src/express-restify-mongoose')
   const db = require('./setup')()
 
@@ -20,8 +20,8 @@ module.exports = function(createFn, setup, dismantle) {
     let server
     let customer
 
-    beforeEach(done => {
-      setup(err => {
+    beforeEach((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -32,13 +32,13 @@ module.exports = function(createFn, setup, dismantle) {
           preRead: null,
           preUpdate: null,
           preDelete: null,
-          restify: app.isRestify
+          restify: app.isRestify,
         })
 
         db.models.Customer.create({
-          name: 'Bob'
+          name: 'Bob',
         })
-          .then(createdCustomer => {
+          .then((createdCustomer) => {
             customer = createdCustomer
             server = app.listen(testPort, done)
           })
@@ -46,17 +46,17 @@ module.exports = function(createFn, setup, dismantle) {
       })
     })
 
-    afterEach(done => {
+    afterEach((done) => {
       dismantle(app, server, done)
     })
 
-    it('POST /Customer 201', done => {
+    it('POST /Customer 201', (done) => {
       request.post(
         {
           url: `${testUrl}/api/v1/Customer`,
           json: {
-            name: 'John'
-          }
+            name: 'John',
+          },
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -66,11 +66,11 @@ module.exports = function(createFn, setup, dismantle) {
       )
     })
 
-    it('GET /Customer 200', done => {
+    it('GET /Customer 200', (done) => {
       request.get(
         {
           url: `${testUrl}/api/v1/Customer`,
-          json: true
+          json: true,
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -80,15 +80,15 @@ module.exports = function(createFn, setup, dismantle) {
       )
     })
 
-    updateMethods.forEach(method => {
-      it(`${method} /Customer/:id 200`, done => {
+    updateMethods.forEach((method) => {
+      it(`${method} /Customer/:id 200`, (done) => {
         request(
           {
             method,
             url: `${testUrl}/api/v1/Customer/${customer._id}`,
             json: {
-              name: 'Bobby'
-            }
+              name: 'Bobby',
+            },
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -99,11 +99,11 @@ module.exports = function(createFn, setup, dismantle) {
       })
     })
 
-    it('DELETE /Customer/:id 204', done => {
+    it('DELETE /Customer/:id 204', (done) => {
       request.del(
         {
           url: `${testUrl}/api/v1/Customer/${customer._id}`,
-          json: true
+          json: true,
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -122,11 +122,11 @@ module.exports = function(createFn, setup, dismantle) {
       preMiddleware: sinon.spy((req, res, next) => {
         next()
       }),
-      restify: app.isRestify
+      restify: app.isRestify,
     }
 
-    beforeEach(done => {
-      setup(err => {
+    beforeEach((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -134,9 +134,9 @@ module.exports = function(createFn, setup, dismantle) {
         erm.serve(app, db.models.Customer, options)
 
         db.models.Customer.create({
-          name: 'Bob'
+          name: 'Bob',
         })
-          .then(createdCustomer => {
+          .then((createdCustomer) => {
             customer = createdCustomer
             server = app.listen(testPort, done)
           })
@@ -144,16 +144,16 @@ module.exports = function(createFn, setup, dismantle) {
       })
     })
 
-    afterEach(done => {
+    afterEach((done) => {
       options.preMiddleware.resetHistory()
       dismantle(app, server, done)
     })
 
-    it('GET /Customer 200', done => {
+    it('GET /Customer 200', (done) => {
       request.get(
         {
           url: `${testUrl}/api/v1/Customer`,
-          json: true
+          json: true,
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -167,11 +167,11 @@ module.exports = function(createFn, setup, dismantle) {
       )
     })
 
-    it('GET /Customer/:id 200', done => {
+    it('GET /Customer/:id 200', (done) => {
       request.get(
         {
           url: `${testUrl}/api/v1/Customer`,
-          json: true
+          json: true,
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -185,13 +185,13 @@ module.exports = function(createFn, setup, dismantle) {
       )
     })
 
-    it('POST /Customer 201', done => {
+    it('POST /Customer 201', (done) => {
       request.post(
         {
           url: `${testUrl}/api/v1/Customer`,
           json: {
-            name: 'Pre'
-          }
+            name: 'Pre',
+          },
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -205,36 +205,17 @@ module.exports = function(createFn, setup, dismantle) {
       )
     })
 
-    it('POST /Customer 400 - not called (missing content type)', done => {
-      request.post(
-        {
-          url: `${testUrl}/api/v1/Customer`
-        },
-        (err, res, body) => {
-          assert.ok(!err)
-          assert.equal(res.statusCode, 400)
-          assert.deepEqual(JSON.parse(body), {
-            name: 'Error',
-            message: 'missing_content_type'
-          })
-          sinon.assert.notCalled(options.preMiddleware)
-          done()
-        }
-      )
-    })
-
-    it('POST /Customer 400 - not called (invalid content type)', done => {
+    it('POST /Customer 400 - not called (missing content type)', (done) => {
       request.post(
         {
           url: `${testUrl}/api/v1/Customer`,
-          formData: {}
         },
         (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 400)
           assert.deepEqual(JSON.parse(body), {
             name: 'Error',
-            message: 'invalid_content_type'
+            message: 'missing_content_type',
           })
           sinon.assert.notCalled(options.preMiddleware)
           done()
@@ -242,15 +223,34 @@ module.exports = function(createFn, setup, dismantle) {
       )
     })
 
-    updateMethods.forEach(method => {
-      it(`${method} /Customer/:id 200`, done => {
+    it('POST /Customer 400 - not called (invalid content type)', (done) => {
+      request.post(
+        {
+          url: `${testUrl}/api/v1/Customer`,
+          formData: {},
+        },
+        (err, res, body) => {
+          assert.ok(!err)
+          assert.equal(res.statusCode, 400)
+          assert.deepEqual(JSON.parse(body), {
+            name: 'Error',
+            message: 'invalid_content_type',
+          })
+          sinon.assert.notCalled(options.preMiddleware)
+          done()
+        }
+      )
+    })
+
+    updateMethods.forEach((method) => {
+      it(`${method} /Customer/:id 200`, (done) => {
         request(
           {
             method,
             url: `${testUrl}/api/v1/Customer/${customer._id}`,
             json: {
-              name: 'Bobby'
-            }
+              name: 'Bobby',
+            },
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -264,18 +264,18 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it(`${method} /Customer/:id 400 - not called (missing content type)`, done => {
+      it(`${method} /Customer/:id 400 - not called (missing content type)`, (done) => {
         request(
           {
             method,
-            url: `${testUrl}/api/v1/Customer/${customer._id}`
+            url: `${testUrl}/api/v1/Customer/${customer._id}`,
           },
           (err, res, body) => {
             assert.ok(!err)
             assert.equal(res.statusCode, 400)
             assert.deepEqual(JSON.parse(body), {
               name: 'Error',
-              message: 'missing_content_type'
+              message: 'missing_content_type',
             })
             sinon.assert.notCalled(options.preMiddleware)
             done()
@@ -283,19 +283,19 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it(`${method} /Customer/:id 400 - not called (invalid content type)`, done => {
+      it(`${method} /Customer/:id 400 - not called (invalid content type)`, (done) => {
         request(
           {
             method,
             url: `${testUrl}/api/v1/Customer/${customer._id}`,
-            formData: {}
+            formData: {},
           },
           (err, res, body) => {
             assert.ok(!err)
             assert.equal(res.statusCode, 400)
             assert.deepEqual(JSON.parse(body), {
               name: 'Error',
-              message: 'invalid_content_type'
+              message: 'invalid_content_type',
             })
             sinon.assert.notCalled(options.preMiddleware)
             done()
@@ -304,11 +304,11 @@ module.exports = function(createFn, setup, dismantle) {
       })
     })
 
-    it('DELETE /Customer 204', done => {
+    it('DELETE /Customer 204', (done) => {
       request.del(
         {
           url: `${testUrl}/api/v1/Customer`,
-          json: true
+          json: true,
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -322,11 +322,11 @@ module.exports = function(createFn, setup, dismantle) {
       )
     })
 
-    it('DELETE /Customer/:id 204', done => {
+    it('DELETE /Customer/:id 204', (done) => {
       request.del(
         {
           url: `${testUrl}/api/v1/Customer/${customer._id}`,
-          json: true
+          json: true,
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -348,11 +348,11 @@ module.exports = function(createFn, setup, dismantle) {
       preCreate: sinon.spy((req, res, next) => {
         next()
       }),
-      restify: app.isRestify
+      restify: app.isRestify,
     }
 
-    beforeEach(done => {
-      setup(err => {
+    beforeEach((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -363,18 +363,18 @@ module.exports = function(createFn, setup, dismantle) {
       })
     })
 
-    afterEach(done => {
+    afterEach((done) => {
       options.preCreate.resetHistory()
       dismantle(app, server, done)
     })
 
-    it('POST /Customer 201', done => {
+    it('POST /Customer 201', (done) => {
       request.post(
         {
           url: `${testUrl}/api/v1/Customer`,
           json: {
-            name: 'Bob'
-          }
+            name: 'Bob',
+          },
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -399,11 +399,11 @@ module.exports = function(createFn, setup, dismantle) {
       preRead: sinon.spy((req, res, next) => {
         next()
       }),
-      restify: app.isRestify
+      restify: app.isRestify,
     }
 
-    beforeEach(done => {
-      setup(err => {
+    beforeEach((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -411,9 +411,9 @@ module.exports = function(createFn, setup, dismantle) {
         erm.serve(app, db.models.Customer, options)
 
         db.models.Customer.create({
-          name: 'Bob'
+          name: 'Bob',
         })
-          .then(createdCustomer => {
+          .then((createdCustomer) => {
             customer = createdCustomer
             server = app.listen(testPort, done)
           })
@@ -421,16 +421,16 @@ module.exports = function(createFn, setup, dismantle) {
       })
     })
 
-    afterEach(done => {
+    afterEach((done) => {
       options.preRead.resetHistory()
       dismantle(app, server, done)
     })
 
-    it('GET /Customer 200', done => {
+    it('GET /Customer 200', (done) => {
       request.get(
         {
           url: `${testUrl}/api/v1/Customer`,
-          json: true
+          json: true,
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -446,11 +446,11 @@ module.exports = function(createFn, setup, dismantle) {
       )
     })
 
-    it('GET /Customer/count 200', done => {
+    it('GET /Customer/count 200', (done) => {
       request.get(
         {
           url: `${testUrl}/api/v1/Customer/count`,
-          json: true
+          json: true,
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -466,11 +466,11 @@ module.exports = function(createFn, setup, dismantle) {
       )
     })
 
-    it('GET /Customer/:id 200', done => {
+    it('GET /Customer/:id 200', (done) => {
       request.get(
         {
           url: `${testUrl}/api/v1/Customer/${customer._id}`,
-          json: true
+          json: true,
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -486,11 +486,11 @@ module.exports = function(createFn, setup, dismantle) {
       )
     })
 
-    it('GET /Customer/:id/shallow 200', done => {
+    it('GET /Customer/:id/shallow 200', (done) => {
       request.get(
         {
           url: `${testUrl}/api/v1/Customer/${customer._id}/shallow`,
-          json: true
+          json: true,
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -515,11 +515,11 @@ module.exports = function(createFn, setup, dismantle) {
       preUpdate: sinon.spy((req, res, next) => {
         next()
       }),
-      restify: app.isRestify
+      restify: app.isRestify,
     }
 
-    beforeEach(done => {
-      setup(err => {
+    beforeEach((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -527,9 +527,9 @@ module.exports = function(createFn, setup, dismantle) {
         erm.serve(app, db.models.Customer, options)
 
         db.models.Customer.create({
-          name: 'Bob'
+          name: 'Bob',
         })
-          .then(createdCustomer => {
+          .then((createdCustomer) => {
             customer = createdCustomer
             server = app.listen(testPort, done)
           })
@@ -537,20 +537,20 @@ module.exports = function(createFn, setup, dismantle) {
       })
     })
 
-    afterEach(done => {
+    afterEach((done) => {
       options.preUpdate.resetHistory()
       dismantle(app, server, done)
     })
 
-    updateMethods.forEach(method => {
-      it(`${method} /Customer/:id 200`, done => {
+    updateMethods.forEach((method) => {
+      it(`${method} /Customer/:id 200`, (done) => {
         request(
           {
             method,
             url: `${testUrl}/api/v1/Customer/${customer._id}`,
             json: {
-              name: 'Bobby'
-            }
+              name: 'Bobby',
+            },
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -566,18 +566,18 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it(`${method} /Customer/:id 400 - not called (missing content type)`, done => {
+      it(`${method} /Customer/:id 400 - not called (missing content type)`, (done) => {
         request(
           {
             method,
-            url: `${testUrl}/api/v1/Customer/${customer._id}`
+            url: `${testUrl}/api/v1/Customer/${customer._id}`,
           },
           (err, res, body) => {
             assert.ok(!err)
             assert.equal(res.statusCode, 400)
             assert.deepEqual(JSON.parse(body), {
               name: 'Error',
-              message: 'missing_content_type'
+              message: 'missing_content_type',
             })
             sinon.assert.notCalled(options.preUpdate)
             done()
@@ -585,19 +585,19 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it(`${method} /Customer/:id 400 - not called (invalid content type)`, done => {
+      it(`${method} /Customer/:id 400 - not called (invalid content type)`, (done) => {
         request(
           {
             method,
             url: `${testUrl}/api/v1/Customer/${customer._id}`,
-            formData: {}
+            formData: {},
           },
           (err, res, body) => {
             assert.ok(!err)
             assert.equal(res.statusCode, 400)
             assert.deepEqual(JSON.parse(body), {
               name: 'Error',
-              message: 'invalid_content_type'
+              message: 'invalid_content_type',
             })
             sinon.assert.notCalled(options.preUpdate)
             done()
@@ -615,11 +615,11 @@ module.exports = function(createFn, setup, dismantle) {
       preDelete: sinon.spy((req, res, next) => {
         next()
       }),
-      restify: app.isRestify
+      restify: app.isRestify,
     }
 
-    beforeEach(done => {
-      setup(err => {
+    beforeEach((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -627,9 +627,9 @@ module.exports = function(createFn, setup, dismantle) {
         erm.serve(app, db.models.Customer, options)
 
         db.models.Customer.create({
-          name: 'Bob'
+          name: 'Bob',
         })
-          .then(createdCustomer => {
+          .then((createdCustomer) => {
             customer = createdCustomer
             server = app.listen(testPort, done)
           })
@@ -637,16 +637,16 @@ module.exports = function(createFn, setup, dismantle) {
       })
     })
 
-    afterEach(done => {
+    afterEach((done) => {
       options.preDelete.resetHistory()
       dismantle(app, server, done)
     })
 
-    it('DELETE /Customer 204', done => {
+    it('DELETE /Customer 204', (done) => {
       request.del(
         {
           url: `${testUrl}/api/v1/Customer`,
-          json: true
+          json: true,
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -662,11 +662,11 @@ module.exports = function(createFn, setup, dismantle) {
       )
     })
 
-    it('DELETE /Customer/:id 204', done => {
+    it('DELETE /Customer/:id 204', (done) => {
       request.del(
         {
           url: `${testUrl}/api/v1/Customer/${customer._id}`,
-          json: true
+          json: true,
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -688,8 +688,8 @@ module.exports = function(createFn, setup, dismantle) {
     let server
     let customer
 
-    beforeEach(done => {
-      setup(err => {
+    beforeEach((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -699,13 +699,13 @@ module.exports = function(createFn, setup, dismantle) {
           postRead: null,
           postUpdate: null,
           postDelete: null,
-          restify: app.isRestify
+          restify: app.isRestify,
         })
 
         db.models.Customer.create({
-          name: 'Bob'
+          name: 'Bob',
         })
-          .then(createdCustomer => {
+          .then((createdCustomer) => {
             customer = createdCustomer
             server = app.listen(testPort, done)
           })
@@ -713,17 +713,17 @@ module.exports = function(createFn, setup, dismantle) {
       })
     })
 
-    afterEach(done => {
+    afterEach((done) => {
       dismantle(app, server, done)
     })
 
-    it('POST /Customer 201', done => {
+    it('POST /Customer 201', (done) => {
       request.post(
         {
           url: `${testUrl}/api/v1/Customer`,
           json: {
-            name: 'John'
-          }
+            name: 'John',
+          },
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -733,11 +733,11 @@ module.exports = function(createFn, setup, dismantle) {
       )
     })
 
-    it('GET /Customer 200', done => {
+    it('GET /Customer 200', (done) => {
       request.get(
         {
           url: `${testUrl}/api/v1/Customer`,
-          json: true
+          json: true,
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -747,14 +747,14 @@ module.exports = function(createFn, setup, dismantle) {
       )
     })
 
-    updateMethods.forEach(method => {
-      it(`${method} /Customer/:id 200`, done => {
+    updateMethods.forEach((method) => {
+      it(`${method} /Customer/:id 200`, (done) => {
         request.post(
           {
             url: `${testUrl}/api/v1/Customer/${customer._id}`,
             json: {
-              name: 'Bobby'
-            }
+              name: 'Bobby',
+            },
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -765,11 +765,11 @@ module.exports = function(createFn, setup, dismantle) {
       })
     })
 
-    it('DELETE /Customer/:id 204', done => {
+    it('DELETE /Customer/:id 204', (done) => {
       request.del(
         {
           url: `${testUrl}/api/v1/Customer/${customer._id}`,
-          json: true
+          json: true,
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -787,11 +787,11 @@ module.exports = function(createFn, setup, dismantle) {
       postCreate: sinon.spy((req, res, next) => {
         next()
       }),
-      restify: app.isRestify
+      restify: app.isRestify,
     }
 
-    beforeEach(done => {
-      setup(err => {
+    beforeEach((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -802,18 +802,18 @@ module.exports = function(createFn, setup, dismantle) {
       })
     })
 
-    afterEach(done => {
+    afterEach((done) => {
       options.postCreate.resetHistory()
       dismantle(app, server, done)
     })
 
-    it('POST /Customer 201', done => {
+    it('POST /Customer 201', (done) => {
       request.post(
         {
           url: `${testUrl}/api/v1/Customer`,
           json: {
-            name: 'Bob'
-          }
+            name: 'Bob',
+          },
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -829,13 +829,13 @@ module.exports = function(createFn, setup, dismantle) {
       )
     })
 
-    it('POST /Customer 400 - missing required field', done => {
+    it('POST /Customer 400 - missing required field', (done) => {
       request.post(
         {
           url: `${testUrl}/api/v1/Customer`,
           json: {
-            comment: 'Bar'
-          }
+            comment: 'Bar',
+          },
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -853,10 +853,10 @@ module.exports = function(createFn, setup, dismantle) {
                 properties: {
                   message: 'Path `name` is required.',
                   path: 'name',
-                  type: 'required'
-                }
-              }
-            }
+                  type: 'required',
+                },
+              },
+            },
           })
           sinon.assert.notCalled(options.postCreate)
           done()
@@ -873,11 +873,11 @@ module.exports = function(createFn, setup, dismantle) {
       postRead: sinon.spy((req, res, next) => {
         next()
       }),
-      restify: app.isRestify
+      restify: app.isRestify,
     }
 
-    beforeEach(done => {
-      setup(err => {
+    beforeEach((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -885,9 +885,9 @@ module.exports = function(createFn, setup, dismantle) {
         erm.serve(app, db.models.Customer, options)
 
         db.models.Customer.create({
-          name: 'Bob'
+          name: 'Bob',
         })
-          .then(createdCustomer => {
+          .then((createdCustomer) => {
             customer = createdCustomer
             server = app.listen(testPort, done)
           })
@@ -895,16 +895,16 @@ module.exports = function(createFn, setup, dismantle) {
       })
     })
 
-    afterEach(done => {
+    afterEach((done) => {
       options.postRead.resetHistory()
       dismantle(app, server, done)
     })
 
-    it('GET /Customer 200', done => {
+    it('GET /Customer 200', (done) => {
       request.get(
         {
           url: `${testUrl}/api/v1/Customer`,
-          json: true
+          json: true,
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -920,11 +920,11 @@ module.exports = function(createFn, setup, dismantle) {
       )
     })
 
-    it('GET /Customer/count 200', done => {
+    it('GET /Customer/count 200', (done) => {
       request.get(
         {
           url: `${testUrl}/api/v1/Customer/count`,
-          json: true
+          json: true,
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -940,11 +940,11 @@ module.exports = function(createFn, setup, dismantle) {
       )
     })
 
-    it('GET /Customer/:id 200', done => {
+    it('GET /Customer/:id 200', (done) => {
       request.get(
         {
           url: `${testUrl}/api/v1/Customer/${customer._id}`,
-          json: true
+          json: true,
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -960,11 +960,11 @@ module.exports = function(createFn, setup, dismantle) {
       )
     })
 
-    it('GET /Customer/:id 404', done => {
+    it('GET /Customer/:id 404', (done) => {
       request.get(
         {
           url: `${testUrl}/api/v1/Customer/${randomId}`,
-          json: true
+          json: true,
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -975,11 +975,11 @@ module.exports = function(createFn, setup, dismantle) {
       )
     })
 
-    it('GET /Customer/:id 404 - invalid id', done => {
+    it('GET /Customer/:id 404 - invalid id', (done) => {
       request.get(
         {
           url: `${testUrl}/api/v1/Customer/${invalidId}`,
-          json: true
+          json: true,
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -990,11 +990,11 @@ module.exports = function(createFn, setup, dismantle) {
       )
     })
 
-    it('GET /Customer/:id/shallow 200', done => {
+    it('GET /Customer/:id/shallow 200', (done) => {
       request.get(
         {
           url: `${testUrl}/api/v1/Customer/${customer._id}/shallow`,
-          json: true
+          json: true,
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -1019,11 +1019,11 @@ module.exports = function(createFn, setup, dismantle) {
       postUpdate: sinon.spy((req, res, next) => {
         next()
       }),
-      restify: app.isRestify
+      restify: app.isRestify,
     }
 
-    beforeEach(done => {
-      setup(err => {
+    beforeEach((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -1031,9 +1031,9 @@ module.exports = function(createFn, setup, dismantle) {
         erm.serve(app, db.models.Customer, options)
 
         db.models.Customer.create({
-          name: 'Bob'
+          name: 'Bob',
         })
-          .then(createdCustomer => {
+          .then((createdCustomer) => {
             customer = createdCustomer
             server = app.listen(testPort, done)
           })
@@ -1041,20 +1041,20 @@ module.exports = function(createFn, setup, dismantle) {
       })
     })
 
-    afterEach(done => {
+    afterEach((done) => {
       options.postUpdate.resetHistory()
       dismantle(app, server, done)
     })
 
-    updateMethods.forEach(method => {
-      it(`${method} /Customer/:id 200`, done => {
+    updateMethods.forEach((method) => {
+      it(`${method} /Customer/:id 200`, (done) => {
         request(
           {
             method,
             url: `${testUrl}/api/v1/Customer/${customer._id}`,
             json: {
-              name: 'Bobby'
-            }
+              name: 'Bobby',
+            },
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -1070,14 +1070,14 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it(`${method} /Customer/:id 404 - random id`, done => {
+      it(`${method} /Customer/:id 404 - random id`, (done) => {
         request(
           {
             method,
             url: `${testUrl}/api/v1/Customer/${randomId}`,
             json: {
-              name: 'Bobby'
-            }
+              name: 'Bobby',
+            },
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -1088,14 +1088,14 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it(`${method} /Customer/:id 404 - invalid id`, done => {
+      it(`${method} /Customer/:id 404 - invalid id`, (done) => {
         request(
           {
             method,
             url: `${testUrl}/api/v1/Customer/${invalidId}`,
             json: {
-              name: 'Bobby'
-            }
+              name: 'Bobby',
+            },
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -1106,18 +1106,18 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it(`${method} /Customer/:id 400 - not called (missing content type)`, done => {
+      it(`${method} /Customer/:id 400 - not called (missing content type)`, (done) => {
         request(
           {
             method,
-            url: `${testUrl}/api/v1/Customer/${customer._id}`
+            url: `${testUrl}/api/v1/Customer/${customer._id}`,
           },
           (err, res, body) => {
             assert.ok(!err)
             assert.equal(res.statusCode, 400)
             assert.deepEqual(JSON.parse(body), {
               name: 'Error',
-              message: 'missing_content_type'
+              message: 'missing_content_type',
             })
             sinon.assert.notCalled(options.postUpdate)
             done()
@@ -1125,19 +1125,19 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it(`${method} /Customer/:id 400 - not called (invalid content type)`, done => {
+      it(`${method} /Customer/:id 400 - not called (invalid content type)`, (done) => {
         request(
           {
             method,
             url: `${testUrl}/api/v1/Customer/${customer._id}`,
-            formData: {}
+            formData: {},
           },
           (err, res, body) => {
             assert.ok(!err)
             assert.equal(res.statusCode, 400)
             assert.deepEqual(JSON.parse(body), {
               name: 'Error',
-              message: 'invalid_content_type'
+              message: 'invalid_content_type',
             })
             sinon.assert.notCalled(options.postUpdate)
             done()
@@ -1155,11 +1155,11 @@ module.exports = function(createFn, setup, dismantle) {
       postDelete: sinon.spy((req, res, next) => {
         next()
       }),
-      restify: app.isRestify
+      restify: app.isRestify,
     }
 
-    beforeEach(done => {
-      setup(err => {
+    beforeEach((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -1167,9 +1167,9 @@ module.exports = function(createFn, setup, dismantle) {
         erm.serve(app, db.models.Customer, options)
 
         db.models.Customer.create({
-          name: 'Bob'
+          name: 'Bob',
         })
-          .then(createdCustomer => {
+          .then((createdCustomer) => {
             customer = createdCustomer
             server = app.listen(testPort, done)
           })
@@ -1177,16 +1177,16 @@ module.exports = function(createFn, setup, dismantle) {
       })
     })
 
-    afterEach(done => {
+    afterEach((done) => {
       options.postDelete.resetHistory()
       dismantle(app, server, done)
     })
 
-    it('DELETE /Customer 204', done => {
+    it('DELETE /Customer 204', (done) => {
       request.del(
         {
           url: `${testUrl}/api/v1/Customer`,
-          json: true
+          json: true,
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -1202,11 +1202,11 @@ module.exports = function(createFn, setup, dismantle) {
       )
     })
 
-    it('DELETE /Customer/:id 204', done => {
+    it('DELETE /Customer/:id 204', (done) => {
       request.del(
         {
           url: `${testUrl}/api/v1/Customer/${customer._id}`,
-          json: true
+          json: true,
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -1222,11 +1222,11 @@ module.exports = function(createFn, setup, dismantle) {
       )
     })
 
-    it('DELETE /Customer/:id 404', done => {
+    it('DELETE /Customer/:id 404', (done) => {
       request.del(
         {
           url: `${testUrl}/api/v1/Customer/${randomId}`,
-          json: true
+          json: true,
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -1237,11 +1237,11 @@ module.exports = function(createFn, setup, dismantle) {
       )
     })
 
-    it('DELETE /Customer/:id 404 - invalid id', done => {
+    it('DELETE /Customer/:id 404 - invalid id', (done) => {
       request.del(
         {
           url: `${testUrl}/api/v1/Customer/${invalidId}`,
-          json: true
+          json: true,
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -1261,11 +1261,11 @@ module.exports = function(createFn, setup, dismantle) {
         next(new Error('Something went wrong'))
       }),
       postProcess: sinon.spy(),
-      restify: app.isRestify
+      restify: app.isRestify,
     }
 
-    beforeEach(done => {
-      setup(err => {
+    beforeEach((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -1276,19 +1276,19 @@ module.exports = function(createFn, setup, dismantle) {
       })
     })
 
-    afterEach(done => {
+    afterEach((done) => {
       options.postCreate.resetHistory()
       dismantle(app, server, done)
     })
 
     // TODO: This test is weird
-    it('POST /Customer 201', done => {
+    it('POST /Customer 201', (done) => {
       request.post(
         {
           url: `${testUrl}/api/v1/Customer`,
           json: {
-            name: 'Bob'
-          }
+            name: 'Bob',
+          },
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -1311,11 +1311,11 @@ module.exports = function(createFn, setup, dismantle) {
     let server
     let options = {
       postProcess: sinon.spy(),
-      restify: app.isRestify
+      restify: app.isRestify,
     }
 
-    beforeEach(done => {
-      setup(err => {
+    beforeEach((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -1326,16 +1326,16 @@ module.exports = function(createFn, setup, dismantle) {
       })
     })
 
-    afterEach(done => {
+    afterEach((done) => {
       options.postProcess.resetHistory()
       dismantle(app, server, done)
     })
 
-    it('GET /Customer 200', done => {
+    it('GET /Customer 200', (done) => {
       request.get(
         {
           url: `${testUrl}/api/v1/Customer`,
-          json: true
+          json: true,
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -1365,11 +1365,11 @@ module.exports = function(createFn, setup, dismantle) {
         return Promise.resolve()
       },
       postProcess: sinon.spy(),
-      restify: app.isRestify
+      restify: app.isRestify,
     }
 
-    beforeEach(done => {
-      setup(err => {
+    beforeEach((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
@@ -1380,16 +1380,16 @@ module.exports = function(createFn, setup, dismantle) {
       })
     })
 
-    afterEach(done => {
+    afterEach((done) => {
       options.postProcess.resetHistory()
       dismantle(app, server, done)
     })
 
-    it('GET /Customer 200', done => {
+    it('GET /Customer 200', (done) => {
       request.get(
         {
           url: `${testUrl}/api/v1/Customer`,
-          json: true
+          json: true,
         },
         (err, res, body) => {
           assert.ok(!err)

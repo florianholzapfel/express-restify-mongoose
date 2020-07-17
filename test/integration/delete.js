@@ -4,7 +4,7 @@ const assert = require('assert')
 const mongoose = require('mongoose')
 const request = require('request')
 
-module.exports = function(createFn, setup, dismantle) {
+module.exports = function (createFn, setup, dismantle) {
   const erm = require('../../src/express-restify-mongoose')
   const db = require('./setup')()
 
@@ -19,29 +19,29 @@ module.exports = function(createFn, setup, dismantle) {
       let server
       let customer
 
-      beforeEach(done => {
-        setup(err => {
+      beforeEach((done) => {
+        setup((err) => {
           if (err) {
             return done(err)
           }
 
           erm.serve(app, db.models.Customer, {
             findOneAndRemove: true,
-            restify: app.isRestify
+            restify: app.isRestify,
           })
 
           db.models.Customer.create([
             {
-              name: 'Bob'
+              name: 'Bob',
             },
             {
-              name: 'John'
+              name: 'John',
             },
             {
-              name: 'Mike'
-            }
+              name: 'Mike',
+            },
           ])
-            .then(createdCustomers => {
+            .then((createdCustomers) => {
               customer = createdCustomers[0]
               server = app.listen(testPort, done)
             })
@@ -49,14 +49,14 @@ module.exports = function(createFn, setup, dismantle) {
         })
       })
 
-      afterEach(done => {
+      afterEach((done) => {
         dismantle(app, server, done)
       })
 
-      it('DELETE /Customer 204 - no id', done => {
+      it('DELETE /Customer 204 - no id', (done) => {
         request.del(
           {
-            url: `${testUrl}/api/v1/Customer`
+            url: `${testUrl}/api/v1/Customer`,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -66,10 +66,10 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it('DELETE /Customer/:id 204 - created id', done => {
+      it('DELETE /Customer/:id 204 - created id', (done) => {
         request.del(
           {
-            url: `${testUrl}/api/v1/Customer/${customer._id}`
+            url: `${testUrl}/api/v1/Customer/${customer._id}`,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -79,10 +79,10 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it('DELETE /Customer/:id 404 - invalid id', done => {
+      it('DELETE /Customer/:id 404 - invalid id', (done) => {
         request.del(
           {
-            url: `${testUrl}/api/v1/Customer/${invalidId}`
+            url: `${testUrl}/api/v1/Customer/${invalidId}`,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -92,10 +92,10 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it('DELETE /Customer/:id 404 - random id', done => {
+      it('DELETE /Customer/:id 404 - random id', (done) => {
         request.del(
           {
-            url: `${testUrl}/api/v1/Customer/${randomId}`
+            url: `${testUrl}/api/v1/Customer/${randomId}`,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -105,16 +105,16 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it('DELETE /Customer?query={"name":"John"} 200 - exact match', done => {
+      it('DELETE /Customer?query={"name":"John"} 200 - exact match', (done) => {
         request.del(
           {
             url: `${testUrl}/api/v1/Customer`,
             qs: {
               query: JSON.stringify({
-                name: 'John'
-              })
+                name: 'John',
+              }),
             },
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -123,7 +123,7 @@ module.exports = function(createFn, setup, dismantle) {
             db.models.Customer.find({}, (err, customers) => {
               assert.ok(!err)
               assert.equal(customers.length, 2)
-              customers.forEach(customer => {
+              customers.forEach((customer) => {
                 assert.ok(customer.name !== 'John')
               })
               done()
@@ -138,29 +138,29 @@ module.exports = function(createFn, setup, dismantle) {
       let server
       let customer
 
-      beforeEach(done => {
-        setup(err => {
+      beforeEach((done) => {
+        setup((err) => {
           if (err) {
             return done(err)
           }
 
           erm.serve(app, db.models.Customer, {
             findOneAndRemove: false,
-            restify: app.isRestify
+            restify: app.isRestify,
           })
 
           db.models.Customer.create([
             {
-              name: 'Bob'
+              name: 'Bob',
             },
             {
-              name: 'John'
+              name: 'John',
             },
             {
-              name: 'Mike'
-            }
+              name: 'Mike',
+            },
           ])
-            .then(createdCustomers => {
+            .then((createdCustomers) => {
               customer = createdCustomers[0]
               server = app.listen(testPort, done)
             })
@@ -168,14 +168,14 @@ module.exports = function(createFn, setup, dismantle) {
         })
       })
 
-      afterEach(done => {
+      afterEach((done) => {
         dismantle(app, server, done)
       })
 
-      it('DELETE /Customer 204 - no id', done => {
+      it('DELETE /Customer 204 - no id', (done) => {
         request.del(
           {
-            url: `${testUrl}/api/v1/Customer`
+            url: `${testUrl}/api/v1/Customer`,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -185,10 +185,10 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it('DELETE /Customer/:id 204 - created id', done => {
+      it('DELETE /Customer/:id 204 - created id', (done) => {
         request.del(
           {
-            url: `${testUrl}/api/v1/Customer/${customer._id}`
+            url: `${testUrl}/api/v1/Customer/${customer._id}`,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -198,10 +198,10 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it('DELETE /Customer/:id 404 - invalid id', done => {
+      it('DELETE /Customer/:id 404 - invalid id', (done) => {
         request.del(
           {
-            url: `${testUrl}/api/v1/Customer/${invalidId}`
+            url: `${testUrl}/api/v1/Customer/${invalidId}`,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -211,10 +211,10 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it('DELETE /Customer/:id 404 - random id', done => {
+      it('DELETE /Customer/:id 404 - random id', (done) => {
         request.del(
           {
-            url: `${testUrl}/api/v1/Customer/${randomId}`
+            url: `${testUrl}/api/v1/Customer/${randomId}`,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -224,16 +224,16 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it('DELETE /Customer?query={"name":"John"} 200 - exact match', done => {
+      it('DELETE /Customer?query={"name":"John"} 200 - exact match', (done) => {
         request.del(
           {
             url: `${testUrl}/api/v1/Customer`,
             qs: {
               query: JSON.stringify({
-                name: 'John'
-              })
+                name: 'John',
+              }),
             },
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -242,7 +242,7 @@ module.exports = function(createFn, setup, dismantle) {
             db.models.Customer.find({}, (err, customers) => {
               assert.ok(!err)
               assert.equal(customers.length, 2)
-              customers.forEach(customer => {
+              customers.forEach((customer) => {
                 assert.ok(customer.name !== 'John')
               })
               done()

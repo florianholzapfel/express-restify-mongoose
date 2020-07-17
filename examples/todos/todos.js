@@ -29,12 +29,12 @@ var bodyParser = require('body-parser')
 var methodOverride = require('method-override')
 var mongoose = require('mongoose')
 mongoose.connect('mongodb://localhost/todos', {
-  useMongoClient: true
+  useMongoClient: true,
 })
 
 var ToDoSchema = new mongoose.Schema({
   text: { type: String, required: true },
-  done: { type: Boolean, default: false }
+  done: { type: Boolean, default: false },
 })
 var ToDoModel = mongoose.model('ToDo', ToDoSchema)
 
@@ -47,10 +47,10 @@ restify.serve(app, ToDoModel, {
   // exclude: 'text,done'
 })
 app.use(express.static(path.join(__dirname, 'public')))
-app.use(function(req, res) {
+app.use(function (req, res) {
   res.sendFile(path.join(__dirname, 'public/index.html'))
 })
 
-http.createServer(app).listen(app.get('port'), function() {
+http.createServer(app).listen(app.get('port'), function () {
   console.log('Express server listening on port ' + app.get('port'))
 })

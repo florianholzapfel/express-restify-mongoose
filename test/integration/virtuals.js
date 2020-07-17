@@ -3,7 +3,7 @@
 const assert = require('assert')
 const request = require('request')
 
-module.exports = function(createFn, setup, dismantle) {
+module.exports = function (createFn, setup, dismantle) {
   const erm = require('../../src/express-restify-mongoose')
   const db = require('./setup')()
 
@@ -15,36 +15,36 @@ module.exports = function(createFn, setup, dismantle) {
       let app = createFn()
       let server
 
-      beforeEach(done => {
-        setup(err => {
+      beforeEach((done) => {
+        setup((err) => {
           if (err) {
             return done(err)
           }
 
           erm.serve(app, db.models.Customer, {
             lean: true,
-            restify: app.isRestify
+            restify: app.isRestify,
           })
 
           db.models.Customer.create({
-            name: 'Bob'
+            name: 'Bob',
           })
-            .then(createdCustomers => {
+            .then((createdCustomers) => {
               server = app.listen(testPort, done)
             })
             .catch(done)
         })
       })
 
-      afterEach(done => {
+      afterEach((done) => {
         dismantle(app, server, done)
       })
 
-      it('GET /Customer 200 - unavailable', done => {
+      it('GET /Customer 200 - unavailable', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Customer`,
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -61,36 +61,36 @@ module.exports = function(createFn, setup, dismantle) {
       let app = createFn()
       let server
 
-      beforeEach(done => {
-        setup(err => {
+      beforeEach((done) => {
+        setup((err) => {
           if (err) {
             return done(err)
           }
 
           erm.serve(app, db.models.Customer, {
             lean: false,
-            restify: app.isRestify
+            restify: app.isRestify,
           })
 
           db.models.Customer.create({
-            name: 'Bob'
+            name: 'Bob',
           })
-            .then(createdCustomers => {
+            .then((createdCustomers) => {
               server = app.listen(testPort, done)
             })
             .catch(done)
         })
       })
 
-      afterEach(done => {
+      afterEach((done) => {
         dismantle(app, server, done)
       })
 
-      it('GET /Customer 200 - available', done => {
+      it('GET /Customer 200 - available', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Customer`,
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -107,36 +107,36 @@ module.exports = function(createFn, setup, dismantle) {
       let app = createFn()
       let server
 
-      beforeEach(done => {
-        setup(err => {
+      beforeEach((done) => {
+        setup((err) => {
           if (err) {
             return done(err)
           }
 
           erm.serve(app, db.models.Customer, {
             readPreference: 'secondary',
-            restify: app.isRestify
+            restify: app.isRestify,
           })
 
           db.models.Customer.create({
-            name: 'Bob'
+            name: 'Bob',
           })
-            .then(createdCustomers => {
+            .then((createdCustomers) => {
               server = app.listen(testPort, done)
             })
             .catch(done)
         })
       })
 
-      afterEach(done => {
+      afterEach((done) => {
         dismantle(app, server, done)
       })
 
-      it('GET /Customer 200 - available', done => {
+      it('GET /Customer 200 - available', (done) => {
         request.get(
           {
             url: `${testUrl}/api/v1/Customer`,
-            json: true
+            json: true,
           },
           (err, res, body) => {
             assert.ok(!err)

@@ -7,16 +7,16 @@ describe('onError', () => {
 
   const req = {
     erm: {
-      statusCode: 500
-    }
+      statusCode: 500,
+    },
   }
 
   let res = {
     setHeader: () => {},
-    status: function() {
+    status: function () {
       return this
     },
-    send: () => {}
+    send: () => {},
   }
 
   let setHeader = sinon.spy(res, 'setHeader')
@@ -41,7 +41,7 @@ describe('onError', () => {
     sinon.assert.calledOnce(send)
     sinon.assert.calledWithExactly(send, {
       message: 'An error occurred',
-      name: 'Error'
+      name: 'Error',
     })
     sinon.assert.notCalled(next)
   })
@@ -55,7 +55,7 @@ describe('onError', () => {
     sinon.assert.calledOnce(send)
     sinon.assert.calledWithExactly(send, 500, {
       message: 'An error occurred',
-      name: 'Error'
+      name: 'Error',
     })
     sinon.assert.notCalled(next)
   })

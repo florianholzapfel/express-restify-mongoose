@@ -3,7 +3,7 @@
 const assert = require('assert')
 const request = require('request')
 
-module.exports = function(createFn, setup, dismantle) {
+module.exports = function (createFn, setup, dismantle) {
   const erm = require('../../src/express-restify-mongoose')
   const db = require('./setup')()
 
@@ -14,32 +14,32 @@ module.exports = function(createFn, setup, dismantle) {
     let app = createFn()
     let server
 
-    beforeEach(done => {
-      setup(err => {
+    beforeEach((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
 
         erm.serve(app, db.models.Hook, {
-          restify: app.isRestify
+          restify: app.isRestify,
         })
 
         server = app.listen(testPort, done)
       })
     })
 
-    afterEach(done => {
+    afterEach((done) => {
       dismantle(app, server, done)
     })
 
-    it('POST /Hook 201', done => {
+    it('POST /Hook 201', (done) => {
       request.post(
         {
           url: `${testUrl}/api/v1/Hook`,
           json: {
             preSaveError: false,
-            postSaveError: false
-          }
+            postSaveError: false,
+          },
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -52,42 +52,42 @@ module.exports = function(createFn, setup, dismantle) {
       )
     })
 
-    it('POST /Hook 400', done => {
+    it('POST /Hook 400', (done) => {
       request.post(
         {
           url: `${testUrl}/api/v1/Hook`,
           json: {
             preSaveError: true,
-            postSaveError: false
-          }
+            postSaveError: false,
+          },
         },
         (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 400)
           assert.deepEqual(body, {
             name: 'Error',
-            message: 'AsyncPreSaveError'
+            message: 'AsyncPreSaveError',
           })
           done()
         }
       )
     })
 
-    it('POST /Hook 400', done => {
+    it('POST /Hook 400', (done) => {
       request.post(
         {
           url: `${testUrl}/api/v1/Hook`,
           json: {
             preSaveError: false,
-            postSaveError: true
-          }
+            postSaveError: true,
+          },
         },
         (err, res, body) => {
           assert.ok(!err)
           assert.equal(res.statusCode, 400)
           assert.deepEqual(body, {
             name: 'Error',
-            message: 'AsyncPostSaveError'
+            message: 'AsyncPostSaveError',
           })
           done()
         }

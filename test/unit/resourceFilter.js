@@ -11,7 +11,7 @@ describe('resourceFilter', () => {
     describe('private', () => {
       it('returns empty array', () => {
         let excluded = filter.getExcluded({
-          access: 'private'
+          access: 'private',
         })
 
         assert.equal(Array.isArray(excluded), true)
@@ -23,7 +23,7 @@ describe('resourceFilter', () => {
       it('returns empty array', () => {
         let excluded = filter.getExcluded({
           access: 'protected',
-          filteredKeys: {}
+          filteredKeys: {},
         })
 
         assert.equal(Array.isArray(excluded), true)
@@ -32,7 +32,7 @@ describe('resourceFilter', () => {
 
       it('returns empty array', () => {
         let excluded = filter.getExcluded({
-          access: 'protected'
+          access: 'protected',
         })
 
         assert.equal(Array.isArray(excluded), true)
@@ -44,8 +44,8 @@ describe('resourceFilter', () => {
           access: 'protected',
           filteredKeys: {
             private: ['foo'],
-            protected: ['bar']
-          }
+            protected: ['bar'],
+          },
         })
 
         assert.equal(Array.isArray(excluded), true)
@@ -60,9 +60,9 @@ describe('resourceFilter', () => {
           excludedMap: {
             FooModel: {
               private: ['foo'],
-              protected: ['bar']
-            }
-          }
+              protected: ['bar'],
+            },
+          },
         })
 
         assert.equal(Array.isArray(excluded), true)
@@ -75,7 +75,7 @@ describe('resourceFilter', () => {
       it('returns empty array', () => {
         let excluded = filter.getExcluded({
           access: 'public',
-          filteredKeys: {}
+          filteredKeys: {},
         })
 
         assert.equal(Array.isArray(excluded), true)
@@ -84,7 +84,7 @@ describe('resourceFilter', () => {
 
       it('returns empty array', () => {
         let excluded = filter.getExcluded({
-          access: 'public'
+          access: 'public',
         })
 
         assert.equal(Array.isArray(excluded), true)
@@ -96,8 +96,8 @@ describe('resourceFilter', () => {
           access: 'public',
           filteredKeys: {
             private: ['foo'],
-            protected: ['bar']
-          }
+            protected: ['bar'],
+          },
         })
 
         assert.equal(Array.isArray(excluded), true)
@@ -112,9 +112,9 @@ describe('resourceFilter', () => {
           excludedMap: {
             FooModel: {
               private: ['foo'],
-              protected: ['bar']
-            }
-          }
+              protected: ['bar'],
+            },
+          },
         })
 
         assert.equal(Array.isArray(excluded), true)
@@ -137,9 +137,9 @@ describe('resourceFilter', () => {
       let doc = {
         foo: {
           bar: {
-            baz: '3.14'
-          }
-        }
+            baz: '3.14',
+          },
+        },
       }
 
       filter.filterItem(doc, ['foo'])
@@ -151,17 +151,17 @@ describe('resourceFilter', () => {
       let doc = {
         foo: {
           bar: {
-            baz: '3.14'
-          }
-        }
+            baz: '3.14',
+          },
+        },
       }
 
       filter.filterItem(doc, ['foo.bar.baz'])
 
       assert.deepEqual(doc, {
         foo: {
-          bar: {}
-        }
+          bar: {},
+        },
       })
     })
 
@@ -170,17 +170,17 @@ describe('resourceFilter', () => {
         {
           foo: {
             bar: {
-              baz: '3.14'
-            }
-          }
+              baz: '3.14',
+            },
+          },
         },
         {
           foo: {
             bar: {
-              baz: 'pi'
-            }
-          }
-        }
+              baz: 'pi',
+            },
+          },
+        },
       ]
 
       filter.filterItem(docs, ['foo.bar.baz'])
@@ -188,14 +188,14 @@ describe('resourceFilter', () => {
       assert.deepEqual(docs, [
         {
           foo: {
-            bar: {}
-          }
+            bar: {},
+          },
         },
         {
           foo: {
-            bar: {}
-          }
-        }
+            bar: {},
+          },
+        },
       ])
     })
   })
@@ -204,30 +204,30 @@ describe('resourceFilter', () => {
     const db = require('../integration/setup')()
 
     db.initialize({
-      connect: false
+      connect: false,
     })
 
     let invoiceFilter = new Filter({
-      model: db.models.Invoice
+      model: db.models.Invoice,
     })
 
     let customerFilter = new Filter({
       model: db.models.Customer,
       filteredKeys: {
-        private: ['name']
-      }
+        private: ['name'],
+      },
     })
 
     let productFilter = new Filter({
       model: db.models.Product,
       filteredKeys: {
-        private: ['name']
-      }
+        private: ['name'],
+      },
     })
 
     it('does nothing', () => {
       let item = invoiceFilter.filterPopulatedItem(null, {
-        populate: []
+        populate: [],
       })
 
       assert.equal(item, null)
@@ -236,25 +236,25 @@ describe('resourceFilter', () => {
     it('removes keys in populated document', () => {
       let invoice = {
         customer: {
-          name: 'John'
+          name: 'John',
         },
-        amount: '42'
+        amount: '42',
       }
 
       invoiceFilter.filterPopulatedItem(invoice, {
         populate: [
           {
-            path: 'customer'
-          }
+            path: 'customer',
+          },
         ],
         excludedMap: {
-          Customer: customerFilter.filteredKeys
-        }
+          Customer: customerFilter.filteredKeys,
+        },
       })
 
       assert.deepEqual(invoice, {
         customer: {},
-        amount: '42'
+        amount: '42',
       })
     })
 
@@ -262,82 +262,82 @@ describe('resourceFilter', () => {
       let invoices = [
         {
           customer: {
-            name: 'John'
+            name: 'John',
           },
-          amount: '42'
+          amount: '42',
         },
         {
           customer: {
-            name: 'Bob'
+            name: 'Bob',
           },
-          amount: '3.14'
-        }
+          amount: '3.14',
+        },
       ]
 
       invoiceFilter.filterPopulatedItem(invoices, {
         populate: [
           {
-            path: 'customer'
-          }
+            path: 'customer',
+          },
         ],
         excludedMap: {
-          Customer: customerFilter.filteredKeys
-        }
+          Customer: customerFilter.filteredKeys,
+        },
       })
 
       assert.deepEqual(invoices, [
         {
           customer: {},
-          amount: '42'
+          amount: '42',
         },
         {
           customer: {},
-          amount: '3.14'
-        }
+          amount: '3.14',
+        },
       ])
     })
 
     it('ignores undefined path', () => {
       let invoice = {
-        amount: '42'
+        amount: '42',
       }
 
       invoiceFilter.filterPopulatedItem(invoice, {
         populate: [
           {
-            path: 'customer'
-          }
+            path: 'customer',
+          },
         ],
         excludedMap: {
-          Customer: customerFilter.filteredKeys
-        }
+          Customer: customerFilter.filteredKeys,
+        },
       })
 
       assert.deepEqual(invoice, {
-        amount: '42'
+        amount: '42',
       })
     })
 
     it('skip when populate path is undefined', () => {
       let invoice = {
         customer: {
-          name: 'John'
+          name: 'John',
         },
-        amount: '42'
+        amount: '42',
       }
 
       invoiceFilter.filterPopulatedItem(invoice, {
         populate: [{}],
         excludedMap: {
-          Customer: customerFilter.filteredKeys
-        }
+          Customer: customerFilter.filteredKeys,
+        },
       })
 
       assert.deepEqual(invoice, {
         customer: {
-          name: 'John'
+          name: 'John',
         },
-        amount: '42'
+        amount: '42',
       })
     })
 
@@ -345,29 +345,29 @@ describe('resourceFilter', () => {
       let invoice = {
         products: [
           {
-            name: 'Squirt Gun'
+            name: 'Squirt Gun',
           },
           {
-            name: 'Water Balloons'
-          }
+            name: 'Water Balloons',
+          },
         ],
-        amount: '42'
+        amount: '42',
       }
 
       invoiceFilter.filterPopulatedItem(invoice, {
         populate: [
           {
-            path: 'products'
-          }
+            path: 'products',
+          },
         ],
         excludedMap: {
-          Product: productFilter.filteredKeys
-        }
+          Product: productFilter.filteredKeys,
+        },
       })
 
       assert.deepEqual(invoice, {
         products: [{}, {}],
-        amount: '42'
+        amount: '42',
       })
     })
 
@@ -377,30 +377,30 @@ describe('resourceFilter', () => {
         purchases: [
           {
             item: {
-              name: 'Squirt Gun'
-            }
-          }
-        ]
+              name: 'Squirt Gun',
+            },
+          },
+        ],
       }
 
       customerFilter.filterPopulatedItem(customer, {
         populate: [
           {
-            path: 'purchases.item'
-          }
+            path: 'purchases.item',
+          },
         ],
         excludedMap: {
-          Product: productFilter.filteredKeys
-        }
+          Product: productFilter.filteredKeys,
+        },
       })
 
       assert.deepEqual(customer, {
         name: 'John',
         purchases: [
           {
-            item: {}
-          }
-        ]
+            item: {},
+          },
+        ],
       })
     })
   })

@@ -3,7 +3,7 @@
 const assert = require('assert')
 const request = require('request')
 
-module.exports = function(createFn, setup, dismantle) {
+module.exports = function (createFn, setup, dismantle) {
   const erm = require('../../src/express-restify-mongoose')
   const db = require('./setup')()
 
@@ -16,41 +16,41 @@ module.exports = function(createFn, setup, dismantle) {
     let server
     let customers
 
-    let contextFilter = function(model, req, done) {
+    let contextFilter = function (model, req, done) {
       done(
         model.find({
           name: { $ne: 'Bob' },
-          age: { $lt: 36 }
+          age: { $lt: 36 },
         })
       )
     }
 
-    beforeEach(done => {
-      setup(err => {
+    beforeEach((done) => {
+      setup((err) => {
         if (err) {
           return done(err)
         }
 
         erm.serve(app, db.models.Customer, {
           contextFilter: contextFilter,
-          restify: app.isRestify
+          restify: app.isRestify,
         })
 
         db.models.Customer.create([
           {
             name: 'Bob',
-            age: 12
+            age: 12,
           },
           {
             name: 'John',
-            age: 24
+            age: 24,
           },
           {
             name: 'Mike',
-            age: 36
-          }
+            age: 36,
+          },
         ])
-          .then(createdCustomers => {
+          .then((createdCustomers) => {
             customers = createdCustomers
             server = app.listen(testPort, done)
           })
@@ -58,15 +58,15 @@ module.exports = function(createFn, setup, dismantle) {
       })
     })
 
-    afterEach(done => {
+    afterEach((done) => {
       dismantle(app, server, done)
     })
 
-    it('GET /Customer 200 - filtered name and age', done => {
+    it('GET /Customer 200 - filtered name and age', (done) => {
       request.get(
         {
           url: `${testUrl}/api/v1/Customer`,
-          json: true
+          json: true,
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -79,11 +79,11 @@ module.exports = function(createFn, setup, dismantle) {
       )
     })
 
-    it('GET /Customer/:id 404 - filtered name', done => {
+    it('GET /Customer/:id 404 - filtered name', (done) => {
       request.get(
         {
           url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
-          json: true
+          json: true,
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -93,11 +93,11 @@ module.exports = function(createFn, setup, dismantle) {
       )
     })
 
-    it('GET /Customer/:id/shallow 404 - filtered age', done => {
+    it('GET /Customer/:id/shallow 404 - filtered age', (done) => {
       request.get(
         {
           url: `${testUrl}/api/v1/Customer/${customers[2]._id}/shallow`,
-          json: true
+          json: true,
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -107,11 +107,11 @@ module.exports = function(createFn, setup, dismantle) {
       )
     })
 
-    it('GET /Customer/count 200 - filtered name and age', done => {
+    it('GET /Customer/count 200 - filtered name and age', (done) => {
       request.get(
         {
           url: `${testUrl}/api/v1/Customer/count`,
-          json: true
+          json: true,
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -122,15 +122,15 @@ module.exports = function(createFn, setup, dismantle) {
       )
     })
 
-    updateMethods.forEach(method => {
-      it(`${method} /Customer/:id 200`, done => {
+    updateMethods.forEach((method) => {
+      it(`${method} /Customer/:id 200`, (done) => {
         request(
           {
             method,
             url: `${testUrl}/api/v1/Customer/${customers[1]._id}`,
             json: {
-              name: 'Johnny'
-            }
+              name: 'Johnny',
+            },
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -141,14 +141,14 @@ module.exports = function(createFn, setup, dismantle) {
         )
       })
 
-      it(`${method} /Customer/:id 404 - filtered name`, done => {
+      it(`${method} /Customer/:id 404 - filtered name`, (done) => {
         request(
           {
             method,
             url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
             json: {
-              name: 'Bobby'
-            }
+              name: 'Bobby',
+            },
           },
           (err, res, body) => {
             assert.ok(!err)
@@ -164,11 +164,11 @@ module.exports = function(createFn, setup, dismantle) {
       })
     })
 
-    it('DELETE /Customer/:id 200', done => {
+    it('DELETE /Customer/:id 200', (done) => {
       request.del(
         {
           url: `${testUrl}/api/v1/Customer/${customers[1]._id}`,
-          json: true
+          json: true,
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -183,11 +183,11 @@ module.exports = function(createFn, setup, dismantle) {
       )
     })
 
-    it('DELETE /Customer/:id 404 - filtered age', done => {
+    it('DELETE /Customer/:id 404 - filtered age', (done) => {
       request.del(
         {
           url: `${testUrl}/api/v1/Customer/${customers[2]._id}`,
-          json: true
+          json: true,
         },
         (err, res, body) => {
           assert.ok(!err)
@@ -203,11 +203,11 @@ module.exports = function(createFn, setup, dismantle) {
       )
     })
 
-    it('DELETE /Customer 200 - filtered name and age', done => {
+    it('DELETE /Customer 200 - filtered name and age', (done) => {
       request.del(
         {
           url: `${testUrl}/api/v1/Customer`,
-          json: true
+          json: true,
         },
         (err, res, body) => {
           assert.ok(!err)
