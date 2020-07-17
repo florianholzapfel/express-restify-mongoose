@@ -15,7 +15,7 @@
     "mongoose-detective": "~1.0.0",
     "moredots": "~1.0.1",
     "run-series": "~1.1.8",
-    "serialize-error": "^5.0.0",
+    "serialize-error": "^7.0.1",
     "weedout": "~1.0.1"
   },
   "peerDependencies": {
@@ -26,18 +26,18 @@
     "babel-preset-es2015": "^6.24.0",
     "babel-register": "^6.26.0",
     "body-parser": "^1.19.0",
-    "eslint": "^6.6.0",
-    "eslint-config-prettier": "^6.5.0",
-    "eslint-plugin-prettier": "^3.1.1",
+    "eslint": "^7.4.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.4",
     "express": "^4.17.1",
-    "in-publish": "^2.0.0",
+    "in-publish": "^2.0.1",
     "istanbul": "^0.4.5",
     "method-override": "^3.0.0",
-    "mocha": "^6.2.2",
-    "prettier": "^1.19.1",
-    "request": "^2.88.0",
-    "restify": "^8.4.0",
-    "sinon": "^7.5.0"
+    "mocha": "^8.0.1",
+    "prettier": "^2.0.5",
+    "request": "^2.88.2",
+    "restify": "^8.5.1",
+    "sinon": "^9.0.2"
   },
   "engines": {
     "node": ">=6"
