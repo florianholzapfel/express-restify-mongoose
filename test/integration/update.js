@@ -146,8 +146,8 @@ module.exports = function(createFn, setup, dismantle) {
               assert.equal(res.statusCode, 400)
               delete body.reason
               assert.deepEqual(body, {
-                kind: 'number',
-                message: 'Cast to number failed for value "not a number" at path "age"',
+                kind: 'Number',
+                message: 'Cast to Number failed for value "not a number" at path "age"',
                 name: 'CastError',
                 path: 'age',
                 stringValue: '"not a number"',

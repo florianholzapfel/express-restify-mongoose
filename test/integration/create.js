@@ -423,8 +423,8 @@ module.exports = function(createFn, setup, dismantle) {
             _message: 'Invoice validation failed',
             errors: {
               customer: {
-                kind: 'ObjectID',
-                message: 'Cast to ObjectID failed for value "invalid-id" at path "customer"',
+                kind: 'ObjectId',
+                message: 'Cast to ObjectId failed for value "invalid-id" at path "customer"',
                 name: 'CastError',
                 path: 'customer',
                 stringValue: '"invalid-id"',
