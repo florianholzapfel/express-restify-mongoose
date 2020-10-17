@@ -81,6 +81,7 @@
     "CHANGELOG.md",
     "LICENSE",
     "README.md",
+    "index.d.ts",
     "src/"
   ]
 }
