@@ -143,7 +143,8 @@ module.exports = function () {
     }
 
     if (opts.connect) {
-      mongoose.connect('mongodb://localhost/database').then(function () {
+      const uri = process.env.MONGO_URL || 'mongodb://localhost/database'
+      mongoose.connect(uri).then(function () {
         callback()
       })
     } else if (typeof callback === 'function') {
