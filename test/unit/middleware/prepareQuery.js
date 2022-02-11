@@ -206,6 +206,7 @@ describe('prepareQuery', () => {
       populate: [
         {
           path: 'foo',
+          strictPopulate: false,
         },
       ],
     })
@@ -328,6 +329,7 @@ describe('prepareQuery', () => {
         populate: [
           {
             path: 'foo',
+            strictPopulate: false,
           },
         ],
       })
@@ -349,9 +351,11 @@ describe('prepareQuery', () => {
         populate: [
           {
             path: 'foo',
+            strictPopulate: false,
           },
           {
             path: 'bar',
+            strictPopulate: false,
           },
         ],
       })
@@ -381,6 +385,7 @@ describe('prepareQuery', () => {
             select: 'baz',
             match: { qux: 'quux' },
             options: { sort: 'baz' },
+            strictPopulate: false,
           },
         ],
       })
@@ -404,6 +409,7 @@ describe('prepareQuery', () => {
           {
             path: 'foo',
             select: 'bar baz',
+            strictPopulate: false,
           },
         ],
       })
