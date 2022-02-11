@@ -18,7 +18,7 @@
     "weedout": "~1.0.1"
   },
   "peerDependencies": {
-    "mongoose": "^6.2.1"
+    "mongoose": "6.x"
   },
   "description": "Easily create a flexible REST interface for mongoose models",
   "devDependencies": {
