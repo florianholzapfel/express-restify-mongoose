@@ -171,14 +171,8 @@ module.exports = function (createFn, setup, dismantle) {
               assert.ok(!err)
               assert.equal(res.statusCode, 400)
               assert.ok(Object.keys(body).length === 5 || Object.keys(body).length === 6 || Object.keys(body).length === 8)
-              assert.equal(body.name, 'MongoError')
+              assert.equal(body.name, 'MongoServerError')
               // Remove extra whitespace and allow code 11001 for MongoDB < 3
-              assert.ok(
-                body.errmsg
-                  .replace(/\s+/g, ' ')
-                  .replace('exception: ', '')
-                  .match(/E11000 duplicate key error (?:index|collection): database.customers(\.\$| index: )name_1 dup key: { (?:name|): "John" }/) !== null
-              )
               assert.ok(
                 body.message
                   .replace(/\s+/g, ' ')
@@ -659,14 +653,7 @@ module.exports = function (createFn, setup, dismantle) {
               assert.equal(res.statusCode, 400)
               // Remove extra whitespace, allow 6, 8, or 9 keys and code 11001 for MongoDB < 3
               assert.ok(Object.keys(body).length === 6 || Object.keys(body).length === 8 || Object.keys(body).length === 9)
-              assert.equal(body.name, 'MongoError')
-              assert.equal(body.driver, true)
-              assert.ok(
-                body.errmsg
-                  .replace(/\s+/g, ' ')
-                  .replace('exception: ', '')
-                  .match(/E11000 duplicate key error (?:index|collection): database.customers(?:\.\$| index: )name_1 dup key: { (?:name|): "John" }/) !== null
-              )
+              assert.equal(body.name, 'MongoServerError')
               assert.ok(
                 body.message
                   .replace(/\s+/g, ' ')
