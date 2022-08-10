@@ -103,7 +103,9 @@ All the following parameters (sort, skip, limit, query, populate, select and dis
 > When passing values as objects or arrays in URLs, they must be valid JSON.
 
 ### Sort
-Use 1 for ascending and -1 for descending order
+
+Use `1` for ascending and `-1` for descending order.
+
 ```
 GET /Customer?sort=name
 GET /Customer?sort=-name
