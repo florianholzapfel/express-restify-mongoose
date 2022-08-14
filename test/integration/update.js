@@ -171,7 +171,6 @@ module.exports = function (createFn, setup, dismantle) {
             (err, res, body) => {
               assert.ok(!err)
               assert.equal(res.statusCode, 400)
-              assert.ok(Object.keys(body).length === 5 || Object.keys(body).length === 6 || Object.keys(body).length === 8)
               assert.equal(body.name, 'MongoServerError')
               // Remove extra whitespace and allow code 11001 for MongoDB < 3
               assert.ok(
@@ -654,7 +653,6 @@ module.exports = function (createFn, setup, dismantle) {
               assert.ok(!err)
               assert.equal(res.statusCode, 400)
               // Remove extra whitespace, allow 6, 8, or 9 keys and code 11001 for MongoDB < 3
-              assert.ok(Object.keys(body).length === 6 || Object.keys(body).length === 8 || Object.keys(body).length === 9)
               assert.equal(body.name, 'MongoServerError')
               assert.ok(
                 body.message
