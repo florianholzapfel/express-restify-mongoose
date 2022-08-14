@@ -40,7 +40,7 @@ module.exports = function (options, excludedMap) {
         req.erm.result = options.filter ? options.filter.filterObject(req.erm.result, opts) : req.erm.result
       }
 
-      if (options.totalCountHeader && req.erm.totalCount !== 'undefined') {
+      if (options.totalCountHeader && typeof req.erm.totalCount === 'number') {
         res.header(typeof options.totalCountHeader === 'string' ? options.totalCountHeader : 'X-Total-Count', req.erm.totalCount)
       }
 
