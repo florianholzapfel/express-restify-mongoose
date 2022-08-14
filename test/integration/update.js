@@ -147,7 +147,7 @@ module.exports = function (createFn, setup, dismantle) {
               delete body.reason
               assert.deepEqual(body, {
                 kind: 'Number',
-                message: 'Cast to Number failed for value "not a number" at path "age"',
+                message: 'Cast to Number failed for value "not a number" (type string) at path "age"',
                 name: 'CastError',
                 path: 'age',
                 stringValue: '"not a number"',
@@ -622,7 +622,7 @@ module.exports = function (createFn, setup, dismantle) {
               assert.deepEqual(body, {
                 name: 'ValidationError',
                 _message: 'Customer validation failed',
-                message: 'Customer validation failed: age: Cast to Number failed for value "not a number" at path "age"',
+                message: 'Customer validation failed: age: Cast to Number failed for value "not a number" (type string) at path "age"',
                 errors: {
                   age: {
                     kind: 'Number',
