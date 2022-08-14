@@ -943,6 +943,7 @@ module.exports = function (createFn, setup, dismantle) {
             path: 'name',
             stringValue: '"{}"',
             value: {},
+            valueType: 'Object',
           })
           done()
         }

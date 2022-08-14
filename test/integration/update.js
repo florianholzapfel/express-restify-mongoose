@@ -152,6 +152,7 @@ module.exports = function (createFn, setup, dismantle) {
                 path: 'age',
                 stringValue: '"not a number"',
                 value: 'not a number',
+                valueType: 'string',
               })
               done()
             }
@@ -626,11 +627,12 @@ module.exports = function (createFn, setup, dismantle) {
                 errors: {
                   age: {
                     kind: 'Number',
-                    message: 'Cast to Number failed for value "not a number" at path "age"',
+                    message: 'Cast to Number failed for value "not a number" (type string) at path "age"',
                     name: 'CastError',
                     path: 'age',
                     stringValue: '"not a number"',
                     value: 'not a number',
+                    valueType: 'string',
                   },
                 },
               })
