@@ -39,7 +39,7 @@
     "sinon": "^9.0.2"
   },
   "engines": {
-    "node": ">=6"
+    "node": ">=14"
   },
   "homepage": "http://florianholzapfel.github.io/express-restify-mongoose/",
   "keywords": [
