@@ -5,11 +5,6 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const util = require('util')
 
-mongoose.set('useNewUrlParser', true)
-mongoose.set('useFindAndModify', false)
-mongoose.set('useCreateIndex', true)
-mongoose.set('useUnifiedTopology', true)
-
 module.exports = function () {
   const ProductSchema = new Schema({
     name: { type: String, required: true },

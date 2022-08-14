@@ -70,6 +70,14 @@ module.exports = function (options) {
       } else if (!Array.isArray(queryOptions.populate)) {
         queryOptions.populate = [queryOptions.populate]
       }
+
+      // Configure populate query to not use strict populate to maintain
+      // behavior from Mongoose previous to v6 (unless already configured).
+      queryOptions.populate = queryOptions.populate.map((pop) => {
+        if (pop.strictPopulate !== undefined) return pop
+        pop.strictPopulate = false
+        return pop
+      })
     }
 
     return queryOptions
