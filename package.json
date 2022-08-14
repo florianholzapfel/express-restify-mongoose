@@ -73,8 +73,7 @@
     "test-restify": "mocha -R spec ./test/restify.js --timeout 10s",
     "test-cov-unit": "istanbul cover node_modules/mocha/bin/_mocha -- --require babel-register -R spec ./test/unit.js",
     "test-cov-express": "istanbul cover node_modules/mocha/bin/_mocha -- --require babel-register -R spec ./test/express.js --timeout 10s",
-    "test-cov-restify": "istanbul cover node_modules/mocha/bin/_mocha -- --require babel-register -R spec ./test/restify.js --timeout 10s",
-    "report-coverage": "cat ./coverage/lcov.info | coveralls"
+    "test-cov-restify": "istanbul cover node_modules/mocha/bin/_mocha -- --require babel-register -R spec ./test/restify.js --timeout 10s"
   },
   "types": "./index.d.ts",
   "files": [

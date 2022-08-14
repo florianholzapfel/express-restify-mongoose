@@ -5,7 +5,6 @@ Easily create a flexible REST interface for mongoose models.
 [![Build Status](https://github.com/florianholzapfel/express-restify-mongoose/actions/workflows/node.js.yml/badge.svg)](https://github.com/florianholzapfel/express-restify-mongoose/actions/workflows/node.js.yml)
 [](https://sonarcloud.io/project/overview?id=florianholzapfel_express-restify-mongoose)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=florianholzapfel_express-restify-mongoose&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=florianholzapfel_express-restify-mongoose)
-[![Coverage Status](https://coveralls.io/repos/florianholzapfel/express-restify-mongoose/badge.svg?branch=master&service=github)](https://coveralls.io/github/florianholzapfel/express-restify-mongoose?branch=master)
 [![npm version](https://badge.fury.io/js/express-restify-mongoose.svg)](https://badge.fury.io/js/express-restify-mongoose)
 
 ## Getting started

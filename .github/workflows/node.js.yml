@@ -31,5 +31,3 @@ jobs:
       - run: npm i mongoose@6.x
       - run: npm run lint
       - run: npm run test-ci
-      - run: npm install coveralls@~2.11.0
-      - run: npm run report-coverage
