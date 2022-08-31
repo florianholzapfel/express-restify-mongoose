@@ -424,19 +424,21 @@ module.exports = function (createFn, setup, dismantle) {
             errors: {
               customer: {
                 kind: 'ObjectId',
-                message: 'Cast to ObjectId failed for value "invalid-id" at path "customer"',
+                message: 'Cast to ObjectId failed for value "invalid-id" (type string) at path "customer" because of "BSONTypeError"',
                 name: 'CastError',
                 path: 'customer',
                 stringValue: '"invalid-id"',
                 value: 'invalid-id',
+                valueType: 'string',
               },
-              products: {
-                kind: 'Array',
-                message: 'Cast to Array failed for value "[ \'invalid-id\', \'invalid-id\' ]" at path "products"',
+              'products.0': {
+                kind: '[ObjectId]',
+                message: 'Cast to [ObjectId] failed for value "[ \'invalid-id\', \'invalid-id\' ]" (type string) at path "products.0" because of "CastError"',
                 name: 'CastError',
-                path: 'products',
+                path: 'products.0',
                 stringValue: "\"[ 'invalid-id', 'invalid-id' ]\"",
-                value: ['invalid-id', 'invalid-id'],
+                value: "[ 'invalid-id', 'invalid-id' ]",
+                valueType: 'string',
               },
             },
           })

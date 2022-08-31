@@ -938,11 +938,12 @@ module.exports = function (createFn, setup, dismantle) {
           delete body.reason
           assert.deepEqual(body, {
             kind: 'string',
-            message: 'Cast to string failed for value "{}" at path "name" for model "Customer"',
+            message: 'Cast to string failed for value "{}" (type Object) at path "name" for model "Customer"',
             name: 'CastError',
             path: 'name',
             stringValue: '"{}"',
             value: {},
+            valueType: 'Object',
           })
           done()
         }
