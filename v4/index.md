@@ -359,7 +359,7 @@ new Schema({
 #### lean
 <span class="label label-primary" title="type">boolean</span><span class="label label-success" title="default">true</span>
 
-Whether or not mongoose should use `.lean()` to convert results to plain old JavaScript objects. This is bad for performance, but allows returning virtuals, getters and setters.
+Whether or not mongoose should use `.lean()` to convert results to plain old JavaScript objects. Setting this to `false` allows returning virtuals, getters and setters but may decrease performance.
 
 #### findOneAndUpdate
 <span class="label label-primary" title="type">boolean</span><span class="label label-success" title="default">true</span>
