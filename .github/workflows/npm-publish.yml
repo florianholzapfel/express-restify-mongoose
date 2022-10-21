@@ -15,8 +15,11 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-      - run: npm ci
-      - run: npm test
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.6.0
+      - run: npm i mongoose@6.x
+      - run: npm run lint
+      - run: npm run test-ci
 
   publish-npm:
     needs: build
