@@ -1,6 +1,11 @@
 Changelog
 =========
 
+### 7.0.0
+> **This release requires mongoose 6.x**
+
+* updated mongoose to version 6.x
+
 ### 6.0.0
 > **This release requires mongoose ~5.8**
 
