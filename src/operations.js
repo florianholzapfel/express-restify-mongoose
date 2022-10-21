@@ -59,7 +59,7 @@ module.exports = function (model, options, excludedMap) {
     const contextModel = (req.erm && req.erm.model) || model
 
     options.contextFilter(contextModel, req, (filteredContext) => {
-      buildQuery(filteredContext.count(), req.erm.query).then((count) => {
+      buildQuery(filteredContext.countDocuments(), req.erm.query).then((count) => {
         req.erm.result = { count: count }
         req.erm.statusCode = 200
 
