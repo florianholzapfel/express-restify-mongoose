@@ -5,9 +5,7 @@
     "name": "Florian Holzapfel"
   },
   "dependencies": {
-    "ensure-array": "~1.0.0",
     "is-coordinates": "~2.0.0",
-    "lodash.defaults": "~4.2.0",
     "lodash.get": "~4.4.2",
     "lodash.has": "~4.5.2",
     "lodash.isplainobject": "~4.0.6",
@@ -22,10 +20,11 @@
   },
   "description": "Easily create a flexible REST interface for mongoose models",
   "devDependencies": {
+    "@types/express": "^4.17.14",
+    "@typescript-eslint/eslint-plugin": "^5.40.0",
+    "@typescript-eslint/parser": "^5.40.0",
     "body-parser": "^1.19.0",
-    "eslint": "^7.4.0",
-    "eslint-config-prettier": "^6.11.0",
-    "eslint-plugin-prettier": "^3.1.4",
+    "eslint": "^8.25.0",
     "express": "^4.17.1",
     "in-publish": "^2.0.1",
     "method-override": "^3.0.0",
@@ -33,7 +32,9 @@
     "prettier": "^2.0.5",
     "request": "^2.88.2",
     "restify": "^8.5.1",
-    "sinon": "^9.0.2"
+    "sinon": "^9.0.2",
+    "tsup": "^6.3.0",
+    "typescript": "^4.8.4"
   },
   "engines": {
     "node": ">=14"
@@ -59,7 +60,7 @@
     "url": "https://github.com/florianholzapfel/express-restify-mongoose/issues"
   },
   "scripts": {
-    "lint": "eslint . --ext .js",
+    "lint": "eslint . --ext .ts",
     "prepublish": "in-publish && npm test || not-in-publish",
     "pretest": "npm run lint",
     "test": "npm run test-unit && npm run test-filter && npm run test-express && npm run test-restify",
@@ -67,7 +68,8 @@
     "test-unit": "mocha -R spec ./test/unit.js",
     "test-filter": "mocha -R spec ./test/integration/resource_filter.js --timeout 10s",
     "test-express": "mocha -R spec ./test/express.js --timeout 10s",
-    "test-restify": "mocha -R spec ./test/restify.js --timeout 10s"
+    "test-restify": "mocha -R spec ./test/restify.js --timeout 10s",
+    "tsc": "tsc --noEmit"
   },
   "types": "./index.d.ts",
   "files": [
