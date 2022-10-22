@@ -29,18 +29,16 @@ export function getFilterAndFindByIdHandler(
         .lean(false)
         .read(options.readPreference || "p")
         .exec()
-        .then(
-          (doc) => {
-            if (!doc) {
-              return errorHandler(new Error(STATUS_CODES[404]), req, res, next);
-            }
+        .then((doc) => {
+          if (!doc) {
+            return errorHandler(new Error(STATUS_CODES[404]), req, res, next);
+          }
 
-            req.erm.document = doc;
+          req.erm.document = doc;
 
-            next();
-          },
-          (err) => errorHandler(err, req, res, next)
-        );
+          next();
+        })
+        .catch((err: Error) => errorHandler(err, req, res, next));
     });
   };
 

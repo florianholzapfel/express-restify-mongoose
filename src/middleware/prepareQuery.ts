@@ -25,7 +25,10 @@ export function getPrepareQueryHandler(
     return value;
   }
 
-  function parseQueryOptions(queryOptions) {
+  function parseQueryOptions(queryOptions: {
+    populate?: string | { path: string; select?: string }[];
+    select?: string | Record<string, unknown>;
+  }) {
     if (queryOptions.select && typeof queryOptions.select === "string") {
       const select = queryOptions.select.split(",");
       queryOptions.select = {};

@@ -1,9 +1,7 @@
 'use strict'
 
-const defaults = require('lodash.defaults')
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
-const util = require('util')
 
 module.exports = function () {
   const ProductSchema = new Schema({
@@ -109,9 +107,10 @@ module.exports = function () {
       opts = {}
     }
 
-    defaults(opts, {
+    opts = {
       connect: true,
-    })
+      ...opts,
+    };
 
     if (!mongoose.models.Customer) {
       mongoose.model('Customer', CustomerSchema)

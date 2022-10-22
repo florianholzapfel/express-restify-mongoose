@@ -1,8 +1,8 @@
-import { RequestHandler } from "express";
+import { deepKeys } from "dot-prop";
+import { Request, RequestHandler } from "express";
 import { STATUS_CODES } from "http";
 import isPlainObject from "lodash.isplainobject";
 import mongoose from "mongoose";
-import moredots from "moredots";
 import { getBuildQuery } from "./buildQuery";
 import { getErrorHandler } from "./errorHandler";
 import { ExcludedMap, Options } from "./express-restify-mongoose";
@@ -19,20 +19,22 @@ export function operations(
     | "limit"
     | "onError"
     | "readPreference"
+    | "runValidators"
     | "totalCountHeader"
+    | "upsert"
   >,
   excludedMap: ExcludedMap
 ) {
   const buildQuery = getBuildQuery(options);
   const errorHandler = getErrorHandler(options);
 
-  function findById(filteredContext, id) {
+  function findById(filteredContext, id: unknown) {
     return filteredContext.findOne().and({
       [options.idProperty]: id,
     });
   }
 
-  function isDistinctExcluded(req) {
+  function isDistinctExcluded(req: Request) {
     return options.filter
       .getExcluded({
         access: req.access,
@@ -172,33 +174,26 @@ export function operations(
       options.contextFilter(contextModel, req, (filteredContext) => {
         findById(filteredContext, req.params.id)
           .findOneAndRemove()
-          .then(
-            (item) => {
-              if (!item) {
-                return errorHandler(
-                  new Error(STATUS_CODES[404]),
-                  req,
-                  res,
-                  next
-                );
-              }
+          .then((item) => {
+            if (!item) {
+              return errorHandler(new Error(STATUS_CODES[404]), req, res, next);
+            }
 
-              req.erm.statusCode = 204;
+            req.erm.statusCode = 204;
 
-              next();
-            },
-            (err) => errorHandler(err, req, res, next)
-          );
+            next();
+          })
+          .catch((err: Error) => errorHandler(err, req, res, next));
       });
     } else {
-      req.erm.document.remove().then(
-        () => {
+      req.erm.document
+        .remove()
+        .then(() => {
           req.erm.statusCode = 204;
 
           next();
-        },
-        (err) => errorHandler(err, req, res, next)
-      );
+        })
+        .catch((err: Error) => errorHandler(err, req, res, next));
     }
   };
 
@@ -246,8 +241,8 @@ export function operations(
       delete req.body[contextModel.schema.options.versionKey];
     }
 
-    function depopulate(src) {
-      const dst = {};
+    function depopulate(src: unknown) {
+      const dst: Record<string, unknown> = {};
 
       for (const key in src) {
         const path = contextModel.schema.path(key);
@@ -279,7 +274,7 @@ export function operations(
       return dst;
     }
 
-    const cleanBody = moredots(depopulate(req.body));
+    const cleanBody = deepKeys(depopulate(req.body));
 
     if (options.findOneAndUpdate) {
       options.contextFilter(contextModel, req, (filteredContext) => {

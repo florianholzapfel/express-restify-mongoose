@@ -84,7 +84,7 @@ export type Options = {
   onError: ErrorRequestHandler;
   // TODO: figure out how this works
   modelFactory?: {
-    getModel: (req: Request) => unknown;
+    getModel: (req: Request) => mongoose.Model<unknown>;
   };
 };
 
@@ -135,11 +135,6 @@ export function serve(
     ...options,
   };
 
-  const ensureContentType = getEnsureContentTypeHandler(serveOptions);
-  const filterAndFindById = getFilterAndFindByIdHandler(serveOptions, model);
-  const prepareQuery = getPrepareQueryHandler(serveOptions);
-  const prepareOutput = getPrepareOutputHandler(serveOptions, excludedMap);
-
   model.schema.eachPath((name, path) => {
     if (path.options.access) {
       switch (path.options.access.toLowerCase()) {
@@ -167,6 +162,7 @@ export function serve(
   const ops = operations(model, serveOptions, excludedMap);
 
   let uriItem = `${serveOptions.prefix}${serveOptions.version}/${serveOptions.name}`;
+
   if (uriItem.indexOf("/:id") === -1) {
     uriItem += "/:id";
   }
@@ -193,6 +189,15 @@ export function serve(
         onError: serveOptions.onError,
       })
     : [];
+
+  const ensureContentType = getEnsureContentTypeHandler(serveOptions);
+  const filterAndFindById = getFilterAndFindByIdHandler(serveOptions, model);
+  const prepareQuery = getPrepareQueryHandler(serveOptions);
+  const prepareOutput = getPrepareOutputHandler(
+    serveOptions,
+    excludedMap,
+    filter
+  );
 
   app.get(
     uriItems,

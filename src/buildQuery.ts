@@ -1,9 +1,21 @@
+import mongoose from "mongoose";
 import { Options } from "./express-restify-mongoose";
 
 export function getBuildQuery(
   options: Pick<Options, "lean" | "limit" | "readPreference">
 ) {
-  return function buildQuery(query, queryOptions) {
+  return function buildQuery(
+    query: mongoose.Query<unknown, unknown>,
+    queryOptions: {
+      distinct: unknown;
+      limit: unknown;
+      populate: unknown;
+      query: unknown;
+      select: unknown;
+      skip: unknown;
+      sort: unknown;
+    }
+  ) {
     const promise = new Promise((resolve) => {
       if (!queryOptions) {
         return resolve(query);

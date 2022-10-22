@@ -2,6 +2,7 @@ import { RequestHandler } from "express";
 import runSeries from "run-series";
 import { getErrorHandler } from "../errorHandler";
 import { ExcludedMap, Options } from "../express-restify-mongoose";
+import { Filter } from "../resource_filter";
 
 export function getPrepareOutputHandler(
   options: Pick<
@@ -16,7 +17,8 @@ export function getPrepareOutputHandler(
     | "postProcess"
     | "totalCountHeader"
   >,
-  excludedMap: ExcludedMap
+  excludedMap: ExcludedMap,
+  filter: Filter
 ) {
   const errorHandler = getErrorHandler(options);
 
@@ -46,15 +48,11 @@ export function getPrepareOutputHandler(
 
       // TODO: this will, but should not, filter /count queries
       if (req.erm.result) {
-        const opts = {
+        req.erm.result = filter.filterObject(req.erm.result, {
           access: req.access,
           excludedMap: excludedMap,
-          populate: req.erm && req.erm.query ? req.erm.query.populate : null,
-        };
-
-        req.erm.result = options.filter
-          ? options.filter.filterObject(req.erm.result, opts)
-          : req.erm.result;
+          populate: req.erm.query.populate,
+        });
       }
 
       if (options.totalCountHeader && typeof req.erm.totalCount === "number") {
@@ -62,7 +60,7 @@ export function getPrepareOutputHandler(
           typeof options.totalCountHeader === "string"
             ? options.totalCountHeader
             : "X-Total-Count",
-          req.erm.totalCount
+          `${req.erm.totalCount}`
         );
       }
 
@@ -72,7 +70,7 @@ export function getPrepareOutputHandler(
         if (promise && typeof promise.then === "function") {
           promise
             .then(() => {
-              options.postProcess(req, res);
+              options.postProcess?.(req, res);
             })
             .catch((err) => errorHandler(err, req, res, next));
         } else {
