@@ -22,6 +22,8 @@
     "@typescript-eslint/eslint-plugin": "^5.40.0",
     "@typescript-eslint/parser": "^5.40.0",
     "body-parser": "^1.19.0",
+    "esbuild": "^0.15.12",
+    "esbuild-register": "^3.3.3",
     "eslint": "^8.25.0",
     "express": "^4.17.1",
     "in-publish": "^2.0.1",
