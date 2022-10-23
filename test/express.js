@@ -1,67 +1,67 @@
-'use strict'
+import bodyParser from "body-parser";
+import express from "express";
+import methodOverride from "method-override";
 
-const express = require('express')
-const bodyParser = require('body-parser')
-const methodOverride = require('method-override')
+import accessTests from "./integration/access";
+import contextFilterTests from "./integration/contextFilter";
+import createTests from "./integration/create";
+import deleteTests from "./integration/delete";
+import hookTests from "./integration/hooks";
+import middlewareTests from "./integration/middleware";
+import optionsTests from "./integration/options";
+import readTests from "./integration/read";
+import updateTests from "./integration/update";
+import virtualsTests from "./integration/virtuals";
 
-const createTests = require('./integration/create')
-const readTests = require('./integration/read')
-const updateTests = require('./integration/update')
-const deleteTests = require('./integration/delete')
-const accessTests = require('./integration/access')
-const contextFilterTests = require('./integration/contextFilter')
-const hookTests = require('./integration/hooks')
-const middlewareTests = require('./integration/middleware')
-const optionsTests = require('./integration/options')
-const virtualsTests = require('./integration/virtuals')
+import setup from "./integration/setup";
 
-const db = require('./integration/setup')()
+const db = setup();
 
 function Express() {
-  let app = express()
-  app.use(bodyParser.json())
-  app.use(bodyParser.urlencoded({ extended: true }))
-  app.use(methodOverride())
-  return app
+  let app = express();
+  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({ extended: true }));
+  app.use(methodOverride());
+  return app;
 }
 
 function setup(callback) {
   db.initialize((err) => {
     if (err) {
-      return callback(err)
+      return callback(err);
     }
 
-    db.reset(callback)
-  })
+    db.reset(callback);
+  });
 }
 
 function dismantle(app, server, callback) {
   db.close((err) => {
     if (err) {
-      return callback(err)
+      return callback(err);
     }
 
     if (app.close) {
-      return app.close(callback)
+      return app.close(callback);
     }
 
-    server.close(callback)
-  })
+    server.close(callback);
+  });
 }
 
 function runTests(createFn) {
   describe(createFn.name, () => {
-    createTests(createFn, setup, dismantle)
-    readTests(createFn, setup, dismantle)
-    updateTests(createFn, setup, dismantle)
-    deleteTests(createFn, setup, dismantle)
-    accessTests(createFn, setup, dismantle)
-    contextFilterTests(createFn, setup, dismantle)
-    hookTests(createFn, setup, dismantle)
-    middlewareTests(createFn, setup, dismantle)
-    optionsTests(createFn, setup, dismantle)
-    virtualsTests(createFn, setup, dismantle)
-  })
+    createTests(createFn, setup, dismantle);
+    readTests(createFn, setup, dismantle);
+    updateTests(createFn, setup, dismantle);
+    deleteTests(createFn, setup, dismantle);
+    accessTests(createFn, setup, dismantle);
+    contextFilterTests(createFn, setup, dismantle);
+    hookTests(createFn, setup, dismantle);
+    middlewareTests(createFn, setup, dismantle);
+    optionsTests(createFn, setup, dismantle);
+    virtualsTests(createFn, setup, dismantle);
+  });
 }
 
-runTests(Express)
+runTests(Express);

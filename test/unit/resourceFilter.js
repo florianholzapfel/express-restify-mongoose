@@ -1,189 +1,187 @@
-'use strict'
+import assert from "assert";
+import { Filter } from "../../src/resource_filter";
+import setup from "../integration/setup";
 
-const assert = require('assert')
+describe("resourceFilter", () => {
+  describe("getExcluded", () => {
+    const filter = new Filter({});
 
-describe('resourceFilter', () => {
-  const Filter = require('../../src/resource_filter')
-
-  describe('getExcluded', () => {
-    const filter = new Filter({})
-
-    describe('private', () => {
-      it('returns empty array', () => {
+    describe("private", () => {
+      it("returns empty array", () => {
         let excluded = filter.getExcluded({
-          access: 'private',
-        })
+          access: "private",
+        });
 
-        assert.equal(Array.isArray(excluded), true)
-        assert.equal(excluded.length, 0)
-      })
-    })
+        assert.equal(Array.isArray(excluded), true);
+        assert.equal(excluded.length, 0);
+      });
+    });
 
-    describe('protected', () => {
-      it('returns empty array', () => {
+    describe("protected", () => {
+      it("returns empty array", () => {
         let excluded = filter.getExcluded({
-          access: 'protected',
+          access: "protected",
           filteredKeys: {},
-        })
+        });
 
-        assert.equal(Array.isArray(excluded), true)
-        assert.equal(excluded.length, 0)
-      })
+        assert.equal(Array.isArray(excluded), true);
+        assert.equal(excluded.length, 0);
+      });
 
-      it('returns empty array', () => {
+      it("returns empty array", () => {
         let excluded = filter.getExcluded({
-          access: 'protected',
-        })
+          access: "protected",
+        });
 
-        assert.equal(Array.isArray(excluded), true)
-        assert.equal(excluded.length, 0)
-      })
+        assert.equal(Array.isArray(excluded), true);
+        assert.equal(excluded.length, 0);
+      });
 
-      it('returns array of private fields', () => {
+      it("returns array of private fields", () => {
         let excluded = filter.getExcluded({
-          access: 'protected',
+          access: "protected",
           filteredKeys: {
-            private: ['foo'],
-            protected: ['bar'],
+            private: ["foo"],
+            protected: ["bar"],
           },
-        })
+        });
 
-        assert.equal(Array.isArray(excluded), true)
-        assert.equal(excluded.length, 1)
-        assert.deepEqual(excluded, ['foo'])
-      })
+        assert.equal(Array.isArray(excluded), true);
+        assert.equal(excluded.length, 1);
+        assert.deepEqual(excluded, ["foo"]);
+      });
 
-      it('returns array of private fields', () => {
+      it("returns array of private fields", () => {
         let excluded = filter.getExcluded({
-          access: 'protected',
-          modelName: 'FooModel',
+          access: "protected",
+          modelName: "FooModel",
           excludedMap: {
             FooModel: {
-              private: ['foo'],
-              protected: ['bar'],
+              private: ["foo"],
+              protected: ["bar"],
             },
           },
-        })
+        });
 
-        assert.equal(Array.isArray(excluded), true)
-        assert.equal(excluded.length, 1)
-        assert.deepEqual(excluded, ['foo'])
-      })
-    })
+        assert.equal(Array.isArray(excluded), true);
+        assert.equal(excluded.length, 1);
+        assert.deepEqual(excluded, ["foo"]);
+      });
+    });
 
-    describe('public', () => {
-      it('returns empty array', () => {
+    describe("public", () => {
+      it("returns empty array", () => {
         let excluded = filter.getExcluded({
-          access: 'public',
+          access: "public",
           filteredKeys: {},
-        })
+        });
 
-        assert.equal(Array.isArray(excluded), true)
-        assert.equal(excluded.length, 0)
-      })
+        assert.equal(Array.isArray(excluded), true);
+        assert.equal(excluded.length, 0);
+      });
 
-      it('returns empty array', () => {
+      it("returns empty array", () => {
         let excluded = filter.getExcluded({
-          access: 'public',
-        })
+          access: "public",
+        });
 
-        assert.equal(Array.isArray(excluded), true)
-        assert.equal(excluded.length, 0)
-      })
+        assert.equal(Array.isArray(excluded), true);
+        assert.equal(excluded.length, 0);
+      });
 
-      it('returns array of private and protected fields', () => {
+      it("returns array of private and protected fields", () => {
         let excluded = filter.getExcluded({
-          access: 'public',
+          access: "public",
           filteredKeys: {
-            private: ['foo'],
-            protected: ['bar'],
+            private: ["foo"],
+            protected: ["bar"],
           },
-        })
+        });
 
-        assert.equal(Array.isArray(excluded), true)
-        assert.equal(excluded.length, 2)
-        assert.deepEqual(excluded, ['foo', 'bar'])
-      })
+        assert.equal(Array.isArray(excluded), true);
+        assert.equal(excluded.length, 2);
+        assert.deepEqual(excluded, ["foo", "bar"]);
+      });
 
-      it('returns array of private and protected fields', () => {
+      it("returns array of private and protected fields", () => {
         let excluded = filter.getExcluded({
-          access: 'public',
-          modelName: 'FooModel',
+          access: "public",
+          modelName: "FooModel",
           excludedMap: {
             FooModel: {
-              private: ['foo'],
-              protected: ['bar'],
+              private: ["foo"],
+              protected: ["bar"],
             },
           },
-        })
+        });
 
-        assert.equal(Array.isArray(excluded), true)
-        assert.equal(excluded.length, 2)
-        assert.deepEqual(excluded, ['foo', 'bar'])
-      })
-    })
-  })
+        assert.equal(Array.isArray(excluded), true);
+        assert.equal(excluded.length, 2);
+        assert.deepEqual(excluded, ["foo", "bar"]);
+      });
+    });
+  });
 
-  describe('filterItem', () => {
-    let filter = new Filter({})
+  describe("filterItem", () => {
+    let filter = new Filter({});
 
-    it('does nothing', () => {
-      let item = filter.filterItem()
+    it("does nothing", () => {
+      let item = filter.filterItem();
 
-      assert.equal(item, undefined)
-    })
+      assert.equal(item, undefined);
+    });
 
-    it('removes excluded keys from a document', () => {
+    it("removes excluded keys from a document", () => {
       let doc = {
         foo: {
           bar: {
-            baz: '3.14',
+            baz: "3.14",
           },
         },
-      }
+      };
 
-      filter.filterItem(doc, ['foo'])
+      filter.filterItem(doc, ["foo"]);
 
-      assert.deepEqual(doc, {})
-    })
+      assert.deepEqual(doc, {});
+    });
 
-    it('removes excluded keys from a document', () => {
+    it("removes excluded keys from a document", () => {
       let doc = {
         foo: {
           bar: {
-            baz: '3.14',
+            baz: "3.14",
           },
         },
-      }
+      };
 
-      filter.filterItem(doc, ['foo.bar.baz'])
+      filter.filterItem(doc, ["foo.bar.baz"]);
 
       assert.deepEqual(doc, {
         foo: {
           bar: {},
         },
-      })
-    })
+      });
+    });
 
-    it('removes excluded keys from an array of document', () => {
+    it("removes excluded keys from an array of document", () => {
       let docs = [
         {
           foo: {
             bar: {
-              baz: '3.14',
+              baz: "3.14",
             },
           },
         },
         {
           foo: {
             bar: {
-              baz: 'pi',
+              baz: "pi",
             },
           },
         },
-      ]
+      ];
 
-      filter.filterItem(docs, ['foo.bar.baz'])
+      filter.filterItem(docs, ["foo.bar.baz"]);
 
       assert.deepEqual(docs, [
         {
@@ -196,212 +194,212 @@ describe('resourceFilter', () => {
             bar: {},
           },
         },
-      ])
-    })
-  })
+      ]);
+    });
+  });
 
-  describe('filterPopulatedItem', () => {
-    const db = require('../integration/setup')()
+  describe("filterPopulatedItem", () => {
+    const db = setup();
 
     db.initialize({
       connect: false,
-    })
+    });
 
     let invoiceFilter = new Filter({
       model: db.models.Invoice,
-    })
+    });
 
     let customerFilter = new Filter({
       model: db.models.Customer,
       filteredKeys: {
-        private: ['name'],
+        private: ["name"],
       },
-    })
+    });
 
     let productFilter = new Filter({
       model: db.models.Product,
       filteredKeys: {
-        private: ['name'],
+        private: ["name"],
       },
-    })
+    });
 
-    it('does nothing', () => {
+    it("does nothing", () => {
       let item = invoiceFilter.filterPopulatedItem(null, {
         populate: [],
-      })
+      });
 
-      assert.equal(item, null)
-    })
+      assert.equal(item, null);
+    });
 
-    it('removes keys in populated document', () => {
+    it("removes keys in populated document", () => {
       let invoice = {
         customer: {
-          name: 'John',
+          name: "John",
         },
-        amount: '42',
-      }
+        amount: "42",
+      };
 
       invoiceFilter.filterPopulatedItem(invoice, {
         populate: [
           {
-            path: 'customer',
+            path: "customer",
           },
         ],
         excludedMap: {
           Customer: customerFilter.filteredKeys,
         },
-      })
+      });
 
       assert.deepEqual(invoice, {
         customer: {},
-        amount: '42',
-      })
-    })
+        amount: "42",
+      });
+    });
 
-    it('removes keys in array with populated document', () => {
+    it("removes keys in array with populated document", () => {
       let invoices = [
         {
           customer: {
-            name: 'John',
+            name: "John",
           },
-          amount: '42',
+          amount: "42",
         },
         {
           customer: {
-            name: 'Bob',
+            name: "Bob",
           },
-          amount: '3.14',
+          amount: "3.14",
         },
-      ]
+      ];
 
       invoiceFilter.filterPopulatedItem(invoices, {
         populate: [
           {
-            path: 'customer',
+            path: "customer",
           },
         ],
         excludedMap: {
           Customer: customerFilter.filteredKeys,
         },
-      })
+      });
 
       assert.deepEqual(invoices, [
         {
           customer: {},
-          amount: '42',
+          amount: "42",
         },
         {
           customer: {},
-          amount: '3.14',
+          amount: "3.14",
         },
-      ])
-    })
+      ]);
+    });
 
-    it('ignores undefined path', () => {
+    it("ignores undefined path", () => {
       let invoice = {
-        amount: '42',
-      }
+        amount: "42",
+      };
 
       invoiceFilter.filterPopulatedItem(invoice, {
         populate: [
           {
-            path: 'customer',
+            path: "customer",
           },
         ],
         excludedMap: {
           Customer: customerFilter.filteredKeys,
         },
-      })
+      });
 
       assert.deepEqual(invoice, {
-        amount: '42',
-      })
-    })
+        amount: "42",
+      });
+    });
 
-    it('skip when populate path is undefined', () => {
+    it("skip when populate path is undefined", () => {
       let invoice = {
         customer: {
-          name: 'John',
+          name: "John",
         },
-        amount: '42',
-      }
+        amount: "42",
+      };
 
       invoiceFilter.filterPopulatedItem(invoice, {
         populate: [{}],
         excludedMap: {
           Customer: customerFilter.filteredKeys,
         },
-      })
+      });
 
       assert.deepEqual(invoice, {
         customer: {
-          name: 'John',
+          name: "John",
         },
-        amount: '42',
-      })
-    })
+        amount: "42",
+      });
+    });
 
-    it('removes keys in populated document array', () => {
+    it("removes keys in populated document array", () => {
       let invoice = {
         products: [
           {
-            name: 'Squirt Gun',
+            name: "Squirt Gun",
           },
           {
-            name: 'Water Balloons',
+            name: "Water Balloons",
           },
         ],
-        amount: '42',
-      }
+        amount: "42",
+      };
 
       invoiceFilter.filterPopulatedItem(invoice, {
         populate: [
           {
-            path: 'products',
+            path: "products",
           },
         ],
         excludedMap: {
           Product: productFilter.filteredKeys,
         },
-      })
+      });
 
       assert.deepEqual(invoice, {
         products: [{}, {}],
-        amount: '42',
-      })
-    })
+        amount: "42",
+      });
+    });
 
-    it('removes keys in populated document in array', () => {
+    it("removes keys in populated document in array", () => {
       let customer = {
-        name: 'John',
+        name: "John",
         purchases: [
           {
             item: {
-              name: 'Squirt Gun',
+              name: "Squirt Gun",
             },
           },
         ],
-      }
+      };
 
       customerFilter.filterPopulatedItem(customer, {
         populate: [
           {
-            path: 'purchases.item',
+            path: "purchases.item",
           },
         ],
         excludedMap: {
           Product: productFilter.filteredKeys,
         },
-      })
+      });
 
       assert.deepEqual(customer, {
-        name: 'John',
+        name: "John",
         purchases: [
           {
             item: {},
           },
         ],
-      })
-    })
-  })
-})
+      });
+    });
+  });
+});
