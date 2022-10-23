@@ -116,11 +116,11 @@ const defaultOptions: Omit<Options, "contextFilter" | "outputFn" | "onError"> =
 export function serve(
   app: Application,
   model: mongoose.Model<unknown>,
-  options: Partial<Options>
+  options: Partial<Options> = {}
 ) {
   const serveOptions: Options = {
     ...defaultOptions,
-    name: options.name || model.modelName,
+    name: typeof options.name === "string" ? options.name : model.modelName,
     contextFilter: (model) => model,
     outputFn: getOutputFnHandler(
       typeof options.restify === "boolean"

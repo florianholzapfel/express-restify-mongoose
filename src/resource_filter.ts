@@ -5,28 +5,35 @@ import weedout from "weedout";
 import { Access, ExcludedMap, FilteredKeys } from "./express-restify-mongoose";
 
 export class Filter {
-  model: mongoose.Model<unknown>;
-  excludedMap: ExcludedMap;
+  model: mongoose.Model<unknown> | undefined;
   filteredKeys: FilteredKeys;
 
-  constructor(options: {
-    model: mongoose.Model<unknown>;
-    excludedMap: ExcludedMap;
-    filteredKeys: FilteredKeys;
+  constructor({
+    model,
+    excludedMap,
+    filteredKeys,
+  }: {
+    model?: mongoose.Model<unknown>;
+    excludedMap?: ExcludedMap;
+    filteredKeys?: Partial<FilteredKeys>;
   }) {
-    this.model = options.model;
-    this.excludedMap = {};
-    this.filteredKeys = options.filteredKeys;
+    this.model = model;
 
-    if (options.model.discriminators) {
-      for (const modelName in this.model.discriminators) {
-        if (options.excludedMap[modelName]) {
+    this.filteredKeys = {
+      private: [],
+      protected: [],
+      ...filteredKeys,
+    };
+
+    if (model?.discriminators && excludedMap) {
+      for (const modelName in model.discriminators) {
+        if (excludedMap[modelName]) {
           this.filteredKeys.private = this.filteredKeys.private.concat(
-            options.excludedMap[modelName].private
+            excludedMap[modelName].private
           );
 
           this.filteredKeys.protected = this.filteredKeys.protected.concat(
-            options.excludedMap[modelName].protected
+            excludedMap[modelName].protected
           );
         }
       }
@@ -38,21 +45,26 @@ export class Filter {
    */
   getExcluded({
     access,
-    modelName = this.model.modelName,
+    excludedMap,
+    filteredKeys,
+    modelName = this.model?.modelName,
   }: {
     access: Access;
+    excludedMap: ExcludedMap;
+    filteredKeys?: FilteredKeys;
     modelName?: string;
   }) {
     if (access === "private") {
       return [];
     }
 
-    let entry = this.excludedMap[modelName];
+    let entry = modelName ? excludedMap[modelName] : undefined;
 
     if (!entry) {
       entry = {
-        private: this.filteredKeys.private || [],
-        protected: this.filteredKeys.protected || [],
+        private: [],
+        protected: [],
+        ...filteredKeys,
       };
     }
 
@@ -63,7 +75,7 @@ export class Filter {
 
   isExcluded(
     field: string,
-    opts: {
+    options: {
       access: Access;
       excludedMap: ExcludedMap;
       modelName: string;
@@ -73,30 +85,30 @@ export class Filter {
       return false;
     }
 
-    return this.getExcluded(opts).includes(field);
+    return this.getExcluded(options).includes(field);
   }
 
   /**
    * Removes excluded keys from a document.
    */
-  filterItem<T extends Record<string, unknown> | Record<string, unknown>[]>(
-    item: T,
-    excluded: string[]
-  ): T {
+  filterItem<
+    T extends undefined | Record<string, unknown> | Record<string, unknown>[]
+  >(item: T, excluded?: string[]): T {
     if (Array.isArray(item)) {
       return item.map((i) => this.filterItem(i, excluded)) as T;
     }
 
-    if (typeof item.toObject === "function") {
-      item = item.toObject();
-    }
+    if (item && excluded) {
+      if (typeof item.toObject === "function") {
+        item = item.toObject();
+      }
 
-    for (let i = 0; i < excluded.length; i++) {
-      if (excluded[i].includes(".")) {
-        weedout(item, excluded[i]);
-      } else {
-        // @ts-expect-error item should be immutable
-        delete item[excluded[i]];
+      for (let i = 0; i < excluded.length; i++) {
+        if (excluded[i].includes(".")) {
+          weedout(item, excluded[i]);
+        } else {
+          delete item[excluded[i]];
+        }
       }
     }
 
@@ -110,47 +122,48 @@ export class Filter {
     T extends Record<string, unknown> | Record<string, unknown>[]
   >(
     item: T,
-    options: {
+    {
+      access,
+      excludedMap,
+      populate,
+    }: {
       access: Access;
       excludedMap: ExcludedMap;
       populate: { path: string }[];
     }
   ): T {
     if (Array.isArray(item)) {
-      return item.map((i) => this.filterPopulatedItem(i, options)) as T;
+      return item.map((i) =>
+        this.filterPopulatedItem(i, {
+          access,
+          excludedMap,
+          populate,
+        })
+      ) as T;
     }
 
-    for (let i = 0; i < options.populate.length; i++) {
-      if (!options.populate[i].path) {
+    for (let i = 0; i < populate.length; i++) {
+      if (!populate[i].path) {
         continue;
       }
 
       const excluded = this.getExcluded({
-        access: options.access,
-        modelName: detective(this.model, options.populate[i].path),
+        access: access,
+        excludedMap: excludedMap,
+        modelName: detective(this.model, populate[i].path),
       });
 
-      if (hasProperty(item, options.populate[i].path)) {
-        this.filterItem(
-          getProperty(item, options.populate[i].path) as T,
-          excluded
-        );
+      if (hasProperty(item, populate[i].path)) {
+        this.filterItem(getProperty(item, populate[i].path) as T, excluded);
       } else {
-        const pathToArray = options.populate[i].path
-          .split(".")
-          .slice(0, -1)
-          .join(".");
+        const pathToArray = populate[i].path.split(".").slice(0, -1).join(".");
 
         if (hasProperty(item, pathToArray)) {
           const array = getProperty(item, pathToArray);
-          const pathToObject = options.populate[i].path
-            .split(".")
-            .slice(-1)
-            .join(".");
+          const pathToObject = populate[i].path.split(".").slice(-1).join(".");
 
           if (Array.isArray(array)) {
             this.filterItem(
-              // @ts-expect-error who knows
               array.map((element) => getProperty(element, pathToObject)),
               excluded
             );
@@ -177,7 +190,10 @@ export class Filter {
       populate: { path: string }[] | undefined;
     }
   ) {
-    const filtered = this.filterItem(resource, this.getExcluded({ access }));
+    const filtered = this.filterItem(
+      resource,
+      this.getExcluded({ access, excludedMap })
+    );
 
     if (populate) {
       this.filterPopulatedItem(filtered, {

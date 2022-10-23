@@ -13,6 +13,12 @@ export function getAccessHandler(
         return errorHandler(err, req, res, next);
       }
 
+      if (!["public", "private", "protected"].includes(access)) {
+        throw new Error(
+          'Unsupported access, must be "public", "private" or "protected"'
+        );
+      }
+
       req.access = access;
 
       next();
