@@ -1,7 +1,7 @@
 import assert from "assert";
 import { Filter } from "../../src/resource_filter";
 
-import setup from "../integration/setup";
+import setupDb from "../integration/setup";
 
 describe("resourceFilter", () => {
   describe("getExcluded", () => {
@@ -200,7 +200,7 @@ describe("resourceFilter", () => {
   });
 
   describe("filterPopulatedItem", () => {
-    const db = setup();
+    const db = setupDb();
 
     db.initialize({
       connect: false,

@@ -11,9 +11,9 @@ import readTests from "./integration/read";
 import updateTests from "./integration/update";
 import virtualsTests from "./integration/virtuals";
 
-import setup from "./integration/setup";
+import setupDb from "./integration/setup";
 
-const db = setup();
+const db = setupDb();
 
 function Restify() {
   let app = restify.createServer();

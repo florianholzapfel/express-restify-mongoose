@@ -2,9 +2,9 @@ import assert from "assert";
 import mongoose from "mongoose";
 import { Filter } from "../../src/resource_filter";
 
-import setup from "./setup";
+import setupDb from "./setup";
 
-const db = setup();
+const db = setupDb();
 
 describe("Resource filter", () => {
   let customerFilter;
