@@ -8,32 +8,28 @@ export class Filter {
   model: mongoose.Model<unknown> | undefined;
   filteredKeys: FilteredKeys;
 
-  constructor({
-    model,
-    excludedMap,
-    filteredKeys,
-  }: {
+  constructor(options: {
     model?: mongoose.Model<unknown>;
     excludedMap?: ExcludedMap;
     filteredKeys?: Partial<FilteredKeys>;
   }) {
-    this.model = model;
+    this.model = options.model;
 
     this.filteredKeys = {
       private: [],
       protected: [],
-      ...filteredKeys,
+      ...options.filteredKeys,
     };
 
-    if (model?.discriminators && excludedMap) {
-      for (const modelName in model.discriminators) {
-        if (excludedMap[modelName]) {
+    if (options.model?.discriminators && options.excludedMap) {
+      for (const modelName in options.model.discriminators) {
+        if (options.excludedMap[modelName]) {
           this.filteredKeys.private = this.filteredKeys.private.concat(
-            excludedMap[modelName].private
+            options.excludedMap[modelName].private
           );
 
           this.filteredKeys.protected = this.filteredKeys.protected.concat(
-            excludedMap[modelName].protected
+            options.excludedMap[modelName].protected
           );
         }
       }
@@ -43,32 +39,30 @@ export class Filter {
   /**
    * Gets excluded keys for a given model and access.
    */
-  getExcluded({
-    access,
-    excludedMap,
-    filteredKeys,
-    modelName = this.model?.modelName,
-  }: {
+  getExcluded(options: {
     access: Access;
-    excludedMap: ExcludedMap;
+    excludedMap?: ExcludedMap;
     filteredKeys?: FilteredKeys;
     modelName?: string;
   }) {
-    if (access === "private") {
+    if (options.access === "private") {
       return [];
     }
 
-    let entry = modelName ? excludedMap[modelName] : undefined;
+    let entry =
+      options.excludedMap && options.modelName
+        ? options.excludedMap[options.modelName]
+        : undefined;
 
     if (!entry) {
       entry = {
         private: [],
         protected: [],
-        ...filteredKeys,
+        ...options.filteredKeys,
       };
     }
 
-    return access === "protected"
+    return options.access === "protected"
       ? entry.private
       : entry.private.concat(entry.protected);
   }
@@ -122,45 +116,44 @@ export class Filter {
     T extends Record<string, unknown> | Record<string, unknown>[]
   >(
     item: T,
-    {
-      access,
-      excludedMap,
-      populate,
-    }: {
+    options: {
       access: Access;
       excludedMap: ExcludedMap;
       populate: { path: string }[];
     }
   ): T {
     if (Array.isArray(item)) {
-      return item.map((i) =>
-        this.filterPopulatedItem(i, {
-          access,
-          excludedMap,
-          populate,
-        })
-      ) as T;
+      return item.map((i) => this.filterPopulatedItem(i, options)) as T;
     }
 
-    for (let i = 0; i < populate.length; i++) {
-      if (!populate[i].path) {
+    for (let i = 0; i < options.populate.length; i++) {
+      if (!options.populate[i].path) {
         continue;
       }
 
       const excluded = this.getExcluded({
-        access: access,
-        excludedMap: excludedMap,
-        modelName: detective(this.model, populate[i].path),
+        access: options.access,
+        excludedMap: options.excludedMap,
+        modelName: detective(this.model, options.populate[i].path),
       });
 
-      if (hasProperty(item, populate[i].path)) {
-        this.filterItem(getProperty(item, populate[i].path) as T, excluded);
+      if (hasProperty(item, options.populate[i].path)) {
+        this.filterItem(
+          getProperty(item, options.populate[i].path) as T,
+          excluded
+        );
       } else {
-        const pathToArray = populate[i].path.split(".").slice(0, -1).join(".");
+        const pathToArray = options.populate[i].path
+          .split(".")
+          .slice(0, -1)
+          .join(".");
 
         if (hasProperty(item, pathToArray)) {
           const array = getProperty(item, pathToArray);
-          const pathToObject = populate[i].path.split(".").slice(-1).join(".");
+          const pathToObject = options.populate[i].path
+            .split(".")
+            .slice(-1)
+            .join(".");
 
           if (Array.isArray(array)) {
             this.filterItem(
@@ -180,11 +173,7 @@ export class Filter {
    */
   filterObject(
     resource: Record<string, unknown> | Record<string, unknown>[],
-    {
-      access,
-      excludedMap,
-      populate,
-    }: {
+    options?: {
       access: Access;
       excludedMap: ExcludedMap;
       populate: { path: string }[] | undefined;
@@ -192,14 +181,19 @@ export class Filter {
   ) {
     const filtered = this.filterItem(
       resource,
-      this.getExcluded({ access, excludedMap })
+      this.getExcluded({
+        access: options?.access || "public",
+        excludedMap: options?.excludedMap,
+        filteredKeys: this.filteredKeys,
+        modelName: this.model?.modelName,
+      })
     );
 
-    if (populate) {
+    if (options?.populate) {
       this.filterPopulatedItem(filtered, {
-        access,
-        excludedMap,
-        populate,
+        access: options.access,
+        excludedMap: options.excludedMap,
+        populate: options.populate,
       });
     }
 

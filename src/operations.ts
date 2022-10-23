@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 import { getBuildQuery } from "./buildQuery";
 import { getErrorHandler } from "./errorHandler";
 import { ExcludedMap, Options } from "./express-restify-mongoose";
+import { Filter } from "./resource_filter";
 
 export function operations(
   model: mongoose.Model<unknown>,
@@ -23,7 +24,8 @@ export function operations(
     | "totalCountHeader"
     | "upsert"
   >,
-  excludedMap: ExcludedMap
+  excludedMap: ExcludedMap,
+  filter: Filter
 ) {
   const buildQuery = getBuildQuery(options);
   const errorHandler = getErrorHandler(options);
@@ -35,7 +37,7 @@ export function operations(
   }
 
   function isDistinctExcluded(req: Request) {
-    return options.filter
+    return filter
       .getExcluded({
         access: req.access,
         excludedMap: excludedMap,
@@ -200,7 +202,7 @@ export function operations(
   const createObject: RequestHandler = function (req, res, next) {
     const contextModel = (req.erm && req.erm.model) || model;
 
-    req.body = options.filter.filterObject(req.body || {}, {
+    req.body = filter.filterObject(req.body || {}, {
       access: req.access,
       populate: req.erm.query.populate,
     });
@@ -230,7 +232,7 @@ export function operations(
   const modifyObject: RequestHandler = function (req, res, next) {
     const contextModel = (req.erm && req.erm.model) || model;
 
-    req.body = options.filter.filterObject(req.body || {}, {
+    req.body = filter.filterObject(req.body || {}, {
       access: req.access,
       populate: req.erm.query.populate,
     });
