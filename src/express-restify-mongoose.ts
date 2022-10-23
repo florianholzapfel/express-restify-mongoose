@@ -82,7 +82,6 @@ export type Options = {
   outputFn: OutputFn;
   postProcess?: (req: Request, res: Response) => void;
   onError: ErrorRequestHandler;
-  // TODO: figure out how this works
   modelFactory?: {
     getModel: (req: Request) => mongoose.Model<unknown>;
   };
