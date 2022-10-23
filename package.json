@@ -49,7 +49,6 @@
   "license": "MIT",
   "main": "./src/express-restify-mongoose",
   "name": "express-restify-mongoose",
-  "readmeFilename": "README.md",
   "repository": {
     "type": "git",
     "url": "git://github.com/florianholzapfel/express-restify-mongoose.git"
@@ -58,6 +57,7 @@
     "url": "https://github.com/florianholzapfel/express-restify-mongoose/issues"
   },
   "scripts": {
+    "build": "tsup",
     "lint": "eslint . --ext .ts",
     "prepublish": "in-publish && npm test || not-in-publish",
     "pretest": "npm run lint",
@@ -69,12 +69,11 @@
     "test-restify": "mocha -R spec ./test/restify.js --timeout 10s",
     "tsc": "tsc --noEmit"
   },
-  "types": "./index.d.ts",
   "files": [
     "CHANGELOG.md",
     "LICENSE",
     "README.md",
-    "index.d.ts",
+    "dist/",
     "src/"
   ]
 }
