@@ -3,8 +3,10 @@ import mongoose from "mongoose";
 import request from "request";
 import { serve } from "../../src/express-restify-mongoose";
 
+import setupDb from "./setup";
+
 module.exports = function (createFn, setup, dismantle) {
-  const db = require("./setup")();
+  const db = setupDb();
 
   let testPort = 30023;
   let testUrl = `http://localhost:${testPort}`;

@@ -1,5 +1,6 @@
 import assert from "assert";
 import { Filter } from "../../src/resource_filter";
+
 import setup from "../integration/setup";
 
 describe("resourceFilter", () => {

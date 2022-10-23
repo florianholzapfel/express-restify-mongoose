@@ -1,7 +1,10 @@
-const Filter = require("../../src/resource_filter");
-const db = require("./setup")();
 import assert from "assert";
-const ObjectId = require("mongoose").Types.ObjectId;
+import mongoose from "mongoose";
+import { Filter } from "../../src/resource_filter";
+
+import setup from "./setup";
+
+const db = setup();
 
 describe("Resource filter", () => {
   let customerFilter;
@@ -303,15 +306,15 @@ describe("Resource filter", () => {
         name: "John",
         purchases: [
           {
-            item: new ObjectId(),
+            item: new mongoose.Types.ObjectId(),
             number: 2,
           },
           {
-            item: new ObjectId(),
+            item: new mongoose.Types.ObjectId(),
             number: 100,
           },
           {
-            item: new ObjectId(),
+            item: new mongoose.Types.ObjectId(),
             number: 1,
           },
         ],

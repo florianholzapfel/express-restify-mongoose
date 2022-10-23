@@ -2,8 +2,10 @@ import assert from "assert";
 import request from "request";
 import { serve } from "../../src/express-restify-mongoose";
 
+import setupDb from "./setup";
+
 module.exports = function (createFn, setup, dismantle) {
-  const db = require("./setup")();
+  const db = setupDb();
 
   const testPort = 30023;
   const testUrl = `http://localhost:${testPort}`;
