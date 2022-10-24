@@ -158,7 +158,7 @@ export function serve(
 
   excludedMap[model.modelName] = filter.filteredKeys;
 
-  const ops = operations(model, serveOptions, excludedMap);
+  const ops = operations(model, serveOptions, excludedMap, filter);
 
   let uriItem = `${serveOptions.prefix}${serveOptions.version}/${serveOptions.name}`;
 
