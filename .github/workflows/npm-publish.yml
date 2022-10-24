@@ -19,7 +19,10 @@ jobs:
         uses: supercharge/mongodb-github-action@1.6.0
       - run: npm i mongoose@6.x
       - run: npm run lint
-      - run: npm run test
+      - run: npm run test:unit
+      - run: npm run test:filter
+      - run: npm run test:express
+      - run: npm run test:restify
       - run: npm run tsc
       - run: npm run build
 
