@@ -62,4 +62,4 @@ function runTests(createFn) {
   });
 }
 
-//runTests(Restify)
+runTests(Restify);
