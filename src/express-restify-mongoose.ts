@@ -120,16 +120,16 @@ export function serve(
   const serveOptions: Options = {
     ...defaultOptions,
     name: typeof options.name === "string" ? options.name : model.modelName,
-    contextFilter: (model) => model,
+    contextFilter: (model, req, done) => done(model),
     outputFn: getOutputFnHandler(
       typeof options.restify === "boolean"
-        ? options.restify
-        : defaultOptions.restify
+        ? !options.restify
+        : !defaultOptions.restify
     ),
     onError: getOnErrorHandler(
       typeof options.restify === "boolean"
-        ? options.restify
-        : defaultOptions.restify
+        ? !options.restify
+        : !defaultOptions.restify
     ),
     ...options,
   };
