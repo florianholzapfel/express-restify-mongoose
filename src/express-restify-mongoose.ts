@@ -75,10 +75,10 @@ export type Options = {
       query: mongoose.Model<unknown> | mongoose.Query<unknown, unknown>
     ) => void
   ) => void;
-  postCreate?: RequestHandler;
-  postRead?: RequestHandler;
-  postUpdate?: RequestHandler;
-  postDelete?: RequestHandler;
+  postCreate?: RequestHandler | RequestHandler[];
+  postRead?: RequestHandler | RequestHandler[];
+  postUpdate?: RequestHandler | RequestHandler[];
+  postDelete?: RequestHandler | RequestHandler[];
   outputFn: OutputFn;
   postProcess?: (req: Request, res: Response) => void;
   onError: ErrorRequestHandler;

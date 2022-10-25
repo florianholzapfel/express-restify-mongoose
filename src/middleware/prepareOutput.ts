@@ -25,21 +25,38 @@ export function getPrepareOutputHandler(
   const fn: RequestHandler = function prepareOutput(req, res, next) {
     const postMiddleware = (() => {
       switch (req.method.toLowerCase()) {
-        case "get":
-          return options.postRead;
-        case "post":
+        case "get": {
+          return Array.isArray(options.postRead)
+            ? options.postRead
+            : [options.postRead];
+        }
+        case "post": {
           if (req.erm.statusCode === 201) {
-            return options.postCreate;
+            return Array.isArray(options.postCreate)
+              ? options.postCreate
+              : [options.postCreate];
           }
 
-          return options.postUpdate;
+          return Array.isArray(options.postUpdate)
+            ? options.postUpdate
+            : [options.postUpdate];
+        }
         case "put":
-        case "patch":
-          return options.postUpdate;
-        case "delete":
-          return options.postDelete;
+        case "patch": {
+          return Array.isArray(options.postUpdate)
+            ? options.postUpdate
+            : [options.postUpdate];
+        }
+        case "delete": {
+          return Array.isArray(options.postDelete)
+            ? options.postDelete
+            : [options.postDelete];
+        }
+        default: {
+          return [];
+        }
       }
-    })();
+    })().filter(Boolean);
 
     const callback = (err: Error | undefined) => {
       if (err) {
