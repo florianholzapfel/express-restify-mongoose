@@ -1,7 +1,88 @@
 import { RequestHandler } from "express";
 import isCoordinates from "is-coordinates";
+import { z } from "zod";
 import { getErrorHandler } from "../errorHandler";
-import { Options } from "../express-restify-mongoose";
+import {
+  Options,
+  QueryOptions,
+  RawQueryOptions,
+} from "../express-restify-mongoose";
+
+const PopulateSchema = z.preprocess(
+  (value) => {
+    if (typeof value !== "string") {
+      return value;
+    }
+
+    if (value.startsWith("{") || value.startsWith("[")) {
+      return JSON.parse(value);
+    }
+
+    return value;
+  },
+  z.union([
+    z.string(),
+    z.object({
+      path: z.string(),
+      select: z.string().optional(),
+      // Configure populate query to not use strict populate to maintain
+      // behavior from Mongoose previous to v6 (unless already configured)
+      strictPopulate: z.boolean().optional().default(false),
+    }),
+    z.array(
+      z.object({
+        path: z.string(),
+        select: z.string().optional(),
+        strictPopulate: z.boolean().optional().default(false),
+      })
+    ),
+  ])
+);
+
+const SelectSchema = z.preprocess((value) => {
+  if (typeof value !== "string") {
+    return value;
+  }
+
+  if (value.startsWith("{")) {
+    return JSON.parse(value);
+  }
+
+  return Object.fromEntries(
+    value
+      .split(",")
+      .filter(Boolean)
+      .map((field) => {
+        if (field.startsWith("-")) {
+          return [field.substring(1), 0];
+        }
+
+        return [field, 1];
+      })
+  );
+}, z.record(z.number().min(0).max(1)));
+
+const SortSchema = z.preprocess((value) => {
+  if (typeof value !== "string") {
+    return value;
+  }
+
+  if (value.startsWith("{")) {
+    return JSON.parse(value);
+  }
+
+  return value;
+}, z.union([z.string(), z.record(z.enum(["asc", "desc", "ascending", "descending"])), z.record(z.number().min(-1).max(1))]));
+
+const SkipLimitSchema = z.preprocess((value) => {
+  if (typeof value !== "string") {
+    return value;
+  }
+
+  return parseInt(value, 10);
+}, z.number());
+
+const DistinctSchema = z.string();
 
 export function getPrepareQueryHandler(
   options: Pick<Options, "allowRegex" | "idProperty" | "onError">
@@ -25,122 +106,116 @@ export function getPrepareQueryHandler(
     return value;
   }
 
-  function parseQueryOptions(queryOptions: {
-    populate?: string | { path: string; select?: string }[];
-    select?: string | Record<string, unknown>;
-  }) {
-    if (queryOptions.select && typeof queryOptions.select === "string") {
-      const select = queryOptions.select.split(",");
-      queryOptions.select = {};
+  function parseQueryOptions({
+    populate,
+    select,
+    ...queryOptions
+  }: RawQueryOptions): QueryOptions {
+    const parsedQueryOptions: QueryOptions = queryOptions;
 
-      for (let i = 0, length = select.length; i < length; i++) {
-        if (select[i][0] === "-") {
-          queryOptions.select[select[i].substring(1)] = 0;
-        } else {
-          queryOptions.select[select[i]] = 1;
-        }
-      }
+    if (
+      parsedQueryOptions.select &&
+      Object.keys(parsedQueryOptions.select).length === 0
+    ) {
+      delete parsedQueryOptions.select;
     }
 
-    if (queryOptions.populate) {
-      if (typeof queryOptions.populate === "string") {
-        const populate = queryOptions.populate.split(",");
-        queryOptions.populate = [];
+    if (populate) {
+      if (typeof populate === "string") {
+        parsedQueryOptions.populate = populate
+          .split(",")
+          .filter(Boolean)
+          .map((field) => {
+            const pop: Exclude<QueryOptions["populate"], undefined>[number] = {
+              path: field,
+              strictPopulate: false,
+            };
 
-        for (let i = 0, length = populate.length; i < length; i++) {
-          queryOptions.populate.push({
-            path: populate[i],
+            if (!parsedQueryOptions.select) {
+              return pop;
+            }
+
+            for (const [key, value] of Object.entries(
+              parsedQueryOptions.select
+            )) {
+              if (key.startsWith(`${field}.`)) {
+                if (pop.select) {
+                  pop.select += " ";
+                } else {
+                  pop.select = "";
+                }
+
+                if (value === 0) {
+                  pop.select += "-";
+                }
+
+                pop.select += key.substring(field.length + 1);
+
+                delete parsedQueryOptions.select?.[key];
+              }
+            }
+
+            // If other specific fields are selected, add the populated field
+            if (!parsedQueryOptions.select[field]) {
+              parsedQueryOptions.select[field] = 1;
+            }
+
+            return pop;
           });
-
-          for (const key in queryOptions.select) {
-            if (key.indexOf(populate[i] + ".") === 0) {
-              if (queryOptions.populate[i].select) {
-                queryOptions.populate[i].select += " ";
-              } else {
-                queryOptions.populate[i].select = "";
-              }
-
-              if (queryOptions.select[key] === 0) {
-                queryOptions.populate[i].select += "-";
-              }
-
-              queryOptions.populate[i].select += key.substring(
-                populate[i].length + 1
-              );
-              delete queryOptions.select[key];
-            }
-          }
-
-          // If other specific fields are selected, add the populated field
-          if (queryOptions.select) {
-            if (
-              Object.keys(queryOptions.select).length > 0 &&
-              !queryOptions.select[populate[i]]
-            ) {
-              queryOptions.select[populate[i]] = 1;
-            } else if (Object.keys(queryOptions.select).length === 0) {
-              delete queryOptions.select;
-            }
-          }
-        }
-      } else if (!Array.isArray(queryOptions.populate)) {
-        queryOptions.populate = [queryOptions.populate];
       }
-
-      // Configure populate query to not use strict populate to maintain
-      // behavior from Mongoose previous to v6 (unless already configured).
-      queryOptions.populate = queryOptions.populate.map((pop) => {
-        if (pop.strictPopulate !== undefined) return pop;
-        pop.strictPopulate = false;
-        return pop;
-      });
     }
 
-    return queryOptions;
+    return parsedQueryOptions;
   }
 
+  const QuerySchema = z.preprocess((value) => {
+    if (typeof value !== "string") {
+      return value;
+    }
+
+    return JSON.parse(value, jsonQueryParser);
+  }, z.record(z.unknown()));
+
   const fn: RequestHandler = function prepareQuery(req, res, next) {
-    const safelist = [
-      "distinct",
-      "limit",
-      "populate",
-      "query",
-      "select",
-      "skip",
-      "sort",
-    ];
-    const query = {};
+    const query: RawQueryOptions = {};
 
-    for (const key in req.query) {
-      if (safelist.indexOf(key) === -1) {
-        continue;
-      }
+    for (const [key, value] of Object.entries(req.query)) {
+      try {
+        switch (key) {
+          case "query": {
+            query[key] = QuerySchema.parse(value);
 
-      if (key === "query") {
-        try {
-          query[key] = JSON.parse(req.query[key], jsonQueryParser);
-        } catch (e) {
-          return errorHandler(new Error(`invalid_json_${key}`), req, res, next);
-        }
-      } else if (key === "populate" || key === "select" || key === "sort") {
-        try {
-          query[key] = JSON.parse(req.query[key]);
-        } catch (e) {
-          query[key] = req.query[key];
-        }
-      } else if (key === "limit" || key === "skip") {
-        query[key] = parseInt(req.query[key], 10);
+            break;
+          }
+          case "populate": {
+            query[key] = PopulateSchema.parse(value);
 
-        if (`${query[key]}` !== `${req.query[key]}`) {
-          return errorHandler(
-            new Error(`invalid_${key}_value`),
-            req,
-            res,
-            next
-          );
+            break;
+          }
+          case "select": {
+            query[key] = SelectSchema.parse(value);
+
+            break;
+          }
+          case "sort": {
+            query[key] = SortSchema.parse(value);
+
+            break;
+          }
+          case "limit":
+          case "skip": {
+            query[key] = SkipLimitSchema.parse(value);
+
+            break;
+          }
+          case "distinct": {
+            query[key] = DistinctSchema.parse(value);
+
+            break;
+          }
         }
-      } else {
-        query[key] = req.query[key];
+      } catch (e) {
+        return errorHandler(new Error(`invalid_value_${key}`), req, res, next);
       }
     }
 

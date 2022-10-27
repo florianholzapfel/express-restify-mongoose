@@ -41,9 +41,9 @@ export class Filter {
    */
   getExcluded(options: {
     access: Access;
-    excludedMap?: ExcludedMap;
+    excludedMap?: ExcludedMap | undefined;
     filteredKeys?: FilteredKeys;
-    modelName?: string;
+    modelName?: string | undefined;
   }) {
     if (options.access === "private") {
       return [];
@@ -101,7 +101,7 @@ export class Filter {
         if (excluded[i].includes(".")) {
           weedout(item, excluded[i]);
         } else {
-          delete item[excluded[i]];
+          delete (item as Record<string, unknown>)[excluded[i]];
         }
       }
     }
@@ -118,7 +118,7 @@ export class Filter {
     item: T,
     options: {
       access: Access;
-      excludedMap: ExcludedMap;
+      excludedMap: ExcludedMap | undefined;
       populate: { path: string }[];
     }
   ): T {
@@ -175,7 +175,7 @@ export class Filter {
     resource: Record<string, unknown> | Record<string, unknown>[],
     options?: {
       access: Access;
-      excludedMap: ExcludedMap;
+      excludedMap?: ExcludedMap;
       populate: { path: string }[] | undefined;
     }
   ) {

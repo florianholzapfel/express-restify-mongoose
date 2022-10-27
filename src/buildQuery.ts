@@ -1,21 +1,13 @@
 import mongoose from "mongoose";
-import { Options } from "./express-restify-mongoose";
+import { Options, QueryOptions } from "./express-restify-mongoose";
 
 export function getBuildQuery(
   options: Pick<Options, "lean" | "limit" | "readPreference">
 ) {
-  return function buildQuery(
+  return function buildQuery<T>(
     query: mongoose.Query<unknown, unknown>,
-    queryOptions: {
-      distinct: unknown;
-      limit: unknown;
-      populate: unknown;
-      query: unknown;
-      select: unknown;
-      skip: unknown;
-      sort: unknown;
-    }
-  ) {
+    queryOptions: QueryOptions | undefined
+  ): Promise<T> {
     const promise = new Promise((resolve) => {
       if (!queryOptions) {
         return resolve(query);
@@ -31,9 +23,7 @@ export function getBuildQuery(
 
       if (
         options.limit &&
-        (!queryOptions.limit ||
-          queryOptions.limit === "0" ||
-          queryOptions.limit > options.limit)
+        (!queryOptions.limit || queryOptions.limit > options.limit)
       ) {
         queryOptions.limit = options.limit;
       }
@@ -73,6 +63,6 @@ export function getBuildQuery(
       resolve(query);
     });
 
-    return promise;
+    return promise as T;
   };
 }

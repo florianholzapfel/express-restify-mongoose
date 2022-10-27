@@ -4,6 +4,10 @@ import { getErrorHandler } from "../errorHandler";
 import { ExcludedMap, Options } from "../express-restify-mongoose";
 import { Filter } from "../resource_filter";
 
+function isDefined<T>(arg: T | undefined): arg is T {
+  return typeof arg !== "undefined";
+}
+
 export function getPrepareOutputHandler(
   options: Pick<
     Options,
@@ -56,7 +60,7 @@ export function getPrepareOutputHandler(
           return [];
         }
       }
-    })().filter(Boolean);
+    })().filter(isDefined);
 
     const callback = (err: Error | undefined) => {
       if (err) {

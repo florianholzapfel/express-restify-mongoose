@@ -28,6 +28,26 @@ export type ExcludedMap = Record<string, FilteredKeys>;
 
 export type OutputFn = (req: Request, res: Response) => void | Promise<void>;
 
+export type RawQueryOptions = {
+  distinct?: string;
+  limit?: number;
+  populate?: string | Record<string, unknown> | Record<string, unknown>[];
+  query?: Record<string, unknown>;
+  select?: Record<string, unknown>;
+  skip?: number;
+  sort?: string | Record<string, unknown>;
+};
+
+export type QueryOptions = {
+  distinct?: string;
+  limit?: number;
+  populate?: { path: string; select?: string; strictPopulate?: boolean }[];
+  query?: Record<string, unknown>;
+  select?: Record<string, number>;
+  skip?: number;
+  sort?: string | Record<string, unknown>;
+};
+
 export type ReadPreference =
   | "p"
   | "primary"
