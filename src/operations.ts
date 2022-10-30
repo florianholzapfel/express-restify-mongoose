@@ -5,8 +5,8 @@ import isPlainObject from "lodash.isplainobject";
 import mongoose from "mongoose";
 import { getBuildQuery } from "./buildQuery";
 import { getErrorHandler } from "./errorHandler";
-import { ExcludedMap, Options } from "./express-restify-mongoose";
 import { Filter } from "./resource_filter";
+import { ExcludedMap, Options } from "./types";
 
 export function operations(
   model: mongoose.Model<unknown>,

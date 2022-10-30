@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
 import { getErrorHandler } from "../errorHandler";
-import { Options } from "../express-restify-mongoose";
+import { Options } from "../types";
 
 export function getEnsureContentTypeHandler(
   options: Pick<Options, "idProperty" | "onError">

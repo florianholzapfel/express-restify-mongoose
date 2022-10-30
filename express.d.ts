@@ -1,5 +1,5 @@
 import type { Document, Model } from "mongoose";
-import type { Access, QueryOptions } from "./src/express-restify-mongoose";
+import type { Access, QueryOptions } from "./src/types";
 
 declare global {
   namespace Express {

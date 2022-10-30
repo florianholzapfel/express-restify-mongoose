@@ -1,10 +1,4 @@
-import {
-  Application,
-  ErrorRequestHandler,
-  Request,
-  RequestHandler,
-  Response,
-} from "express";
+import { Application } from "express";
 import mongoose from "mongoose";
 import { deprecate } from "util";
 import { getAccessHandler } from "./middleware/access";
@@ -16,96 +10,7 @@ import { getPrepareOutputHandler } from "./middleware/prepareOutput";
 import { getPrepareQueryHandler } from "./middleware/prepareQuery";
 import { operations } from "./operations";
 import { Filter } from "./resource_filter";
-
-export type Access = "private" | "protected" | "public";
-
-export type FilteredKeys = {
-  private: string[];
-  protected: string[];
-};
-
-export type ExcludedMap = Record<string, FilteredKeys>;
-
-export type OutputFn = (req: Request, res: Response) => void | Promise<void>;
-
-export type RawQueryOptions = {
-  distinct?: string;
-  limit?: number;
-  populate?: string | Record<string, unknown> | Record<string, unknown>[];
-  query?: Record<string, unknown>;
-  select?: Record<string, unknown>;
-  skip?: number;
-  sort?: string | Record<string, unknown>;
-};
-
-export type QueryOptions = {
-  distinct?: string;
-  limit?: number;
-  populate?: { path: string; select?: string; strictPopulate?: boolean }[];
-  query?: Record<string, unknown>;
-  select?: Record<string, number>;
-  skip?: number;
-  sort?: string | Record<string, unknown>;
-};
-
-export type ReadPreference =
-  | "p"
-  | "primary"
-  | "pp"
-  | "primaryPreferred"
-  | "s"
-  | "secondary"
-  | "sp"
-  | "secondaryPreferred"
-  | "n"
-  | "nearest";
-
-export type Options = {
-  prefix: `/${string}`;
-  version: `/v${number}`;
-  idProperty: string;
-  restify: boolean;
-  name?: string;
-  allowRegex: boolean;
-  runValidators: boolean;
-  readPreference: ReadPreference;
-  totalCountHeader: boolean | string;
-  private: string[];
-  protected: string[];
-  lean: boolean;
-  limit?: number;
-  findOneAndRemove: boolean;
-  findOneAndUpdate: boolean;
-  upsert: boolean;
-  preMiddleware: RequestHandler | RequestHandler[];
-  preCreate: RequestHandler | RequestHandler[];
-  preRead: RequestHandler | RequestHandler[];
-  preUpdate: RequestHandler | RequestHandler[];
-  preDelete: RequestHandler | RequestHandler[];
-  access?:
-    | ((req: Request) => Access)
-    | ((
-        req: Request,
-        done: (err: Error | undefined, access: Access) => void
-      ) => void);
-  contextFilter: (
-    model: mongoose.Model<unknown>,
-    req: Request,
-    done: (
-      query: mongoose.Model<unknown> | mongoose.Query<unknown, unknown>
-    ) => void
-  ) => void;
-  postCreate?: RequestHandler | RequestHandler[];
-  postRead?: RequestHandler | RequestHandler[];
-  postUpdate?: RequestHandler | RequestHandler[];
-  postDelete?: RequestHandler | RequestHandler[];
-  outputFn: OutputFn;
-  postProcess?: (req: Request, res: Response) => void;
-  onError: ErrorRequestHandler;
-  modelFactory?: {
-    getModel: (req: Request) => mongoose.Model<unknown>;
-  };
-};
+import { ExcludedMap, Options } from "./types";
 
 const excludedMap: ExcludedMap = {};
 
@@ -115,7 +20,7 @@ const defaultOptions: Omit<Options, "contextFilter" | "outputFn" | "onError"> =
     version: "/v1",
     idProperty: "_id",
     restify: false,
-    allowRegex: true,
+    allowRegex: false,
     runValidators: false,
     readPreference: "primary",
     totalCountHeader: false,

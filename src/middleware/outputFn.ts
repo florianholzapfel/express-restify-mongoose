@@ -1,4 +1,4 @@
-import { OutputFn } from "../express-restify-mongoose";
+import { OutputFn } from "../types";
 
 export function getOutputFnHandler(isExpress: boolean) {
   const fn: OutputFn = function outputFn(req, res) {

@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
 import { getErrorHandler } from "../errorHandler";
-import { Access, Options } from "../express-restify-mongoose";
+import { Access, Options } from "../types";
 
 export function getAccessHandler(
   options: Required<Pick<Options, "access" | "idProperty" | "onError">>

@@ -2,7 +2,7 @@ import { getProperty, hasProperty } from "dot-prop";
 import mongoose from "mongoose";
 import detective from "mongoose-detective";
 import weedout from "weedout";
-import { Access, ExcludedMap, FilteredKeys } from "./express-restify-mongoose";
+import { Access, ExcludedMap, FilteredKeys } from "./types";
 
 export class Filter {
   model: mongoose.Model<unknown> | undefined;

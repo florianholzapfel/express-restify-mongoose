@@ -28,14 +28,15 @@ describe("prepareQuery", () => {
 
       getPrepareQueryHandler(options)(req, {}, next);
 
-      assert.deepEqual(req.erm.query, {
-        query: {
-          foo: {},
-        },
-      });
-      sinon.assert.calledOnce(next);
-      sinon.assert.calledWithExactly(next);
-      sinon.assert.notCalled(options.onError);
+      sinon.assert.calledOnce(options.onError);
+      sinon.assert.calledWithExactly(
+        options.onError,
+        sinon.match.instanceOf(Error) /*new Error('invalid_json_query')*/,
+        req,
+        {},
+        next
+      );
+      sinon.assert.notCalled(next);
     });
 
     it("converts [] to $in", () => {
@@ -122,7 +123,7 @@ describe("prepareQuery", () => {
   it("calls next when sort key is valid json", () => {
     let req = {
       query: {
-        sort: '{"foo":"bar"}',
+        sort: '{"foo":"asc"}',
       },
     };
 

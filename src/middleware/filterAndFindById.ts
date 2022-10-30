@@ -2,7 +2,7 @@ import { RequestHandler } from "express";
 import { STATUS_CODES } from "http";
 import mongoose from "mongoose";
 import { getErrorHandler } from "../errorHandler";
-import { Options } from "../express-restify-mongoose";
+import { Options } from "../types";
 
 export function getFilterAndFindByIdHandler(
   options: Pick<

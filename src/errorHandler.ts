@@ -1,6 +1,6 @@
 import { ErrorRequestHandler } from "express";
 import { STATUS_CODES } from "http";
-import { Options } from "./express-restify-mongoose";
+import { Options } from "./types";
 
 export function getErrorHandler(
   options: Pick<Options, "idProperty" | "onError">
@@ -8,7 +8,7 @@ export function getErrorHandler(
   const fn: ErrorRequestHandler = function errorHandler(err, req, res, next) {
     if (
       err.message === STATUS_CODES[404] ||
-      (req.params.id &&
+      (req.params?.id &&
         err.path === options.idProperty &&
         err.name === "CastError")
     ) {

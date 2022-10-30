@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { Options, QueryOptions } from "./express-restify-mongoose";
+import { Options, QueryOptions } from "./types";
 
 export function getBuildQuery(
   options: Pick<Options, "lean" | "limit" | "readPreference">

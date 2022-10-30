@@ -1,12 +1,9 @@
 import { RequestHandler } from "express";
 import runSeries from "run-series";
 import { getErrorHandler } from "../errorHandler";
-import { ExcludedMap, Options } from "../express-restify-mongoose";
 import { Filter } from "../resource_filter";
-
-function isDefined<T>(arg: T | undefined): arg is T {
-  return typeof arg !== "undefined";
-}
+import { ExcludedMap, Options } from "../types";
+import { isDefined } from "../utils";
 
 export function getPrepareOutputHandler(
   options: Pick<
