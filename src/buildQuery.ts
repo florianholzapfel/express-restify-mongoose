@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
-import { Options, QueryOptions } from "./types";
+import { QueryOptions } from "./getQuerySchema";
+import { Options } from "./types";
 
 export function getBuildQuery(
   options: Pick<Options, "lean" | "limit" | "readPreference">
@@ -63,6 +64,6 @@ export function getBuildQuery(
       resolve(query);
     });
 
-    return promise as T;
+    return promise as Promise<T>;
   };
 }

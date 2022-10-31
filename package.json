@@ -8,7 +8,6 @@
     "dot-prop": "^7.2.0",
     "lodash.isplainobject": "~4.0.6",
     "mongoose-detective": "~2.0.0",
-    "run-series": "~1.1.8",
     "serialize-error": "^7.0.1",
     "weedout": "~1.0.1",
     "zod": "^3.19.1"

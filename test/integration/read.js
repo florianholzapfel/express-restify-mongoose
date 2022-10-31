@@ -25,6 +25,7 @@ module.exports = function (createFn, setup, dismantle) {
         }
 
         serve(app, db.models.Customer, {
+          allowRegex: true,
           restify: app.isRestify,
         });
 
@@ -219,7 +220,7 @@ module.exports = function (createFn, setup, dismantle) {
             assert.equal(res.statusCode, 400);
             assert.deepEqual(body, {
               name: "Error",
-              message: "invalid_limit_value",
+              message: "invalid_json_query",
             });
             done();
           }
@@ -260,7 +261,7 @@ module.exports = function (createFn, setup, dismantle) {
             assert.equal(res.statusCode, 400);
             assert.deepEqual(body, {
               name: "Error",
-              message: "invalid_skip_value",
+              message: "invalid_json_query",
             });
             done();
           }

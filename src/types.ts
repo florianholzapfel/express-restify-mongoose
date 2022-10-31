@@ -1,4 +1,9 @@
-import { ErrorRequestHandler, RequestHandler } from "express";
+import {
+  ErrorRequestHandler,
+  Request,
+  RequestHandler,
+  Response,
+} from "express";
 import mongoose from "mongoose";
 
 export type Access = "private" | "protected" | "public";
@@ -46,12 +51,7 @@ export type Options = {
   preRead: RequestHandler | RequestHandler[];
   preUpdate: RequestHandler | RequestHandler[];
   preDelete: RequestHandler | RequestHandler[];
-  access?:
-    | ((req: Request) => Access)
-    | ((
-        req: Request,
-        done: (err: Error | undefined, access: Access) => void
-      ) => void);
+  access?: (req: Request) => Promise<Access>;
   contextFilter: (
     model: mongoose.Model<unknown>,
     req: Request,

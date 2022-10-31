@@ -1,5 +1,6 @@
 import type { Document, Model } from "mongoose";
-import type { Access, QueryOptions } from "./src/types";
+import type { QueryOptions } from "./src/getQuerySchema";
+import type { Access } from "./src/types";
 
 declare global {
   namespace Express {

@@ -45,8 +45,8 @@ describe("access", () => {
       let req = {};
 
       getAccessHandler({
-        access: (req, cb) => {
-          return cb(null, "private");
+        access: () => {
+          return Promise.resolve("private");
         },
       })(req, {}, next);
 
@@ -64,8 +64,8 @@ describe("access", () => {
       let err = new Error("Something bad happened");
 
       getAccessHandler({
-        access: (req, cb) => {
-          return cb(err, "private");
+        access: () => {
+          return Promise.resolve("private");
         },
         onError: onError,
       })(req, {}, next);
@@ -81,8 +81,8 @@ describe("access", () => {
 
       assert.throws(() => {
         getAccessHandler({
-          access: (req, cb) => {
-            return cb(null, "foo");
+          access: () => {
+            return Promise.resolve("foo");
           },
         })(req, {}, next);
       }, Error('Unsupported access, must be "public", "private" or "protected"'));

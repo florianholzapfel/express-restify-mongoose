@@ -46,8 +46,8 @@ module.exports = function (createFn, setup, dismantle) {
               "privateDoes.notExist",
             ],
             protected: ["comment", "favorites.color", "protectedDoes.notExist"],
-            access: (req, done) => {
-              done(null, "private");
+            access: () => {
+              return Promise.resolve("private");
             },
             restify: app.isRestify,
           });
@@ -640,8 +640,8 @@ module.exports = function (createFn, setup, dismantle) {
               "privateDoes.notExist",
             ],
             protected: ["comment", "favorites.color", "protectedDoes.notExist"],
-            access: (req, done) => {
-              done(null, "protected");
+            access: () => {
+              Promise.resolve("protected");
             },
             restify: app.isRestify,
           });
@@ -1758,9 +1758,9 @@ module.exports = function (createFn, setup, dismantle) {
           }
 
           serve(app, db.models.Customer, {
-            access: (req, done) => {
+            access: () => {
               let err = new Error("Something went wrong");
-              done(err);
+              return Promise.reject(err);
             },
             restify: app.isRestify,
           });

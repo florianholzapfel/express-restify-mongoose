@@ -683,7 +683,7 @@ module.exports = function (createFn, setup, dismantle) {
     });
   });
 
-  describe("postCreate/Read/Update/Delete - null", () => {
+  describe("postCreate/Read/Update/Delete - undefined", () => {
     let app = createFn();
     let server;
     let customer;
@@ -695,10 +695,10 @@ module.exports = function (createFn, setup, dismantle) {
         }
 
         serve(app, db.models.Customer, {
-          postCreate: null,
-          postRead: null,
-          postUpdate: null,
-          postDelete: null,
+          postCreate: undefined,
+          postRead: undefined,
+          postUpdate: undefined,
+          postDelete: undefined,
           restify: app.isRestify,
         });
 

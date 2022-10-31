@@ -11,51 +11,48 @@ const PopulateOptionsSchema = z.object({
 });
 
 const PopulateSchema = z.preprocess((value) => {
-  if (typeof value !== "string") {
-    return value;
-  }
+  if (typeof value === "string") {
+    if (value.startsWith("{")) {
+      return JSON.parse(`[${value}]`);
+    }
 
-  if (value.startsWith("{") || value.startsWith("[")) {
-    return JSON.parse(value);
+    if (value.startsWith("[")) {
+      return JSON.parse(value);
+    }
   }
 
   return value;
-}, z.union([z.string(), PopulateOptionsSchema, z.array(PopulateOptionsSchema)]));
+}, z.union([z.string(), z.array(PopulateOptionsSchema)]));
 
 const SelectSchema = z.preprocess((value) => {
-  if (typeof value !== "string") {
-    return value;
+  const fieldToRecord = (field: string) => {
+    if (field.startsWith("-")) {
+      return [field.substring(1), 0];
+    }
+
+    return [field, 1];
+  };
+
+  if (typeof value === "string") {
+    if (value.startsWith("{")) {
+      return JSON.parse(value);
+    }
+
+    return Object.fromEntries(
+      value.split(",").filter(Boolean).map(fieldToRecord)
+    );
   }
 
-  if (value.startsWith("{")) {
-    return JSON.parse(value);
+  if (Array.isArray(value)) {
+    return Object.fromEntries(value.map(fieldToRecord));
   }
 
-  return Object.fromEntries(
-    value
-      .split(",")
-      .filter(Boolean)
-      .map((field) => {
-        if (field.startsWith("-")) {
-          return [field.substring(1), 0];
-        }
-
-        return [field, 1];
-      })
-  );
+  return value;
 }, z.record(z.number().min(0).max(1)));
 
 const SortSchema = z.preprocess((value) => {
-  if (typeof value !== "string") {
-    return value;
-  }
-
-  if (value.startsWith("{")) {
-    return JSON.parse(value);
-  }
-
   return value;
-}, z.union([z.string(), z.record(z.enum(["asc", "desc", "ascending", "descending"])), z.record(z.number().min(-1).max(1))]));
+}, z.union([z.string(), z.record(z.enum(["asc", "desc", "ascending", "descending", "-1", "1"])), z.record(z.number().min(-1).max(1))]));
 
 const LimitSkipSchema = z.preprocess((value) => {
   if (typeof value !== "string") {
@@ -102,14 +99,15 @@ export function getQueryOptionsSchema({ allowRegex }: { allowRegex: boolean }) {
     })
     .transform((value) => {
       if (!value.populate) {
-        const { populate, ...rest } = value;
-
-        return rest;
+        return {
+          ...value,
+          populate: undefined,
+        };
       } else if (typeof value.populate === "string") {
-        const populate: z.infer<typeof PopulateOptionsSchema>[] = value.populate
+        const populate = value.populate
           .split(",")
           .filter(Boolean)
-          .map((field) => {
+          .map<z.infer<typeof PopulateOptionsSchema>>((field) => {
             const pop: z.infer<typeof PopulateOptionsSchema> = {
               path: field,
               strictPopulate: false,
@@ -149,11 +147,6 @@ export function getQueryOptionsSchema({ allowRegex }: { allowRegex: boolean }) {
           ...value,
           populate,
         };
-      } else if (!Array.isArray(value.populate)) {
-        return {
-          ...value,
-          populate: [value.populate],
-        };
       }
 
       return value;
@@ -162,9 +155,14 @@ export function getQueryOptionsSchema({ allowRegex }: { allowRegex: boolean }) {
       if (!value.select || Object.keys(value.select).length === 0) {
         const { select, ...rest } = value;
 
-        return rest;
+        return {
+          ...value,
+          select: undefined,
+        };
       }
 
       return value;
     });
 }
+
+export type QueryOptions = z.infer<ReturnType<typeof getQueryOptionsSchema>>;

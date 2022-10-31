@@ -1,5 +1,4 @@
 import { RequestHandler } from "express";
-import runSeries from "run-series";
 import { getErrorHandler } from "../errorHandler";
 import { Filter } from "../resource_filter";
 import { ExcludedMap, Options } from "../types";
@@ -59,17 +58,13 @@ export function getPrepareOutputHandler(
       }
     })().filter(isDefined);
 
-    const callback = (err: Error | undefined) => {
-      if (err) {
-        return errorHandler(err, req, res, next);
-      }
-
+    const callback = () => {
       // TODO: this will, but should not, filter /count queries
       if (req.erm.result) {
         req.erm.result = filter.filterObject(req.erm.result, {
           access: req.access,
           excludedMap: excludedMap,
-          populate: req.erm.query.populate,
+          populate: req.erm.query?.populate,
         });
       }
 
@@ -98,17 +93,19 @@ export function getPrepareOutputHandler(
     };
 
     if (!postMiddleware || postMiddleware.length === 0) {
-      return callback(undefined);
+      return callback();
     }
 
-    runSeries(
-      postMiddleware.map((middleware) => {
-        return (cb) => {
-          middleware(req, res, cb);
-        };
-      }),
-      callback
-    );
+    postMiddleware
+      .reduce(async (acc, middleware) => {
+        await acc;
+
+        return new Promise((resolve, reject) => {
+          middleware(req, res, (err) => (err ? reject(err) : resolve(err)));
+        });
+      }, Promise.resolve())
+      .then(callback)
+      .catch((err) => errorHandler(err, req, res, next));
   };
 
   return fn;
