@@ -18,5 +18,11 @@
     "ecmaVersion": 2021,
     "sourceType": "module"
   },
-  "plugins": ["@typescript-eslint"]
+  "plugins": ["@typescript-eslint"],
+  "rules": {
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      { "ignoreRestSiblings": true }
+    ]
+  }
 }
