@@ -1,16 +1,14 @@
 import { RequestHandler } from "express";
 import { getErrorHandler } from "../errorHandler";
-import { Options } from "../types";
+import { Access, Options } from "../types";
 
 export function getAccessHandler(
   options: Required<Pick<Options, "access" | "idProperty" | "onError">>
 ) {
   const errorHandler = getErrorHandler(options);
 
-  const fn: RequestHandler = async function access(req, res, next) {
-    try {
-      const access = await options.access(req);
-
+  const fn: RequestHandler = function access(req, res, next) {
+    const handler = function (access: Access) {
       if (!["public", "private", "protected"].includes(access)) {
         throw new Error(
           'Unsupported access, must be "public", "private" or "protected"'
@@ -20,8 +18,14 @@ export function getAccessHandler(
       req.access = access;
 
       next();
-    } catch (err) {
-      errorHandler(err, req, res, next);
+    };
+
+    const result = options.access(req);
+
+    if (typeof result === "string") {
+      handler(result);
+    } else {
+      result.then(handler).catch((err) => errorHandler(err, req, res, next));
     }
   };
 

@@ -641,7 +641,7 @@ module.exports = function (createFn, setup, dismantle) {
             ],
             protected: ["comment", "favorites.color", "protectedDoes.notExist"],
             access: () => {
-              Promise.resolve("protected");
+              return Promise.resolve("protected");
             },
             restify: app.isRestify,
           });
