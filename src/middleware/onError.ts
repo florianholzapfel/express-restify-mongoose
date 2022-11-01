@@ -17,8 +17,9 @@ export function getOnErrorHandler(isExpress: boolean) {
     res.setHeader("Content-Type", "application/json");
 
     if (isExpress) {
-      res.status(req.erm.statusCode).send(serializedErr);
+      res.status(req.erm.statusCode || 500).send(serializedErr);
     } else {
+      // @ts-expect-error restify
       res.send(req.erm.statusCode, serializedErr);
     }
   };
