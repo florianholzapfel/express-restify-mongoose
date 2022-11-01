@@ -1,8 +1,8 @@
-import { deepKeys } from "dot-prop";
 import { Request, RequestHandler } from "express";
 import { STATUS_CODES } from "http";
 import isPlainObject from "lodash.isplainobject";
 import mongoose from "mongoose";
+import moredots from "moredots";
 import { getBuildQuery } from "./buildQuery";
 import { getErrorHandler } from "./errorHandler";
 import { Filter } from "./resource_filter";
@@ -195,8 +195,8 @@ export function operations(
           .catch((err: Error) => errorHandler(err, req, res, next));
       });
     } else {
-      req.erm
-        .document!.remove()
+      req.erm.document
+        ?.remove()
         .then(() => {
           req.erm.statusCode = 204;
 
@@ -283,7 +283,7 @@ export function operations(
       return dst;
     }
 
-    const cleanBody = deepKeys(depopulate(req.body));
+    const cleanBody = moredots(depopulate(req.body));
 
     if (options.findOneAndUpdate) {
       options.contextFilter(contextModel, req, (filteredContext) => {
@@ -317,11 +317,11 @@ export function operations(
       });
     } else {
       for (const [key, value] of Object.entries(cleanBody)) {
-        req.erm.document!.set(key, value);
+        req.erm.document?.set(key, value);
       }
 
-      req.erm
-        .document!.save()
+      req.erm.document
+        ?.save()
         .then((item) => {
           return contextModel.populate(item, req.erm.query?.populate || []);
         })
