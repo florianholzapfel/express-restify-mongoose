@@ -8,7 +8,7 @@
     "dot-prop": "^7.2.0",
     "lodash.isplainobject": "~4.0.6",
     "mongoose-detective": "~2.0.0",
-    "serialize-error": "^7.0.1",
+    "serialize-error": "^11.0.0",
     "weedout": "~1.0.1",
     "zod": "^3.19.1"
   },
@@ -30,7 +30,7 @@
     "prettier": "^2.0.5",
     "request": "^2.88.2",
     "restify": "^8.5.1",
-    "sinon": "^9.0.2",
+    "sinon": "^14.0.1",
     "tsup": "^6.3.0",
     "typescript": "^4.8.4"
   },
