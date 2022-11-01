@@ -19,9 +19,11 @@ const PopulateSchema = z.preprocess((value) => {
     if (value.startsWith("[")) {
       return JSON.parse(value);
     }
+
+    return value;
   }
 
-  return value;
+  return Array.isArray(value) ? value : [value];
 }, z.union([z.string(), z.array(PopulateOptionsSchema)]));
 
 const SelectSchema = z.preprocess((value) => {
@@ -51,6 +53,10 @@ const SelectSchema = z.preprocess((value) => {
 }, z.record(z.number().min(0).max(1)));
 
 const SortSchema = z.preprocess((value) => {
+  if (typeof value === "string" && value.startsWith("{")) {
+    return JSON.parse(value);
+  }
+
   return value;
 }, z.union([z.string(), z.record(z.enum(["asc", "desc", "ascending", "descending", "-1", "1"])), z.record(z.number().min(-1).max(1))]));
 
@@ -99,10 +105,9 @@ export function getQueryOptionsSchema({ allowRegex }: { allowRegex: boolean }) {
     })
     .transform((value) => {
       if (!value.populate) {
-        return {
-          ...value,
-          populate: undefined,
-        };
+        const { populate, ...rest } = value;
+
+        return rest;
       } else if (typeof value.populate === "string") {
         const populate = value.populate
           .split(",")
@@ -155,10 +160,7 @@ export function getQueryOptionsSchema({ allowRegex }: { allowRegex: boolean }) {
       if (!value.select || Object.keys(value.select).length === 0) {
         const { select, ...rest } = value;
 
-        return {
-          ...value,
-          select: undefined,
-        };
+        return rest;
       }
 
       return value;
