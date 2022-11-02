@@ -9,6 +9,7 @@ export function getOutputFnHandler(isExpress: boolean) {
         res.sendStatus(req.erm.statusCode);
       }
     } else {
+      // @ts-expect-error restify
       res.send(req.erm.statusCode, req.erm.result);
     }
   };

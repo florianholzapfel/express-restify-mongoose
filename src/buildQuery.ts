@@ -31,7 +31,7 @@ export function getBuildQuery(
 
       if (
         queryOptions.limit &&
-        query.op !== "count" &&
+        query.op !== "countDocuments" &&
         !queryOptions.distinct
       ) {
         query.limit(queryOptions.limit);

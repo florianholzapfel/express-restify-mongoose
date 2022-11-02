@@ -933,14 +933,8 @@ module.exports = function (createFn, setup, dismantle) {
           assert.equal(res.statusCode, 400);
           delete body.reason;
           assert.deepEqual(body, {
-            kind: "string",
-            message:
-              'Cast to string failed for value "{}" (type Object) at path "name" for model "Customer"',
-            name: "CastError",
-            path: "name",
-            stringValue: '"{}"',
-            value: {},
-            valueType: "Object",
+            message: "invalid_json_query",
+            name: "Error",
           });
           done();
         }

@@ -15,7 +15,7 @@ module.exports = function (createFn, setup, dismantle) {
   const randomId = mongoose.Types.ObjectId().toHexString();
   const updateMethods = ["PATCH", "POST", "PUT"];
 
-  describe("preMiddleware/Create/Read/Update/Delete - null", () => {
+  describe("preMiddleware/Create/Read/Update/Delete - undefined", () => {
     let app = createFn();
     let server;
     let customer;
@@ -27,11 +27,6 @@ module.exports = function (createFn, setup, dismantle) {
         }
 
         serve(app, db.models.Customer, {
-          preMiddleware: null,
-          preCreate: null,
-          preRead: null,
-          preUpdate: null,
-          preDelete: null,
           restify: app.isRestify,
         });
 
@@ -695,10 +690,6 @@ module.exports = function (createFn, setup, dismantle) {
         }
 
         serve(app, db.models.Customer, {
-          postCreate: undefined,
-          postRead: undefined,
-          postUpdate: undefined,
-          postDelete: undefined,
           restify: app.isRestify,
         });
 

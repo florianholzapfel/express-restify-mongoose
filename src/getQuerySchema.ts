@@ -104,63 +104,70 @@ export function getQueryOptionsSchema({ allowRegex }: { allowRegex: boolean }) {
       distinct: z.string().optional(),
     })
     .transform((value) => {
-      if (!value.populate) {
-        const { populate, ...rest } = value;
-
-        return rest;
-      } else if (typeof value.populate === "string") {
-        const populate = value.populate
-          .split(",")
-          .filter(Boolean)
-          .map<z.infer<typeof PopulateOptionsSchema>>((field) => {
-            const pop: z.infer<typeof PopulateOptionsSchema> = {
-              path: field,
-              strictPopulate: false,
-            };
-
-            if (!value.select) {
-              return pop;
-            }
-
-            for (const [k, v] of Object.entries(value.select)) {
-              if (k.startsWith(`${field}.`)) {
-                if (pop.select) {
-                  pop.select += " ";
-                } else {
-                  pop.select = "";
-                }
-
-                if (v === 0) {
-                  pop.select += "-";
-                }
-
-                pop.select += k.substring(field.length + 1);
-
-                delete value.select[k];
-              }
-            }
-
-            // If other specific fields are selected, add the populated field
-            if (Object.keys(value.select).length > 0 && !value.select[field]) {
-              value.select[field] = 1;
-            }
-
-            return pop;
-          });
-
-        return {
-          ...value,
-          populate,
-        };
+      if (typeof value.populate === "undefined") {
+        return value;
       }
 
-      return value;
+      const populate =
+        typeof value.populate === "string"
+          ? value.populate
+              .split(",")
+              .filter(Boolean)
+              .map<z.infer<typeof PopulateOptionsSchema>>((field) => {
+                const pop: z.infer<typeof PopulateOptionsSchema> = {
+                  path: field,
+                  strictPopulate: false,
+                };
+
+                if (!value.select) {
+                  return pop;
+                }
+
+                for (const [k, v] of Object.entries(value.select)) {
+                  if (k.startsWith(`${field}.`)) {
+                    if (pop.select) {
+                      pop.select += " ";
+                    } else {
+                      pop.select = "";
+                    }
+
+                    if (v === 0) {
+                      pop.select += "-";
+                    }
+
+                    pop.select += k.substring(field.length + 1);
+
+                    delete value.select[k];
+                  }
+                }
+
+                // If other specific fields are selected, add the populated field
+                if (
+                  Object.keys(value.select).length > 0 &&
+                  !value.select[field]
+                ) {
+                  value.select[field] = 1;
+                }
+
+                return pop;
+              })
+          : value.populate;
+
+      return {
+        ...value,
+        populate,
+      };
     })
     .transform((value) => {
-      if (!value.select || Object.keys(value.select).length === 0) {
-        const { select, ...rest } = value;
+      if (
+        !value.populate ||
+        (Array.isArray(value.populate) && value.populate.length === 0)
+      ) {
+        delete value.populate;
+      }
 
-        return rest;
+      if (!value.select || Object.keys(value.select).length === 0) {
+        delete value.select;
       }
 
       return value;

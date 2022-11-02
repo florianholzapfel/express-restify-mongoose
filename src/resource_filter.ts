@@ -1,7 +1,7 @@
-import { getProperty, hasProperty } from "dot-prop";
+import { deleteProperty, getProperty, hasProperty } from "dot-prop";
 import mongoose from "mongoose";
 import detective from "mongoose-detective";
-import weedout from "weedout";
+import { QueryOptions } from "./getQuerySchema";
 import { Access, ExcludedMap, FilteredKeys } from "./types";
 
 export class Filter {
@@ -98,11 +98,7 @@ export class Filter {
       }
 
       for (let i = 0; i < excluded.length; i++) {
-        if (excluded[i].includes(".")) {
-          weedout(item, excluded[i]);
-        } else {
-          delete (item as Record<string, unknown>)[excluded[i]];
-        }
+        deleteProperty(item as Record<string, unknown>, excluded[i]);
       }
     }
 
@@ -119,7 +115,7 @@ export class Filter {
     options: {
       access: Access;
       excludedMap: ExcludedMap | undefined;
-      populate: { path: string }[];
+      populate: Exclude<QueryOptions["populate"], undefined>;
     }
   ): T {
     if (Array.isArray(item)) {
@@ -176,7 +172,7 @@ export class Filter {
     options?: {
       access: Access;
       excludedMap?: ExcludedMap;
-      populate: { path: string }[] | undefined;
+      populate: QueryOptions["populate"];
     }
   ) {
     const filtered = this.filterItem(
