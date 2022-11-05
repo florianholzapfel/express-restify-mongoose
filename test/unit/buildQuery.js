@@ -115,7 +115,7 @@ describe("buildQuery", () => {
         limit: "2",
       };
 
-      query.op = "count";
+      query.op = "countDocuments";
 
       return getBuildQuery({})(query, queryOptions).then((result) => {
         delete query.op;
@@ -137,7 +137,7 @@ describe("buildQuery", () => {
         limit: "2",
       };
 
-      query.op = "count";
+      query.op = "countDocuments";
 
       return getBuildQuery(options)(query, queryOptions).then((result) => {
         delete query.op;
