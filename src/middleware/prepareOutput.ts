@@ -1,8 +1,11 @@
 import { RequestHandler } from "express";
 import { getErrorHandler } from "../errorHandler";
 import { Filter } from "../resource_filter";
-import { ExcludedMap, Options } from "../types";
-import { isDefined } from "../utils";
+import { Options } from "../types";
+
+function isDefined<T>(arg: T | undefined): arg is T {
+  return typeof arg !== "undefined";
+}
 
 export function getPrepareOutputHandler(
   options: Pick<
@@ -17,7 +20,7 @@ export function getPrepareOutputHandler(
     | "postProcess"
     | "totalCountHeader"
   >,
-  excludedMap: ExcludedMap,
+  modelName: string,
   filter: Filter
 ) {
   const errorHandler = getErrorHandler(options);
@@ -63,7 +66,7 @@ export function getPrepareOutputHandler(
       if (req.erm.result) {
         req.erm.result = filter.filterObject(req.erm.result, {
           access: req.access,
-          excludedMap: excludedMap,
+          modelName,
           populate: req.erm.query?.populate,
         });
       }

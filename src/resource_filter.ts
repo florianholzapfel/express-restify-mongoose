@@ -1,104 +1,82 @@
-import { deleteProperty, getProperty, hasProperty } from "dot-prop";
+import { getProperty, hasProperty } from "dot-prop";
 import mongoose from "mongoose";
-import detective from "mongoose-detective";
+import { detective } from "./detective";
 import { QueryOptions } from "./getQuerySchema";
 import { Access, ExcludedMap, FilteredKeys } from "./types";
+import { weedout } from "./weedout";
 
 export class Filter {
-  model: mongoose.Model<unknown> | undefined;
-  filteredKeys: FilteredKeys;
+  excludedMap: ExcludedMap = new Map();
 
-  constructor(options: {
-    model?: mongoose.Model<unknown>;
-    excludedMap?: ExcludedMap;
-    filteredKeys?: Partial<FilteredKeys>;
-  }) {
-    this.model = options.model;
+  add(
+    model: mongoose.Model<unknown>,
+    options: {
+      filteredKeys: FilteredKeys;
+    }
+  ) {
+    if (model.discriminators) {
+      for (const modelName in model.discriminators) {
+        const excluded = this.excludedMap.get(modelName);
 
-    this.filteredKeys = {
-      private: [],
-      protected: [],
-      ...options.filteredKeys,
-    };
-
-    if (options.model?.discriminators && options.excludedMap) {
-      for (const modelName in options.model.discriminators) {
-        if (options.excludedMap[modelName]) {
-          this.filteredKeys.private = this.filteredKeys.private.concat(
-            options.excludedMap[modelName].private
+        if (excluded) {
+          options.filteredKeys.private = options.filteredKeys.private.concat(
+            excluded.filteredKeys.private
           );
 
-          this.filteredKeys.protected = this.filteredKeys.protected.concat(
-            options.excludedMap[modelName].protected
-          );
+          options.filteredKeys.protected =
+            options.filteredKeys.protected.concat(
+              excluded.filteredKeys.protected
+            );
         }
       }
     }
+
+    this.excludedMap.set(model.modelName, {
+      filteredKeys: options.filteredKeys,
+      model,
+    });
   }
 
   /**
    * Gets excluded keys for a given model and access.
    */
-  getExcluded(options: {
-    access: Access;
-    excludedMap?: ExcludedMap | undefined;
-    filteredKeys?: FilteredKeys;
-    modelName?: string | undefined;
-  }) {
+  getExcluded(options: { access: Access; modelName: string }) {
     if (options.access === "private") {
       return [];
     }
 
-    let entry =
-      options.excludedMap && options.modelName
-        ? options.excludedMap[options.modelName]
-        : undefined;
+    const filteredKeys = this.excludedMap.get(options.modelName)?.filteredKeys;
 
-    if (!entry) {
-      entry = {
-        private: [],
-        protected: [],
-        ...options.filteredKeys,
-      };
+    if (!filteredKeys) {
+      return [];
     }
 
     return options.access === "protected"
-      ? entry.private
-      : entry.private.concat(entry.protected);
-  }
-
-  isExcluded(
-    field: string,
-    options: {
-      access: Access;
-      excludedMap: ExcludedMap;
-      modelName: string;
-    }
-  ) {
-    if (!field) {
-      return false;
-    }
-
-    return this.getExcluded(options).includes(field);
+      ? filteredKeys.private
+      : filteredKeys.private.concat(filteredKeys.protected);
   }
 
   /**
    * Removes excluded keys from a document.
    */
-  filterItem<
+  private filterItem<
     T extends undefined | Record<string, unknown> | Record<string, unknown>[]
-  >(item: T, excluded?: string[]): T {
+  >(item: T, excluded: string[]): T {
+    if (!item) {
+      return item;
+    }
+
     if (Array.isArray(item)) {
       return item.map((i) => this.filterItem(i, excluded)) as T;
     }
 
-    if (item && excluded) {
+    if (excluded) {
       if (typeof item.toObject === "function") {
         item = item.toObject();
       }
 
       for (let i = 0; i < excluded.length; i++) {
-        deleteProperty(item as Record<string, unknown>, excluded[i]);
+        weedout(item as Record<string, unknown>, excluded[i]);
       }
     }
 
@@ -108,14 +86,14 @@ export class Filter {
   /**
    * Removes excluded keys from a document with populated subdocuments.
    */
-  filterPopulatedItem<
+  private filterPopulatedItem<
     T extends Record<string, unknown> | Record<string, unknown>[]
   >(
     item: T,
     options: {
       access: Access;
-      excludedMap: ExcludedMap | undefined;
-      populate: Exclude<QueryOptions["populate"], undefined>;
+      modelName: string;
+      populate: Exclude<QueryOptions["populate"], undefined | string>;
     }
   ): T {
     if (Array.isArray(item)) {
@@ -127,10 +105,15 @@ export class Filter {
         continue;
       }
 
+      const model = this.excludedMap.get(options.modelName)?.model;
+
+      if (!model) {
+        continue;
+      }
+
       const excluded = this.getExcluded({
         access: options.access,
-        excludedMap: options.excludedMap,
-        modelName: detective(this.model, options.populate[i].path),
+        modelName: detective(model, options.populate[i].path),
       });
 
       if (hasProperty(item, options.populate[i].path)) {
@@ -169,26 +152,23 @@ export class Filter {
    */
   filterObject(
     resource: Record<string, unknown> | Record<string, unknown>[],
-    options?: {
+    options: {
       access: Access;
-      excludedMap?: ExcludedMap;
-      populate: QueryOptions["populate"];
+      modelName: string;
+      populate?: Exclude<QueryOptions["populate"], string>;
     }
   ) {
-    const filtered = this.filterItem(
-      resource,
-      this.getExcluded({
-        access: options?.access || "public",
-        excludedMap: options?.excludedMap,
-        filteredKeys: this.filteredKeys,
-        modelName: this.model?.modelName,
-      })
-    );
+    const excluded = this.getExcluded({
+      access: options.access,
+      modelName: options.modelName,
+    });
+
+    const filtered = this.filterItem(resource, excluded);
 
     if (options?.populate) {
       this.filterPopulatedItem(filtered, {
         access: options.access,
-        excludedMap: options.excludedMap,
+        modelName: options.modelName,
         populate: options.populate,
       });
     }

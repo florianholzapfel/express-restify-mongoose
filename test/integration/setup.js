@@ -1,7 +1,6 @@
-import mongoose from "mongoose";
-const Schema = mongoose.Schema;
+import mongoose, { Schema } from "mongoose";
 
-module.exports = function () {
+export default function () {
   const ProductSchema = new Schema({
     name: { type: String, required: true },
     department: {
@@ -169,4 +168,4 @@ module.exports = function () {
     reset: reset,
     close: close,
   };
-};
+}

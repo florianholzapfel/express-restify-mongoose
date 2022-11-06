@@ -7,7 +7,6 @@
   "dependencies": {
     "dot-prop": "^7.2.0",
     "lodash.isplainobject": "~4.0.6",
-    "mongoose-detective": "~2.0.0",
     "moredots": "^2.0.2",
     "serialize-error": "^11.0.0",
     "zod": "^3.19.1"

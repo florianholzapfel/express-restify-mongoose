@@ -10,9 +10,7 @@ import { getPrepareOutputHandler } from "./middleware/prepareOutput";
 import { getPrepareQueryHandler } from "./middleware/prepareQuery";
 import { operations } from "./operations";
 import { Filter } from "./resource_filter";
-import { ExcludedMap, Options } from "./types";
-
-const excludedMap: ExcludedMap = {};
+import { Options } from "./types";
 
 const defaultOptions: Omit<Options, "contextFilter" | "outputFn" | "onError"> =
   {
@@ -36,6 +34,8 @@ const defaultOptions: Omit<Options, "contextFilter" | "outputFn" | "onError"> =
     preUpdate: [],
     preDelete: [],
   };
+
+const filter = new Filter();
 
 export function serve(
   app: Application,
@@ -72,18 +72,14 @@ export function serve(
     }
   });
 
-  const filter = new Filter({
-    model,
-    excludedMap,
+  filter.add(model, {
     filteredKeys: {
       private: serveOptions.private,
       protected: serveOptions.protected,
     },
   });
 
-  excludedMap[model.modelName] = filter.filteredKeys;
-
-  const ops = operations(model, serveOptions, excludedMap, filter);
+  const ops = operations(model, serveOptions, filter);
 
   let uriItem = `${serveOptions.prefix}${serveOptions.version}/${serveOptions.name}`;
 
@@ -119,7 +115,7 @@ export function serve(
   const prepareQuery = getPrepareQueryHandler(serveOptions);
   const prepareOutput = getPrepareOutputHandler(
     serveOptions,
-    excludedMap,
+    model.modelName,
     filter
   );
 

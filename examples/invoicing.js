@@ -2,21 +2,21 @@ import bodyParser from "body-parser";
 import express from "express";
 import http from "http";
 import methodOverride from "method-override";
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import { serve } from "../src/express-restify-mongoose";
 
 mongoose.connect("mongodb://localhost/database", {
   useMongoClient: true,
 });
 
-const Customer = new mongoose.Schema({
+const Customer = new Schema({
   name: { type: String, required: true },
   comment: { type: String },
 });
 
 const CustomerModel = mongoose.model("Customer", Customer);
 
-const Invoice = new mongoose.Schema({
+const Invoice = new Schema({
   customer: { type: Schema.Types.ObjectId, ref: "Customer" },
   amount: { type: Number, required: true },
 });

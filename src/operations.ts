@@ -6,7 +6,7 @@ import moredots from "moredots";
 import { getBuildQuery } from "./buildQuery";
 import { getErrorHandler } from "./errorHandler";
 import { Filter } from "./resource_filter";
-import { ExcludedMap, Options } from "./types";
+import { Options } from "./types";
 
 export function operations(
   model: mongoose.Model<unknown>,
@@ -24,7 +24,6 @@ export function operations(
     | "totalCountHeader"
     | "upsert"
   >,
-  excludedMap: ExcludedMap,
   filter: Filter
 ) {
   const buildQuery = getBuildQuery(options);
@@ -46,7 +45,7 @@ export function operations(
     return filter
       .getExcluded({
         access: req.access,
-        excludedMap: excludedMap,
+        modelName: model.modelName,
       })
       .includes(req.erm.query.distinct);
   }
@@ -211,6 +210,7 @@ export function operations(
 
     req.body = filter.filterObject(req.body || {}, {
       access: req.access,
+      modelName: model.modelName,
       populate: req.erm.query?.populate,
     });
 
@@ -241,6 +241,7 @@ export function operations(
 
     req.body = filter.filterObject(req.body || {}, {
       access: req.access,
+      modelName: model.modelName,
       populate: req.erm.query?.populate,
     });
 

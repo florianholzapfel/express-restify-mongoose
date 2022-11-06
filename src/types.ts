@@ -13,7 +13,13 @@ export type FilteredKeys = {
   protected: string[];
 };
 
-export type ExcludedMap = Record<string, FilteredKeys>;
+export type ExcludedMap = Map<
+  string,
+  {
+    filteredKeys: FilteredKeys;
+    model: mongoose.Model<unknown>;
+  }
+>;
 
 export type OutputFn = (req: Request, res: Response) => void | Promise<void>;
 
