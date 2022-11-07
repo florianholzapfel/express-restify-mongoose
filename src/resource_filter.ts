@@ -113,7 +113,6 @@ export class Filter {
 
       const excluded = this.getExcluded({
         access: options.access,
-        // @ts-expect-error this is fine 🐶🔥
         modelName: detective(model, options.populate[i].path),
       });
 
