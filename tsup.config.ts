@@ -1,8 +1,12 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: ["src/express-restify-mongoose.ts"],
-  splitting: false,
-  sourcemap: true,
   clean: true,
+  dts: true,
+  entry: ["src/express-restify-mongoose.ts"],
+  format: ["cjs", "esm"],
+  legacyOutput: true,
+  sourcemap: true,
+  splitting: false,
+  target: "node14",
 });
