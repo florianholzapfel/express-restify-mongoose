@@ -51,7 +51,7 @@ export function operations(
   }
 
   const getItems: RequestHandler = function (req, res, next) {
-    const contextModel = (req.erm && req.erm.model) || model;
+    const contextModel = model;
 
     if (isDistinctExcluded(req)) {
       req.erm.result = [];
@@ -90,7 +90,7 @@ export function operations(
   };
 
   const getCount: RequestHandler = function (req, res, next) {
-    const contextModel = (req.erm && req.erm.model) || model;
+    const contextModel = model;
 
     options.contextFilter(contextModel, req, (filteredContext) => {
       buildQuery(filteredContext.countDocuments(), req.erm.query)
@@ -105,7 +105,7 @@ export function operations(
   };
 
   const getShallow: RequestHandler = function (req, res, next) {
-    const contextModel = (req.erm && req.erm.model) || model;
+    const contextModel = model;
 
     options.contextFilter(contextModel, req, (filteredContext) => {
       buildQuery<Record<string, unknown> | null>(
@@ -134,7 +134,7 @@ export function operations(
   };
 
   const deleteItems: RequestHandler = function (req, res, next) {
-    const contextModel = (req.erm && req.erm.model) || model;
+    const contextModel = model;
 
     options.contextFilter(contextModel, req, (filteredContext) => {
       buildQuery(filteredContext.deleteMany(), req.erm.query)
@@ -148,7 +148,7 @@ export function operations(
   };
 
   const getItem: RequestHandler = function (req, res, next) {
-    const contextModel = (req.erm && req.erm.model) || model;
+    const contextModel = model;
 
     if (isDistinctExcluded(req)) {
       req.erm.result = [];
@@ -176,7 +176,7 @@ export function operations(
   };
 
   const deleteItem: RequestHandler = function (req, res, next) {
-    const contextModel = (req.erm && req.erm.model) || model;
+    const contextModel = model;
 
     if (options.findOneAndRemove) {
       options.contextFilter(contextModel, req, (filteredContext) => {
@@ -206,7 +206,7 @@ export function operations(
   };
 
   const createObject: RequestHandler = function (req, res, next) {
-    const contextModel = (req.erm && req.erm.model) || model;
+    const contextModel = model;
 
     req.body = filter.filterObject(req.body || {}, {
       access: req.access,
@@ -237,7 +237,7 @@ export function operations(
   };
 
   const modifyObject: RequestHandler = function (req, res, next) {
-    const contextModel = (req.erm && req.erm.model) || model;
+    const contextModel = model;
 
     req.body = filter.filterObject(req.body || {}, {
       access: req.access,

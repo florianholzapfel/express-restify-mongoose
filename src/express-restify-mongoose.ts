@@ -92,12 +92,7 @@ export function serve(
   const uriShallow = uriItem + "/shallow";
 
   app.use((req, res, next) => {
-    const getModel =
-      serveOptions.modelFactory && serveOptions.modelFactory.getModel;
-
-    req.erm = {
-      model: typeof getModel === "function" ? getModel(req) : model,
-    };
+    req.erm = {};
 
     next();
   });

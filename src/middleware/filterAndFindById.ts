@@ -14,7 +14,7 @@ export function getFilterAndFindByIdHandler(
   const errorHandler = getErrorHandler(options);
 
   const fn: RequestHandler = function filterAndFindById(req, res, next) {
-    const contextModel = (req.erm && req.erm.model) || model;
+    const contextModel = model;
 
     if (!req.params.id) {
       return next();
