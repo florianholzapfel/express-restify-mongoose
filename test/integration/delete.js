@@ -197,7 +197,7 @@ module.exports = function (createFn, setup, dismantle) {
           {
             url: `${testUrl}/api/v1/Customer`,
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             assert.equal(res.statusCode, 204);
             done();
@@ -210,7 +210,7 @@ module.exports = function (createFn, setup, dismantle) {
           {
             url: `${testUrl}/api/v1/Customer/${customer._id}`,
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             assert.equal(res.statusCode, 204);
             done();
@@ -223,7 +223,7 @@ module.exports = function (createFn, setup, dismantle) {
           {
             url: `${testUrl}/api/v1/Customer/${invalidId}`,
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             assert.equal(res.statusCode, 404);
             done();
@@ -236,7 +236,7 @@ module.exports = function (createFn, setup, dismantle) {
           {
             url: `${testUrl}/api/v1/Customer/${randomId}`,
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             assert.equal(res.statusCode, 404);
             done();
@@ -255,7 +255,7 @@ module.exports = function (createFn, setup, dismantle) {
             },
             json: true,
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             assert.equal(res.statusCode, 204);
 

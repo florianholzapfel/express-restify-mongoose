@@ -3,12 +3,12 @@ import { getOutputFnHandler } from "../../../src/middleware/outputFn";
 
 describe("outputFn", () => {
   let res = {
-    sendStatus: function () {},
+    sendStatus: () => undefined,
     status: function () {
       return this;
     },
-    json: function () {},
-    send: function () {},
+    json: () => undefined,
+    send: () => undefined,
   };
 
   let sendStatus = sinon.spy(res, "sendStatus");

@@ -45,7 +45,7 @@ module.exports = function (createFn, setup, dismantle) {
         {
           url: `${testUrl}/api/v1/Customer`,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 200);
           done();
@@ -91,7 +91,7 @@ module.exports = function (createFn, setup, dismantle) {
         {
           url: `${testUrl}/api/custom/Customer`,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 200);
           done();
@@ -104,7 +104,7 @@ module.exports = function (createFn, setup, dismantle) {
         {
           url: `${testUrl}/api/custom/Invoice`,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 200);
           done();
@@ -139,7 +139,7 @@ module.exports = function (createFn, setup, dismantle) {
             name: "Mike",
           },
         ])
-          .then((createdCustomers) => {
+          .then(() => {
             server = app.listen(testPort, done);
           })
           .catch(done);
@@ -258,7 +258,7 @@ module.exports = function (createFn, setup, dismantle) {
             name: "Mike",
           },
         ])
-          .then((createdCustomers) => {
+          .then(() => {
             server = app.listen(testPort, done);
           })
           .catch(done);
@@ -315,7 +315,7 @@ module.exports = function (createFn, setup, dismantle) {
             name: "Mike",
           },
         ])
-          .then((createdCustomers) => {
+          .then(() => {
             server = app.listen(testPort, done);
           })
           .catch(done);
@@ -372,7 +372,7 @@ module.exports = function (createFn, setup, dismantle) {
             name: "Mike",
           },
         ])
-          .then((createdCustomers) => {
+          .then(() => {
             server = app.listen(testPort, done);
           })
           .catch(done);
@@ -496,7 +496,7 @@ module.exports = function (createFn, setup, dismantle) {
         {
           url: `${testUrl}/api/v1/Client`,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 200);
           done();
@@ -533,7 +533,7 @@ module.exports = function (createFn, setup, dismantle) {
         {
           url: `${testUrl}/applepie/v1/Customer`,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 200);
           done();
@@ -571,7 +571,7 @@ module.exports = function (createFn, setup, dismantle) {
           {
             url: `${testUrl}/api/v8/Customer`,
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             assert.equal(res.statusCode, 200);
             done();
@@ -616,7 +616,7 @@ module.exports = function (createFn, setup, dismantle) {
           {
             url: `${testUrl}/api/v8/Entities/Customer`,
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             assert.equal(res.statusCode, 200);
             done();
@@ -629,7 +629,7 @@ module.exports = function (createFn, setup, dismantle) {
           {
             url: `${testUrl}/api/v8/Entities/${customer._id}/Customer`,
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             assert.equal(res.statusCode, 200);
             done();
@@ -642,7 +642,7 @@ module.exports = function (createFn, setup, dismantle) {
           {
             url: `${testUrl}/api/v8/Entities/${customer._id}/Customer/shallow`,
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             assert.equal(res.statusCode, 200);
             done();
@@ -655,7 +655,7 @@ module.exports = function (createFn, setup, dismantle) {
           {
             url: `${testUrl}/api/v8/Entities/Customer/count`,
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             assert.equal(res.statusCode, 200);
             done();
@@ -795,7 +795,7 @@ module.exports = function (createFn, setup, dismantle) {
         {
           url: `${testUrl}/api/v1/Customer/${customer._id}`,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 204);
           assert.equal(options.preDelete.length, 2);
@@ -879,7 +879,7 @@ module.exports = function (createFn, setup, dismantle) {
         {
           url: `${testUrl}/api/v1/Customer/${customer.name}`,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 204);
           done();
@@ -906,7 +906,7 @@ module.exports = function (createFn, setup, dismantle) {
         db.models.Customer.create({
           name: "Bob",
         })
-          .then((createdCustomer) => {
+          .then(() => {
             server = app.listen(testPort, done);
           })
           .catch(done);

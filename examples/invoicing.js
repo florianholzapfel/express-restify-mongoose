@@ -33,5 +33,6 @@ serve(app, CustomerModel);
 serve(app, InvoiceModel);
 
 http.createServer(app).listen(3000, function () {
+  // eslint-disable-next-line no-undef
   console.log("Express server listening on port 3000");
 });

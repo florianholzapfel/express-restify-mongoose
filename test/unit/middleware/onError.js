@@ -9,11 +9,11 @@ describe("onError", () => {
   };
 
   let res = {
-    setHeader: () => {},
+    setHeader: () => undefined,
     status: function () {
       return this;
     },
-    send: () => {},
+    send: () => undefined,
   };
 
   let setHeader = sinon.spy(res, "setHeader");
