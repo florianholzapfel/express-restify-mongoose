@@ -11,7 +11,7 @@ module.exports = function (createFn, setup, dismantle) {
   const testPort = 30023;
   const testUrl = `http://localhost:${testPort}`;
   const invalidId = "invalid-id";
-  const randomId = mongoose.Types.ObjectId().toHexString();
+  const randomId = new mongoose.Types.ObjectId().toHexString();
 
   describe("Delete documents", () => {
     describe("findOneAndRemove: true", () => {
@@ -19,7 +19,7 @@ module.exports = function (createFn, setup, dismantle) {
       let server;
       let customer;
 
-      beforeEach((done) => {
+      before((done) => {
         setup((err) => {
           if (err) {
             return done(err);
@@ -29,6 +29,16 @@ module.exports = function (createFn, setup, dismantle) {
             findOneAndRemove: true,
             restify: app.isRestify,
           });
+
+          server = app.listen(testPort, done);
+        });
+      });
+
+      beforeEach((done) => {
+        db.reset((err) => {
+          if (err) {
+            return done(err);
+          }
 
           db.models.Customer.create([
             {
@@ -43,13 +53,13 @@ module.exports = function (createFn, setup, dismantle) {
           ])
             .then((createdCustomers) => {
               customer = createdCustomers[0];
-              server = app.listen(testPort, done);
             })
+            .then(done)
             .catch(done);
         });
       });
 
-      afterEach((done) => {
+      after((done) => {
         dismantle(app, server, done);
       });
 
@@ -58,7 +68,7 @@ module.exports = function (createFn, setup, dismantle) {
           {
             url: `${testUrl}/api/v1/Customer`,
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             assert.equal(res.statusCode, 204);
             done();
@@ -71,7 +81,7 @@ module.exports = function (createFn, setup, dismantle) {
           {
             url: `${testUrl}/api/v1/Customer/${customer._id}`,
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             assert.equal(res.statusCode, 204);
             done();
@@ -84,7 +94,7 @@ module.exports = function (createFn, setup, dismantle) {
           {
             url: `${testUrl}/api/v1/Customer/${invalidId}`,
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             assert.equal(res.statusCode, 404);
             done();
@@ -97,7 +107,7 @@ module.exports = function (createFn, setup, dismantle) {
           {
             url: `${testUrl}/api/v1/Customer/${randomId}`,
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             assert.equal(res.statusCode, 404);
             done();
@@ -116,7 +126,7 @@ module.exports = function (createFn, setup, dismantle) {
             },
             json: true,
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             assert.equal(res.statusCode, 204);
 
@@ -138,7 +148,7 @@ module.exports = function (createFn, setup, dismantle) {
       let server;
       let customer;
 
-      beforeEach((done) => {
+      before((done) => {
         setup((err) => {
           if (err) {
             return done(err);
@@ -148,6 +158,16 @@ module.exports = function (createFn, setup, dismantle) {
             findOneAndRemove: false,
             restify: app.isRestify,
           });
+
+          server = app.listen(testPort, done);
+        });
+      });
+
+      beforeEach((done) => {
+        db.reset((err) => {
+          if (err) {
+            return done(err);
+          }
 
           db.models.Customer.create([
             {
@@ -162,13 +182,13 @@ module.exports = function (createFn, setup, dismantle) {
           ])
             .then((createdCustomers) => {
               customer = createdCustomers[0];
-              server = app.listen(testPort, done);
             })
+            .then(done)
             .catch(done);
         });
       });
 
-      afterEach((done) => {
+      after((done) => {
         dismantle(app, server, done);
       });
 

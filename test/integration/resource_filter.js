@@ -1,4 +1,3 @@
-// @ts-check
 import assert from "assert";
 import mongoose from "mongoose";
 import { Filter } from "../../src/resource_filter";

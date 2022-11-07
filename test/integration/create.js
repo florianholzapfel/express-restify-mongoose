@@ -11,14 +11,14 @@ module.exports = function (createFn, setup, dismantle) {
   let testPort = 30023;
   let testUrl = `http://localhost:${testPort}`;
   let invalidId = "invalid-id";
-  let randomId = mongoose.Types.ObjectId().toHexString();
+  let randomId = new mongoose.Types.ObjectId().toHexString();
 
   describe("Create documents", () => {
     let app = createFn();
     let server;
     let customer, product;
 
-    beforeEach((done) => {
+    before((done) => {
       setup((err) => {
         if (err) {
           return done(err);
@@ -36,25 +36,34 @@ module.exports = function (createFn, setup, dismantle) {
           restify: app.isRestify,
         });
 
-        db.models.Customer.create({
-          name: "Bob",
-        })
-          .then((createdCustomer) => {
-            customer = createdCustomer;
+        server = app.listen(testPort, done);
+      });
+    });
 
-            return db.models.Product.create({
-              name: "Bobsleigh",
-            });
-          })
-          .then((createdProduct) => {
+    beforeEach((done) => {
+      db.reset((err) => {
+        if (err) {
+          return done(err);
+        }
+
+        Promise.all([
+          db.models.Customer.create({
+            name: "Bob",
+          }),
+          db.models.Product.create({
+            name: "Bobsleigh",
+          }),
+        ])
+          .then(([createdCustomer, createdProduct]) => {
+            customer = createdCustomer;
             product = createdProduct;
-            server = app.listen(testPort, done);
           })
+          .then(done)
           .catch(done);
       });
     });
 
-    afterEach((done) => {
+    after((done) => {
       dismantle(app, server, done);
     });
 
@@ -171,7 +180,7 @@ module.exports = function (createFn, setup, dismantle) {
           assert.ok(!err);
           assert.equal(res.statusCode, 201);
           assert.ok(Array.isArray(body));
-          assert.ok(body.length, 2);
+          assert.equal(body.length, 2);
           assert.ok(body[0]._id);
           assert.equal(body[0].name, "John");
           assert.ok(body[1]._id);

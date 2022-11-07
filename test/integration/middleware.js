@@ -12,7 +12,7 @@ module.exports = function (createFn, setup, dismantle) {
   const testPort = 30023;
   const testUrl = `http://localhost:${testPort}`;
   const invalidId = "invalid-id";
-  const randomId = mongoose.Types.ObjectId().toHexString();
+  const randomId = new mongoose.Types.ObjectId().toHexString();
   const updateMethods = ["PATCH", "POST", "PUT"];
 
   describe("preMiddleware/Create/Read/Update/Delete - undefined", () => {
@@ -20,7 +20,7 @@ module.exports = function (createFn, setup, dismantle) {
     let server;
     let customer;
 
-    beforeEach((done) => {
+    before((done) => {
       setup((err) => {
         if (err) {
           return done(err);
@@ -30,18 +30,28 @@ module.exports = function (createFn, setup, dismantle) {
           restify: app.isRestify,
         });
 
+        server = app.listen(testPort, done);
+      });
+    });
+
+    beforeEach((done) => {
+      db.reset((err) => {
+        if (err) {
+          return done(err);
+        }
+
         db.models.Customer.create({
           name: "Bob",
         })
           .then((createdCustomer) => {
             customer = createdCustomer;
-            server = app.listen(testPort, done);
           })
+          .then(done)
           .catch(done);
       });
     });
 
-    afterEach((done) => {
+    after((done) => {
       dismantle(app, server, done);
     });
 
@@ -53,7 +63,7 @@ module.exports = function (createFn, setup, dismantle) {
             name: "John",
           },
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 201);
           done();
@@ -67,7 +77,7 @@ module.exports = function (createFn, setup, dismantle) {
           url: `${testUrl}/api/v1/Customer`,
           json: true,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 200);
           done();
@@ -85,7 +95,7 @@ module.exports = function (createFn, setup, dismantle) {
               name: "Bobby",
             },
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             assert.equal(res.statusCode, 200);
             done();
@@ -100,7 +110,7 @@ module.exports = function (createFn, setup, dismantle) {
           url: `${testUrl}/api/v1/Customer/${customer._id}`,
           json: true,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 204);
           done();
@@ -120,7 +130,7 @@ module.exports = function (createFn, setup, dismantle) {
       restify: app.isRestify,
     };
 
-    beforeEach((done) => {
+    before((done) => {
       setup((err) => {
         if (err) {
           return done(err);
@@ -128,19 +138,32 @@ module.exports = function (createFn, setup, dismantle) {
 
         serve(app, db.models.Customer, options);
 
+        server = app.listen(testPort, done);
+      });
+    });
+
+    beforeEach((done) => {
+      db.reset((err) => {
+        if (err) {
+          return done(err);
+        }
+
         db.models.Customer.create({
           name: "Bob",
         })
           .then((createdCustomer) => {
             customer = createdCustomer;
-            server = app.listen(testPort, done);
           })
+          .then(done)
           .catch(done);
       });
     });
 
-    afterEach((done) => {
+    afterEach(() => {
       options.preMiddleware.resetHistory();
+    });
+
+    after((done) => {
       dismantle(app, server, done);
     });
 
@@ -150,7 +173,7 @@ module.exports = function (createFn, setup, dismantle) {
           url: `${testUrl}/api/v1/Customer`,
           json: true,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 200);
           sinon.assert.calledOnce(options.preMiddleware);
@@ -168,7 +191,7 @@ module.exports = function (createFn, setup, dismantle) {
           url: `${testUrl}/api/v1/Customer`,
           json: true,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 200);
           sinon.assert.calledOnce(options.preMiddleware);
@@ -188,7 +211,7 @@ module.exports = function (createFn, setup, dismantle) {
             name: "Pre",
           },
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 201);
           sinon.assert.calledOnce(options.preMiddleware);
@@ -247,7 +270,7 @@ module.exports = function (createFn, setup, dismantle) {
               name: "Bobby",
             },
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             assert.equal(res.statusCode, 200);
             sinon.assert.calledOnce(options.preMiddleware);
@@ -305,7 +328,7 @@ module.exports = function (createFn, setup, dismantle) {
           url: `${testUrl}/api/v1/Customer`,
           json: true,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 204);
           sinon.assert.calledOnce(options.preMiddleware);
@@ -323,7 +346,7 @@ module.exports = function (createFn, setup, dismantle) {
           url: `${testUrl}/api/v1/Customer/${customer._id}`,
           json: true,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 204);
           sinon.assert.calledOnce(options.preMiddleware);
@@ -346,7 +369,7 @@ module.exports = function (createFn, setup, dismantle) {
       restify: app.isRestify,
     };
 
-    beforeEach((done) => {
+    before((done) => {
       setup((err) => {
         if (err) {
           return done(err);
@@ -358,8 +381,11 @@ module.exports = function (createFn, setup, dismantle) {
       });
     });
 
-    afterEach((done) => {
+    afterEach(() => {
       options.preCreate.resetHistory();
+    });
+
+    after((done) => {
       dismantle(app, server, done);
     });
 
@@ -371,7 +397,7 @@ module.exports = function (createFn, setup, dismantle) {
             name: "Bob",
           },
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 201);
           sinon.assert.calledOnce(options.preCreate);
@@ -397,7 +423,7 @@ module.exports = function (createFn, setup, dismantle) {
       restify: app.isRestify,
     };
 
-    beforeEach((done) => {
+    before((done) => {
       setup((err) => {
         if (err) {
           return done(err);
@@ -405,19 +431,32 @@ module.exports = function (createFn, setup, dismantle) {
 
         serve(app, db.models.Customer, options);
 
+        server = app.listen(testPort, done);
+      });
+    });
+
+    beforeEach((done) => {
+      db.reset((err) => {
+        if (err) {
+          return done(err);
+        }
+
         db.models.Customer.create({
           name: "Bob",
         })
           .then((createdCustomer) => {
             customer = createdCustomer;
-            server = app.listen(testPort, done);
           })
+          .then(done)
           .catch(done);
       });
     });
 
-    afterEach((done) => {
+    afterEach(() => {
       options.preRead.resetHistory();
+    });
+
+    after((done) => {
       dismantle(app, server, done);
     });
 
@@ -427,7 +466,7 @@ module.exports = function (createFn, setup, dismantle) {
           url: `${testUrl}/api/v1/Customer`,
           json: true,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 200);
           sinon.assert.calledOnce(options.preRead);
@@ -447,7 +486,7 @@ module.exports = function (createFn, setup, dismantle) {
           url: `${testUrl}/api/v1/Customer/count`,
           json: true,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 200);
           sinon.assert.calledOnce(options.preRead);
@@ -467,7 +506,7 @@ module.exports = function (createFn, setup, dismantle) {
           url: `${testUrl}/api/v1/Customer/${customer._id}`,
           json: true,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 200);
           sinon.assert.calledOnce(options.preRead);
@@ -487,7 +526,7 @@ module.exports = function (createFn, setup, dismantle) {
           url: `${testUrl}/api/v1/Customer/${customer._id}/shallow`,
           json: true,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 200);
           sinon.assert.calledOnce(options.preRead);
@@ -513,7 +552,7 @@ module.exports = function (createFn, setup, dismantle) {
       restify: app.isRestify,
     };
 
-    beforeEach((done) => {
+    before((done) => {
       setup((err) => {
         if (err) {
           return done(err);
@@ -521,19 +560,32 @@ module.exports = function (createFn, setup, dismantle) {
 
         serve(app, db.models.Customer, options);
 
+        server = app.listen(testPort, done);
+      });
+    });
+
+    beforeEach((done) => {
+      db.reset((err) => {
+        if (err) {
+          return done(err);
+        }
+
         db.models.Customer.create({
           name: "Bob",
         })
           .then((createdCustomer) => {
             customer = createdCustomer;
-            server = app.listen(testPort, done);
           })
+          .then(done)
           .catch(done);
       });
     });
 
-    afterEach((done) => {
+    afterEach(() => {
       options.preUpdate.resetHistory();
+    });
+
+    after((done) => {
       dismantle(app, server, done);
     });
 
@@ -547,7 +599,7 @@ module.exports = function (createFn, setup, dismantle) {
               name: "Bobby",
             },
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             assert.equal(res.statusCode, 200);
             sinon.assert.calledOnce(options.preUpdate);
@@ -613,7 +665,7 @@ module.exports = function (createFn, setup, dismantle) {
       restify: app.isRestify,
     };
 
-    beforeEach((done) => {
+    before((done) => {
       setup((err) => {
         if (err) {
           return done(err);
@@ -621,19 +673,32 @@ module.exports = function (createFn, setup, dismantle) {
 
         serve(app, db.models.Customer, options);
 
+        server = app.listen(testPort, done);
+      });
+    });
+
+    beforeEach((done) => {
+      db.reset((err) => {
+        if (err) {
+          return done(err);
+        }
+
         db.models.Customer.create({
           name: "Bob",
         })
           .then((createdCustomer) => {
             customer = createdCustomer;
-            server = app.listen(testPort, done);
           })
+          .then(done)
           .catch(done);
       });
     });
 
-    afterEach((done) => {
+    afterEach(() => {
       options.preDelete.resetHistory();
+    });
+
+    after((done) => {
       dismantle(app, server, done);
     });
 
@@ -643,7 +708,7 @@ module.exports = function (createFn, setup, dismantle) {
           url: `${testUrl}/api/v1/Customer`,
           json: true,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 204);
           sinon.assert.calledOnce(options.preDelete);
@@ -663,7 +728,7 @@ module.exports = function (createFn, setup, dismantle) {
           url: `${testUrl}/api/v1/Customer/${customer._id}`,
           json: true,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 204);
           sinon.assert.calledOnce(options.preDelete);
@@ -683,7 +748,7 @@ module.exports = function (createFn, setup, dismantle) {
     let server;
     let customer;
 
-    beforeEach((done) => {
+    before((done) => {
       setup((err) => {
         if (err) {
           return done(err);
@@ -693,18 +758,28 @@ module.exports = function (createFn, setup, dismantle) {
           restify: app.isRestify,
         });
 
+        server = app.listen(testPort, done);
+      });
+    });
+
+    beforeEach((done) => {
+      db.reset((err) => {
+        if (err) {
+          return done(err);
+        }
+
         db.models.Customer.create({
           name: "Bob",
         })
           .then((createdCustomer) => {
             customer = createdCustomer;
-            server = app.listen(testPort, done);
           })
+          .then(done)
           .catch(done);
       });
     });
 
-    afterEach((done) => {
+    after((done) => {
       dismantle(app, server, done);
     });
 
@@ -716,7 +791,7 @@ module.exports = function (createFn, setup, dismantle) {
             name: "John",
           },
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 201);
           done();
@@ -730,7 +805,7 @@ module.exports = function (createFn, setup, dismantle) {
           url: `${testUrl}/api/v1/Customer`,
           json: true,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 200);
           done();
@@ -747,7 +822,7 @@ module.exports = function (createFn, setup, dismantle) {
               name: "Bobby",
             },
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             assert.equal(res.statusCode, 200);
             done();
@@ -762,7 +837,7 @@ module.exports = function (createFn, setup, dismantle) {
           url: `${testUrl}/api/v1/Customer/${customer._id}`,
           json: true,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 204);
           done();
@@ -781,7 +856,7 @@ module.exports = function (createFn, setup, dismantle) {
       restify: app.isRestify,
     };
 
-    beforeEach((done) => {
+    before((done) => {
       setup((err) => {
         if (err) {
           return done(err);
@@ -793,8 +868,11 @@ module.exports = function (createFn, setup, dismantle) {
       });
     });
 
-    afterEach((done) => {
+    afterEach(() => {
       options.postCreate.resetHistory();
+    });
+
+    after((done) => {
       dismantle(app, server, done);
     });
 
@@ -806,7 +884,7 @@ module.exports = function (createFn, setup, dismantle) {
             name: "Bob",
           },
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 201);
           sinon.assert.calledOnce(options.postCreate);
@@ -868,7 +946,7 @@ module.exports = function (createFn, setup, dismantle) {
       restify: app.isRestify,
     };
 
-    beforeEach((done) => {
+    before((done) => {
       setup((err) => {
         if (err) {
           return done(err);
@@ -876,19 +954,32 @@ module.exports = function (createFn, setup, dismantle) {
 
         serve(app, db.models.Customer, options);
 
+        server = app.listen(testPort, done);
+      });
+    });
+
+    beforeEach((done) => {
+      db.reset((err) => {
+        if (err) {
+          return done(err);
+        }
+
         db.models.Customer.create({
           name: "Bob",
         })
           .then((createdCustomer) => {
             customer = createdCustomer;
-            server = app.listen(testPort, done);
           })
+          .then(done)
           .catch(done);
       });
     });
 
-    afterEach((done) => {
+    afterEach(() => {
       options.postRead.resetHistory();
+    });
+
+    after((done) => {
       dismantle(app, server, done);
     });
 
@@ -898,7 +989,7 @@ module.exports = function (createFn, setup, dismantle) {
           url: `${testUrl}/api/v1/Customer`,
           json: true,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 200);
           sinon.assert.calledOnce(options.postRead);
@@ -918,7 +1009,7 @@ module.exports = function (createFn, setup, dismantle) {
           url: `${testUrl}/api/v1/Customer/count`,
           json: true,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 200);
           sinon.assert.calledOnce(options.postRead);
@@ -938,7 +1029,7 @@ module.exports = function (createFn, setup, dismantle) {
           url: `${testUrl}/api/v1/Customer/${customer._id}`,
           json: true,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 200);
           sinon.assert.calledOnce(options.postRead);
@@ -958,7 +1049,7 @@ module.exports = function (createFn, setup, dismantle) {
           url: `${testUrl}/api/v1/Customer/${randomId}`,
           json: true,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 404);
           sinon.assert.notCalled(options.postRead);
@@ -973,7 +1064,7 @@ module.exports = function (createFn, setup, dismantle) {
           url: `${testUrl}/api/v1/Customer/${invalidId}`,
           json: true,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 404);
           sinon.assert.notCalled(options.postRead);
@@ -988,7 +1079,7 @@ module.exports = function (createFn, setup, dismantle) {
           url: `${testUrl}/api/v1/Customer/${customer._id}/shallow`,
           json: true,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 200);
           sinon.assert.calledOnce(options.postRead);
@@ -1014,7 +1105,7 @@ module.exports = function (createFn, setup, dismantle) {
       restify: app.isRestify,
     };
 
-    beforeEach((done) => {
+    before((done) => {
       setup((err) => {
         if (err) {
           return done(err);
@@ -1022,19 +1113,32 @@ module.exports = function (createFn, setup, dismantle) {
 
         serve(app, db.models.Customer, options);
 
+        server = app.listen(testPort, done);
+      });
+    });
+
+    beforeEach((done) => {
+      db.reset((err) => {
+        if (err) {
+          return done(err);
+        }
+
         db.models.Customer.create({
           name: "Bob",
         })
           .then((createdCustomer) => {
             customer = createdCustomer;
-            server = app.listen(testPort, done);
           })
+          .then(done)
           .catch(done);
       });
     });
 
-    afterEach((done) => {
+    afterEach(() => {
       options.postUpdate.resetHistory();
+    });
+
+    after((done) => {
       dismantle(app, server, done);
     });
 
@@ -1048,7 +1152,7 @@ module.exports = function (createFn, setup, dismantle) {
               name: "Bobby",
             },
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             assert.equal(res.statusCode, 200);
             sinon.assert.calledOnce(options.postUpdate);
@@ -1071,7 +1175,7 @@ module.exports = function (createFn, setup, dismantle) {
               name: "Bobby",
             },
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             assert.equal(res.statusCode, 404);
             sinon.assert.notCalled(options.postUpdate);
@@ -1089,7 +1193,7 @@ module.exports = function (createFn, setup, dismantle) {
               name: "Bobby",
             },
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             assert.equal(res.statusCode, 404);
             sinon.assert.notCalled(options.postUpdate);
@@ -1150,7 +1254,7 @@ module.exports = function (createFn, setup, dismantle) {
       restify: app.isRestify,
     };
 
-    beforeEach((done) => {
+    before((done) => {
       setup((err) => {
         if (err) {
           return done(err);
@@ -1158,19 +1262,32 @@ module.exports = function (createFn, setup, dismantle) {
 
         serve(app, db.models.Customer, options);
 
+        server = app.listen(testPort, done);
+      });
+    });
+
+    beforeEach((done) => {
+      db.reset((err) => {
+        if (err) {
+          return done(err);
+        }
+
         db.models.Customer.create({
           name: "Bob",
         })
           .then((createdCustomer) => {
             customer = createdCustomer;
-            server = app.listen(testPort, done);
           })
+          .then(done)
           .catch(done);
       });
     });
 
-    afterEach((done) => {
+    afterEach(() => {
       options.postDelete.resetHistory();
+    });
+
+    after((done) => {
       dismantle(app, server, done);
     });
 
@@ -1180,7 +1297,7 @@ module.exports = function (createFn, setup, dismantle) {
           url: `${testUrl}/api/v1/Customer`,
           json: true,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 204);
           sinon.assert.calledOnce(options.postDelete);
@@ -1200,7 +1317,7 @@ module.exports = function (createFn, setup, dismantle) {
           url: `${testUrl}/api/v1/Customer/${customer._id}`,
           json: true,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 204);
           sinon.assert.calledOnce(options.postDelete);
@@ -1220,7 +1337,7 @@ module.exports = function (createFn, setup, dismantle) {
           url: `${testUrl}/api/v1/Customer/${randomId}`,
           json: true,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 404);
           sinon.assert.notCalled(options.postDelete);
@@ -1235,7 +1352,7 @@ module.exports = function (createFn, setup, dismantle) {
           url: `${testUrl}/api/v1/Customer/${invalidId}`,
           json: true,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 404);
           sinon.assert.notCalled(options.postDelete);
@@ -1256,7 +1373,7 @@ module.exports = function (createFn, setup, dismantle) {
       restify: app.isRestify,
     };
 
-    beforeEach((done) => {
+    before((done) => {
       setup((err) => {
         if (err) {
           return done(err);
@@ -1268,8 +1385,11 @@ module.exports = function (createFn, setup, dismantle) {
       });
     });
 
-    afterEach((done) => {
+    afterEach(() => {
       options.postCreate.resetHistory();
+    });
+
+    after((done) => {
       dismantle(app, server, done);
     });
 
@@ -1282,7 +1402,7 @@ module.exports = function (createFn, setup, dismantle) {
             name: "Bob",
           },
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 400);
           sinon.assert.calledOnce(options.postCreate);
@@ -1306,7 +1426,7 @@ module.exports = function (createFn, setup, dismantle) {
       restify: app.isRestify,
     };
 
-    beforeEach((done) => {
+    before((done) => {
       setup((err) => {
         if (err) {
           return done(err);
@@ -1318,8 +1438,11 @@ module.exports = function (createFn, setup, dismantle) {
       });
     });
 
-    afterEach((done) => {
+    afterEach(() => {
       options.postProcess.resetHistory();
+    });
+
+    after((done) => {
       dismantle(app, server, done);
     });
 
@@ -1329,7 +1452,7 @@ module.exports = function (createFn, setup, dismantle) {
           url: `${testUrl}/api/v1/Customer`,
           json: true,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 200);
           sinon.assert.calledOnce(options.postProcess);
@@ -1360,7 +1483,7 @@ module.exports = function (createFn, setup, dismantle) {
       restify: app.isRestify,
     };
 
-    beforeEach((done) => {
+    before((done) => {
       setup((err) => {
         if (err) {
           return done(err);
@@ -1372,8 +1495,11 @@ module.exports = function (createFn, setup, dismantle) {
       });
     });
 
-    afterEach((done) => {
+    afterEach(() => {
       options.postProcess.resetHistory();
+    });
+
+    after((done) => {
       dismantle(app, server, done);
     });
 
@@ -1383,7 +1509,7 @@ module.exports = function (createFn, setup, dismantle) {
           url: `${testUrl}/api/v1/Customer`,
           json: true,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 200);
           sinon.assert.calledOnce(options.postProcess);

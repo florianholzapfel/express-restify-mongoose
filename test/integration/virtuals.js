@@ -15,7 +15,7 @@ module.exports = function (createFn, setup, dismantle) {
       let app = createFn();
       let server;
 
-      beforeEach((done) => {
+      before((done) => {
         setup((err) => {
           if (err) {
             return done(err);
@@ -26,17 +26,25 @@ module.exports = function (createFn, setup, dismantle) {
             restify: app.isRestify,
           });
 
+          server = app.listen(testPort, done);
+        });
+      });
+
+      beforeEach((done) => {
+        db.reset((err) => {
+          if (err) {
+            return done(err);
+          }
+
           db.models.Customer.create({
             name: "Bob",
           })
-            .then((createdCustomers) => {
-              server = app.listen(testPort, done);
-            })
+            .then(() => done())
             .catch(done);
         });
       });
 
-      afterEach((done) => {
+      after((done) => {
         dismantle(app, server, done);
       });
 
@@ -61,7 +69,7 @@ module.exports = function (createFn, setup, dismantle) {
       let app = createFn();
       let server;
 
-      beforeEach((done) => {
+      before((done) => {
         setup((err) => {
           if (err) {
             return done(err);
@@ -72,17 +80,25 @@ module.exports = function (createFn, setup, dismantle) {
             restify: app.isRestify,
           });
 
+          server = app.listen(testPort, done);
+        });
+      });
+
+      beforeEach((done) => {
+        db.reset((err) => {
+          if (err) {
+            return done(err);
+          }
+
           db.models.Customer.create({
             name: "Bob",
           })
-            .then((createdCustomers) => {
-              server = app.listen(testPort, done);
-            })
+            .then(() => done())
             .catch(done);
         });
       });
 
-      afterEach((done) => {
+      after((done) => {
         dismantle(app, server, done);
       });
 
@@ -107,7 +123,7 @@ module.exports = function (createFn, setup, dismantle) {
       let app = createFn();
       let server;
 
-      beforeEach((done) => {
+      before((done) => {
         setup((err) => {
           if (err) {
             return done(err);
@@ -118,17 +134,25 @@ module.exports = function (createFn, setup, dismantle) {
             restify: app.isRestify,
           });
 
+          server = app.listen(testPort, done);
+        });
+      });
+
+      beforeEach((done) => {
+        db.reset((err) => {
+          if (err) {
+            return done(err);
+          }
+
           db.models.Customer.create({
             name: "Bob",
           })
-            .then((createdCustomers) => {
-              server = app.listen(testPort, done);
-            })
+            .then(() => done())
             .catch(done);
         });
       });
 
-      afterEach((done) => {
+      after((done) => {
         dismantle(app, server, done);
       });
 
@@ -138,7 +162,7 @@ module.exports = function (createFn, setup, dismantle) {
             url: `${testUrl}/api/v1/Customer`,
             json: true,
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             assert.equal(res.statusCode, 200);
             done();

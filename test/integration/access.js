@@ -22,7 +22,7 @@ module.exports = function (createFn, setup, dismantle) {
       let repeatCustomer;
       let repeatCustomerInvoice;
 
-      beforeEach((done) => {
+      before((done) => {
         setup((err) => {
           if (err) {
             return done(err);
@@ -78,6 +78,16 @@ module.exports = function (createFn, setup, dismantle) {
             },
             restify: app.isRestify,
           });
+
+          server = app.listen(testPort, done);
+        });
+      });
+
+      beforeEach((done) => {
+        db.reset((err) => {
+          if (err) {
+            return done(err);
+          }
 
           db.models.Product.create({
             name: "Bobsleigh",
@@ -149,13 +159,13 @@ module.exports = function (createFn, setup, dismantle) {
             })
             .then((createdRepeatCustomerInvoice) => {
               repeatCustomerInvoice = createdRepeatCustomerInvoice;
-              server = app.listen(testPort, done);
             })
+            .then(done)
             .catch(done);
         });
       });
 
-      afterEach((done) => {
+      after((done) => {
         dismantle(app, server, done);
       });
 
@@ -616,7 +626,7 @@ module.exports = function (createFn, setup, dismantle) {
       let repeatCustomer;
       let repeatCustomerInvoice;
 
-      beforeEach((done) => {
+      before((done) => {
         setup((err) => {
           if (err) {
             return done(err);
@@ -672,6 +682,16 @@ module.exports = function (createFn, setup, dismantle) {
             },
             restify: app.isRestify,
           });
+
+          server = app.listen(testPort, done);
+        });
+      });
+
+      beforeEach((done) => {
+        db.reset((err) => {
+          if (err) {
+            return done(err);
+          }
 
           db.models.Product.create({
             name: "Bobsleigh",
@@ -743,13 +763,13 @@ module.exports = function (createFn, setup, dismantle) {
             })
             .then((createdRepeatCustomerInvoice) => {
               repeatCustomerInvoice = createdRepeatCustomerInvoice;
-              server = app.listen(testPort, done);
             })
+            .then(done)
             .catch(done);
         });
       });
 
-      afterEach((done) => {
+      after((done) => {
         dismantle(app, server, done);
       });
 
@@ -1198,7 +1218,7 @@ module.exports = function (createFn, setup, dismantle) {
       let repeatCustomer;
       let repeatCustomerInvoice;
 
-      beforeEach((done) => {
+      before((done) => {
         setup((err) => {
           if (err) {
             return done(err);
@@ -1239,6 +1259,16 @@ module.exports = function (createFn, setup, dismantle) {
             protected: ["points"],
             restify: app.isRestify,
           });
+
+          server = app.listen(testPort, done);
+        });
+      });
+
+      beforeEach((done) => {
+        db.reset((err) => {
+          if (err) {
+            return done(err);
+          }
 
           db.models.Product.create({
             name: "Bobsleigh",
@@ -1310,13 +1340,13 @@ module.exports = function (createFn, setup, dismantle) {
             })
             .then((createdRepeatCustomerInvoice) => {
               repeatCustomerInvoice = createdRepeatCustomerInvoice;
-              server = app.listen(testPort, done);
             })
+            .then(done)
             .catch(done);
         });
       });
 
-      afterEach((done) => {
+      after((done) => {
         dismantle(app, server, done);
       });
 
@@ -1751,7 +1781,7 @@ module.exports = function (createFn, setup, dismantle) {
       let app = createFn();
       let server;
 
-      beforeEach((done) => {
+      before((done) => {
         setup((err) => {
           if (err) {
             return done(err);
@@ -1769,7 +1799,7 @@ module.exports = function (createFn, setup, dismantle) {
         });
       });
 
-      afterEach((done) => {
+      after((done) => {
         dismantle(app, server, done);
       });
 

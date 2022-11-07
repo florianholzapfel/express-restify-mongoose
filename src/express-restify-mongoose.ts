@@ -91,6 +91,11 @@ export function serve(
   const uriCount = uriItems + "/count";
   const uriShallow = uriItem + "/shallow";
 
+  if (typeof app.delete === "undefined") {
+    // @ts-expect-error restify
+    app.delete = app.del;
+  }
+
   app.use((req, res, next) => {
     req.erm = {};
 

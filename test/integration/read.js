@@ -11,14 +11,14 @@ module.exports = function (createFn, setup, dismantle) {
   const testPort = 30023;
   const testUrl = `http://localhost:${testPort}`;
   const invalidId = "invalid-id";
-  const randomId = mongoose.Types.ObjectId().toHexString();
+  const randomId = new mongoose.Types.ObjectId().toHexString();
 
   describe("Read documents", () => {
     let app = createFn();
     let server;
     let customers;
 
-    beforeEach((done) => {
+    before((done) => {
       setup((err) => {
         if (err) {
           return done(err);
@@ -32,6 +32,16 @@ module.exports = function (createFn, setup, dismantle) {
         serve(app, db.models.Invoice, {
           restify: app.isRestify,
         });
+
+        server = app.listen(testPort, done);
+      });
+    });
+
+    beforeEach((done) => {
+      db.reset((err) => {
+        if (err) {
+          return done(err);
+        }
 
         db.models.Product.create({
           name: "Bobsleigh",
@@ -98,14 +108,12 @@ module.exports = function (createFn, setup, dismantle) {
               },
             ]);
           })
-          .then((createdInvoices) => {
-            server = app.listen(testPort, done);
-          })
+          .then(() => done())
           .catch(done);
       });
     });
 
-    afterEach((done) => {
+    after((done) => {
       dismantle(app, server, done);
     });
 
@@ -145,7 +153,7 @@ module.exports = function (createFn, setup, dismantle) {
           url: `${testUrl}/api/v1/Customer/${invalidId}`,
           json: true,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 404);
           done();
@@ -159,7 +167,7 @@ module.exports = function (createFn, setup, dismantle) {
           url: `${testUrl}/api/v1/Customer/${randomId}`,
           json: true,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 404);
           done();
@@ -1095,7 +1103,7 @@ module.exports = function (createFn, setup, dismantle) {
             url: `${testUrl}/api/v1/Customer/${invalidId}/shallow`,
             json: true,
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             assert.equal(res.statusCode, 404);
             done();
@@ -1109,7 +1117,7 @@ module.exports = function (createFn, setup, dismantle) {
             url: `${testUrl}/api/v1/Customer/${randomId}/shallow`,
             json: true,
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             assert.equal(res.statusCode, 404);
             done();

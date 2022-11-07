@@ -14,7 +14,7 @@ module.exports = function (createFn, setup, dismantle) {
     let app = createFn();
     let server;
 
-    beforeEach((done) => {
+    before((done) => {
       setup((err) => {
         if (err) {
           return done(err);
@@ -28,7 +28,7 @@ module.exports = function (createFn, setup, dismantle) {
       });
     });
 
-    afterEach((done) => {
+    after((done) => {
       dismantle(app, server, done);
     });
 

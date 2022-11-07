@@ -11,7 +11,7 @@ module.exports = function (createFn, setup, dismantle) {
   const testPort = 30023;
   const testUrl = `http://localhost:${testPort}`;
   const invalidId = "invalid-id";
-  const randomId = mongoose.Types.ObjectId().toHexString();
+  const randomId = new mongoose.Types.ObjectId().toHexString();
   const updateMethods = ["PATCH", "POST", "PUT"];
 
   describe("Update documents", () => {
@@ -22,7 +22,7 @@ module.exports = function (createFn, setup, dismantle) {
       let products;
       let invoice;
 
-      beforeEach((done) => {
+      before((done) => {
         setup((err) => {
           if (err) {
             return done(err);
@@ -37,6 +37,16 @@ module.exports = function (createFn, setup, dismantle) {
             findOneAndUpdate: true,
             restify: app.isRestify,
           });
+
+          server = app.listen(testPort, done);
+        });
+      });
+
+      beforeEach((done) => {
+        db.reset((err) => {
+          if (err) {
+            return done(err);
+          }
 
           db.models.Customer.create([
             {
@@ -87,13 +97,13 @@ module.exports = function (createFn, setup, dismantle) {
             })
             .then((customer) => {
               customers.push(customer);
-              server = app.listen(testPort, done);
             })
+            .then(done)
             .catch(done);
         });
       });
 
-      afterEach((done) => {
+      after((done) => {
         dismantle(app, server, done);
       });
 
@@ -236,7 +246,7 @@ module.exports = function (createFn, setup, dismantle) {
                 name: "Mike",
               },
             },
-            (err, res, body) => {
+            (err, res) => {
               assert.ok(!err);
               assert.equal(res.statusCode, 404);
               done();
@@ -253,7 +263,7 @@ module.exports = function (createFn, setup, dismantle) {
                 name: "Mike",
               },
             },
-            (err, res, body) => {
+            (err, res) => {
               assert.ok(!err);
               assert.equal(res.statusCode, 404);
               done();
@@ -477,7 +487,7 @@ module.exports = function (createFn, setup, dismantle) {
             url: `${testUrl}/api/v1/Customer`,
             json: {},
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             if (app.isRestify) {
               assert.equal(res.statusCode, 405);
@@ -495,7 +505,7 @@ module.exports = function (createFn, setup, dismantle) {
             url: `${testUrl}/api/v1/Customer`,
             json: {},
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             if (app.isRestify) {
               assert.equal(res.statusCode, 405);
@@ -515,7 +525,7 @@ module.exports = function (createFn, setup, dismantle) {
       let products;
       let invoice;
 
-      beforeEach((done) => {
+      before((done) => {
         setup((err) => {
           if (err) {
             return done(err);
@@ -530,6 +540,16 @@ module.exports = function (createFn, setup, dismantle) {
             findOneAndUpdate: false,
             restify: app.isRestify,
           });
+
+          server = app.listen(testPort, done);
+        });
+      });
+
+      beforeEach((done) => {
+        db.reset((err) => {
+          if (err) {
+            return done(err);
+          }
 
           db.models.Customer.create([
             {
@@ -580,13 +600,13 @@ module.exports = function (createFn, setup, dismantle) {
             })
             .then((customer) => {
               customers.push(customer);
-              server = app.listen(testPort, done);
             })
+            .then(done)
             .catch(done);
         });
       });
 
-      afterEach((done) => {
+      after((done) => {
         dismantle(app, server, done);
       });
 
@@ -737,7 +757,7 @@ module.exports = function (createFn, setup, dismantle) {
                 name: "Mike",
               },
             },
-            (err, res, body) => {
+            (err, res) => {
               assert.ok(!err);
               assert.equal(res.statusCode, 404);
               done();
@@ -754,7 +774,7 @@ module.exports = function (createFn, setup, dismantle) {
                 name: "Mike",
               },
             },
-            (err, res, body) => {
+            (err, res) => {
               assert.ok(!err);
               assert.equal(res.statusCode, 404);
               done();
@@ -978,7 +998,7 @@ module.exports = function (createFn, setup, dismantle) {
             url: `${testUrl}/api/v1/Customer`,
             json: {},
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             if (app.isRestify) {
               assert.equal(res.statusCode, 405);
@@ -996,7 +1016,7 @@ module.exports = function (createFn, setup, dismantle) {
             url: `${testUrl}/api/v1/Customer`,
             json: {},
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             if (app.isRestify) {
               assert.equal(res.statusCode, 405);
