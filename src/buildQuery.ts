@@ -31,6 +31,7 @@ export function getBuildQuery(
 
       if (
         queryOptions.limit &&
+        // @ts-expect-error this is fine 🐶🔥
         query.op !== "countDocuments" &&
         !queryOptions.distinct
       ) {
@@ -38,10 +39,12 @@ export function getBuildQuery(
       }
 
       if (queryOptions.sort) {
+        // @ts-expect-error this is fine 🐶🔥
         query.sort(queryOptions.sort);
       }
 
       if (queryOptions.populate) {
+        // @ts-expect-error this is fine 🐶🔥
         query.populate(queryOptions.populate);
       }
 

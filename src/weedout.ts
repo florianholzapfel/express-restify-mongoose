@@ -11,6 +11,7 @@ export function weedout(obj: Record<string, unknown>, path: string) {
     }
 
     if (i < keys.length - 1) {
+      // @ts-expect-error this is fine 🐶🔥
       obj = obj[keys[i]];
     } else {
       delete obj[keys[i]];

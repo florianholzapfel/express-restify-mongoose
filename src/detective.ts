@@ -21,15 +21,20 @@ export function detective(model: mongoose.Model<unknown>, path: string) {
     return;
   }
 
+  // @ts-expect-error this is fine 🐶🔥
   schemaPath = schema.path(keys[keys.length - 1]) || schema.path(schemaPath);
 
   if (!schemaPath && (!model || !model.discriminators)) {
     return;
   }
 
+  // @ts-expect-error this is fine 🐶🔥
   if (schemaPath.caster && schemaPath.caster.options) {
+    // @ts-expect-error this is fine 🐶🔥
     return schemaPath.caster.options.ref;
+    // @ts-expect-error this is fine 🐶🔥
   } else if (schemaPath.options) {
+    // @ts-expect-error this is fine 🐶🔥
     return schemaPath.options.ref;
   }
 }

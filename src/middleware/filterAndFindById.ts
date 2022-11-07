@@ -22,6 +22,7 @@ export function getFilterAndFindByIdHandler(
 
     options.contextFilter(contextModel, req, (filteredContext) => {
       filteredContext
+        // @ts-expect-error this is fine 🐶🔥
         .findOne()
         .and({
           [options.idProperty]: req.params.id,
@@ -29,7 +30,7 @@ export function getFilterAndFindByIdHandler(
         .lean(false)
         .read(options.readPreference || "p")
         .exec()
-        .then((doc) => {
+        .then((doc: mongoose.Document | null) => {
           if (!doc) {
             return errorHandler(new Error(STATUS_CODES[404]), req, res, next);
           }

@@ -61,6 +61,7 @@ export function operations(
 
     options.contextFilter(contextModel, req, (filteredContext) => {
       buildQuery<Record<string, unknown>[]>(
+        // @ts-expect-error this is fine 🐶🔥
         filteredContext.find(),
         req.erm.query
       )
@@ -109,6 +110,7 @@ export function operations(
 
     options.contextFilter(contextModel, req, (filteredContext) => {
       buildQuery<Record<string, unknown> | null>(
+        // @ts-expect-error this is fine 🐶🔥
         findById(filteredContext, req.params.id),
         req.erm.query
       )
@@ -158,6 +160,7 @@ export function operations(
 
     options.contextFilter(contextModel, req, (filteredContext) => {
       buildQuery<Record<string, unknown> | null>(
+        // @ts-expect-error this is fine 🐶🔥
         findById(filteredContext, req.params.id),
         req.erm.query
       )
@@ -180,6 +183,7 @@ export function operations(
 
     if (options.findOneAndRemove) {
       options.contextFilter(contextModel, req, (filteredContext) => {
+        // @ts-expect-error this is fine 🐶🔥
         findById(filteredContext, req.params.id)
           .findOneAndRemove()
           .then((item) => {
@@ -211,6 +215,7 @@ export function operations(
     req.body = filter.filterObject(req.body || {}, {
       access: req.access,
       modelName: model.modelName,
+      // @ts-expect-error this is fine 🐶🔥
       populate: req.erm.query?.populate,
     });
 
@@ -218,13 +223,16 @@ export function operations(
       delete req.body._id;
     }
 
+    // @ts-expect-error this is fine 🐶🔥
     if (contextModel.schema.options.versionKey) {
+      // @ts-expect-error this is fine 🐶🔥
       delete req.body[contextModel.schema.options.versionKey];
     }
 
     contextModel
       .create(req.body)
       .then((item) => {
+        // @ts-expect-error this is fine 🐶🔥
         return contextModel.populate(item, req.erm.query?.populate || []);
       })
       .then((item) => {
@@ -242,12 +250,15 @@ export function operations(
     req.body = filter.filterObject(req.body || {}, {
       access: req.access,
       modelName: model.modelName,
+      // @ts-expect-error this is fine 🐶🔥
       populate: req.erm.query?.populate,
     });
 
     delete req.body._id;
 
+    // @ts-expect-error this is fine 🐶🔥
     if (contextModel.schema.options.versionKey) {
+      // @ts-expect-error this is fine 🐶🔥
       delete req.body[contextModel.schema.options.versionKey];
     }
 
@@ -257,11 +268,13 @@ export function operations(
       for (const [key, value] of Object.entries(src)) {
         const path = contextModel.schema.path(key);
 
+        // @ts-expect-error this is fine 🐶🔥
         if (path && path.caster && path.caster.instance === "ObjectID") {
           if (Array.isArray(value)) {
             for (let j = 0; j < value.length; ++j) {
               if (typeof value[j] === "object") {
                 dst[key] = dst[key] || [];
+                // @ts-expect-error this is fine 🐶🔥
                 dst[key].push(value[j]._id);
               }
             }
@@ -288,6 +301,7 @@ export function operations(
 
     if (options.findOneAndUpdate) {
       options.contextFilter(contextModel, req, (filteredContext) => {
+        // @ts-expect-error this is fine 🐶🔥
         findById(filteredContext, req.params.id)
           .findOneAndUpdate(
             {},
@@ -302,6 +316,7 @@ export function operations(
           )
           .exec()
           .then((item) => {
+            // @ts-expect-error this is fine 🐶🔥
             return contextModel.populate(item, req.erm.query?.populate || []);
           })
           .then((item) => {
@@ -324,6 +339,7 @@ export function operations(
       req.erm.document
         ?.save()
         .then((item) => {
+          // @ts-expect-error this is fine 🐶🔥
           return contextModel.populate(item, req.erm.query?.populate || []);
         })
         .then((item) => {

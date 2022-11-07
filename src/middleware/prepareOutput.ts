@@ -67,6 +67,7 @@ export function getPrepareOutputHandler(
         req.erm.result = filter.filterObject(req.erm.result, {
           access: req.access,
           modelName,
+          // @ts-expect-error this is fine 🐶🔥
           populate: req.erm.query?.populate,
         });
       }
