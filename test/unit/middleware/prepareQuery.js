@@ -12,7 +12,6 @@ describe("prepareQuery", () => {
 
   afterEach(() => {
     options.onError.resetHistory();
-    options.allowRegex = true;
     next.resetHistory();
   });
 
@@ -24,9 +23,7 @@ describe("prepareQuery", () => {
         },
       };
 
-      options.allowRegex = false;
-
-      getPrepareQueryHandler(options)(req, {}, next);
+      getPrepareQueryHandler({ ...options, allowRegex: false })(req, {}, next);
 
       sinon.assert.calledOnce(options.onError);
       sinon.assert.calledWithExactly(
