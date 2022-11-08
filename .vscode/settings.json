@@ -1,4 +1,4 @@
 {
   "editor.formatOnSave": true,
-  "javascript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
+  "javascript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false
 }

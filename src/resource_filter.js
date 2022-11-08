@@ -1,11 +1,11 @@
-'use strict'
+"use strict";
 
-const defaults = require('lodash.defaults')
-const detective = require('mongoose-detective')
-const get = require('lodash.get')
-const has = require('lodash.has')
-const isPlainObject = require('lodash.isplainobject')
-const weedout = require('weedout')
+const defaults = require("lodash.defaults");
+const detective = require("mongoose-detective");
+const get = require("lodash.get");
+const has = require("lodash.has");
+const isPlainObject = require("lodash.isplainobject");
+const weedout = require("weedout");
 
 /**
  * Represents a filter.
@@ -16,7 +16,7 @@ const weedout = require('weedout')
  * @param {Object} opts.filteredKeys {} - Keys to filter for the current model
  */
 function Filter(opts) {
-  this.model = opts.model
+  this.model = opts.model;
 
   this.filteredKeys = isPlainObject(opts.filteredKeys)
     ? {
@@ -26,13 +26,21 @@ function Filter(opts) {
     : {
         private: [],
         protected: [],
-      }
+      };
 
-  if (this.model && this.model.discriminators && isPlainObject(opts.excludedMap)) {
+  if (
+    this.model &&
+    this.model.discriminators &&
+    isPlainObject(opts.excludedMap)
+  ) {
     for (const modelName in this.model.discriminators) {
       if (opts.excludedMap[modelName]) {
-        this.filteredKeys.private = this.filteredKeys.private.concat(opts.excludedMap[modelName].private)
-        this.filteredKeys.protected = this.filteredKeys.protected.concat(opts.excludedMap[modelName].protected)
+        this.filteredKeys.private = this.filteredKeys.private.concat(
+          opts.excludedMap[modelName].private
+        );
+        this.filteredKeys.protected = this.filteredKeys.protected.concat(
+          opts.excludedMap[modelName].protected
+        );
       }
     }
   }
@@ -48,11 +56,14 @@ function Filter(opts) {
  * @returns {Array} - Keys to filter.
  */
 Filter.prototype.getExcluded = function (opts) {
-  if (opts.access === 'private') {
-    return []
+  if (opts.access === "private") {
+    return [];
   }
 
-  let entry = opts.excludedMap && opts.modelName ? opts.excludedMap[opts.modelName] : null
+  let entry =
+    opts.excludedMap && opts.modelName
+      ? opts.excludedMap[opts.modelName]
+      : null;
 
   if (!entry) {
     entry = isPlainObject(opts.filteredKeys)
@@ -63,26 +74,28 @@ Filter.prototype.getExcluded = function (opts) {
       : {
           private: [],
           protected: [],
-        }
+        };
   }
 
-  return opts.access === 'protected' ? entry.private : entry.private.concat(entry.protected)
-}
+  return opts.access === "protected"
+    ? entry.private
+    : entry.private.concat(entry.protected);
+};
 
 Filter.prototype.isExcluded = function (field, opts) {
   if (!field) {
-    return false
+    return false;
   }
 
   opts = defaults(opts, {
-    access: 'public',
+    access: "public",
     excludedMap: {},
     filteredKeys: this.filteredKeys,
     modelName: this.model.modelName,
-  })
+  });
 
-  return this.getExcluded(opts).indexOf(field) >= 0
-}
+  return this.getExcluded(opts).indexOf(field) >= 0;
+};
 
 /**
  * Removes excluded keys from a document.
@@ -93,25 +106,25 @@ Filter.prototype.isExcluded = function (field, opts) {
  */
 Filter.prototype.filterItem = function (item, excluded) {
   if (Array.isArray(item)) {
-    return item.map((i) => this.filterItem(i, excluded))
+    return item.map((i) => this.filterItem(i, excluded));
   }
 
   if (item && excluded) {
-    if (typeof item.toObject === 'function') {
-      item = item.toObject()
+    if (typeof item.toObject === "function") {
+      item = item.toObject();
     }
 
     for (let i = 0, length = excluded.length; i < length; i++) {
-      if (excluded[i].indexOf('.') > 0) {
-        weedout(item, excluded[i])
+      if (excluded[i].indexOf(".") > 0) {
+        weedout(item, excluded[i]);
       } else {
-        delete item[excluded[i]]
+        delete item[excluded[i]];
       }
     }
   }
 
-  return item
-}
+  return item;
+};
 
 /**
  * Removes excluded keys from a document with populated subdocuments.
@@ -125,41 +138,47 @@ Filter.prototype.filterItem = function (item, excluded) {
  */
 Filter.prototype.filterPopulatedItem = function (item, opts) {
   if (Array.isArray(item)) {
-    return item.map((i) => this.filterPopulatedItem(i, opts))
+    return item.map((i) => this.filterPopulatedItem(i, opts));
   }
 
   for (let i = 0; i < opts.populate.length; i++) {
     if (!opts.populate[i].path) {
-      continue
+      continue;
     }
 
     const excluded = this.getExcluded({
       access: opts.access,
       excludedMap: opts.excludedMap,
       modelName: detective(this.model, opts.populate[i].path),
-    })
+    });
 
     if (has(item, opts.populate[i].path)) {
-      this.filterItem(get(item, opts.populate[i].path), excluded)
+      this.filterItem(get(item, opts.populate[i].path), excluded);
     } else {
-      const pathToArray = opts.populate[i].path.split('.').slice(0, -1).join('.')
+      const pathToArray = opts.populate[i].path
+        .split(".")
+        .slice(0, -1)
+        .join(".");
 
       if (has(item, pathToArray)) {
-        const array = get(item, pathToArray)
-        const pathToObject = opts.populate[i].path.split('.').slice(-1).join('.')
+        const array = get(item, pathToArray);
+        const pathToObject = opts.populate[i].path
+          .split(".")
+          .slice(-1)
+          .join(".");
 
         if (Array.isArray(array)) {
           this.filterItem(
             array.map((element) => get(element, pathToObject)),
             excluded
-          )
+          );
         }
       }
     }
   }
 
-  return item
-}
+  return item;
+};
 
 /**
  * Removes excluded keys from a document.
@@ -174,19 +193,19 @@ Filter.prototype.filterPopulatedItem = function (item, opts) {
  */
 Filter.prototype.filterObject = function (resource, opts) {
   opts = defaults(opts || {}, {
-    access: 'public',
+    access: "public",
     excludedMap: {},
     filteredKeys: this.filteredKeys,
     modelName: this.model.modelName,
-  })
+  });
 
-  const filtered = this.filterItem(resource, this.getExcluded(opts))
+  const filtered = this.filterItem(resource, this.getExcluded(opts));
 
   if (opts.populate) {
-    this.filterPopulatedItem(filtered, opts)
+    this.filterPopulatedItem(filtered, opts);
   }
 
-  return filtered
-}
+  return filtered;
+};
 
-module.exports = Filter
+module.exports = Filter;

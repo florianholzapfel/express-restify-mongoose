@@ -1,32 +1,32 @@
-'use strict'
+"use strict";
 
-const runSeries = require('run-series')
+const runSeries = require("run-series");
 
 module.exports = function (options, excludedMap) {
-  const errorHandler = require('../errorHandler')(options)
+  const errorHandler = require("../errorHandler")(options);
 
   return function (req, res, next) {
     const postMiddleware = (() => {
       switch (req.method.toLowerCase()) {
-        case 'get':
-          return options.postRead
-        case 'post':
+        case "get":
+          return options.postRead;
+        case "post":
           if (req.erm.statusCode === 201) {
-            return options.postCreate
+            return options.postCreate;
           }
 
-          return options.postUpdate
-        case 'put':
-        case 'patch':
-          return options.postUpdate
-        case 'delete':
-          return options.postDelete
+          return options.postUpdate;
+        case "put":
+        case "patch":
+          return options.postUpdate;
+        case "delete":
+          return options.postDelete;
       }
-    })()
+    })();
 
     const callback = (err) => {
       if (err) {
-        return errorHandler(req, res, next)(err)
+        return errorHandler(req, res, next)(err);
       }
 
       // TODO: this will, but should not, filter /count queries
@@ -35,41 +35,48 @@ module.exports = function (options, excludedMap) {
           access: req.access,
           excludedMap: excludedMap,
           populate: req.erm && req.erm.query ? req.erm.query.populate : null,
-        }
+        };
 
-        req.erm.result = options.filter ? options.filter.filterObject(req.erm.result, opts) : req.erm.result
+        req.erm.result = options.filter
+          ? options.filter.filterObject(req.erm.result, opts)
+          : req.erm.result;
       }
 
-      if (options.totalCountHeader && typeof req.erm.totalCount === 'number') {
-        res.header(typeof options.totalCountHeader === 'string' ? options.totalCountHeader : 'X-Total-Count', req.erm.totalCount)
+      if (options.totalCountHeader && typeof req.erm.totalCount === "number") {
+        res.header(
+          typeof options.totalCountHeader === "string"
+            ? options.totalCountHeader
+            : "X-Total-Count",
+          req.erm.totalCount
+        );
       }
 
-      const promise = options.outputFn(req, res)
+      const promise = options.outputFn(req, res);
 
       if (options.postProcess) {
-        if (promise && typeof promise.then === 'function') {
+        if (promise && typeof promise.then === "function") {
           promise
             .then(() => {
-              options.postProcess(req, res)
+              options.postProcess(req, res);
             })
-            .catch(errorHandler(req, res, next))
+            .catch(errorHandler(req, res, next));
         } else {
-          options.postProcess(req, res)
+          options.postProcess(req, res);
         }
       }
-    }
+    };
 
     if (!postMiddleware || postMiddleware.length === 0) {
-      return callback()
+      return callback();
     }
 
     runSeries(
       postMiddleware.map((middleware, i) => {
         return (cb) => {
-          middleware(req, res, cb)
-        }
+          middleware(req, res, cb);
+        };
       }),
       callback
-    )
-  }
-}
+    );
+  };
+};

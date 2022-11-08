@@ -1,15 +1,15 @@
-'use strict'
+"use strict";
 
-const http = require('http')
+const http = require("http");
 
 module.exports = function (model, options) {
-  const errorHandler = require('../errorHandler')(options)
+  const errorHandler = require("../errorHandler")(options);
 
   return function (req, res, next) {
-    const contextModel = (req.erm && req.erm.model) || model
+    const contextModel = (req.erm && req.erm.model) || model;
 
     if (!req.params.id) {
-      return next()
+      return next();
     }
 
     options.contextFilter(contextModel, req, (filteredContext) => {
@@ -19,17 +19,21 @@ module.exports = function (model, options) {
           [options.idProperty]: req.params.id,
         })
         .lean(false)
-        .read(options.readPreference || 'p')
+        .read(options.readPreference || "p")
         .exec()
         .then((doc) => {
           if (!doc) {
-            return errorHandler(req, res, next)(new Error(http.STATUS_CODES[404]))
+            return errorHandler(
+              req,
+              res,
+              next
+            )(new Error(http.STATUS_CODES[404]));
           }
 
-          req.erm.document = doc
+          req.erm.document = doc;
 
-          next()
-        }, errorHandler(req, res, next))
-    })
-  }
-}
+          next();
+        }, errorHandler(req, res, next));
+    });
+  };
+};
