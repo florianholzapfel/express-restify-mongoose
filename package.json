@@ -1,8 +1,43 @@
 {
+  "name": "express-restify-mongoose",
   "version": "7.0.2",
+  "description": "Easily create a flexible REST interface for mongoose models",
+  "keywords": [
+    "ReST",
+    "express",
+    "restify",
+    "mongodb",
+    "mongoose",
+    "model"
+  ],
+  "homepage": "http://florianholzapfel.github.io/express-restify-mongoose/",
+  "bugs": {
+    "url": "https://github.com/florianholzapfel/express-restify-mongoose/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/florianholzapfel/express-restify-mongoose.git"
+  },
+  "license": "MIT",
   "author": {
-    "email": "flo.holzapfel@gmail.com",
-    "name": "Florian Holzapfel"
+    "name": "Florian Holzapfel",
+    "email": "flo.holzapfel@gmail.com"
+  },
+  "files": [
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md",
+    "dist/",
+    "src/"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "lint": "eslint . --ext .js,.ts",
+    "test:express": "mocha -R spec ./test/express.js --timeout 10s",
+    "test:filter": "mocha -R spec ./test/integration/resource_filter.js --timeout 10s",
+    "test:restify": "mocha -R spec ./test/restify.js --timeout 10s",
+    "test:unit": "mocha -R spec ./test/unit.js",
+    "tsc": "tsc --noEmit"
   },
   "dependencies": {
     "dot-prop": "^7.2.0",
@@ -11,10 +46,6 @@
     "serialize-error": "^11.0.0",
     "zod": "^3.19.1"
   },
-  "peerDependencies": {
-    "mongoose": "6.x"
-  },
-  "description": "Easily create a flexible REST interface for mongoose models",
   "devDependencies": {
     "@types/express": "^4.17.14",
     "@typescript-eslint/eslint-plugin": "^5.40.0",
@@ -34,42 +65,10 @@
     "tsup": "^6.3.0",
     "typescript": "^4.8.4"
   },
+  "peerDependencies": {
+    "mongoose": "6.x"
+  },
   "engines": {
     "node": ">=14"
-  },
-  "homepage": "http://florianholzapfel.github.io/express-restify-mongoose/",
-  "keywords": [
-    "ReST",
-    "express",
-    "restify",
-    "mongodb",
-    "mongoose",
-    "model"
-  ],
-  "license": "MIT",
-  "main": "./src/express-restify-mongoose",
-  "name": "express-restify-mongoose",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/florianholzapfel/express-restify-mongoose.git"
-  },
-  "bugs": {
-    "url": "https://github.com/florianholzapfel/express-restify-mongoose/issues"
-  },
-  "scripts": {
-    "build": "tsup",
-    "lint": "eslint . --ext .js,.ts",
-    "test:unit": "mocha -R spec ./test/unit.js",
-    "test:filter": "mocha -R spec ./test/integration/resource_filter.js --timeout 10s",
-    "test:express": "mocha -R spec ./test/express.js --timeout 10s",
-    "test:restify": "mocha -R spec ./test/restify.js --timeout 10s",
-    "tsc": "tsc --noEmit"
-  },
-  "files": [
-    "CHANGELOG.md",
-    "LICENSE",
-    "README.md",
-    "dist/",
-    "src/"
-  ]
+  }
 }
