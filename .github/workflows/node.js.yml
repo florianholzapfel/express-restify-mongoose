@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        mongodb-version: ["4.4", "5.0", "6.0"]
         node-version: [14.x, 16.x]
     steps:
       - uses: actions/checkout@v3
