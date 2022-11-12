@@ -23,6 +23,11 @@
     "name": "Florian Holzapfel",
     "email": "flo.holzapfel@gmail.com"
   },
+  "type": "module",
+  "exports": {
+    "import": "./dist/express-restify-mongoose.js",
+    "require": "./dist/express-restify-mongoose.cjs"
+  },
   "files": [
     "CHANGELOG.md",
     "LICENSE",

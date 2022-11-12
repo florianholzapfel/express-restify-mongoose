@@ -5,7 +5,6 @@ export default defineConfig({
   dts: true,
   entry: ["src/express-restify-mongoose.ts"],
   format: ["cjs", "esm"],
-  legacyOutput: true,
   sourcemap: true,
   splitting: false,
   target: "node14",
