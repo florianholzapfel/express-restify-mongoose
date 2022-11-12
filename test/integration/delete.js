@@ -5,7 +5,7 @@ import { serve } from "../../src/express-restify-mongoose";
 
 import setupDb from "./setup";
 
-module.exports = function (createFn, setup, dismantle) {
+export default function (createFn, setup, dismantle) {
   const db = setupDb();
 
   const testPort = 30023;
@@ -272,4 +272,4 @@ module.exports = function (createFn, setup, dismantle) {
       });
     });
   });
-};
+}
