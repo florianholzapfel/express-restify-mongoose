@@ -24,5 +24,6 @@ jobs:
       - run: npm i mongoose@6.x
       - run: npm run lint
       - run: npm run test
+      - run: git restore .
       - run: npm run tsc
       - run: npm run build
