@@ -9,20 +9,21 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        mongodb-version: ["4.4", "5.0", "6.0"]
         node-version: [14.x, 16.x]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
+          cache: "yarn"
           node-version: ${{ matrix.node-version }}
-      - name: Start MongoDB
-        uses: supercharge/mongodb-github-action@1.6.0
-      - run: npm i mongoose@6.x
-      - run: npm run lint
-      - run: npm run test
-      - run: git restore .
-      - run: npm run tsc
-      - run: npm run build
+      - uses: supercharge/mongodb-github-action@1.6.0
+      - run: yarn --frozen-lockfile
+      - run: yarn add mongoose@6.x
+      - run: yarn lint
+      - run: yarn test
+      - run: yarn tsc
+      - run: yarn build
 
   publish:
     needs: build
@@ -33,8 +34,8 @@ jobs:
         with:
           node-version: 16
           registry-url: https://registry.npmjs.org/
-      - run: npm ci
-      - run: npm run build
+      - run: yarn --frozen-lockfile
+      - run: yarn build
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
