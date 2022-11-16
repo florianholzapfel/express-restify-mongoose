@@ -30,11 +30,7 @@
   },
   "main": "./dist/cjs/express-restify-mongoose.js",
   "files": [
-    "CHANGELOG.md",
-    "LICENSE",
-    "README.md",
-    "dist/",
-    "src/"
+    "dist/"
   ],
   "scripts": {
     "build": "run-p build:*",
