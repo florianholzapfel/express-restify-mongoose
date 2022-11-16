@@ -1,9 +1,9 @@
 import { getProperty, hasProperty } from "dot-prop";
 import mongoose from "mongoose";
-import { detective } from "./detective";
-import { QueryOptions } from "./getQuerySchema";
+import { detective } from "./detective.js";
+import { QueryOptions } from "./getQuerySchema.js";
 import { Access, ExcludedMap, FilteredKeys } from "./types";
-import { weedout } from "./weedout";
+import { weedout } from "./weedout.js";
 
 export class Filter {
   excludedMap: ExcludedMap = new Map();

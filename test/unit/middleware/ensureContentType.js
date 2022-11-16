@@ -1,6 +1,6 @@
 import assert from "assert";
 import sinon from "sinon";
-import { getEnsureContentTypeHandler } from "../../../src/middleware/ensureContentType";
+import { getEnsureContentTypeHandler } from "../../../dist/middleware/ensureContentType.js";
 
 describe("ensureContentType", () => {
   let onError = sinon.spy();

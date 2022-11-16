@@ -1,8 +1,8 @@
 import assert from "assert";
 import mongoose from "mongoose";
-import { Filter } from "../../src/resource_filter";
+import { Filter } from "../../dist/resource_filter.js";
 
-import setupDb from "./setup";
+import setupDb from "./setup.js";
 
 const db = setupDb();
 

@@ -26,9 +26,9 @@
   "type": "module",
   "exports": {
     "import": "./dist/express-restify-mongoose.js",
-    "require": "./dist/express-restify-mongoose.cjs"
+    "require": "./dist/cjs/express-restify-mongoose.js"
   },
-  "main": "./dist/express-restify-mongoose.cjs",
+  "main": "./dist/cjs/express-restify-mongoose.js",
   "files": [
     "CHANGELOG.md",
     "LICENSE",
@@ -37,9 +37,11 @@
     "src/"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "run-p build:*",
+    "build:esm": "swc src --out-dir dist",
+    "build:cjs": "swc src --config module.type=commonjs --out-dir dist/cjs",
+    "build:dts": "tsup src/express-restify-mongoose.ts --dts-only",
     "lint": "eslint . --ext .js,.ts",
-    "pretest": "node ./pretest.js",
     "test": "run-s test:*",
     "test:express": "mocha -R spec ./test/express.js --timeout 10s",
     "test:filter": "mocha -R spec ./test/integration/resource_filter.js --timeout 10s",
@@ -55,12 +57,14 @@
     "zod": "^3.19.1"
   },
   "devDependencies": {
+    "@swc/cli": "^0.1.57",
+    "@swc/core": "^1.3.17",
+    "@swc/register": "^0.1.10",
     "@types/express": "^4.17.14",
     "@typescript-eslint/eslint-plugin": "^5.40.0",
     "@typescript-eslint/parser": "^5.40.0",
     "body-parser": "^1.19.0",
     "esbuild": "^0.15.12",
-    "esbuild-register": "^3.3.3",
     "eslint": "^8.25.0",
     "eslint-plugin-mocha": "^10.1.0",
     "express": "^4.17.1",

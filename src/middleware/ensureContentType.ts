@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import { getErrorHandler } from "../errorHandler";
+import { getErrorHandler } from "../errorHandler.js";
 import { Options } from "../types";
 
 export function getEnsureContentTypeHandler(

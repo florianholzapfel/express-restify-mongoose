@@ -1,5 +1,5 @@
 import sinon from "sinon";
-import { getPrepareOutputHandler } from "../../../src/middleware/prepareOutput";
+import { getPrepareOutputHandler } from "../../../dist/middleware/prepareOutput.js";
 
 describe("prepareOutput", () => {
   let onError = sinon.spy();

@@ -1,7 +1,7 @@
 import assert from "assert";
 import mongoose from "mongoose";
 import sinon from "sinon";
-import { getErrorHandler } from "../../src/errorHandler";
+import { getErrorHandler } from "../../dist/errorHandler.js";
 
 describe("errorHandler", () => {
   it("is a function", () => {

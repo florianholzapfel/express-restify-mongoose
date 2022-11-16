@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
-import { getErrorHandler } from "../errorHandler";
-import { Filter } from "../resource_filter";
+import { getErrorHandler } from "../errorHandler.js";
+import { Filter } from "../resource_filter.js";
 import { Options } from "../types";
 
 function isDefined<T>(arg: T | undefined): arg is T {

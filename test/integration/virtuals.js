@@ -1,8 +1,8 @@
 import assert from "assert";
 import request from "request";
-import { serve } from "../../src/express-restify-mongoose";
+import { serve } from "../../dist/express-restify-mongoose.js";
 
-import setupDb from "./setup";
+import setupDb from "./setup.js";
 
 export default function (createFn, setup, dismantle) {
   const db = setupDb();

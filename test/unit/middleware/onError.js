@@ -1,5 +1,5 @@
 import sinon from "sinon";
-import { getOnErrorHandler } from "../../../src/middleware/onError";
+import { getOnErrorHandler } from "../../../dist/middleware/onError.js";
 
 describe("onError", () => {
   const req = {

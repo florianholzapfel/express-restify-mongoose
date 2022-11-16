@@ -2,18 +2,18 @@ import bodyParser from "body-parser";
 import express from "express";
 import methodOverride from "method-override";
 
-import accessTests from "./integration/access";
-import contextFilterTests from "./integration/contextFilter";
-import createTests from "./integration/create";
-import deleteTests from "./integration/delete";
-import hookTests from "./integration/hooks";
-import middlewareTests from "./integration/middleware";
-import optionsTests from "./integration/options";
-import readTests from "./integration/read";
-import updateTests from "./integration/update";
-import virtualsTests from "./integration/virtuals";
+import accessTests from "./integration/access.js";
+import contextFilterTests from "./integration/contextFilter.js";
+import createTests from "./integration/create.js";
+import deleteTests from "./integration/delete.js";
+import hookTests from "./integration/hooks.js";
+import middlewareTests from "./integration/middleware.js";
+import optionsTests from "./integration/options.js";
+import readTests from "./integration/read.js";
+import updateTests from "./integration/update.js";
+import virtualsTests from "./integration/virtuals.js";
 
-import setupDb from "./integration/setup";
+import setupDb from "./integration/setup.js";
 
 const db = setupDb();
 

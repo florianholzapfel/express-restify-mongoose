@@ -1,5 +1,5 @@
 import assert from "assert";
-import { weedout } from "../../src/weedout";
+import { weedout } from "../../dist/weedout.js";
 
 describe("weedout", () => {
   it("removes root keys", () => {

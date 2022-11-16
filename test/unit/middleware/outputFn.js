@@ -1,5 +1,5 @@
 import sinon from "sinon";
-import { getOutputFnHandler } from "../../../src/middleware/outputFn";
+import { getOutputFnHandler } from "../../../dist/middleware/outputFn.js";
 
 describe("outputFn", () => {
   let res = {

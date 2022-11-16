@@ -1,7 +1,7 @@
 import assert from "assert";
-import { Filter } from "../../src/resource_filter";
+import { Filter } from "../../dist/resource_filter.js";
 
-import setupDb from "../integration/setup";
+import setupDb from "../integration/setup.js";
 
 describe("resourceFilter", () => {
   describe("filterObject", () => {

@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
-import { getErrorHandler } from "../errorHandler";
-import { getQueryOptionsSchema } from "../getQuerySchema";
+import { getErrorHandler } from "../errorHandler.js";
+import { getQueryOptionsSchema } from "../getQuerySchema.js";
 import { Options } from "../types";
 
 export function getPrepareQueryHandler(

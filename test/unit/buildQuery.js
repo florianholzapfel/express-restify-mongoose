@@ -1,6 +1,6 @@
 import assert from "assert";
 import sinon from "sinon";
-import { getBuildQuery } from "../../src/buildQuery";
+import { getBuildQuery } from "../../dist/buildQuery.js";
 
 describe("buildQuery", () => {
   let query = {

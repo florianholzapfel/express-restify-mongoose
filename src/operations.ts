@@ -3,9 +3,9 @@ import { STATUS_CODES } from "http";
 import isPlainObject from "lodash.isplainobject";
 import mongoose from "mongoose";
 import moredots from "moredots";
-import { getBuildQuery } from "./buildQuery";
-import { getErrorHandler } from "./errorHandler";
-import { Filter } from "./resource_filter";
+import { getBuildQuery } from "./buildQuery.js";
+import { getErrorHandler } from "./errorHandler.js";
+import { Filter } from "./resource_filter.js";
 import { Options } from "./types";
 
 export function operations(

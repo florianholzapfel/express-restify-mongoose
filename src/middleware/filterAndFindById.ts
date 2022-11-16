@@ -1,7 +1,7 @@
 import { RequestHandler } from "express";
 import { STATUS_CODES } from "http";
 import mongoose from "mongoose";
-import { getErrorHandler } from "../errorHandler";
+import { getErrorHandler } from "../errorHandler.js";
 import { Options } from "../types";
 
 export function getFilterAndFindByIdHandler(

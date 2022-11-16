@@ -1,6 +1,6 @@
 import assert from "assert";
 import sinon from "sinon";
-import { getAccessHandler } from "../../../src/middleware/access";
+import { getAccessHandler } from "../../../dist/middleware/access.js";
 
 describe("access", () => {
   let next = sinon.spy();

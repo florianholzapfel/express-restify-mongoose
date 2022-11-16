@@ -1,6 +1,6 @@
 import assert from "assert";
 import sinon from "sinon";
-import { getPrepareQueryHandler } from "../../../src/middleware/prepareQuery";
+import { getPrepareQueryHandler } from "../../../dist/middleware/prepareQuery.js";
 
 describe("prepareQuery", () => {
   let options = {

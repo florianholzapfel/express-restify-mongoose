@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { QueryOptions } from "./getQuerySchema";
+import { QueryOptions } from "./getQuerySchema.js";
 import { Options } from "./types";
 
 export function getBuildQuery(

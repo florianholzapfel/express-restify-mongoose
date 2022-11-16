@@ -1,6 +1,6 @@
 import assert from "assert";
 import mongoose, { Schema } from "mongoose";
-import { detective } from "../../src/detective";
+import { detective } from "../../dist/detective.js";
 
 describe("detective", () => {
   const InvoiceSchema = new Schema({

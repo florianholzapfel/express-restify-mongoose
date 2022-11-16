@@ -1,15 +1,15 @@
 import { Application } from "express";
 import mongoose from "mongoose";
 import { deprecate } from "util";
-import { getAccessHandler } from "./middleware/access";
-import { getEnsureContentTypeHandler } from "./middleware/ensureContentType";
-import { getFilterAndFindByIdHandler } from "./middleware/filterAndFindById";
-import { getOnErrorHandler } from "./middleware/onError";
-import { getOutputFnHandler } from "./middleware/outputFn";
-import { getPrepareOutputHandler } from "./middleware/prepareOutput";
-import { getPrepareQueryHandler } from "./middleware/prepareQuery";
-import { operations } from "./operations";
-import { Filter } from "./resource_filter";
+import { getAccessHandler } from "./middleware/access.js";
+import { getEnsureContentTypeHandler } from "./middleware/ensureContentType.js";
+import { getFilterAndFindByIdHandler } from "./middleware/filterAndFindById.js";
+import { getOnErrorHandler } from "./middleware/onError.js";
+import { getOutputFnHandler } from "./middleware/outputFn.js";
+import { getPrepareOutputHandler } from "./middleware/prepareOutput.js";
+import { getPrepareQueryHandler } from "./middleware/prepareQuery.js";
+import { operations } from "./operations.js";
+import { Filter } from "./resource_filter.js";
 import { Options } from "./types";
 
 const defaultOptions: Omit<Options, "contextFilter" | "outputFn" | "onError"> =

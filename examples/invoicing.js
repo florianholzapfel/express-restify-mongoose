@@ -3,7 +3,7 @@ import express from "express";
 import http from "http";
 import methodOverride from "method-override";
 import mongoose, { Schema } from "mongoose";
-import { serve } from "../src/express-restify-mongoose";
+import { serve } from "../dist/express-restify-mongoose.js";
 
 mongoose.connect("mongodb://localhost/database", {
   useMongoClient: true,
