@@ -18,7 +18,6 @@ jobs:
           cache: "yarn"
           node-version: ${{ matrix.node-version }}
       - uses: supercharge/mongodb-github-action@1.6.0
-      - run: yarn --frozen-lockfile
       - run: yarn add mongoose@6.x
       - run: yarn lint
       - run: yarn test
