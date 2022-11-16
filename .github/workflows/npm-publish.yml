@@ -20,9 +20,9 @@ jobs:
       - uses: supercharge/mongodb-github-action@1.6.0
       - run: yarn add mongoose@6.x
       - run: yarn lint
-      - run: yarn test
       - run: yarn tsc
       - run: yarn build
+      - run: yarn test
 
   publish:
     needs: build
