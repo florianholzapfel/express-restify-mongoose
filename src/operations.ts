@@ -2,9 +2,9 @@ import { Request, RequestHandler } from "express";
 import { STATUS_CODES } from "http";
 import isPlainObject from "lodash.isplainobject";
 import mongoose from "mongoose";
-import moredots from "moredots";
 import { getBuildQuery } from "./buildQuery.js";
 import { getErrorHandler } from "./errorHandler.js";
+import { moredots } from "./moredots";
 import { Filter } from "./resource_filter.js";
 import { Options } from "./types";
 
