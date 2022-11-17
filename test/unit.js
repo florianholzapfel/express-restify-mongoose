@@ -7,6 +7,6 @@ import "./unit/middleware/onError.js";
 import "./unit/middleware/outputFn.js";
 import "./unit/middleware/prepareOutput.js";
 import "./unit/middleware/prepareQuery.js";
-import "./unit/moredots";
+import "./unit/moredots.js";
 import "./unit/resourceFilter.js";
 import "./unit/weedout.js";

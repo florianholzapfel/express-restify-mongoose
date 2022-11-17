@@ -4,7 +4,7 @@ import isPlainObject from "lodash.isplainobject";
 import mongoose from "mongoose";
 import { getBuildQuery } from "./buildQuery.js";
 import { getErrorHandler } from "./errorHandler.js";
-import { moredots } from "./moredots";
+import { moredots } from "./moredots.js";
 import { Filter } from "./resource_filter.js";
 import { Options } from "./types";
 
