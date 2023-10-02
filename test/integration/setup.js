@@ -1,11 +1,6 @@
-"use strict";
+import mongoose, { Schema } from "mongoose";
 
-const defaults = require("lodash.defaults");
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
-const util = require("util");
-
-module.exports = function () {
+export default function () {
   const ProductSchema = new Schema({
     name: { type: String, required: true },
     department: {
@@ -109,9 +104,10 @@ module.exports = function () {
       opts = {};
     }
 
-    defaults(opts, {
+    opts = {
       connect: true,
-    });
+      ...opts,
+    };
 
     if (!mongoose.models.Customer) {
       mongoose.model("Customer", CustomerSchema);
@@ -172,4 +168,4 @@ module.exports = function () {
     reset: reset,
     close: close,
   };
-};
+}

@@ -1,14 +1,28 @@
 {
-  "extends": ["plugin:prettier/recommended"],
-  "parserOptions": {
-    "ecmaVersion": 6
+  "env": {
+    "es2021": true
   },
+  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+  "overrides": [
+    {
+      "env": {
+        "mocha": true,
+        "node": true
+      },
+      "files": ["test/**/*.js"],
+      "plugins": ["mocha"]
+    }
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2021,
+    "sourceType": "module"
+  },
+  "plugins": ["@typescript-eslint"],
   "rules": {
-    "prettier/prettier": [
+    "@typescript-eslint/no-unused-vars": [
       "error",
-      {
-        "endOfLine": "auto"
-      }
+      { "ignoreRestSiblings": true }
     ]
   }
 }

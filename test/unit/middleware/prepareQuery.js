@@ -1,11 +1,8 @@
-"use strict";
-
-const assert = require("assert");
-const sinon = require("sinon");
+import assert from "assert";
+import sinon from "sinon";
+import { getPrepareQueryHandler } from "../../../dist/middleware/prepareQuery.js";
 
 describe("prepareQuery", () => {
-  const prepareQuery = require("../../../src/middleware/prepareQuery");
-
   let options = {
     onError: sinon.spy(),
     allowRegex: true,
@@ -15,7 +12,6 @@ describe("prepareQuery", () => {
 
   afterEach(() => {
     options.onError.resetHistory();
-    options.allowRegex = true;
     next.resetHistory();
   });
 
@@ -27,18 +23,17 @@ describe("prepareQuery", () => {
         },
       };
 
-      options.allowRegex = false;
+      getPrepareQueryHandler({ ...options, allowRegex: false })(req, {}, next);
 
-      prepareQuery(options)(req, {}, next);
-
-      assert.deepEqual(req.erm.query, {
-        query: {
-          foo: {},
-        },
-      });
-      sinon.assert.calledOnce(next);
-      sinon.assert.calledWithExactly(next);
-      sinon.assert.notCalled(options.onError);
+      sinon.assert.calledOnce(options.onError);
+      sinon.assert.calledWithExactly(
+        options.onError,
+        sinon.match.instanceOf(Error) /*new Error('invalid_json_query')*/,
+        req,
+        {},
+        next
+      );
+      sinon.assert.notCalled(next);
     });
 
     it("converts [] to $in", () => {
@@ -48,7 +43,7 @@ describe("prepareQuery", () => {
         },
       };
 
-      prepareQuery(options)(req, {}, next);
+      getPrepareQueryHandler(options)(req, {}, next);
 
       assert.deepEqual(req.erm.query, {
         query: {
@@ -62,7 +57,7 @@ describe("prepareQuery", () => {
   });
 
   it("calls next when query is empty", () => {
-    prepareQuery(options)({}, {}, next);
+    getPrepareQueryHandler(options)({}, {}, next);
 
     sinon.assert.calledOnce(next);
     sinon.assert.calledWithExactly(next);
@@ -76,7 +71,7 @@ describe("prepareQuery", () => {
       },
     };
 
-    prepareQuery(options)(req, {}, next);
+    getPrepareQueryHandler(options)(req, {}, next);
 
     sinon.assert.calledOnce(next);
     sinon.assert.calledWithExactly(next);
@@ -90,7 +85,7 @@ describe("prepareQuery", () => {
       },
     };
 
-    prepareQuery(options)(req, {}, next);
+    getPrepareQueryHandler(options)(req, {}, next);
 
     assert.deepEqual(req.erm.query, {
       query: JSON.parse(req.query.query),
@@ -109,7 +104,7 @@ describe("prepareQuery", () => {
       },
     };
 
-    prepareQuery(options)(req, {}, next);
+    getPrepareQueryHandler(options)(req, {}, next);
 
     sinon.assert.calledOnce(options.onError);
     sinon.assert.calledWithExactly(
@@ -125,11 +120,11 @@ describe("prepareQuery", () => {
   it("calls next when sort key is valid json", () => {
     let req = {
       query: {
-        sort: '{"foo":"bar"}',
+        sort: '{"foo":"asc"}',
       },
     };
 
-    prepareQuery(options)(req, {}, next);
+    getPrepareQueryHandler(options)(req, {}, next);
 
     assert.deepEqual(req.erm.query, {
       sort: JSON.parse(req.query.sort),
@@ -146,7 +141,7 @@ describe("prepareQuery", () => {
       },
     };
 
-    prepareQuery(options)(req, {}, next);
+    getPrepareQueryHandler(options)(req, {}, next);
 
     assert.deepEqual(req.erm.query, req.query);
     sinon.assert.calledOnce(next);
@@ -161,7 +156,7 @@ describe("prepareQuery", () => {
       },
     };
 
-    prepareQuery(options)(req, {}, next);
+    getPrepareQueryHandler(options)(req, {}, next);
 
     assert.deepEqual(req.erm.query, req.query);
     sinon.assert.calledOnce(next);
@@ -176,7 +171,7 @@ describe("prepareQuery", () => {
       },
     };
 
-    prepareQuery(options)(req, {}, next);
+    getPrepareQueryHandler(options)(req, {}, next);
 
     assert.deepEqual(req.erm.query, req.query);
     sinon.assert.calledOnce(next);
@@ -191,7 +186,7 @@ describe("prepareQuery", () => {
       },
     };
 
-    prepareQuery(options)(req, {}, next);
+    getPrepareQueryHandler(options)(req, {}, next);
 
     assert.deepEqual(req.erm.query, req.query);
     sinon.assert.calledOnce(next);
@@ -206,7 +201,7 @@ describe("prepareQuery", () => {
       },
     };
 
-    prepareQuery(options)(req, {}, next);
+    getPrepareQueryHandler(options)(req, {}, next);
 
     assert.deepEqual(req.erm.query, {
       populate: [
@@ -229,7 +224,7 @@ describe("prepareQuery", () => {
         },
       };
 
-      prepareQuery(options)(req, {}, next);
+      getPrepareQueryHandler(options)(req, {}, next);
 
       assert.deepEqual(req.erm.query, {
         select: {
@@ -248,7 +243,7 @@ describe("prepareQuery", () => {
         },
       };
 
-      prepareQuery(options)(req, {}, next);
+      getPrepareQueryHandler(options)(req, {}, next);
 
       assert.deepEqual(req.erm.query, {
         select: {
@@ -267,7 +262,7 @@ describe("prepareQuery", () => {
         },
       };
 
-      prepareQuery(options)(req, {}, next);
+      getPrepareQueryHandler(options)(req, {}, next);
 
       assert.deepEqual(req.erm.query, {
         select: {
@@ -287,7 +282,7 @@ describe("prepareQuery", () => {
         },
       };
 
-      prepareQuery(options)(req, {}, next);
+      getPrepareQueryHandler(options)(req, {}, next);
 
       assert.deepEqual(req.erm.query, {
         select: {
@@ -307,7 +302,7 @@ describe("prepareQuery", () => {
         },
       };
 
-      prepareQuery(options)(req, {}, next);
+      getPrepareQueryHandler(options)(req, {}, next);
 
       assert.deepEqual(req.erm.query, {
         select: {
@@ -329,7 +324,7 @@ describe("prepareQuery", () => {
         },
       };
 
-      prepareQuery(options)(req, {}, next);
+      getPrepareQueryHandler(options)(req, {}, next);
 
       assert.deepEqual(req.erm.query, {
         populate: [
@@ -351,7 +346,7 @@ describe("prepareQuery", () => {
         },
       };
 
-      prepareQuery(options)(req, {}, next);
+      getPrepareQueryHandler(options)(req, {}, next);
 
       assert.deepEqual(req.erm.query, {
         populate: [
@@ -382,7 +377,7 @@ describe("prepareQuery", () => {
         },
       };
 
-      prepareQuery(options)(req, {}, next);
+      getPrepareQueryHandler(options)(req, {}, next);
 
       assert.deepEqual(req.erm.query, {
         populate: [
@@ -408,7 +403,7 @@ describe("prepareQuery", () => {
         },
       };
 
-      prepareQuery(options)(req, {}, next);
+      getPrepareQueryHandler(options)(req, {}, next);
 
       assert.deepEqual(req.erm.query, {
         populate: [

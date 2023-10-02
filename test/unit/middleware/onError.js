@@ -1,10 +1,7 @@
-"use strict";
-
-const sinon = require("sinon");
+import sinon from "sinon";
+import { getOnErrorHandler } from "../../../dist/middleware/onError.js";
 
 describe("onError", () => {
-  const onError = require("../../../src/middleware/onError");
-
   const req = {
     erm: {
       statusCode: 500,
@@ -12,11 +9,11 @@ describe("onError", () => {
   };
 
   let res = {
-    setHeader: () => {},
+    setHeader: () => undefined,
     status: function () {
       return this;
     },
-    send: () => {},
+    send: () => undefined,
   };
 
   let setHeader = sinon.spy(res, "setHeader");
@@ -32,7 +29,7 @@ describe("onError", () => {
   });
 
   it("with express", () => {
-    onError(true)(new Error("An error occurred"), req, res, next);
+    getOnErrorHandler(true)(new Error("An error occurred"), req, res, next);
 
     sinon.assert.calledOnce(setHeader);
     sinon.assert.calledWithExactly(
@@ -51,7 +48,7 @@ describe("onError", () => {
   });
 
   it("with restify", () => {
-    onError(false)(new Error("An error occurred"), req, res, next);
+    getOnErrorHandler(false)(new Error("An error occurred"), req, res, next);
 
     sinon.assert.calledOnce(setHeader);
     sinon.assert.calledWithExactly(

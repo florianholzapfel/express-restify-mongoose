@@ -1,9 +1,8 @@
-"use strict";
+import { ErrorRequestHandler } from "express";
+import { serializeError } from "serialize-error";
 
-const { serializeError } = require("serialize-error");
-
-module.exports = function (isExpress) {
-  return function (err, req, res, next) {
+export function getOnErrorHandler(isExpress: boolean) {
+  const fn: ErrorRequestHandler = function onError(err, req, res) {
     const serializedErr = serializeError(err);
 
     delete serializedErr.stack;
@@ -18,9 +17,12 @@ module.exports = function (isExpress) {
     res.setHeader("Content-Type", "application/json");
 
     if (isExpress) {
-      res.status(req.erm.statusCode).send(serializedErr);
+      res.status(req.erm.statusCode || 500).send(serializedErr);
     } else {
+      // @ts-expect-error restify
       res.send(req.erm.statusCode, serializedErr);
     }
   };
-};
+
+  return fn;
+}

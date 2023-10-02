@@ -1,12 +1,12 @@
-"use strict";
+import assert from "assert";
+import request from "request";
+import sinon from "sinon";
+import { serve } from "../../dist/express-restify-mongoose.js";
 
-const assert = require("assert");
-const request = require("request");
-const sinon = require("sinon");
+import setupDb from "./setup.js";
 
-module.exports = function (createFn, setup, dismantle) {
-  const erm = require("../../src/express-restify-mongoose");
-  const db = require("./setup")();
+export default function (createFn, setup, dismantle) {
+  const db = setupDb();
 
   const testPort = 30023;
   const testUrl = `http://localhost:${testPort}`;
@@ -22,7 +22,7 @@ module.exports = function (createFn, setup, dismantle) {
           return done(err);
         }
 
-        erm.serve(
+        serve(
           app,
           db.models.Customer,
           app.isRestify
@@ -45,7 +45,7 @@ module.exports = function (createFn, setup, dismantle) {
         {
           url: `${testUrl}/api/v1/Customer`,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 200);
           done();
@@ -64,15 +64,17 @@ module.exports = function (createFn, setup, dismantle) {
           return done(err);
         }
 
-        erm.defaults({
+        const defaults = {
           version: "/custom",
-        });
+        };
 
-        erm.serve(app, db.models.Customer, {
+        serve(app, db.models.Customer, {
+          ...defaults,
           restify: app.isRestify,
         });
 
-        erm.serve(app, db.models.Invoice, {
+        serve(app, db.models.Invoice, {
+          ...defaults,
           restify: app.isRestify,
         });
 
@@ -81,10 +83,6 @@ module.exports = function (createFn, setup, dismantle) {
     });
 
     after((done) => {
-      erm.defaults({
-        version: "/v1",
-      });
-
       dismantle(app, server, done);
     });
 
@@ -93,7 +91,7 @@ module.exports = function (createFn, setup, dismantle) {
         {
           url: `${testUrl}/api/custom/Customer`,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 200);
           done();
@@ -106,7 +104,7 @@ module.exports = function (createFn, setup, dismantle) {
         {
           url: `${testUrl}/api/custom/Invoice`,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 200);
           done();
@@ -125,7 +123,7 @@ module.exports = function (createFn, setup, dismantle) {
           return done(err);
         }
 
-        erm.serve(app, db.models.Customer, {
+        serve(app, db.models.Customer, {
           totalCountHeader: true,
           restify: app.isRestify,
         });
@@ -141,7 +139,7 @@ module.exports = function (createFn, setup, dismantle) {
             name: "Mike",
           },
         ])
-          .then((createdCustomers) => {
+          .then(() => {
             server = app.listen(testPort, done);
           })
           .catch(done);
@@ -243,7 +241,7 @@ module.exports = function (createFn, setup, dismantle) {
           return done(err);
         }
 
-        erm.serve(app, db.models.Customer, {
+        serve(app, db.models.Customer, {
           totalCountHeader: true,
           contextFilter: (model, req, done) => done(model.find()),
           restify: app.isRestify,
@@ -260,7 +258,7 @@ module.exports = function (createFn, setup, dismantle) {
             name: "Mike",
           },
         ])
-          .then((createdCustomers) => {
+          .then(() => {
             server = app.listen(testPort, done);
           })
           .catch(done);
@@ -301,7 +299,7 @@ module.exports = function (createFn, setup, dismantle) {
           return done(err);
         }
 
-        erm.serve(app, db.models.Customer, {
+        serve(app, db.models.Customer, {
           totalCountHeader: "X-Custom-Count",
           restify: app.isRestify,
         });
@@ -317,7 +315,7 @@ module.exports = function (createFn, setup, dismantle) {
             name: "Mike",
           },
         ])
-          .then((createdCustomers) => {
+          .then(() => {
             server = app.listen(testPort, done);
           })
           .catch(done);
@@ -358,7 +356,7 @@ module.exports = function (createFn, setup, dismantle) {
           return done(err);
         }
 
-        erm.serve(app, db.models.Customer, {
+        serve(app, db.models.Customer, {
           limit: 2,
           restify: app.isRestify,
         });
@@ -374,7 +372,7 @@ module.exports = function (createFn, setup, dismantle) {
             name: "Mike",
           },
         ])
-          .then((createdCustomers) => {
+          .then(() => {
             server = app.listen(testPort, done);
           })
           .catch(done);
@@ -480,7 +478,7 @@ module.exports = function (createFn, setup, dismantle) {
           return done(err);
         }
 
-        erm.serve(app, db.models.Customer, {
+        serve(app, db.models.Customer, {
           name: "Client",
           restify: app.isRestify,
         });
@@ -498,7 +496,7 @@ module.exports = function (createFn, setup, dismantle) {
         {
           url: `${testUrl}/api/v1/Client`,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 200);
           done();
@@ -517,7 +515,7 @@ module.exports = function (createFn, setup, dismantle) {
           return done(err);
         }
 
-        erm.serve(app, db.models.Customer, {
+        serve(app, db.models.Customer, {
           prefix: "/applepie",
           restify: app.isRestify,
         });
@@ -535,7 +533,7 @@ module.exports = function (createFn, setup, dismantle) {
         {
           url: `${testUrl}/applepie/v1/Customer`,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 200);
           done();
@@ -555,7 +553,7 @@ module.exports = function (createFn, setup, dismantle) {
             return done(err);
           }
 
-          erm.serve(app, db.models.Customer, {
+          serve(app, db.models.Customer, {
             version: "/v8",
             restify: app.isRestify,
           });
@@ -573,7 +571,7 @@ module.exports = function (createFn, setup, dismantle) {
           {
             url: `${testUrl}/api/v8/Customer`,
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             assert.equal(res.statusCode, 200);
             done();
@@ -593,7 +591,7 @@ module.exports = function (createFn, setup, dismantle) {
             return done(err);
           }
 
-          erm.serve(app, db.models.Customer, {
+          serve(app, db.models.Customer, {
             version: "/v8/Entities/:id",
             restify: app.isRestify,
           });
@@ -618,7 +616,7 @@ module.exports = function (createFn, setup, dismantle) {
           {
             url: `${testUrl}/api/v8/Entities/Customer`,
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             assert.equal(res.statusCode, 200);
             done();
@@ -631,7 +629,7 @@ module.exports = function (createFn, setup, dismantle) {
           {
             url: `${testUrl}/api/v8/Entities/${customer._id}/Customer`,
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             assert.equal(res.statusCode, 200);
             done();
@@ -644,7 +642,7 @@ module.exports = function (createFn, setup, dismantle) {
           {
             url: `${testUrl}/api/v8/Entities/${customer._id}/Customer/shallow`,
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             assert.equal(res.statusCode, 200);
             done();
@@ -657,7 +655,7 @@ module.exports = function (createFn, setup, dismantle) {
           {
             url: `${testUrl}/api/v8/Entities/Customer/count`,
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             assert.equal(res.statusCode, 200);
             done();
@@ -689,14 +687,14 @@ module.exports = function (createFn, setup, dismantle) {
           return done(err);
         }
 
-        erm.defaults(options);
-
-        erm.serve(app, db.models.Product, {
+        serve(app, db.models.Product, {
+          ...options,
           restify: app.isRestify,
         });
 
         // order is important, test the second attached model to potentially reproduce the error.
-        erm.serve(app, db.models.Customer, {
+        serve(app, db.models.Customer, {
+          ...options,
           restify: app.isRestify,
         });
 
@@ -712,7 +710,6 @@ module.exports = function (createFn, setup, dismantle) {
     });
 
     after((done) => {
-      erm.defaults(null);
       dismantle(app, server, done);
     });
 
@@ -767,14 +764,14 @@ module.exports = function (createFn, setup, dismantle) {
           return done(err);
         }
 
-        erm.defaults(options);
-
-        erm.serve(app, db.models.Product, {
+        serve(app, db.models.Product, {
+          ...options,
           restify: app.isRestify,
         });
 
         // order is important, test the second attached model to potentially reproduce the error.
-        erm.serve(app, db.models.Customer, {
+        serve(app, db.models.Customer, {
+          ...options,
           restify: app.isRestify,
         });
 
@@ -790,7 +787,6 @@ module.exports = function (createFn, setup, dismantle) {
     });
 
     after((done) => {
-      erm.defaults(null);
       dismantle(app, server, done);
     });
 
@@ -799,7 +795,7 @@ module.exports = function (createFn, setup, dismantle) {
         {
           url: `${testUrl}/api/v1/Customer/${customer._id}`,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 204);
           assert.equal(options.preDelete.length, 2);
@@ -822,7 +818,7 @@ module.exports = function (createFn, setup, dismantle) {
           return done(err);
         }
 
-        erm.serve(app, db.models.Customer, {
+        serve(app, db.models.Customer, {
           idProperty: "name",
           restify: app.isRestify,
         });
@@ -883,7 +879,7 @@ module.exports = function (createFn, setup, dismantle) {
         {
           url: `${testUrl}/api/v1/Customer/${customer.name}`,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 204);
           done();
@@ -902,7 +898,7 @@ module.exports = function (createFn, setup, dismantle) {
           return done(err);
         }
 
-        erm.serve(app, db.models.Customer, {
+        serve(app, db.models.Customer, {
           allowRegex: false,
           restify: app.isRestify,
         });
@@ -910,7 +906,7 @@ module.exports = function (createFn, setup, dismantle) {
         db.models.Customer.create({
           name: "Bob",
         })
-          .then((createdCustomer) => {
+          .then(() => {
             server = app.listen(testPort, done);
           })
           .catch(done);
@@ -937,18 +933,12 @@ module.exports = function (createFn, setup, dismantle) {
           assert.equal(res.statusCode, 400);
           delete body.reason;
           assert.deepEqual(body, {
-            kind: "string",
-            message:
-              'Cast to string failed for value "{}" (type Object) at path "name" for model "Customer"',
-            name: "CastError",
-            path: "name",
-            stringValue: '"{}"',
-            value: {},
-            valueType: "Object",
+            message: "invalid_json_query",
+            name: "Error",
           });
           done();
         }
       );
     });
   });
-};
+}

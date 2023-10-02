@@ -1,11 +1,11 @@
-"use strict";
+import assert from "assert";
+import request from "request";
+import { serve } from "../../dist/express-restify-mongoose.js";
 
-const assert = require("assert");
-const request = require("request");
+import setupDb from "./setup.js";
 
-module.exports = function (createFn, setup, dismantle) {
-  const erm = require("../../src/express-restify-mongoose");
-  const db = require("./setup")();
+export default function (createFn, setup, dismantle) {
+  const db = setupDb();
 
   const testPort = 30023;
   const testUrl = `http://localhost:${testPort}`;
@@ -25,16 +25,26 @@ module.exports = function (createFn, setup, dismantle) {
       );
     };
 
-    beforeEach((done) => {
+    before((done) => {
       setup((err) => {
         if (err) {
           return done(err);
         }
 
-        erm.serve(app, db.models.Customer, {
+        serve(app, db.models.Customer, {
           contextFilter: contextFilter,
           restify: app.isRestify,
         });
+
+        server = app.listen(testPort, done);
+      });
+    });
+
+    beforeEach((done) => {
+      db.reset((err) => {
+        if (err) {
+          return done(err);
+        }
 
         db.models.Customer.create([
           {
@@ -52,13 +62,13 @@ module.exports = function (createFn, setup, dismantle) {
         ])
           .then((createdCustomers) => {
             customers = createdCustomers;
-            server = app.listen(testPort, done);
           })
+          .then(done)
           .catch(done);
       });
     });
 
-    afterEach((done) => {
+    after((done) => {
       dismantle(app, server, done);
     });
 
@@ -85,7 +95,7 @@ module.exports = function (createFn, setup, dismantle) {
           url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
           json: true,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 404);
           done();
@@ -99,7 +109,7 @@ module.exports = function (createFn, setup, dismantle) {
           url: `${testUrl}/api/v1/Customer/${customers[2]._id}/shallow`,
           json: true,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 404);
           done();
@@ -150,7 +160,7 @@ module.exports = function (createFn, setup, dismantle) {
               name: "Bobby",
             },
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             assert.equal(res.statusCode, 404);
 
@@ -170,7 +180,7 @@ module.exports = function (createFn, setup, dismantle) {
           url: `${testUrl}/api/v1/Customer/${customers[1]._id}`,
           json: true,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 204);
 
@@ -189,7 +199,7 @@ module.exports = function (createFn, setup, dismantle) {
           url: `${testUrl}/api/v1/Customer/${customers[2]._id}`,
           json: true,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 404);
 
@@ -209,7 +219,7 @@ module.exports = function (createFn, setup, dismantle) {
           url: `${testUrl}/api/v1/Customer`,
           json: true,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 204);
 
@@ -222,4 +232,4 @@ module.exports = function (createFn, setup, dismantle) {
       );
     });
   });
-};
+}

@@ -1,22 +1,23 @@
-"use strict";
-
-const assert = require("assert");
-const sinon = require("sinon");
+import assert from "assert";
+import sinon from "sinon";
+import { getAccessHandler } from "../../../dist/middleware/access.js";
 
 describe("access", () => {
-  const access = require("../../../src/middleware/access");
-
   let next = sinon.spy();
+  let onError = sinon.spy();
 
   afterEach(() => {
     next.resetHistory();
+    onError.resetHistory();
   });
 
   describe("returns (sync)", () => {
     it("adds access field to req", () => {
-      let req = {};
+      let req = {
+        erm: {},
+      };
 
-      access({
+      getAccessHandler({
         access: () => {
           return "private";
         },
@@ -28,70 +29,79 @@ describe("access", () => {
     });
 
     it("throws an exception with unsupported parameter", () => {
-      let req = {};
+      let req = {
+        erm: {},
+      };
 
       assert.throws(() => {
-        access({
+        getAccessHandler({
           access: () => {
             return "foo";
           },
         })(req, {}, next);
-      }, 'Unsupported access, must be "public", "private" or "protected"');
+      }, Error('Unsupported access, must be "public", "private" or "protected"'));
 
       sinon.assert.notCalled(next);
       assert.equal(req.access, undefined);
     });
   });
 
-  describe("yields (async)", () => {
+  describe("yields (async)", (done) => {
     it("adds access field to req", () => {
-      let req = {};
-
-      access({
-        access: (req, cb) => {
-          return cb(null, "private");
-        },
-      })(req, {}, next);
-
-      sinon.assert.calledOnce(next);
-      sinon.assert.calledWithExactly(next);
-      assert.equal(req.access, "private");
-    });
-
-    it("calls onError", () => {
       let req = {
         erm: {},
-        params: {},
       };
-      let onError = sinon.spy();
-      let err = new Error("Something bad happened");
 
-      access({
-        access: (req, cb) => {
-          return cb(err, "private");
+      getAccessHandler({
+        access: () => {
+          return Promise.resolve("private");
         },
-        onError: onError,
-      })(req, {}, next);
-
-      sinon.assert.calledOnce(onError);
-      sinon.assert.calledWithExactly(onError, err, req, {}, next);
-      sinon.assert.notCalled(next);
-      assert.equal(req.access, undefined);
+      })(req, {}, () => {
+        assert.equal(req.access, "private");
+        done();
+      });
     });
 
-    it("throws an exception with unsupported parameter", () => {
-      let req = {};
+    it("calls onError", (done) => {
+      let req = {
+        erm: {},
+      };
+      let err = new Error("Something bad happened");
 
-      assert.throws(() => {
-        access({
-          access: (req, cb) => {
-            return cb(null, "foo");
-          },
-        })(req, {}, next);
-      }, 'Unsupported access, must be "public", "private" or "protected"');
+      getAccessHandler({
+        access: () => {
+          return Promise.reject(err);
+        },
+        onError,
+      })(req, {}, next);
 
-      sinon.assert.notCalled(next);
-      assert.equal(req.access, undefined);
+      setTimeout(() => {
+        sinon.assert.calledOnce(onError);
+        sinon.assert.calledWithExactly(onError, err, req, {}, next);
+        sinon.assert.notCalled(next);
+        assert.equal(req.access, undefined);
+        done();
+      });
+    });
+
+    it("throws an exception with unsupported parameter", (done) => {
+      let req = {
+        erm: {},
+      };
+
+      getAccessHandler({
+        access: () => {
+          return Promise.resolve("foo");
+        },
+        onError,
+      })(req, {}, next);
+
+      setTimeout(() => {
+        sinon.assert.calledOnce(onError);
+        sinon.assert.notCalled(next);
+        assert.equal(req.access, undefined);
+        done();
+      });
     });
   });
 });

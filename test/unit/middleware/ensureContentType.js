@@ -1,11 +1,8 @@
-"use strict";
-
-const assert = require("assert");
-const sinon = require("sinon");
+import assert from "assert";
+import sinon from "sinon";
+import { getEnsureContentTypeHandler } from "../../../dist/middleware/ensureContentType.js";
 
 describe("ensureContentType", () => {
-  const ensureContentType = require("../../../src/middleware/ensureContentType");
-
   let onError = sinon.spy();
   let next = sinon.spy();
 
@@ -21,7 +18,7 @@ describe("ensureContentType", () => {
       params: {},
     };
 
-    ensureContentType({ onError })(req, {}, next);
+    getEnsureContentTypeHandler({ onError })(req, {}, next);
 
     sinon.assert.calledOnce(onError);
     sinon.assert.calledWithExactly(
@@ -44,7 +41,7 @@ describe("ensureContentType", () => {
       params: {},
     };
 
-    ensureContentType({ onError })(req, {}, next);
+    getEnsureContentTypeHandler({ onError })(req, {}, next);
 
     sinon.assert.calledOnce(onError);
     sinon.assert.calledWithExactly(
@@ -66,7 +63,7 @@ describe("ensureContentType", () => {
       params: {},
     };
 
-    ensureContentType({ onError })(req, {}, next);
+    getEnsureContentTypeHandler({ onError })(req, {}, next);
 
     sinon.assert.calledOnce(next);
     sinon.assert.calledWithExactly(next);

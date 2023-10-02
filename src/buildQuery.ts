@@ -1,8 +1,15 @@
-"use strict";
+import mongoose from "mongoose";
+import { QueryOptions } from "./getQuerySchema.js";
+import { Options } from "./types";
 
-module.exports = function (options) {
-  return function (query, queryOptions) {
-    const promise = new Promise((resolve, reject) => {
+export function getBuildQuery(
+  options: Pick<Options, "lean" | "limit" | "readPreference">
+) {
+  return function buildQuery<T>(
+    query: mongoose.Query<unknown, unknown>,
+    queryOptions: QueryOptions | undefined
+  ): Promise<T> {
+    const promise = new Promise((resolve) => {
       if (!queryOptions) {
         return resolve(query);
       }
@@ -17,26 +24,27 @@ module.exports = function (options) {
 
       if (
         options.limit &&
-        (!queryOptions.limit ||
-          queryOptions.limit === "0" ||
-          queryOptions.limit > options.limit)
+        (!queryOptions.limit || queryOptions.limit > options.limit)
       ) {
         queryOptions.limit = options.limit;
       }
 
       if (
         queryOptions.limit &&
-        query.op !== "count" &&
+        // @ts-expect-error this is fine 🐶🔥
+        query.op !== "countDocuments" &&
         !queryOptions.distinct
       ) {
         query.limit(queryOptions.limit);
       }
 
       if (queryOptions.sort) {
+        // @ts-expect-error this is fine 🐶🔥
         query.sort(queryOptions.sort);
       }
 
       if (queryOptions.populate) {
+        // @ts-expect-error this is fine 🐶🔥
         query.populate(queryOptions.populate);
       }
 
@@ -59,6 +67,6 @@ module.exports = function (options) {
       resolve(query);
     });
 
-    return promise;
+    return promise as Promise<T>;
   };
-};
+}

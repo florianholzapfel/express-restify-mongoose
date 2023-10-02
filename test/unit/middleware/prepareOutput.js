@@ -1,10 +1,7 @@
-"use strict";
-
-const sinon = require("sinon");
+import sinon from "sinon";
+import { getPrepareOutputHandler } from "../../../dist/middleware/prepareOutput.js";
 
 describe("prepareOutput", () => {
-  const prepareOutput = require("../../../src/middleware/prepareOutput");
-
   let onError = sinon.spy();
   let outputFn = sinon.spy();
   let outputFnPromise = sinon.spy(() => {
@@ -31,7 +28,7 @@ describe("prepareOutput", () => {
       outputFn: outputFn,
     };
 
-    prepareOutput(options)(req, {}, next);
+    getPrepareOutputHandler(options)(req, {}, next);
 
     sinon.assert.calledOnce(outputFn);
     sinon.assert.calledWithExactly(outputFn, req, {});
@@ -50,7 +47,7 @@ describe("prepareOutput", () => {
       outputFn: outputFnPromise,
     };
 
-    prepareOutput(options)(req, {}, next);
+    getPrepareOutputHandler(options)(req, {}, next);
 
     sinon.assert.calledOnce(outputFnPromise);
     sinon.assert.calledWithExactly(outputFnPromise, req, {});
@@ -70,7 +67,7 @@ describe("prepareOutput", () => {
       postProcess: postProcess,
     };
 
-    prepareOutput(options)(req, {}, next);
+    getPrepareOutputHandler(options)(req, {}, next);
 
     sinon.assert.calledOnce(outputFn);
     sinon.assert.calledWithExactly(outputFn, req, {});
@@ -92,7 +89,7 @@ describe("prepareOutput", () => {
       postProcess: postProcess,
     };
 
-    prepareOutput(options)(req, {}, next);
+    getPrepareOutputHandler(options)(req, {}, next);
 
     sinon.assert.calledOnce(outputFnPromise);
     sinon.assert.calledWithExactly(outputFnPromise, req, {});

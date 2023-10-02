@@ -1,11 +1,12 @@
-"use strict";
-
-require("./unit/middleware/access");
-require("./unit/middleware/ensureContentType");
-require("./unit/middleware/onError");
-require("./unit/middleware/outputFn");
-require("./unit/middleware/prepareOutput");
-require("./unit/middleware/prepareQuery");
-require("./unit/buildQuery");
-require("./unit/errorHandler");
-require("./unit/resourceFilter");
+import "./unit/buildQuery.js";
+import "./unit/detective.js";
+import "./unit/errorHandler.js";
+import "./unit/middleware/access.js";
+import "./unit/middleware/ensureContentType.js";
+import "./unit/middleware/onError.js";
+import "./unit/middleware/outputFn.js";
+import "./unit/middleware/prepareOutput.js";
+import "./unit/middleware/prepareQuery.js";
+import "./unit/moredots.js";
+import "./unit/resourceFilter.js";
+import "./unit/weedout.js";

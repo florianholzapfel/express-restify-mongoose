@@ -1,11 +1,8 @@
-"use strict";
-
-const assert = require("assert");
-const sinon = require("sinon");
+import assert from "assert";
+import sinon from "sinon";
+import { getBuildQuery } from "../../dist/buildQuery.js";
 
 describe("buildQuery", () => {
-  const buildQuery = require("../../src/buildQuery");
-
   let query = {
     where: sinon.spy(),
     skip: sinon.spy(),
@@ -23,7 +20,7 @@ describe("buildQuery", () => {
   });
 
   it("does not call any methods and returns a query object", () => {
-    return buildQuery({})(query).then((result) => {
+    return getBuildQuery({})(query).then((result) => {
       for (let key in query) {
         sinon.assert.notCalled(query[key]);
       }
@@ -38,7 +35,7 @@ describe("buildQuery", () => {
         query: "foo",
       };
 
-      return buildQuery({})(query, queryOptions).then((result) => {
+      return getBuildQuery({})(query, queryOptions).then((result) => {
         sinon.assert.calledOnce(query.where);
         sinon.assert.calledWithExactly(query.where, queryOptions.query);
         sinon.assert.notCalled(query.skip);
@@ -58,7 +55,7 @@ describe("buildQuery", () => {
         skip: "1",
       };
 
-      return buildQuery({})(query, queryOptions).then((result) => {
+      return getBuildQuery({})(query, queryOptions).then((result) => {
         sinon.assert.calledOnce(query.skip);
         sinon.assert.calledWithExactly(query.skip, queryOptions.skip);
         sinon.assert.notCalled(query.where);
@@ -78,7 +75,7 @@ describe("buildQuery", () => {
         limit: "1",
       };
 
-      return buildQuery({})(query, queryOptions).then((result) => {
+      return getBuildQuery({})(query, queryOptions).then((result) => {
         sinon.assert.calledOnce(query.limit);
         sinon.assert.calledWithExactly(query.limit, queryOptions.limit);
         sinon.assert.notCalled(query.where);
@@ -100,7 +97,7 @@ describe("buildQuery", () => {
         limit: "2",
       };
 
-      return buildQuery(options)(query, queryOptions).then((result) => {
+      return getBuildQuery(options)(query, queryOptions).then((result) => {
         sinon.assert.calledOnce(query.limit);
         sinon.assert.calledWithExactly(query.limit, options.limit);
         sinon.assert.notCalled(query.where);
@@ -118,9 +115,9 @@ describe("buildQuery", () => {
         limit: "2",
       };
 
-      query.op = "count";
+      query.op = "countDocuments";
 
-      return buildQuery({})(query, queryOptions).then((result) => {
+      return getBuildQuery({})(query, queryOptions).then((result) => {
         delete query.op;
 
         for (let key in query) {
@@ -140,9 +137,9 @@ describe("buildQuery", () => {
         limit: "2",
       };
 
-      query.op = "count";
+      query.op = "countDocuments";
 
-      return buildQuery(options)(query, queryOptions).then((result) => {
+      return getBuildQuery(options)(query, queryOptions).then((result) => {
         delete query.op;
 
         for (let key in query) {
@@ -162,7 +159,7 @@ describe("buildQuery", () => {
         distinct: "name",
       };
 
-      return buildQuery(options)(query, queryOptions).then((result) => {
+      return getBuildQuery(options)(query, queryOptions).then((result) => {
         for (let key in query) {
           if (key === "distinct") continue;
           sinon.assert.notCalled(query[key]);
@@ -180,7 +177,7 @@ describe("buildQuery", () => {
         sort: "foo",
       };
 
-      return buildQuery({})(query, queryOptions).then((result) => {
+      return getBuildQuery({})(query, queryOptions).then((result) => {
         sinon.assert.calledOnce(query.sort);
         sinon.assert.calledWithExactly(query.sort, queryOptions.sort);
         sinon.assert.notCalled(query.where);
@@ -203,7 +200,7 @@ describe("buildQuery", () => {
         },
       };
 
-      return buildQuery({})(query, queryOptions).then((result) => {
+      return getBuildQuery({})(query, queryOptions).then((result) => {
         sinon.assert.calledOnce(query.select);
         sinon.assert.calledWithExactly(query.select, {
           foo: 1,
@@ -233,7 +230,7 @@ describe("buildQuery", () => {
         ],
       };
 
-      return buildQuery({})(query, queryOptions).then((result) => {
+      return getBuildQuery({})(query, queryOptions).then((result) => {
         sinon.assert.calledOnce(query.populate);
         sinon.assert.calledWithExactly(query.populate, [
           {
@@ -260,7 +257,7 @@ describe("buildQuery", () => {
         distinct: "foo",
       };
 
-      return buildQuery({})(query, queryOptions).then((result) => {
+      return getBuildQuery({})(query, queryOptions).then((result) => {
         sinon.assert.calledOnce(query.distinct);
         sinon.assert.calledWithExactly(query.distinct, "foo");
         sinon.assert.notCalled(query.where);

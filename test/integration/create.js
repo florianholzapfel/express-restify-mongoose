@@ -1,60 +1,69 @@
-"use strict";
+import assert from "assert";
+import mongoose from "mongoose";
+import request from "request";
+import { serve } from "../../dist/express-restify-mongoose.js";
 
-const assert = require("assert");
-const mongoose = require("mongoose");
-const request = require("request");
+import setupDb from "./setup.js";
 
-module.exports = function (createFn, setup, dismantle) {
-  const erm = require("../../src/express-restify-mongoose");
-  const db = require("./setup")();
+export default function (createFn, setup, dismantle) {
+  const db = setupDb();
 
   let testPort = 30023;
   let testUrl = `http://localhost:${testPort}`;
   let invalidId = "invalid-id";
-  let randomId = mongoose.Types.ObjectId().toHexString();
+  let randomId = new mongoose.Types.ObjectId().toHexString();
 
   describe("Create documents", () => {
     let app = createFn();
     let server;
     let customer, product;
 
-    beforeEach((done) => {
+    before((done) => {
       setup((err) => {
         if (err) {
           return done(err);
         }
 
-        erm.serve(app, db.models.Customer, {
+        serve(app, db.models.Customer, {
           restify: app.isRestify,
         });
 
-        erm.serve(app, db.models.Invoice, {
+        serve(app, db.models.Invoice, {
           restify: app.isRestify,
         });
 
-        erm.serve(app, db.models.Product, {
+        serve(app, db.models.Product, {
           restify: app.isRestify,
         });
 
-        db.models.Customer.create({
-          name: "Bob",
-        })
-          .then((createdCustomer) => {
+        server = app.listen(testPort, done);
+      });
+    });
+
+    beforeEach((done) => {
+      db.reset((err) => {
+        if (err) {
+          return done(err);
+        }
+
+        Promise.all([
+          db.models.Customer.create({
+            name: "Bob",
+          }),
+          db.models.Product.create({
+            name: "Bobsleigh",
+          }),
+        ])
+          .then(([createdCustomer, createdProduct]) => {
             customer = createdCustomer;
-
-            return db.models.Product.create({
-              name: "Bobsleigh",
-            });
-          })
-          .then((createdProduct) => {
             product = createdProduct;
-            server = app.listen(testPort, done);
           })
+          .then(done)
           .catch(done);
       });
     });
 
-    afterEach((done) => {
+    after((done) => {
       dismantle(app, server, done);
     });
 
@@ -171,7 +180,7 @@ module.exports = function (createFn, setup, dismantle) {
           assert.ok(!err);
           assert.equal(res.statusCode, 201);
           assert.ok(Array.isArray(body));
-          assert.ok(body.length, 2);
+          assert.equal(body.length, 2);
           assert.ok(body[0]._id);
           assert.equal(body[0].name, "John");
           assert.ok(body[1]._id);
@@ -450,4 +459,4 @@ module.exports = function (createFn, setup, dismantle) {
       );
     });
   });
-};
+}

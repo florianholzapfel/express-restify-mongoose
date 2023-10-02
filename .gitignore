@@ -1,9 +1,2 @@
-tmp
+dist
 node_modules
-npm-debug.log
-/.idea
-nbproject
-coverage
-.DS_Store
-db/
-

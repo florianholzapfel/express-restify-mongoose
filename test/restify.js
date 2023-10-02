@@ -1,19 +1,19 @@
-"use strict";
+import restify from "restify";
 
-const restify = require("restify");
+import accessTests from "./integration/access.js";
+import contextFilterTests from "./integration/contextFilter.js";
+import createTests from "./integration/create.js";
+import deleteTests from "./integration/delete.js";
+import hookTests from "./integration/hooks.js";
+import middlewareTests from "./integration/middleware.js";
+import optionsTests from "./integration/options.js";
+import readTests from "./integration/read.js";
+import updateTests from "./integration/update.js";
+import virtualsTests from "./integration/virtuals.js";
 
-const createTests = require("./integration/create");
-const readTests = require("./integration/read");
-const updateTests = require("./integration/update");
-const deleteTests = require("./integration/delete");
-const accessTests = require("./integration/access");
-const contextFilterTests = require("./integration/contextFilter");
-const hookTests = require("./integration/hooks");
-const middlewareTests = require("./integration/middleware");
-const optionsTests = require("./integration/options");
-const virtualsTests = require("./integration/virtuals");
+import setupDb from "./integration/setup.js";
 
-const db = require("./integration/setup")();
+const db = setupDb();
 
 function Restify() {
   let app = restify.createServer();
@@ -62,4 +62,4 @@ function runTests(createFn) {
   });
 }
 
-//runTests(Restify)
+runTests(Restify);

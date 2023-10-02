@@ -1,17 +1,14 @@
-"use strict";
-
-const sinon = require("sinon");
+import sinon from "sinon";
+import { getOutputFnHandler } from "../../../dist/middleware/outputFn.js";
 
 describe("outputFn", () => {
-  const outputFn = require("../../../src/middleware/outputFn");
-
   let res = {
-    sendStatus: function () {},
+    sendStatus: () => undefined,
     status: function () {
       return this;
     },
-    json: function () {},
-    send: function () {},
+    json: () => undefined,
+    send: () => undefined,
   };
 
   let sendStatus = sinon.spy(res, "sendStatus");
@@ -28,7 +25,7 @@ describe("outputFn", () => {
 
   describe("express", () => {
     it("sends status code and message", () => {
-      outputFn(true)(
+      getOutputFnHandler(true)(
         {
           erm: {
             statusCode: 200,
@@ -54,7 +51,7 @@ describe("outputFn", () => {
         },
       };
 
-      outputFn(true)(req, res);
+      getOutputFnHandler(true)(req, res);
 
       sinon.assert.calledOnce(status);
       sinon.assert.calledWithExactly(status, 201);
@@ -69,7 +66,7 @@ describe("outputFn", () => {
 
   describe("restify", () => {
     it("sends status code", () => {
-      outputFn(false)(
+      getOutputFnHandler(false)(
         {
           erm: {
             statusCode: 200,
@@ -95,7 +92,7 @@ describe("outputFn", () => {
         },
       };
 
-      outputFn(false)(req, res);
+      getOutputFnHandler(false)(req, res);
 
       sinon.assert.calledOnce(send);
       sinon.assert.calledWithExactly(send, 201, {

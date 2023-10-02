@@ -1,11 +1,11 @@
-"use strict";
+import assert from "assert";
+import request from "request";
+import { serve } from "../../dist/express-restify-mongoose.js";
 
-const assert = require("assert");
-const request = require("request");
+import setupDb from "./setup.js";
 
-module.exports = function (createFn, setup, dismantle) {
-  const erm = require("../../src/express-restify-mongoose");
-  const db = require("./setup")();
+export default function (createFn, setup, dismantle) {
+  const db = setupDb();
 
   const testPort = 30023;
   const testUrl = `http://localhost:${testPort}`;
@@ -22,13 +22,13 @@ module.exports = function (createFn, setup, dismantle) {
       let repeatCustomer;
       let repeatCustomerInvoice;
 
-      beforeEach((done) => {
+      before((done) => {
         setup((err) => {
           if (err) {
             return done(err);
           }
 
-          erm.serve(app, db.models.RepeatCustomer, {
+          serve(app, db.models.RepeatCustomer, {
             private: ["job"],
             protected: ["status"],
             access: () => {
@@ -37,7 +37,7 @@ module.exports = function (createFn, setup, dismantle) {
             restify: app.isRestify,
           });
 
-          erm.serve(app, db.models.Customer, {
+          serve(app, db.models.Customer, {
             private: [
               "age",
               "favorites.animal",
@@ -46,13 +46,13 @@ module.exports = function (createFn, setup, dismantle) {
               "privateDoes.notExist",
             ],
             protected: ["comment", "favorites.color", "protectedDoes.notExist"],
-            access: (req, done) => {
-              done(null, "private");
+            access: () => {
+              return Promise.resolve("private");
             },
             restify: app.isRestify,
           });
 
-          erm.serve(app, db.models.Invoice, {
+          serve(app, db.models.Invoice, {
             private: ["amount"],
             protected: ["receipt"],
             access: () => {
@@ -61,7 +61,7 @@ module.exports = function (createFn, setup, dismantle) {
             restify: app.isRestify,
           });
 
-          erm.serve(app, db.models.Product, {
+          serve(app, db.models.Product, {
             private: ["department.code"],
             protected: ["price"],
             access: () => {
@@ -70,7 +70,7 @@ module.exports = function (createFn, setup, dismantle) {
             restify: app.isRestify,
           });
 
-          erm.serve(app, db.models.Account, {
+          serve(app, db.models.Account, {
             private: ["accountNumber"],
             protected: ["points"],
             access: () => {
@@ -78,6 +78,16 @@ module.exports = function (createFn, setup, dismantle) {
             },
             restify: app.isRestify,
           });
+
+          server = app.listen(testPort, done);
+        });
+      });
+
+      beforeEach((done) => {
+        db.reset((err) => {
+          if (err) {
+            return done(err);
+          }
 
           db.models.Product.create({
             name: "Bobsleigh",
@@ -149,13 +159,13 @@ module.exports = function (createFn, setup, dismantle) {
             })
             .then((createdRepeatCustomerInvoice) => {
               repeatCustomerInvoice = createdRepeatCustomerInvoice;
-              server = app.listen(testPort, done);
             })
+            .then(done)
             .catch(done);
         });
       });
 
-      afterEach((done) => {
+      after((done) => {
         dismantle(app, server, done);
       });
 
@@ -616,13 +626,13 @@ module.exports = function (createFn, setup, dismantle) {
       let repeatCustomer;
       let repeatCustomerInvoice;
 
-      beforeEach((done) => {
+      before((done) => {
         setup((err) => {
           if (err) {
             return done(err);
           }
 
-          erm.serve(app, db.models.RepeatCustomer, {
+          serve(app, db.models.RepeatCustomer, {
             private: ["job"],
             protected: ["status"],
             access: () => {
@@ -631,7 +641,7 @@ module.exports = function (createFn, setup, dismantle) {
             restify: app.isRestify,
           });
 
-          erm.serve(app, db.models.Customer, {
+          serve(app, db.models.Customer, {
             private: [
               "age",
               "favorites.animal",
@@ -640,13 +650,13 @@ module.exports = function (createFn, setup, dismantle) {
               "privateDoes.notExist",
             ],
             protected: ["comment", "favorites.color", "protectedDoes.notExist"],
-            access: (req, done) => {
-              done(null, "protected");
+            access: () => {
+              return Promise.resolve("protected");
             },
             restify: app.isRestify,
           });
 
-          erm.serve(app, db.models.Invoice, {
+          serve(app, db.models.Invoice, {
             private: ["amount"],
             protected: ["receipt"],
             access: () => {
@@ -655,7 +665,7 @@ module.exports = function (createFn, setup, dismantle) {
             restify: app.isRestify,
           });
 
-          erm.serve(app, db.models.Product, {
+          serve(app, db.models.Product, {
             private: ["department.code"],
             protected: ["price"],
             access: () => {
@@ -664,7 +674,7 @@ module.exports = function (createFn, setup, dismantle) {
             restify: app.isRestify,
           });
 
-          erm.serve(app, db.models.Account, {
+          serve(app, db.models.Account, {
             private: ["accountNumber"],
             protected: ["points"],
             access: () => {
@@ -672,6 +682,16 @@ module.exports = function (createFn, setup, dismantle) {
             },
             restify: app.isRestify,
           });
+
+          server = app.listen(testPort, done);
+        });
+      });
+
+      beforeEach((done) => {
+        db.reset((err) => {
+          if (err) {
+            return done(err);
+          }
 
           db.models.Product.create({
             name: "Bobsleigh",
@@ -743,13 +763,13 @@ module.exports = function (createFn, setup, dismantle) {
             })
             .then((createdRepeatCustomerInvoice) => {
               repeatCustomerInvoice = createdRepeatCustomerInvoice;
-              server = app.listen(testPort, done);
             })
+            .then(done)
             .catch(done);
         });
       });
 
-      afterEach((done) => {
+      after((done) => {
         dismantle(app, server, done);
       });
 
@@ -1198,19 +1218,19 @@ module.exports = function (createFn, setup, dismantle) {
       let repeatCustomer;
       let repeatCustomerInvoice;
 
-      beforeEach((done) => {
+      before((done) => {
         setup((err) => {
           if (err) {
             return done(err);
           }
 
-          erm.serve(app, db.models.RepeatCustomer, {
+          serve(app, db.models.RepeatCustomer, {
             private: ["job"],
             protected: ["status"],
             restify: app.isRestify,
           });
 
-          erm.serve(app, db.models.Customer, {
+          serve(app, db.models.Customer, {
             private: [
               "age",
               "favorites.animal",
@@ -1222,23 +1242,33 @@ module.exports = function (createFn, setup, dismantle) {
             restify: app.isRestify,
           });
 
-          erm.serve(app, db.models.Invoice, {
+          serve(app, db.models.Invoice, {
             private: ["amount"],
             protected: ["receipt"],
             restify: app.isRestify,
           });
 
-          erm.serve(app, db.models.Product, {
+          serve(app, db.models.Product, {
             private: ["department.code"],
             protected: ["price"],
             restify: app.isRestify,
           });
 
-          erm.serve(app, db.models.Account, {
+          serve(app, db.models.Account, {
             private: ["accountNumber"],
             protected: ["points"],
             restify: app.isRestify,
           });
+
+          server = app.listen(testPort, done);
+        });
+      });
+
+      beforeEach((done) => {
+        db.reset((err) => {
+          if (err) {
+            return done(err);
+          }
 
           db.models.Product.create({
             name: "Bobsleigh",
@@ -1310,13 +1340,13 @@ module.exports = function (createFn, setup, dismantle) {
             })
             .then((createdRepeatCustomerInvoice) => {
               repeatCustomerInvoice = createdRepeatCustomerInvoice;
-              server = app.listen(testPort, done);
             })
+            .then(done)
             .catch(done);
         });
       });
 
-      afterEach((done) => {
+      after((done) => {
         dismantle(app, server, done);
       });
 
@@ -1751,16 +1781,16 @@ module.exports = function (createFn, setup, dismantle) {
       let app = createFn();
       let server;
 
-      beforeEach((done) => {
+      before((done) => {
         setup((err) => {
           if (err) {
             return done(err);
           }
 
-          erm.serve(app, db.models.Customer, {
-            access: (req, done) => {
+          serve(app, db.models.Customer, {
+            access: () => {
               let err = new Error("Something went wrong");
-              done(err);
+              return Promise.reject(err);
             },
             restify: app.isRestify,
           });
@@ -1769,7 +1799,7 @@ module.exports = function (createFn, setup, dismantle) {
         });
       });
 
-      afterEach((done) => {
+      after((done) => {
         dismantle(app, server, done);
       });
 
@@ -1792,4 +1822,4 @@ module.exports = function (createFn, setup, dismantle) {
       });
     });
   });
-};
+}

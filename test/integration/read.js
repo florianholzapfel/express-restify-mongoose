@@ -1,36 +1,47 @@
-"use strict";
+import assert from "assert";
+import mongoose from "mongoose";
+import request from "request";
+import { serve } from "../../dist/express-restify-mongoose.js";
 
-const assert = require("assert");
-const mongoose = require("mongoose");
-const request = require("request");
+import setupDb from "./setup.js";
 
-module.exports = function (createFn, setup, dismantle) {
-  const erm = require("../../src/express-restify-mongoose");
-  const db = require("./setup")();
+export default function (createFn, setup, dismantle) {
+  const db = setupDb();
 
   const testPort = 30023;
   const testUrl = `http://localhost:${testPort}`;
   const invalidId = "invalid-id";
-  const randomId = mongoose.Types.ObjectId().toHexString();
+  const randomId = new mongoose.Types.ObjectId().toHexString();
 
   describe("Read documents", () => {
     let app = createFn();
     let server;
     let customers;
 
-    beforeEach((done) => {
+    before((done) => {
       setup((err) => {
         if (err) {
           return done(err);
         }
 
-        erm.serve(app, db.models.Customer, {
+        serve(app, db.models.Customer, {
+          allowRegex: true,
           restify: app.isRestify,
         });
 
-        erm.serve(app, db.models.Invoice, {
+        serve(app, db.models.Invoice, {
           restify: app.isRestify,
         });
+
+        server = app.listen(testPort, done);
+      });
+    });
+
+    beforeEach((done) => {
+      db.reset((err) => {
+        if (err) {
+          return done(err);
+        }
 
         db.models.Product.create({
           name: "Bobsleigh",
@@ -97,14 +108,12 @@ module.exports = function (createFn, setup, dismantle) {
               },
             ]);
           })
-          .then((createdInvoices) => {
-            server = app.listen(testPort, done);
-          })
+          .then(() => done())
           .catch(done);
       });
     });
 
-    afterEach((done) => {
+    after((done) => {
       dismantle(app, server, done);
     });
 
@@ -144,7 +153,7 @@ module.exports = function (createFn, setup, dismantle) {
           url: `${testUrl}/api/v1/Customer/${invalidId}`,
           json: true,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 404);
           done();
@@ -158,7 +167,7 @@ module.exports = function (createFn, setup, dismantle) {
           url: `${testUrl}/api/v1/Customer/${randomId}`,
           json: true,
         },
-        (err, res, body) => {
+        (err, res) => {
           assert.ok(!err);
           assert.equal(res.statusCode, 404);
           done();
@@ -219,7 +228,7 @@ module.exports = function (createFn, setup, dismantle) {
             assert.equal(res.statusCode, 400);
             assert.deepEqual(body, {
               name: "Error",
-              message: "invalid_limit_value",
+              message: "invalid_json_query",
             });
             done();
           }
@@ -260,7 +269,7 @@ module.exports = function (createFn, setup, dismantle) {
             assert.equal(res.statusCode, 400);
             assert.deepEqual(body, {
               name: "Error",
-              message: "invalid_skip_value",
+              message: "invalid_json_query",
             });
             done();
           }
@@ -1094,7 +1103,7 @@ module.exports = function (createFn, setup, dismantle) {
             url: `${testUrl}/api/v1/Customer/${invalidId}/shallow`,
             json: true,
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             assert.equal(res.statusCode, 404);
             done();
@@ -1108,7 +1117,7 @@ module.exports = function (createFn, setup, dismantle) {
             url: `${testUrl}/api/v1/Customer/${randomId}/shallow`,
             json: true,
           },
-          (err, res, body) => {
+          (err, res) => {
             assert.ok(!err);
             assert.equal(res.statusCode, 404);
             done();
@@ -1117,4 +1126,4 @@ module.exports = function (createFn, setup, dismantle) {
       });
     });
   });
-};
+}

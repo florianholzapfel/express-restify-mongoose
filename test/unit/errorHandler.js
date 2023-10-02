@@ -1,22 +1,15 @@
-"use strict";
-
-const assert = require("assert");
-const CastError = require("mongoose/lib/error/cast");
-const sinon = require("sinon");
+import assert from "assert";
+import mongoose from "mongoose";
+import sinon from "sinon";
+import { getErrorHandler } from "../../dist/errorHandler.js";
 
 describe("errorHandler", () => {
-  const errorHandler = require("../../src/errorHandler");
-
   it("is a function", () => {
-    assert.equal(typeof errorHandler, "function");
+    assert.equal(typeof getErrorHandler, "function");
   });
 
   it("returns a function", () => {
-    assert.equal(typeof errorHandler(), "function");
-  });
-
-  it("returns a function that returns a function", () => {
-    assert.equal(typeof errorHandler()(), "function");
+    assert.equal(typeof getErrorHandler(), "function");
   });
 
   it("sets statusCode 400 and calls onError", () => {
@@ -31,7 +24,7 @@ describe("errorHandler", () => {
 
     const err = new Error("Something went wrong");
 
-    errorHandler(options)(req)(err);
+    getErrorHandler(options)(err, req);
 
     sinon.assert.calledOnce(options.onError);
     assert.equal(req.erm.statusCode, 400);
@@ -52,7 +45,7 @@ describe("errorHandler", () => {
 
     const err = new Error("Something went wrong");
 
-    errorHandler(options)(req)(err);
+    getErrorHandler(options)(err, req);
 
     sinon.assert.calledOnce(options.onError);
     assert.equal(req.erm.statusCode, 400);
@@ -71,9 +64,9 @@ describe("errorHandler", () => {
       },
     };
 
-    const err = new CastError("type", "42", "_id");
+    const err = new mongoose.CastError("type", "42", "_id");
 
-    errorHandler(options)(req)(err);
+    getErrorHandler(options)(err, req);
 
     sinon.assert.calledOnce(options.onError);
     assert.equal(req.erm.statusCode, 404);

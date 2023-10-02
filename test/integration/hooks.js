@@ -1,11 +1,11 @@
-"use strict";
+import assert from "assert";
+import request from "request";
+import { serve } from "../../dist/express-restify-mongoose.js";
 
-const assert = require("assert");
-const request = require("request");
+import setupDb from "./setup.js";
 
-module.exports = function (createFn, setup, dismantle) {
-  const erm = require("../../src/express-restify-mongoose");
-  const db = require("./setup")();
+export default function (createFn, setup, dismantle) {
+  const db = setupDb();
 
   let testPort = 30023;
   let testUrl = `http://localhost:${testPort}`;
@@ -14,13 +14,13 @@ module.exports = function (createFn, setup, dismantle) {
     let app = createFn();
     let server;
 
-    beforeEach((done) => {
+    before((done) => {
       setup((err) => {
         if (err) {
           return done(err);
         }
 
-        erm.serve(app, db.models.Hook, {
+        serve(app, db.models.Hook, {
           restify: app.isRestify,
         });
 
@@ -28,7 +28,7 @@ module.exports = function (createFn, setup, dismantle) {
       });
     });
 
-    afterEach((done) => {
+    after((done) => {
       dismantle(app, server, done);
     });
 
@@ -94,4 +94,4 @@ module.exports = function (createFn, setup, dismantle) {
       );
     });
   });
-};
+}

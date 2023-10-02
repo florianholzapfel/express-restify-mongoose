@@ -1,4 +1,9 @@
 {
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true,
+    "source.organizeImports": true
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
-  "javascript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
