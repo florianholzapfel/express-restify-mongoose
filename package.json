@@ -1,6 +1,6 @@
 {
   "name": "express-restify-mongoose",
-  "version": "7.0.2",
+  "version": "8.0.0",
   "description": "Easily create a flexible REST interface for mongoose models",
   "keywords": [
     "ReST",
