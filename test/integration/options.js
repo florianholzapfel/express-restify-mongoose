@@ -1,7 +1,7 @@
 import assert from "assert";
-import request from "request";
 import sinon from "sinon";
 import { serve } from "../../dist/express-restify-mongoose.js";
+import * as request from "../request.js";
 
 import setupDb from "./setup.js";
 
@@ -715,9 +715,8 @@ export default function (createFn, setup, dismantle) {
 
     updateMethods.forEach((method) => {
       it(`${method} /Customer/:id 200`, (done) => {
-        request(
+        request[method](
           {
-            method,
             url: `${testUrl}/api/v1/Customer/${customer._id}`,
             json: {
               age: 12,
@@ -855,9 +854,8 @@ export default function (createFn, setup, dismantle) {
 
     updateMethods.forEach((method) => {
       it(`${method} /Customer/:name 200`, (done) => {
-        request(
+        request[method](
           {
-            method,
             url: `${testUrl}/api/v1/Customer/${customer.name}`,
             json: {
               age: 12,

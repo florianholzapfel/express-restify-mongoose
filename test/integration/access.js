@@ -1,6 +1,6 @@
 import assert from "assert";
-import request from "request";
 import { serve } from "../../dist/express-restify-mongoose.js";
+import * as request from "../request.js";
 
 import setupDb from "./setup.js";
 
@@ -471,9 +471,8 @@ export default function (createFn, setup, dismantle) {
 
       updateMethods.forEach((method) => {
         it(`${method} /Customer/:id - saves all fields`, (done) => {
-          request(
+          request[method](
             {
-              method,
               url: `${testUrl}/api/v1/Customer/${customer._id}`,
               json: {
                 name: "John",
@@ -509,9 +508,8 @@ export default function (createFn, setup, dismantle) {
         });
 
         it(`${method} /Customer/:id - saves all fields (falsy values)`, (done) => {
-          request(
+          request[method](
             {
-              method,
               url: `${testUrl}/api/v1/Customer/${customer._id}`,
               json: {
                 age: 0,
@@ -1045,9 +1043,8 @@ export default function (createFn, setup, dismantle) {
 
       updateMethods.forEach((method) => {
         it(`${method} /Customer/:id - saves protected and public fields`, (done) => {
-          request(
+          request[method](
             {
-              method,
               url: `${testUrl}/api/v1/Customer/${customer._id}`,
               json: {
                 name: "John",
@@ -1093,9 +1090,8 @@ export default function (createFn, setup, dismantle) {
         });
 
         it(`${method} /Customer/:id - saves protected and public fields (falsy values)`, (done) => {
-          request(
+          request[method](
             {
-              method,
               url: `${testUrl}/api/v1/Customer/${customer._id}`,
               json: {
                 age: 0,
@@ -1614,9 +1610,8 @@ export default function (createFn, setup, dismantle) {
 
       updateMethods.forEach((method) => {
         it(`${method} /Customer/:id - saves public fields`, (done) => {
-          request(
+          request[method](
             {
-              method,
               url: `${testUrl}/api/v1/Customer/${customer._id}`,
               json: {
                 name: "John",
@@ -1662,9 +1657,8 @@ export default function (createFn, setup, dismantle) {
         });
 
         it(`${method} /Customer/:id - saves public fields (falsy values)`, (done) => {
-          request(
+          request[method](
             {
-              method,
               url: `${testUrl}/api/v1/Customer/${customer._id}`,
               json: {
                 age: 0,

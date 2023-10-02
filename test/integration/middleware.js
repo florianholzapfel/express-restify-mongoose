@@ -1,8 +1,8 @@
 import assert from "assert";
 import mongoose from "mongoose";
-import request from "request";
 import sinon from "sinon";
 import { serve } from "../../dist/express-restify-mongoose.js";
+import * as request from "../request.js";
 
 import setupDb from "./setup.js";
 
@@ -87,9 +87,8 @@ export default function (createFn, setup, dismantle) {
 
     updateMethods.forEach((method) => {
       it(`${method} /Customer/:id 200`, (done) => {
-        request(
+        request[method](
           {
-            method,
             url: `${testUrl}/api/v1/Customer/${customer._id}`,
             json: {
               name: "Bobby",
@@ -262,9 +261,8 @@ export default function (createFn, setup, dismantle) {
 
     updateMethods.forEach((method) => {
       it(`${method} /Customer/:id 200`, (done) => {
-        request(
+        request[method](
           {
-            method,
             url: `${testUrl}/api/v1/Customer/${customer._id}`,
             json: {
               name: "Bobby",
@@ -283,9 +281,8 @@ export default function (createFn, setup, dismantle) {
       });
 
       it(`${method} /Customer/:id 400 - not called (missing content type)`, (done) => {
-        request(
+        request[method](
           {
-            method,
             url: `${testUrl}/api/v1/Customer/${customer._id}`,
           },
           (err, res, body) => {
@@ -302,9 +299,8 @@ export default function (createFn, setup, dismantle) {
       });
 
       it(`${method} /Customer/:id 400 - not called (invalid content type)`, (done) => {
-        request(
+        request[method](
           {
-            method,
             url: `${testUrl}/api/v1/Customer/${customer._id}`,
             formData: {},
           },
@@ -591,9 +587,8 @@ export default function (createFn, setup, dismantle) {
 
     updateMethods.forEach((method) => {
       it(`${method} /Customer/:id 200`, (done) => {
-        request(
+        request[method](
           {
-            method,
             url: `${testUrl}/api/v1/Customer/${customer._id}`,
             json: {
               name: "Bobby",
@@ -614,9 +609,8 @@ export default function (createFn, setup, dismantle) {
       });
 
       it(`${method} /Customer/:id 400 - not called (missing content type)`, (done) => {
-        request(
+        request[method](
           {
-            method,
             url: `${testUrl}/api/v1/Customer/${customer._id}`,
           },
           (err, res, body) => {
@@ -633,9 +627,8 @@ export default function (createFn, setup, dismantle) {
       });
 
       it(`${method} /Customer/:id 400 - not called (invalid content type)`, (done) => {
-        request(
+        request[method](
           {
-            method,
             url: `${testUrl}/api/v1/Customer/${customer._id}`,
             formData: {},
           },
@@ -1144,9 +1137,8 @@ export default function (createFn, setup, dismantle) {
 
     updateMethods.forEach((method) => {
       it(`${method} /Customer/:id 200`, (done) => {
-        request(
+        request[method](
           {
-            method,
             url: `${testUrl}/api/v1/Customer/${customer._id}`,
             json: {
               name: "Bobby",
@@ -1167,9 +1159,8 @@ export default function (createFn, setup, dismantle) {
       });
 
       it(`${method} /Customer/:id 404 - random id`, (done) => {
-        request(
+        request[method](
           {
-            method,
             url: `${testUrl}/api/v1/Customer/${randomId}`,
             json: {
               name: "Bobby",
@@ -1185,9 +1176,8 @@ export default function (createFn, setup, dismantle) {
       });
 
       it(`${method} /Customer/:id 404 - invalid id`, (done) => {
-        request(
+        request[method](
           {
-            method,
             url: `${testUrl}/api/v1/Customer/${invalidId}`,
             json: {
               name: "Bobby",
@@ -1203,9 +1193,8 @@ export default function (createFn, setup, dismantle) {
       });
 
       it(`${method} /Customer/:id 400 - not called (missing content type)`, (done) => {
-        request(
+        request[method](
           {
-            method,
             url: `${testUrl}/api/v1/Customer/${customer._id}`,
           },
           (err, res, body) => {
@@ -1222,9 +1211,8 @@ export default function (createFn, setup, dismantle) {
       });
 
       it(`${method} /Customer/:id 400 - not called (invalid content type)`, (done) => {
-        request(
+        request[method](
           {
-            method,
             url: `${testUrl}/api/v1/Customer/${customer._id}`,
             formData: {},
           },

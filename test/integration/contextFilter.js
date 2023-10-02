@@ -1,6 +1,6 @@
 import assert from "assert";
-import request from "request";
 import { serve } from "../../dist/express-restify-mongoose.js";
+import * as request from "../request.js";
 
 import setupDb from "./setup.js";
 
@@ -134,9 +134,8 @@ export default function (createFn, setup, dismantle) {
 
     updateMethods.forEach((method) => {
       it(`${method} /Customer/:id 200`, (done) => {
-        request(
+        request[method](
           {
-            method,
             url: `${testUrl}/api/v1/Customer/${customers[1]._id}`,
             json: {
               name: "Johnny",
@@ -152,9 +151,8 @@ export default function (createFn, setup, dismantle) {
       });
 
       it(`${method} /Customer/:id 404 - filtered name`, (done) => {
-        request(
+        request[method](
           {
-            method,
             url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
             json: {
               name: "Bobby",
