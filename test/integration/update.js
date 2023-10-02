@@ -1,7 +1,7 @@
 import assert from "assert";
 import mongoose from "mongoose";
-import request from "request";
 import { serve } from "../../dist/express-restify-mongoose.js";
+import * as request from "../request.js";
 
 import setupDb from "./setup.js";
 
@@ -109,9 +109,8 @@ export default function (createFn, setup, dismantle) {
 
       updateMethods.forEach((method) => {
         it(`${method} /Customer/:id 200 - empty body`, (done) => {
-          request(
+          request[method](
             {
-              method,
               url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
               json: {},
             },
@@ -125,9 +124,8 @@ export default function (createFn, setup, dismantle) {
         });
 
         it(`${method} /Customer/:id 200 - created id`, (done) => {
-          request(
+          request[method](
             {
-              method,
               url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
               json: {
                 name: "Mike",
@@ -143,9 +141,8 @@ export default function (createFn, setup, dismantle) {
         });
 
         it(`${method} /Customer/:id 400 - cast error`, (done) => {
-          request(
+          request[method](
             {
-              method,
               url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
               json: {
                 age: "not a number",
@@ -171,9 +168,8 @@ export default function (createFn, setup, dismantle) {
         });
 
         it(`${method} /Customer/:id 400 - mongo error`, (done) => {
-          request(
+          request[method](
             {
-              method,
               url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
               json: {
                 name: "John",
@@ -201,9 +197,8 @@ export default function (createFn, setup, dismantle) {
         });
 
         it(`${method} /Customer/:id 400 - missing content type`, (done) => {
-          request(
+          request[method](
             {
-              method,
               url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
             },
             (err, res, body) => {
@@ -219,9 +214,8 @@ export default function (createFn, setup, dismantle) {
         });
 
         it(`${method} /Customer/:id 400 - invalid content type`, (done) => {
-          request(
+          request[method](
             {
-              method,
               url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
               formData: {},
             },
@@ -238,9 +232,8 @@ export default function (createFn, setup, dismantle) {
         });
 
         it(`${method} /Customer/:id 404 - invalid id`, (done) => {
-          request(
+          request[method](
             {
-              method,
               url: `${testUrl}/api/v1/Customer/${invalidId}`,
               json: {
                 name: "Mike",
@@ -255,9 +248,8 @@ export default function (createFn, setup, dismantle) {
         });
 
         it(`${method} /Customer/:id 404 - random id`, (done) => {
-          request(
+          request[method](
             {
-              method,
               url: `${testUrl}/api/v1/Customer/${randomId}`,
               json: {
                 name: "Mike",
@@ -272,9 +264,8 @@ export default function (createFn, setup, dismantle) {
         });
 
         it(`${method} /Invoice/:id 200 - referencing customer and product ids as strings`, (done) => {
-          request(
+          request[method](
             {
-              method,
               url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
               json: {
                 customer: customers[1]._id.toHexString(),
@@ -292,9 +283,8 @@ export default function (createFn, setup, dismantle) {
         });
 
         it(`${method} /Invoice/:id 200 - referencing customer and products ids as strings`, (done) => {
-          request(
+          request[method](
             {
-              method,
               url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
               json: {
                 customer: customers[1]._id.toHexString(),
@@ -312,9 +302,8 @@ export default function (createFn, setup, dismantle) {
         });
 
         it(`${method} /Invoice/:id 200 - referencing customer and product ids`, (done) => {
-          request(
+          request[method](
             {
-              method,
               url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
               json: {
                 customer: customers[1]._id,
@@ -332,9 +321,8 @@ export default function (createFn, setup, dismantle) {
         });
 
         it(`${method} /Invoice/:id 200 - referencing customer and products ids`, (done) => {
-          request(
+          request[method](
             {
-              method,
               url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
               json: {
                 customer: customers[1]._id,
@@ -360,9 +348,8 @@ export default function (createFn, setup, dismantle) {
                 assert.notEqual(invoice.amount, 200);
                 invoice.amount = 200;
 
-                request(
+                request[method](
                   {
-                    method,
                     url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
                     json: invoice,
                   },
@@ -386,9 +373,8 @@ export default function (createFn, setup, dismantle) {
                 assert.notEqual(invoice.amount, 200);
                 invoice.amount = 200;
 
-                request(
+                request[method](
                   {
-                    method,
                     url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
                     json: invoice,
                   },
@@ -412,9 +398,8 @@ export default function (createFn, setup, dismantle) {
               .populate("customer products")
               .exec()
               .then((invoice) => {
-                request(
+                request[method](
                   {
-                    method,
                     url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
                     qs: {
                       populate: "customer,products",
@@ -457,9 +442,8 @@ export default function (createFn, setup, dismantle) {
               .exec()
               .then((customer) => {
                 customer.returns = [customer.returns[1]];
-                request(
+                request[method](
                   {
-                    method,
                     url: `${testUrl}/api/v1/Customer/${customer._id}`,
                     qs: {
                       populate: "returns,purchases.item",
@@ -612,9 +596,8 @@ export default function (createFn, setup, dismantle) {
 
       updateMethods.forEach((method) => {
         it(`${method} /Customer/:id 200 - empty body`, (done) => {
-          request(
+          request[method](
             {
-              method,
               url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
               json: {},
             },
@@ -628,9 +611,8 @@ export default function (createFn, setup, dismantle) {
         });
 
         it(`${method} /Customer/:id 200 - created id`, (done) => {
-          request(
+          request[method](
             {
-              method,
               url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
               json: {
                 name: "Mike",
@@ -646,9 +628,8 @@ export default function (createFn, setup, dismantle) {
         });
 
         it(`${method} /Customer/:id 400 - validation error`, (done) => {
-          request(
+          request[method](
             {
-              method,
               url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
               json: {
                 age: "not a number",
@@ -681,9 +662,8 @@ export default function (createFn, setup, dismantle) {
         });
 
         it(`${method} /Customer/:id 400 - mongo error`, (done) => {
-          request(
+          request[method](
             {
-              method,
               url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
               json: {
                 name: "John",
@@ -710,9 +690,8 @@ export default function (createFn, setup, dismantle) {
         });
 
         it(`${method} /Customer/:id 400 - missing content type`, (done) => {
-          request(
+          request[method](
             {
-              method,
               url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
             },
             (err, res, body) => {
@@ -728,9 +707,8 @@ export default function (createFn, setup, dismantle) {
         });
 
         it(`${method} /Customer/:id 400 - invalid content type`, (done) => {
-          request(
+          request[method](
             {
-              method,
               url: `${testUrl}/api/v1/Customer/${customers[0]._id}`,
               formData: {
                 name: "Mike",
@@ -749,9 +727,8 @@ export default function (createFn, setup, dismantle) {
         });
 
         it(`${method} /Customer/:id 404 - invalid id`, (done) => {
-          request(
+          request[method](
             {
-              method,
               url: `${testUrl}/api/v1/Customer/${invalidId}`,
               json: {
                 name: "Mike",
@@ -766,9 +743,8 @@ export default function (createFn, setup, dismantle) {
         });
 
         it(`${method} /Customer/:id 404 - random id`, (done) => {
-          request(
+          request[method](
             {
-              method,
               url: `${testUrl}/api/v1/Customer/${randomId}`,
               json: {
                 name: "Mike",
@@ -783,9 +759,8 @@ export default function (createFn, setup, dismantle) {
         });
 
         it(`${method} /Invoice/:id 200 - referencing customer and product ids as strings`, (done) => {
-          request(
+          request[method](
             {
-              method,
               url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
               json: {
                 customer: customers[1]._id.toHexString(),
@@ -803,9 +778,8 @@ export default function (createFn, setup, dismantle) {
         });
 
         it(`${method} /Invoice/:id 200 - referencing customer and products ids as strings`, (done) => {
-          request(
+          request[method](
             {
-              method,
               url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
               json: {
                 customer: customers[1]._id.toHexString(),
@@ -823,9 +797,8 @@ export default function (createFn, setup, dismantle) {
         });
 
         it(`${method} /Invoice/:id 200 - referencing customer and product ids`, (done) => {
-          request(
+          request[method](
             {
-              method,
               url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
               json: {
                 customer: customers[1]._id,
@@ -843,9 +816,8 @@ export default function (createFn, setup, dismantle) {
         });
 
         it(`${method} /Invoice/:id 200 - referencing customer and products ids`, (done) => {
-          request(
+          request[method](
             {
-              method,
               url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
               json: {
                 customer: customers[1]._id,
@@ -871,9 +843,8 @@ export default function (createFn, setup, dismantle) {
                 assert.notEqual(invoice.amount, 200);
                 invoice.amount = 200;
 
-                request(
+                request[method](
                   {
-                    method,
                     url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
                     json: invoice,
                   },
@@ -897,9 +868,8 @@ export default function (createFn, setup, dismantle) {
                 assert.notEqual(invoice.amount, 200);
                 invoice.amount = 200;
 
-                request(
+                request[method](
                   {
-                    method,
                     url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
                     json: invoice,
                   },
@@ -923,9 +893,8 @@ export default function (createFn, setup, dismantle) {
               .populate("customer products")
               .exec()
               .then((invoice) => {
-                request(
+                request[method](
                   {
-                    method,
                     url: `${testUrl}/api/v1/Invoice/${invoice._id}`,
                     qs: {
                       populate: "customer,products",
@@ -968,9 +937,8 @@ export default function (createFn, setup, dismantle) {
               .exec()
               .then((customer) => {
                 customer.returns = [customer.returns[1]];
-                request(
+                request[method](
                   {
-                    method,
                     url: `${testUrl}/api/v1/Customer/${customer._id}`,
                     qs: {
                       populate: "returns,purchases.item",

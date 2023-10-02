@@ -1,7 +1,7 @@
 import assert from "assert";
 import mongoose from "mongoose";
-import request from "request";
 import { serve } from "../../dist/express-restify-mongoose.js";
+import * as request from "../request.js";
 
 import setupDb from "./setup.js";
 

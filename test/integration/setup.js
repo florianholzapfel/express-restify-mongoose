@@ -137,10 +137,16 @@ export default function () {
     }
 
     if (opts.connect) {
-      const uri = process.env.MONGO_URL || "mongodb://localhost/database";
-      mongoose.connect(uri).then(function () {
-        callback();
-      });
+      const uri = process.env.MONGO_URL || "mongodb://localhost:27017/database";
+      console.info("opts", opts, uri);
+      mongoose
+        .connect(uri)
+        .then(() => {
+          callback();
+        })
+        .catch((e) => {
+          callback(e);
+        });
     } else if (typeof callback === "function") {
       callback();
     }
