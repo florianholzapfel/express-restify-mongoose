@@ -164,11 +164,12 @@ export default function (createFn, setup, dismantle) {
             assert.ok(!err);
             assert.equal(res.statusCode, 404);
 
-            db.models.Customer.findById(customers[0]._id, (err, customer) => {
-              assert.ok(!err);
-              assert.notEqual(customer.name, "Bobby");
+            db.models.Customer.findById(customers[0]._id)
+            .then((foundCustomer) => {
+              assert.notEqual(foundCustomer.name, "Bobby");
               done();
-            });
+            })
+            .catch(done);          
           }
         );
       });
@@ -184,11 +185,12 @@ export default function (createFn, setup, dismantle) {
           assert.ok(!err);
           assert.equal(res.statusCode, 204);
 
-          db.models.Customer.findById(customers[1]._id, (err, customer) => {
-            assert.ok(!err);
-            assert.ok(!customer);
+          db.models.Customer.findById(customers[1]._id)
+          .then((foundCustomer) => {
+            assert.ok(!foundCustomer);
             done();
-          });
+          })
+          .catch(done);        
         }
       );
     });
@@ -203,12 +205,13 @@ export default function (createFn, setup, dismantle) {
           assert.ok(!err);
           assert.equal(res.statusCode, 404);
 
-          db.models.Customer.findById(customers[2]._id, (err, customer) => {
-            assert.ok(!err);
-            assert.ok(customer);
-            assert.equal(customer.name, "Mike");
+          db.models.Customer.findById(customers[2]._id)
+          .then((foundCustomer) => {
+            assert.ok(foundCustomer);
+            assert.equal(foundCustomer.name, "Mike");
             done();
-          });
+          })
+          .catch(done);        
         }
       );
     });
@@ -223,11 +226,12 @@ export default function (createFn, setup, dismantle) {
           assert.ok(!err);
           assert.equal(res.statusCode, 204);
 
-          db.models.Customer.countDocuments((err, count) => {
-            assert.ok(!err);
-            assert.equal(count, 2);
-            done();
-          });
+          db.models.Customer.countDocuments()
+            .then((count) => {
+              assert.equal(count, 2);
+              done();
+            })
+            .catch(done);
         }
       );
     });

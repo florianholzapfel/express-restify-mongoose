@@ -39,6 +39,12 @@ export function getBuildQuery(
       }
 
       if (queryOptions.sort) {
+        // Necessary to support Mongoose 8
+        if (typeof queryOptions.sort === 'object') {
+            Object.keys(queryOptions.sort).forEach(key => {
+                queryOptions.sort[key] = Number(queryOptions.sort[key]);
+            });
+        }
         // @ts-expect-error this is fine 🐶🔥
         query.sort(queryOptions.sort);
       }
