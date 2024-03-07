@@ -1,27 +1,25 @@
-import bodyParser from "body-parser";
-import express from "express";
-import methodOverride from "method-override";
+import restify from "restify";
 
-import accessTests from "./integration/access.js";
-import contextFilterTests from "./integration/contextFilter.js";
-import createTests from "./integration/create.js";
-import deleteTests from "./integration/delete.js";
-import hookTests from "./integration/hooks.js";
-import middlewareTests from "./integration/middleware.js";
-import optionsTests from "./integration/options.js";
-import readTests from "./integration/read.js";
-import updateTests from "./integration/update.js";
-import virtualsTests from "./integration/virtuals.js";
+import accessTests from "./integration/access.mjs";
+import contextFilterTests from "./integration/contextFilter.mjs";
+import createTests from "./integration/create.mjs";
+import deleteTests from "./integration/delete.mjs";
+import hookTests from "./integration/hooks.mjs";
+import middlewareTests from "./integration/middleware.mjs";
+import optionsTests from "./integration/options.mjs";
+import readTests from "./integration/read.mjs";
+import updateTests from "./integration/update.mjs";
+import virtualsTests from "./integration/virtuals.mjs";
 
-import setupDb from "./integration/setup.js";
+import setupDb from "./integration/setup.mjs";
 
 const db = setupDb();
 
-function Express() {
-  let app = express();
-  app.use(bodyParser.json());
-  app.use(bodyParser.urlencoded({ extended: true }));
-  app.use(methodOverride());
+function Restify() {
+  let app = restify.createServer();
+  app.use(restify.plugins.queryParser());
+  app.use(restify.plugins.bodyParser());
+  app.isRestify = true;
   return app;
 }
 
@@ -64,4 +62,4 @@ function runTests(createFn) {
   });
 }
 
-runTests(Express);
+runTests(Restify);

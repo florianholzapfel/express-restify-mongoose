@@ -1,9 +1,10 @@
-import { getProperty, hasProperty } from "dot-prop";
+import dotProp from "dot-prop";
 import mongoose from "mongoose";
 import { detective } from "./detective.js";
 import { QueryOptions } from "./getQuerySchema.js";
 import { Access, ExcludedMap, FilteredKeys } from "./types";
 import { weedout } from "./weedout.js";
+const { get: getProperty, has: hasProperty } = dotProp; // Because we're using an older version of dotProp that supports CommonJS
 
 export class Filter {
   excludedMap: ExcludedMap = new Map();

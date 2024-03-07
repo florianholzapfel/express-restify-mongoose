@@ -4,7 +4,7 @@ import request from "request";
 import sinon from "sinon";
 import { serve } from "../../dist/express-restify-mongoose.js";
 
-import setupDb from "./setup.js";
+import setupDb from "./setup.mjs";
 
 export default function (createFn, setup, dismantle) {
   const db = setupDb();
@@ -921,6 +921,7 @@ export default function (createFn, setup, dismantle) {
                 name: "ValidatorError",
                 path: "name",
                 properties: {
+                  fullPath: "name",
                   message: "Path `name` is required.",
                   path: "name",
                   type: "required",
