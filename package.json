@@ -1,6 +1,6 @@
 {
   "name": "express-restify-mongoose",
-  "version": "8.0.1",
+  "version": "9.0.0",
   "description": "Easily create a flexible REST interface for mongoose models",
   "keywords": [
     "ReST",
@@ -42,7 +42,7 @@
   "dependencies": {
     "dot-prop": "^6.0.0",
     "lodash.isplainobject": "~4.0.6",
-    "mongoose": "6.x",
+    "mongoose": "^8.2.1",
     "serialize-error": "^8.1.0",
     "zod": "^3.19.1"
   },
@@ -63,12 +63,12 @@
     "npm-run-all": "^4.1.5",
     "prettier": "^2.7.1",
     "request": "^2.88.2",
-    "restify": "^8.5.1",
+    "restify": "^4.3.4",
     "sinon": "^14.0.1",
     "tsup": "^6.3.0",
     "typescript": "^4.8.4"
   },
   "engines": {
-    "node": ">=14"
+    "node": ">=16"
   }
 }

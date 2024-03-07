@@ -375,67 +375,75 @@ describe("Resource filter", () => {
           },
         ];
 
-        db.models.Product.create(products, (err, createdProducts) => {
-          assert.ok(!err);
-          new db.models.Customer({
-            name: "John",
-            address: "123 Drury Lane",
-            purchases: [
-              {
-                item: createdProducts[0]._id,
-                number: 2,
-              },
-              {
-                item: createdProducts[1]._id,
-                number: 100,
-              },
-              {
-                item: createdProducts[2]._id,
-                number: 1,
-              },
-            ],
-            favorites: {
-              purchase: {
-                item: createdProducts[0]._id,
-                number: 2,
-              },
-            },
-          }).save((err, res) => {
-            assert.ok(!err);
-            customerId = res._id;
+        let createdProducts;
 
-            new db.models.Invoice({
-              customer: res._id,
+        db.models.Product.create(products)
+          .then((products) => {
+            assert.ok(products);
+            createdProducts = products;
+
+            return new db.models.Customer({
+              name: "John",
+              address: "123 Drury Lane",
+              purchases: [
+                {
+                  item: createdProducts[0]._id,
+                  number: 2,
+                },
+                {
+                  item: createdProducts[1]._id,
+                  number: 100,
+                },
+                {
+                  item: createdProducts[2]._id,
+                  number: 1,
+                },
+              ],
+              favorites: {
+                purchase: {
+                  item: createdProducts[0]._id,
+                  number: 2,
+                },
+              },
+            }).save();
+          })
+          .then((customer) => {
+            assert.ok(customer);
+            customerId = customer._id;
+
+            return new db.models.Invoice({
+              customer: customer._id,
               amount: 42,
               products: [
                 createdProducts[0]._id,
                 createdProducts[1]._id,
                 createdProducts[2]._id,
               ],
-            }).save((err, res) => {
-              assert.ok(!err);
-              invoiceId = res._id;
-              done();
-            });
-          });
-        });
+            }).save();
+          })
+          .then((invoice) => {
+            assert.ok(invoice);
+            invoiceId = invoice._id;
+            done();
+          })
+          .catch(done);
+
       });
 
       after((done) => {
-        db.models.Customer.deleteMany((err) => {
-          assert.ok(!err);
-          db.models.Invoice.deleteMany((err) => {
-            assert.ok(!err);
-            db.models.Product.deleteMany(done);
-          });
-        });
+        db.models.Customer.deleteMany()
+        .then(() => db.models.Invoice.deleteMany())
+        .then(() => db.models.Product.deleteMany())
+        .then(()=>{done();})
+        .catch(done);
       });
 
       it("excludes fields from populated items", (done) => {
         db.models.Invoice.findById(invoiceId)
           .populate("customer")
-          .exec((err, invoice) => {
-            assert.ok(!err);
+          .exec()
+          .then((invoice) => {
+            assert.ok(invoice);
             invoice = filter.filterObject(invoice, {
               access: "public",
               modelName: db.models.Invoice.modelName,
@@ -458,14 +466,16 @@ describe("Resource filter", () => {
               "Customer address should be excluded"
             );
             done();
-          });
+          })
+          .catch(done);
       });
 
       it("iterates through array of populated objects", (done) => {
         db.models.Invoice.findById(invoiceId)
           .populate("products")
-          .exec((err, invoice) => {
-            assert.ok(!err);
+          .exec()
+          .then((invoice) => {
+            assert.ok(invoice);
             invoice = filter.filterObject(invoice, {
               access: "public",
               modelName: db.models.Invoice.modelName,
@@ -479,23 +489,25 @@ describe("Resource filter", () => {
             invoice.products.forEach((product) => {
               assert.ok(
                 product.name !== undefined,
-                "product name should be populated"
+                "Product name should be populated"
               );
               assert.ok(
                 product.price === undefined,
-                "product price should be excluded"
+                "Product price should be excluded"
               );
             });
 
             done();
-          });
+          })
+          .catch(done);
       });
 
       it("filters multiple populated models", (done) => {
         db.models.Invoice.findById(invoiceId)
           .populate("products customer")
-          .exec((err, invoice) => {
-            assert.ok(!err);
+          .exec()
+          .then((invoice) => {
+            assert.ok(invoice);
             invoice = filter.filterObject(invoice, {
               access: "public",
               modelName: db.models.Invoice.modelName,
@@ -508,36 +520,39 @@ describe("Resource filter", () => {
                 },
               ],
             });
+
             assert.equal(
               invoice.customer.name,
               "John",
-              "customer name should be populated"
+              "Customer name should be populated"
             );
             assert.ok(
               invoice.customer.address === undefined,
-              "customer address should be excluded"
+              "Customer address should be excluded"
             );
 
             invoice.products.forEach((product) => {
               assert.ok(
                 product.name !== undefined,
-                "product name should be populated"
+                "Product name should be populated"
               );
               assert.ok(
                 product.price === undefined,
-                "product price should be excluded"
+                "Product price should be excluded"
               );
             });
 
             done();
-          });
+          })
+          .catch(done);
       });
 
       it("filters nested populated docs", (done) => {
         db.models.Customer.findById(customerId)
           .populate("favorites.purchase.item")
-          .exec((err, customer) => {
-            assert.ok(!err);
+          .exec()
+          .then((customer) => {
+            assert.ok(customer);
             customer = filter.filterObject(customer, {
               access: "public",
               modelName: db.models.Customer.modelName,
@@ -566,14 +581,16 @@ describe("Resource filter", () => {
             );
 
             done();
-          });
+          })
+          .catch(done);
       });
 
       it("filters embedded array of populated docs", (done) => {
         db.models.Customer.findById(customerId)
           .populate("purchases.item")
-          .exec((err, customer) => {
-            assert.ok(!err);
+          .exec()
+          .then((customer) => {
+            assert.ok(customer);
             customer = filter.filterObject(customer, {
               access: "public",
               modelName: db.models.Customer.modelName,
@@ -603,7 +620,8 @@ describe("Resource filter", () => {
             });
 
             done();
-          });
+          })
+          .catch(done);
       });
     });
   });
@@ -683,28 +701,26 @@ describe("Resource filter", () => {
         },
       });
 
-      db.models.Account.create(
-        {
-          accountNumber: "123XYZ",
-          points: 244,
-        },
-        (err, account) => {
-          assert.ok(!err);
-          db.models.RepeatCustomer.create(
-            {
-              name: "John Smith",
-              account: account._id,
-            },
-            done
-          );
-        }
-      );
+      db.models.Account.create({
+        accountNumber: "123XYZ",
+        points: 244,
+      })
+        .then((account) => {
+          assert.ok(account);
+          return db.models.RepeatCustomer.create({
+            name: "John Smith",
+            account: account._id,
+          });
+        })
+        .then(() => done())
+        .catch(done);      
     });
 
     after((done) => {
-      db.models.Account.deleteMany(() => {
-        db.models.Customer.deleteMany(done);
-      });
+      db.models.Account.deleteMany()
+        .then(() => db.models.Customer.deleteMany())
+        .then(()=>{done();})
+        .catch(done);
     });
 
     it.skip("should filter populated from subschema", (done) => {

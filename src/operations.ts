@@ -185,7 +185,7 @@ export function operations(
       options.contextFilter(contextModel, req, (filteredContext) => {
         // @ts-expect-error this is fine 🐶🔥
         findById(filteredContext, req.params.id)
-          .findOneAndRemove()
+          .findOneAndDelete() // switched to findOneAndDelete to add support for Mongoose 7 and 8
           .then((item) => {
             if (!item) {
               return errorHandler(new Error(STATUS_CODES[404]), req, res, next);
@@ -199,7 +199,7 @@ export function operations(
       });
     } else {
       req.erm.document
-        ?.remove()
+        ?.deleteOne() // switched to deleteOne to add support for Mongoose 7 and 8
         .then(() => {
           req.erm.statusCode = 204;
 
@@ -269,7 +269,8 @@ export function operations(
         const path = contextModel.schema.path(key);
 
         // @ts-expect-error this is fine 🐶🔥
-        if (path && path.caster && path.caster.instance === "ObjectID") {
+        // Add support for Mongoose 7 and 8 while keeping backwards-compatibility to 6 by allowing ObjectID and ObejctId 
+        if (path && path.caster && (path.caster.instance === "ObjectID" || path.caster.instance === "ObjectId")) {
           if (Array.isArray(value)) {
             for (let j = 0; j < value.length; ++j) {
               if (typeof value[j] === "object") {
@@ -282,7 +283,8 @@ export function operations(
             dst[key] = value._id;
           }
         } else if (isPlainObject(value)) {
-          if (path && path.instance === "ObjectID") {
+        // Add support for Mongoose 7 and 8 while keeping backwards-compatibility to 6 by allowing ObjectID and ObejctId 
+          if (path && (path.instance === "ObjectID" || path.instance === "ObjectId")) {
             dst[key] = value._id;
           } else {
             dst[key] = depopulate(value);
