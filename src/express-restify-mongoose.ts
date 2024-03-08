@@ -96,9 +96,13 @@ export function serve(
     app.delete = app.del;
   }
 
-  app.use((req, res, next) => {
-    req.erm = {};
-
+  app.use(async (req, res, next) => {
+    const getModel = serveOptions?.modelFactory?.getModel;
+    
+    req.erm = {
+      model: typeof getModel === 'function' ? await getModel(req) : model,
+    };
+    
     next();
   });
 
