@@ -9,8 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        mongodb-version: ["4.4", "5.0", "6.0"]
-        node-version: [14.x, 16.x]
+        mongodb-version: ["4.4", "5.0", "6.0", "7.0"]
+        node-version: [16.x, 18.x, 20.x, 21.x]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
