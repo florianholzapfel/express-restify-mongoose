@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import request from "request";
 import { serve } from "../../dist/express-restify-mongoose.js";
 
-import setupDb from "./setup.js";
+import setupDb from "./setup.mjs";
 
 export default function (createFn, setup, dismantle) {
   const db = setupDb();
@@ -130,14 +130,15 @@ export default function (createFn, setup, dismantle) {
             assert.ok(!err);
             assert.equal(res.statusCode, 204);
 
-            db.models.Customer.find({}, (err, customers) => {
-              assert.ok(!err);
+            db.models.Customer.find({})
+            .then((customers) => {
               assert.equal(customers.length, 2);
               customers.forEach((customer) => {
                 assert.ok(customer.name !== "John");
               });
               done();
-            });
+            })
+            .catch(done);
           }
         );
       });
@@ -259,14 +260,17 @@ export default function (createFn, setup, dismantle) {
             assert.ok(!err);
             assert.equal(res.statusCode, 204);
 
-            db.models.Customer.find({}, (err, customers) => {
-              assert.ok(!err);
-              assert.equal(customers.length, 2);
-              customers.forEach((customer) => {
-                assert.ok(customer.name !== "John");
-              });
-              done();
-            });
+            db.models.Customer.find({})
+              .then((customers) => {
+                assert.equal(customers.length, 2);
+            
+                customers.forEach((customer) => {
+                  assert.ok(customer.name !== "John");
+                });
+            
+                done();
+              })
+              .catch(done);
           }
         );
       });

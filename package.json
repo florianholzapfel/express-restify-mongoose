@@ -1,6 +1,6 @@
 {
   "name": "express-restify-mongoose",
-  "version": "8.0.0",
+  "version": "9.0.0",
   "description": "Easily create a flexible REST interface for mongoose models",
   "keywords": [
     "ReST",
@@ -23,33 +23,27 @@
     "name": "Florian Holzapfel",
     "email": "flo.holzapfel@gmail.com"
   },
-  "type": "module",
-  "exports": {
-    "import": "./dist/express-restify-mongoose.js",
-    "require": "./dist/cjs/express-restify-mongoose.js"
-  },
-  "main": "./dist/cjs/express-restify-mongoose.js",
+  "main": "./dist/express-restify-mongoose.js",
   "files": [
     "dist/"
   ],
   "scripts": {
     "build": "run-p build:*",
-    "build:esm": "swc src --out-dir dist",
-    "build:cjs": "swc src --config module.type=commonjs --out-dir dist/cjs",
+    "build:cjs": "swc src --config module.type=commonjs --out-dir dist",
     "build:dts": "tsup src/express-restify-mongoose.ts --dts-only",
     "lint": "eslint . --ext .js,.ts",
     "test": "run-s test:*",
-    "test:express": "mocha -R spec ./test/express.js --timeout 10s",
-    "test:filter": "mocha -R spec ./test/integration/resource_filter.js --timeout 10s",
-    "test:restify": "mocha -R spec ./test/restify.js --timeout 10s",
-    "test:unit": "mocha -R spec ./test/unit.js",
+    "test:express": "mocha -R spec ./test/express.mjs --timeout 10s",
+    "test:filter": "mocha -R spec ./test/integration/resource_filter.mjs --timeout 10s",
+    "test:restify": "mocha -R spec ./test/restify.mjs --timeout 10s",
+    "test:unit": "mocha -R spec ./test/unit.mjs",
     "tsc": "tsc --noEmit"
   },
   "dependencies": {
-    "dot-prop": "^7.2.0",
+    "dot-prop": "^6.0.0",
     "lodash.isplainobject": "~4.0.6",
-    "mongoose": "6.x",
-    "serialize-error": "^11.0.0",
+    "mongoose": "^8.2.1",
+    "serialize-error": "^8.1.0",
     "zod": "^3.19.1"
   },
   "devDependencies": {
@@ -62,19 +56,19 @@
     "body-parser": "^1.19.0",
     "esbuild": "^0.15.12",
     "eslint": "^8.25.0",
-    "eslint-plugin-mocha": "^10.1.0",
+    "eslint-plugin-mocha": "10.3.0",
     "express": "^4.17.1",
     "method-override": "^3.0.0",
     "mocha": "^10.1.0",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.7.1",
     "request": "^2.88.2",
-    "restify": "^8.5.1",
+    "restify": "^4.3.4",
     "sinon": "^14.0.1",
     "tsup": "^6.3.0",
     "typescript": "^4.8.4"
   },
   "engines": {
-    "node": ">=14"
+    "node": ">=16"
   }
 }

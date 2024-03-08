@@ -159,7 +159,11 @@ export default function () {
   }
 
   function close(callback) {
-    mongoose.connection.close(callback);
+    mongoose.connection.close()
+      .then(()=>{
+        callback()
+      })
+      .catch(callback)
   }
 
   return {

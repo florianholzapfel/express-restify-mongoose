@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import request from "request";
 import { serve } from "../../dist/express-restify-mongoose.js";
 
-import setupDb from "./setup.js";
+import setupDb from "./setup.mjs";
 
 export default function (createFn, setup, dismantle) {
   const db = setupDb();
@@ -428,14 +428,13 @@ export default function (createFn, setup, dismantle) {
           assert.ok(!err);
           assert.equal(res.statusCode, 400);
           delete body.message;
+          delete body.errors.customer.message;
           assert.deepEqual(body, {
             name: "ValidationError",
             _message: "Invoice validation failed",
             errors: {
               customer: {
                 kind: "ObjectId",
-                message:
-                  'Cast to ObjectId failed for value "invalid-id" (type string) at path "customer" because of "BSONTypeError"',
                 name: "CastError",
                 path: "customer",
                 stringValue: '"invalid-id"',

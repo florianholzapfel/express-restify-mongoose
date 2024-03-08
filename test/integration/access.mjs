@@ -2,7 +2,7 @@ import assert from "assert";
 import request from "request";
 import { serve } from "../../dist/express-restify-mongoose.js";
 
-import setupDb from "./setup.js";
+import setupDb from "./setup.mjs";
 
 export default function (createFn, setup, dismantle) {
   const db = setupDb();
@@ -1075,19 +1075,20 @@ export default function (createFn, setup, dismantle) {
                 },
               });
 
-              db.models.Customer.findById(customer._id, (err, customer) => {
-                assert.ok(!err);
-                assert.equal(customer.age, 12);
-                assert.deepEqual(customer.favorites.toObject(), {
-                  animal: "Boar",
-                  color: "Jade",
-                  purchase: {
-                    item: product._id,
-                    number: 1,
-                  },
-                });
-                done();
-              });
+              db.models.Customer.findById(customer._id)
+                .then((customer) => {
+                  assert.equal(customer.age, 12);
+                  assert.deepEqual(customer.favorites.toObject(), {
+                    animal: "Boar",
+                    color: "Jade",
+                    purchase: {
+                      item: product._id,
+                      number: 1,
+                    },
+                  });
+                  done();
+                })
+                .catch(done);
             }
           );
         });
@@ -1122,19 +1123,22 @@ export default function (createFn, setup, dismantle) {
                 },
               });
 
-              db.models.Customer.findById(customer._id, (err, customer) => {
-                assert.ok(!err);
-                assert.equal(customer.age, 12);
-                assert.deepEqual(customer.favorites.toObject(), {
-                  animal: "Boar",
-                  color: "",
-                  purchase: {
-                    item: product._id,
-                    number: 1,
-                  },
-                });
-                done();
-              });
+              db.models.Customer.findById(customer._id)
+                .then((foundCustomer) => {
+                  assert.equal(foundCustomer.age, 12);
+                  assert.deepEqual(foundCustomer.favorites.toObject(), {
+                    animal: "Boar",
+                    color: "",
+                    purchase: {
+                      item: product._id,
+                      number: 1,
+                    },
+                  });
+                  done();
+                })
+                .catch(done);
+
+            
             }
           );
         });
@@ -1643,11 +1647,11 @@ export default function (createFn, setup, dismantle) {
                 },
               });
 
-              db.models.Customer.findById(customer._id, (err, customer) => {
-                assert.ok(!err);
-                assert.equal(customer.age, 12);
-                assert.equal(customer.comment, "Boo");
-                assert.deepEqual(customer.favorites.toObject(), {
+              db.models.Customer.findById(customer._id)
+              .then((foundCustomer) => {
+                assert.equal(foundCustomer.age, 12);
+                assert.equal(foundCustomer.comment, "Boo");
+                assert.deepEqual(foundCustomer.favorites.toObject(), {
                   animal: "Boar",
                   color: "Black",
                   purchase: {
@@ -1656,7 +1660,8 @@ export default function (createFn, setup, dismantle) {
                   },
                 });
                 done();
-              });
+              })
+              .catch(done);            
             }
           );
         });
@@ -1690,11 +1695,11 @@ export default function (createFn, setup, dismantle) {
                 },
               });
 
-              db.models.Customer.findById(customer._id, (err, customer) => {
-                assert.ok(!err);
-                assert.equal(customer.age, 12);
-                assert.equal(customer.comment, "Boo");
-                assert.deepEqual(customer.favorites.toObject(), {
+              db.models.Customer.findById(customer._id)
+              .then((foundCustomer) => {
+                assert.equal(foundCustomer.age, 12);
+                assert.equal(foundCustomer.comment, "Boo");
+                assert.deepEqual(foundCustomer.favorites.toObject(), {
                   animal: "Boar",
                   color: "Black",
                   purchase: {
@@ -1703,7 +1708,8 @@ export default function (createFn, setup, dismantle) {
                   },
                 });
                 done();
-              });
+              })
+              .catch(done);            
             }
           );
         });
