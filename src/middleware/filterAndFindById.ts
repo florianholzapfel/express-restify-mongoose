@@ -8,13 +8,15 @@ export function getFilterAndFindByIdHandler(
   options: Pick<
     Options,
     "contextFilter" | "idProperty" | "onError" | "readPreference"
-  >,
-  model: mongoose.Model<unknown>
+  >
 ) {
   const errorHandler = getErrorHandler(options);
 
   const fn: RequestHandler = function filterAndFindById(req, res, next) {
-    const contextModel = model;
+    const contextModel = req.erm.model;
+    if (!contextModel) {
+      return errorHandler(new Error('Model is undefined.'), req, res, next);
+    }
 
     if (!req.params.id) {
       return next();
