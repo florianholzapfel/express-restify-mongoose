@@ -96,7 +96,8 @@ export function serve(
     app.delete = app.del;
   }
 
-  app.use(async (req, res, next) => {
+  // @ts-expect-error restify
+  const modelMiddleware = async (req, res, next) => {
     const getModel = serveOptions?.modelFactory?.getModel;
     
     req.erm = {
@@ -104,7 +105,7 @@ export function serve(
     };
     
     next();
-  });
+  };
 
   const accessMiddleware = serveOptions.access
     ? getAccessHandler({
@@ -115,7 +116,7 @@ export function serve(
     : [];
 
   const ensureContentType = getEnsureContentTypeHandler(serveOptions);
-  const filterAndFindById = getFilterAndFindByIdHandler(serveOptions, model);
+  const filterAndFindById = getFilterAndFindByIdHandler(serveOptions);
   const prepareQuery = getPrepareQueryHandler(serveOptions);
   const prepareOutput = getPrepareOutputHandler(
     serveOptions,
@@ -125,6 +126,7 @@ export function serve(
 
   app.get(
     uriItems,
+    modelMiddleware,
     prepareQuery,
     serveOptions.preMiddleware,
     serveOptions.preRead,
@@ -135,6 +137,7 @@ export function serve(
 
   app.get(
     uriCount,
+    modelMiddleware,
     prepareQuery,
     serveOptions.preMiddleware,
     serveOptions.preRead,
@@ -145,6 +148,7 @@ export function serve(
 
   app.get(
     uriItem,
+    modelMiddleware,
     prepareQuery,
     serveOptions.preMiddleware,
     serveOptions.preRead,
@@ -155,6 +159,7 @@ export function serve(
 
   app.get(
     uriShallow,
+    modelMiddleware,
     prepareQuery,
     serveOptions.preMiddleware,
     serveOptions.preRead,
@@ -165,6 +170,7 @@ export function serve(
 
   app.post(
     uriItems,
+    modelMiddleware,
     prepareQuery,
     ensureContentType,
     serveOptions.preMiddleware,
@@ -176,6 +182,7 @@ export function serve(
 
   app.post(
     uriItem,
+    modelMiddleware,
     deprecate(
       prepareQuery,
       "express-restify-mongoose: in a future major version, the POST method to update resources will be removed. Use PATCH instead."
@@ -191,6 +198,7 @@ export function serve(
 
   app.put(
     uriItem,
+    modelMiddleware,
     deprecate(
       prepareQuery,
       "express-restify-mongoose: in a future major version, the PUT method will replace rather than update a resource. Use PATCH instead."
@@ -206,6 +214,7 @@ export function serve(
 
   app.patch(
     uriItem,
+    modelMiddleware,
     prepareQuery,
     ensureContentType,
     serveOptions.preMiddleware,
@@ -218,6 +227,7 @@ export function serve(
 
   app.delete(
     uriItems,
+    modelMiddleware,
     prepareQuery,
     serveOptions.preMiddleware,
     serveOptions.preDelete,
@@ -227,6 +237,7 @@ export function serve(
 
   app.delete(
     uriItem,
+    modelMiddleware,
     prepareQuery,
     serveOptions.preMiddleware,
     serveOptions.findOneAndRemove ? [] : filterAndFindById,

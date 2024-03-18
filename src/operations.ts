@@ -51,7 +51,10 @@ export function operations(
   }
 
   const getItems: RequestHandler = function (req, res, next) {
-    const contextModel = model;
+    const contextModel = req.erm.model;
+    if (!contextModel) {
+      return errorHandler(new Error('Model is undefined.'), req, res, next);
+    }
 
     if (isDistinctExcluded(req)) {
       req.erm.result = [];
@@ -91,7 +94,10 @@ export function operations(
   };
 
   const getCount: RequestHandler = function (req, res, next) {
-    const contextModel = model;
+    const contextModel = req.erm.model;
+    if (!contextModel) {
+      return errorHandler(new Error('Model is undefined.'), req, res, next);
+    }
 
     options.contextFilter(contextModel, req, (filteredContext) => {
       buildQuery(filteredContext.countDocuments(), req.erm.query)
@@ -106,7 +112,10 @@ export function operations(
   };
 
   const getShallow: RequestHandler = function (req, res, next) {
-    const contextModel = model;
+    const contextModel = req.erm.model;
+    if (!contextModel) {
+      return errorHandler(new Error('Model is undefined.'), req, res, next);
+    }
 
     options.contextFilter(contextModel, req, (filteredContext) => {
       buildQuery<Record<string, unknown> | null>(
@@ -136,7 +145,10 @@ export function operations(
   };
 
   const deleteItems: RequestHandler = function (req, res, next) {
-    const contextModel = model;
+    const contextModel = req.erm.model;
+    if (!contextModel) {
+      return errorHandler(new Error('Model is undefined.'), req, res, next);
+    }
 
     options.contextFilter(contextModel, req, (filteredContext) => {
       buildQuery(filteredContext.deleteMany(), req.erm.query)
@@ -150,7 +162,10 @@ export function operations(
   };
 
   const getItem: RequestHandler = function (req, res, next) {
-    const contextModel = model;
+    const contextModel = req.erm.model;
+    if (!contextModel) {
+      return errorHandler(new Error('Model is undefined.'), req, res, next);
+    }
 
     if (isDistinctExcluded(req)) {
       req.erm.result = [];
@@ -179,7 +194,10 @@ export function operations(
   };
 
   const deleteItem: RequestHandler = function (req, res, next) {
-    const contextModel = model;
+    const contextModel = req.erm.model;
+    if (!contextModel) {
+      return errorHandler(new Error('Model is undefined.'), req, res, next);
+    }
 
     if (options.findOneAndRemove) {
       options.contextFilter(contextModel, req, (filteredContext) => {
@@ -210,7 +228,10 @@ export function operations(
   };
 
   const createObject: RequestHandler = function (req, res, next) {
-    const contextModel = model;
+    const contextModel = req.erm.model;
+    if (!contextModel) {
+      return errorHandler(new Error('Model is undefined.'), req, res, next);
+    }
 
     req.body = filter.filterObject(req.body || {}, {
       access: req.access,
@@ -245,7 +266,10 @@ export function operations(
   };
 
   const modifyObject: RequestHandler = function (req, res, next) {
-    const contextModel = model;
+    const contextModel = req.erm.model;
+    if (!contextModel) {
+      return errorHandler(new Error('Model is undefined.'), req, res, next);
+    }
 
     req.body = filter.filterObject(req.body || {}, {
       access: req.access,
@@ -266,6 +290,7 @@ export function operations(
       const dst: Record<string, unknown> = {};
 
       for (const [key, value] of Object.entries(src)) {
+        // @ts-expect-error this is fine 🐶🔥
         const path = contextModel.schema.path(key);
 
         // @ts-expect-error this is fine 🐶🔥
