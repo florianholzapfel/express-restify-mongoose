@@ -57,6 +57,7 @@ export type Options = {
   preRead: RequestHandler | RequestHandler[];
   preUpdate: RequestHandler | RequestHandler[];
   preDelete: RequestHandler | RequestHandler[];
+  updateDeep: boolean;
   access?: (req: Request) => Access | Promise<Access>;
   contextFilter: (
     model: mongoose.Model<unknown>,
