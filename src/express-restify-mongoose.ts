@@ -33,6 +33,7 @@ const defaultOptions: Omit<Options, "contextFilter" | "outputFn" | "onError"> =
     preRead: [],
     preUpdate: [],
     preDelete: [],
+    updateDeep: true,
   };
 
 const filter = new Filter();
