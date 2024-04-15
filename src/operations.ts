@@ -23,6 +23,7 @@ export function operations(
     | "runValidators"
     | "totalCountHeader"
     | "upsert"
+    | "updateDeep"
   >,
   filter: Filter
 ) {
@@ -324,7 +325,11 @@ export function operations(
       return dst;
     }
 
-    const cleanBody = moredots(depopulate(req.body));
+    let cleanBody = depopulate(req.body);
+
+    if (options.updateDeep) { 
+      cleanBody = moredots(cleanBody);
+    }
 
     if (options.findOneAndUpdate) {
       options.contextFilter(contextModel, req, (filteredContext) => {
