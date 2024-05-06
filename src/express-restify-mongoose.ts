@@ -18,7 +18,7 @@ const defaultOptions: Omit<Options, "contextFilter" | "outputFn" | "onError"> =
     version: "/v1",
     idProperty: "_id",
     restify: false,
-    allowRegex: false,
+    allowRegex: true,
     runValidators: false,
     readPreference: "primary",
     totalCountHeader: false,
