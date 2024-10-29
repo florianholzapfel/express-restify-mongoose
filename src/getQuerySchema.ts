@@ -5,6 +5,7 @@ const PopulateOptionsSchema = z.object({
   match: z.record(z.unknown()).optional(),
   options: z.record(z.unknown()).optional(),
   select: z.string().optional(),
+  populate: z.record(z.unknown()).optional(),
   // Configure populate query to not use strict populate to maintain
   // behavior from Mongoose previous to v6 (unless already configured)
   strictPopulate: z.boolean().optional().default(false),
