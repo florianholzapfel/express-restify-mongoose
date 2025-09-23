@@ -35,4 +35,4 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - run: yarn --frozen-lockfile
       - run: yarn build
-      - run: npm publish --provenance
+      - run: npm publish
