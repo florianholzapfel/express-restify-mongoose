@@ -16,8 +16,8 @@ jobs:
         mongodb-version: ["4.4", "5.0", "6.0", "7.0"]
         node-version: [16.x, 18.x, 20.x, 21.x]
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           cache: "yarn"
           node-version: ${{ matrix.node-version }}
@@ -32,10 +32,10 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 20
           registry-url: https://registry.npmjs.org/
       - run: yarn --frozen-lockfile
       - run: yarn build
