@@ -19,6 +19,7 @@ npm install express-restify-mongoose --save
 
 | This library |  Mongoose   |   MongoDB   |  NodeJS
 | ------------ | ----------- | ----------- | --------
+| >= 10.0.0    | 8.x         | 5.x - 8.x   | >=22
 | >= 9.0.0     | 6.x - 8.x   | 3.6.x - 7.x | >=16
 | >= 8.0.0     | 6.x         | 3.6.x - 6.x | >=18
 | >= 7.0.0     | 6.x         | 3.6.x - 6.x | >=14

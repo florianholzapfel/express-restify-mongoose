@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        mongodb-version: ["4.4", "5.0", "6.0", "7.0"]
+        mongodb-version: ["5.0", "6.0", "7.0", "8.0"]
         # Node 22 (maintenance), 24 (active), 26 (current). Older lines are EOL.
         node-version: [22.x, 24.x, 26.x]
     steps:
