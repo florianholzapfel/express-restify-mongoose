@@ -419,4 +419,130 @@ describe("prepareQuery", () => {
       sinon.assert.notCalled(options.onError);
     });
   });
+
+  // Regression tests for GHSA-5r4m-2pw8-7gvw: server-side JavaScript operators
+  // (and the allowRegex bypass) must be rejected in untrusted query input.
+  describe("blocks server-side javascript operators (GHSA-5r4m-2pw8-7gvw)", () => {
+    const assertRejected = (req) => {
+      sinon.assert.calledOnce(options.onError);
+      sinon.assert.calledWithExactly(
+        options.onError,
+        sinon.match.instanceOf(Error),
+        req,
+        {},
+        next
+      );
+      sinon.assert.notCalled(next);
+    };
+
+    it("rejects $where in a JSON-string query (even when allowRegex is true)", () => {
+      let req = {
+        query: {
+          query: '{"$where":"sleep(5000)"}',
+        },
+      };
+
+      getPrepareQueryHandler(options)(req, {}, next);
+
+      assertRejected(req);
+    });
+
+    it("rejects $where sent as a nested/bracketed object query", () => {
+      let req = {
+        query: {
+          // e.g. ?query[$where]=... parsed by qs into an object
+          query: { $where: "return true" },
+        },
+      };
+
+      getPrepareQueryHandler(options)(req, {}, next);
+
+      assertRejected(req);
+    });
+
+    it("rejects $function nested inside $expr", () => {
+      let req = {
+        query: {
+          query: '{"$expr":{"$function":{"body":"function(){return true}","args":[],"lang":"js"}}}',
+        },
+      };
+
+      getPrepareQueryHandler(options)(req, {}, next);
+
+      assertRejected(req);
+    });
+
+    it("rejects $accumulator anywhere in the query", () => {
+      let req = {
+        query: {
+          query: '{"foo":{"$accumulator":{}}}',
+        },
+      };
+
+      getPrepareQueryHandler(options)(req, {}, next);
+
+      assertRejected(req);
+    });
+
+    it("rejects $where inside populate.match", () => {
+      let req = {
+        query: {
+          populate: {
+            path: "foo",
+            match: { $where: "return true" },
+          },
+        },
+      };
+
+      getPrepareQueryHandler(options)(req, {}, next);
+
+      assertRejected(req);
+    });
+
+    it("enforces allowRegex:false against a nested/bracketed object query (bypass fix)", () => {
+      let req = {
+        query: {
+          query: { foo: { $regex: "bar" } },
+        },
+      };
+
+      getPrepareQueryHandler({ ...options, allowRegex: false })(req, {}, next);
+
+      assertRejected(req);
+    });
+
+    it("still allows $regex in a nested object query when allowRegex is true", () => {
+      let req = {
+        query: {
+          query: { foo: { $regex: "bar" } },
+        },
+      };
+
+      getPrepareQueryHandler(options)(req, {}, next);
+
+      assert.deepEqual(req.erm.query, {
+        query: { foo: { $regex: "bar" } },
+      });
+      sinon.assert.calledOnce(next);
+      sinon.assert.calledWithExactly(next);
+      sinon.assert.notCalled(options.onError);
+    });
+
+    it("still allows a benign $expr field comparison", () => {
+      let req = {
+        query: {
+          query: '{"$expr":{"$gt":["$a","$b"]}}',
+        },
+      };
+
+      getPrepareQueryHandler(options)(req, {}, next);
+
+      assert.deepEqual(req.erm.query, {
+        query: { $expr: { $gt: ["$a", "$b"] } },
+      });
+      sinon.assert.calledOnce(next);
+      sinon.assert.calledWithExactly(next);
+      sinon.assert.notCalled(options.onError);
+    });
+  });
 });

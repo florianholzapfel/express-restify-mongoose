@@ -1,5 +1,50 @@
 import { z } from "zod";
 
+// MongoDB operators that evaluate arbitrary server-side JavaScript. They have no
+// legitimate use in a client-supplied REST query and enable remote code
+// execution and denial of service (CWE-94 / CWE-943). We reject them wherever
+// they appear in untrusted query input. See GHSA-5r4m-2pw8-7gvw.
+//
+// $expr is intentionally not blocked (it enables legitimate in-document field
+// comparisons and cannot itself run JavaScript); the recursive walk below still
+// rejects a $function/$accumulator nested inside an $expr.
+const BLOCKED_OPERATORS = new Set(["$where", "$function", "$accumulator"]);
+
+/**
+ * Recursively rejects server-side JavaScript operators in untrusted query
+ * input. Also enforces `allowRegex` structurally (on the parsed object) so it
+ * cannot be bypassed by sending the query as nested/bracketed parameters
+ * instead of a JSON string.
+ */
+function assertQueryIsSafe(
+  value: unknown,
+  { allowRegex }: { allowRegex: boolean }
+): void {
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      assertQueryIsSafe(item, { allowRegex });
+    }
+
+    return;
+  }
+
+  if (value === null || typeof value !== "object") {
+    return;
+  }
+
+  for (const key of Object.keys(value)) {
+    if (BLOCKED_OPERATORS.has(key)) {
+      throw new Error("operator_not_allowed");
+    }
+
+    if (!allowRegex && (key === "$regex" || key === "$options")) {
+      throw new Error("regex_not_allowed");
+    }
+
+    assertQueryIsSafe((value as Record<string, unknown>)[key], { allowRegex });
+  }
+}
+
 const PopulateOptionsSchema = z.object({
   path: z.string(),
   match: z.record(z.unknown()).optional(),
@@ -72,15 +117,11 @@ const LimitSkipSchema = z.preprocess((value) => {
 export function getQueryOptionsSchema({ allowRegex }: { allowRegex: boolean }) {
   const QuerySchema = z
     .preprocess((value) => {
-      if (!allowRegex && `${value}`.toLowerCase().includes("$regex")) {
-        throw new Error("regex_not_allowed");
-      }
+      const query = typeof value === "string" ? JSON.parse(value) : value;
 
-      if (typeof value !== "string") {
-        return value;
-      }
+      assertQueryIsSafe(query, { allowRegex });
 
-      return JSON.parse(value);
+      return query;
     }, z.record(z.unknown()))
     .transform((value) => {
       return Object.fromEntries(
@@ -103,6 +144,22 @@ export function getQueryOptionsSchema({ allowRegex }: { allowRegex: boolean }) {
       limit: LimitSkipSchema.optional(),
       skip: LimitSkipSchema.optional(),
       distinct: z.string().optional(),
+    })
+    .superRefine((value, ctx) => {
+      // `populate.match` (and nested populate) accept arbitrary query objects,
+      // so they are a second injection channel that must be guarded like `query`.
+      if (value.populate === undefined || typeof value.populate === "string") {
+        return;
+      }
+
+      try {
+        assertQueryIsSafe(value.populate, { allowRegex });
+      } catch {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "operator_not_allowed",
+        });
+      }
     })
     .transform((value) => {
       if (typeof value.populate === "undefined") {
