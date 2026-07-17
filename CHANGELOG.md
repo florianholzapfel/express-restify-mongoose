@@ -1,5 +1,10 @@
 # Changelog
 
+### 9.0.13
+
+- **ci:** drop the restify integration tests and the `restify` devDependency. restify (through v11) depends on the abandoned `spdy` → `http-deceiver`, which calls `process.binding('http_parser')` — a binding Node removed in v12 — so it cannot load on any supported Node version and was blocking the release build gate. The Express suite already runs the same integration tests. Restify support code in `src/` is unchanged.
+- Note: `9.0.11` and `9.0.12` never reached npm because their release builds failed on the above issue; `9.0.13` is the first published release since `9.0.10` and carries the `9.0.11`/`9.0.12` security fixes below.
+
 ### 9.0.12
 
 - **security:** bump `mongoose` to `^8.22.1` (lockfile relocked to 8.24.1), resolving three advisories in the runtime dependency — one critical and two high (prototype-pollution / search-injection fixes landed in 8.8.3, 8.9.5 and 8.22.1). Consumers on the previous `^8.2.1` range already resolved to a patched 8.x on fresh installs; this raises the floor and pins the committed lockfile.
