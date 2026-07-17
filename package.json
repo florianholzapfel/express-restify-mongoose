@@ -35,7 +35,6 @@
     "test": "run-s test:*",
     "test:express": "mocha -R spec ./test/express.mjs --timeout 10s",
     "test:filter": "mocha -R spec ./test/integration/resource_filter.mjs --timeout 10s",
-    "test:restify": "mocha -R spec ./test/restify.mjs --timeout 10s",
     "test:unit": "mocha -R spec ./test/unit.mjs",
     "tsc": "tsc --noEmit"
   },
@@ -63,7 +62,6 @@
     "npm-run-all": "^4.1.5",
     "prettier": "^2.7.1",
     "request": "^2.88.2",
-    "restify": "^4.3.4",
     "sinon": "^14.0.1",
     "tsup": "^6.3.0",
     "typescript": "^4.8.4"
