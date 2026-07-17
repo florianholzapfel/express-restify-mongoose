@@ -1,5 +1,11 @@
 # Changelog
 
+### 9.0.11
+
+- **security:** block server-side JavaScript operators (`$where`, `$function`, `$accumulator`) in the user-supplied `query` parameter and in `populate.match`. Unfiltered query operators allowed an unauthenticated caller to execute JavaScript on the MongoDB server (denial of service via long-running predicates and boolean-based field exfiltration) — NoSQL injection, CWE-943/CWE-94. The check is recursive, so a `$function`/`$accumulator` nested inside `$expr` is rejected as well. [GHSA-5r4m-2pw8-7gvw]
+- **security:** `allowRegex` is now enforced structurally against the parsed query object. It could previously be bypassed by sending the query as nested/bracketed parameters (`?query[field][$regex]=…`) instead of a JSON string.
+- updated dependencies (rollup 3.30.0, flatted 3.4.2, picomatch 2.3.2)
+
 ### 7.0.0
 
 > **This release requires mongoose 6.x**
