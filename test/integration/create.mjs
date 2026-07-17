@@ -429,6 +429,13 @@ export default function (createFn, setup, dismantle) {
           assert.equal(res.statusCode, 400);
           delete body.message;
           delete body.errors.customer.message;
+          // The array cast error's message/stringValue/value are derived from
+          // Node's formatting of a Mongoose-proxied array, which differs across
+          // Node versions (Node >=26 renders it as "Proxy([ ... ])"). Assert
+          // only the stable structural fields.
+          delete body.errors["products.0"].message;
+          delete body.errors["products.0"].stringValue;
+          delete body.errors["products.0"].value;
           assert.deepEqual(body, {
             name: "ValidationError",
             _message: "Invoice validation failed",
@@ -443,12 +450,8 @@ export default function (createFn, setup, dismantle) {
               },
               "products.0": {
                 kind: "[ObjectId]",
-                message:
-                  'Cast to [ObjectId] failed for value "[ \'invalid-id\', \'invalid-id\' ]" (type string) at path "products.0" because of "CastError"',
                 name: "CastError",
                 path: "products.0",
-                stringValue: "\"[ 'invalid-id', 'invalid-id' ]\"",
-                value: "[ 'invalid-id', 'invalid-id' ]",
                 valueType: "string",
               },
             },

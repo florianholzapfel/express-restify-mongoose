@@ -10,6 +10,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
+      # Don't cancel the whole matrix when one cell fails — surface every
+      # Node/MongoDB combination's result in a single run.
+      fail-fast: false
       matrix:
         mongodb-version: ["5.0", "6.0", "7.0", "8.0"]
         # Node 22 (maintenance), 24 (active), 26 (current). Older lines are EOL.
