@@ -14,7 +14,8 @@ jobs:
     strategy:
       matrix:
         mongodb-version: ["4.4", "5.0", "6.0", "7.0"]
-        node-version: [16.x, 18.x, 20.x, 21.x]
+        # Release build gate runs on Node 24 (active LTS) only.
+        node-version: [24.x]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -35,7 +36,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           registry-url: https://registry.npmjs.org/
       - run: npm install -g npm@latest
       - run: yarn --frozen-lockfile

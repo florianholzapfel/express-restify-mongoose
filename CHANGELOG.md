@@ -1,5 +1,10 @@
 # Changelog
 
+### 9.0.12
+
+- **security:** bump `mongoose` to `^8.22.1` (lockfile relocked to 8.24.1), resolving three advisories in the runtime dependency — one critical and two high (prototype-pollution / search-injection fixes landed in 8.8.3, 8.9.5 and 8.22.1). Consumers on the previous `^8.2.1` range already resolved to a patched 8.x on fresh installs; this raises the floor and pins the committed lockfile.
+- **ci:** run the publish workflow on Node 24. The release build gate and publish step previously used EOL Node versions, causing the release workflow to fail.
+
 ### 9.0.11
 
 - **security:** block server-side JavaScript operators (`$where`, `$function`, `$accumulator`) in the user-supplied `query` parameter and in `populate.match`. Unfiltered query operators allowed an unauthenticated caller to execute JavaScript on the MongoDB server (denial of service via long-running predicates and boolean-based field exfiltration) — NoSQL injection, CWE-943/CWE-94. The check is recursive, so a `$function`/`$accumulator` nested inside `$expr` is rejected as well. [GHSA-5r4m-2pw8-7gvw]
