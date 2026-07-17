@@ -12,7 +12,8 @@ jobs:
     strategy:
       matrix:
         mongodb-version: ["4.4", "5.0", "6.0", "7.0"]
-        node-version: [16.x, 18.x, 20.x, 21.x]
+        # Node 22 (maintenance), 24 (active), 26 (current). Older lines are EOL.
+        node-version: [22.x, 24.x, 26.x]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
