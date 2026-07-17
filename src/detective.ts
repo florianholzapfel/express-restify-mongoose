@@ -13,6 +13,7 @@ export function detective(model: mongoose.Model<unknown>, path: string) {
     schemaPath += keys[i];
 
     if (schema.path(schemaPath) && schema.path(schemaPath).schema) {
+      // @ts-expect-error this is fine 🐶🔥
       schema = schema.path(schemaPath).schema;
     }
   }

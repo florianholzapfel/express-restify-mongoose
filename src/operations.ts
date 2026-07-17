@@ -65,7 +65,6 @@ export function operations(
 
     options.contextFilter(contextModel, req, (filteredContext) => {
       buildQuery<Record<string, unknown>[]>(
-        // @ts-expect-error this is fine 🐶🔥
         filteredContext.find(),
         req.erm.query
       )
@@ -75,11 +74,15 @@ export function operations(
 
           if (options.totalCountHeader && !req.erm.query?.distinct) {
             options.contextFilter(contextModel, req, (countFilteredContext) => {
-              buildQuery<number>(countFilteredContext.countDocuments(), {
-                ...req.erm.query,
-                skip: 0,
-                limit: 0,
-              })
+              buildQuery<number>(
+                // @ts-expect-error this is fine 🐶🔥
+                countFilteredContext.countDocuments(),
+                {
+                  ...req.erm.query,
+                  skip: 0,
+                  limit: 0,
+                }
+              )
                 .then((count) => {
                   req.erm.totalCount = count;
                   next();
@@ -101,7 +104,11 @@ export function operations(
     }
 
     options.contextFilter(contextModel, req, (filteredContext) => {
-      buildQuery(filteredContext.countDocuments(), req.erm.query)
+      buildQuery(
+        // @ts-expect-error this is fine 🐶🔥
+        filteredContext.countDocuments(),
+        req.erm.query
+      )
         .then((count) => {
           req.erm.result = { count: count };
           req.erm.statusCode = 200;
@@ -245,9 +252,7 @@ export function operations(
       delete req.body._id;
     }
 
-    // @ts-expect-error this is fine 🐶🔥
     if (contextModel.schema.options.versionKey) {
-      // @ts-expect-error this is fine 🐶🔥
       delete req.body[contextModel.schema.options.versionKey];
     }
 
@@ -281,9 +286,7 @@ export function operations(
 
     delete req.body._id;
 
-    // @ts-expect-error this is fine 🐶🔥
     if (contextModel.schema.options.versionKey) {
-      // @ts-expect-error this is fine 🐶🔥
       delete req.body[contextModel.schema.options.versionKey];
     }
 
