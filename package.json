@@ -43,7 +43,7 @@
     "lodash.isplainobject": "~4.0.6",
     "mongoose": "^8.22.1",
     "serialize-error": "^8.1.0",
-    "zod": "^3.19.1"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@swc/cli": "^0.1.57",
