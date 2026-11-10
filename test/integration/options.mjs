@@ -1,5 +1,5 @@
 import assert from "assert";
-import request from "request";
+import request from "./request.mjs";
 import sinon from "sinon";
 import { serve } from "../../dist/express-restify-mongoose.js";
 
