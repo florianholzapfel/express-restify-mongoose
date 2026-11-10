@@ -75,7 +75,6 @@ export function operations(
           if (options.totalCountHeader && !req.erm.query?.distinct) {
             options.contextFilter(contextModel, req, (countFilteredContext) => {
               buildQuery<number>(
-                // @ts-expect-error this is fine 🐶🔥
                 countFilteredContext.countDocuments(),
                 {
                   ...req.erm.query,
@@ -105,7 +104,6 @@ export function operations(
 
     options.contextFilter(contextModel, req, (filteredContext) => {
       buildQuery(
-        // @ts-expect-error this is fine 🐶🔥
         filteredContext.countDocuments(),
         req.erm.query
       )

@@ -47,10 +47,10 @@ function assertQueryIsSafe(
 
 const PopulateOptionsSchema = z.object({
   path: z.string(),
-  match: z.record(z.unknown()).optional(),
-  options: z.record(z.unknown()).optional(),
+  match: z.record(z.string(), z.unknown()).optional(),
+  options: z.record(z.string(), z.unknown()).optional(),
   select: z.string().optional(),
-  populate: z.record(z.unknown()).optional(),
+  populate: z.record(z.string(), z.unknown()).optional(),
   // Configure populate query to not use strict populate to maintain
   // behavior from Mongoose previous to v6 (unless already configured)
   strictPopulate: z.boolean().optional().default(false),
@@ -96,7 +96,7 @@ const SelectSchema = z.preprocess((value) => {
   }
 
   return value;
-}, z.record(z.number().min(0).max(1)));
+}, z.record(z.string(), z.number().min(0).max(1)));
 
 const SortSchema = z.preprocess((value) => {
   if (typeof value === "string" && value.startsWith("{")) {
@@ -104,7 +104,7 @@ const SortSchema = z.preprocess((value) => {
   }
 
   return value;
-}, z.union([z.string(), z.record(z.enum(["asc", "desc", "ascending", "descending", "-1", "1"])), z.record(z.number().min(-1).max(1))]));
+}, z.union([z.string(), z.record(z.string(), z.enum(["asc", "desc", "ascending", "descending", "-1", "1"])), z.record(z.string(), z.number().min(-1).max(1))]));
 
 const LimitSkipSchema = z.preprocess((value) => {
   if (typeof value !== "string") {
@@ -122,7 +122,7 @@ export function getQueryOptionsSchema({ allowRegex }: { allowRegex: boolean }) {
       assertQueryIsSafe(query, { allowRegex });
 
       return query;
-    }, z.record(z.unknown()))
+    }, z.record(z.string(), z.unknown()))
     .transform((value) => {
       return Object.fromEntries(
         Object.entries(value).map(([key, value]) => {
@@ -156,7 +156,7 @@ export function getQueryOptionsSchema({ allowRegex }: { allowRegex: boolean }) {
         assertQueryIsSafe(value.populate, { allowRegex });
       } catch {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           message: "operator_not_allowed",
         });
       }
