@@ -43,12 +43,10 @@ export function operations(
       return false;
     }
 
-    return filter
-      .getExcluded({
-        access: req.access,
-        modelName: model.modelName,
-      })
-      .includes(req.erm.query.distinct);
+    return filter.isPathExcluded(req.erm.query.distinct, {
+      access: req.access,
+      modelName: model.modelName,
+    });
   }
 
   const getItems: RequestHandler = function (req, res, next) {
