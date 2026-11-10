@@ -49,6 +49,14 @@ export function operations(
     });
   }
 
+  /**
+   * distinct replaces the operation of the query it is applied to, it is only
+   * meant for getItems and getItem, where isDistinctExcluded guards it.
+   */
+  function withoutDistinct(req: Request) {
+    return req.erm.query && { ...req.erm.query, distinct: undefined };
+  }
+
   const getItems: RequestHandler = function (req, res, next) {
     const contextModel = req.erm.model;
     if (!contextModel) {
@@ -105,7 +113,7 @@ export function operations(
       buildQuery(
         // @ts-expect-error this is fine 🐶🔥
         filteredContext.countDocuments(),
-        req.erm.query
+        withoutDistinct(req)
       )
         .then((count) => {
           req.erm.result = { count: count };
@@ -127,7 +135,7 @@ export function operations(
       buildQuery<Record<string, unknown> | null>(
         // @ts-expect-error this is fine 🐶🔥
         findById(filteredContext, req.params.id),
-        req.erm.query
+        withoutDistinct(req)
       )
         .then((item) => {
           if (!item) {
@@ -157,7 +165,7 @@ export function operations(
     }
 
     options.contextFilter(contextModel, req, (filteredContext) => {
-      buildQuery(filteredContext.deleteMany(), req.erm.query)
+      buildQuery(filteredContext.deleteMany(), withoutDistinct(req))
         .then(() => {
           req.erm.statusCode = 204;
 
