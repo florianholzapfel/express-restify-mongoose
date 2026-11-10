@@ -1,6 +1,6 @@
 import assert from "assert";
 import mongoose from "mongoose";
-import request from "request";
+import request from "./request.mjs";
 import { serve } from "../../dist/express-restify-mongoose.js";
 
 import setupDb from "./setup.mjs";
