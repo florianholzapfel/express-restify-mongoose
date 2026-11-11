@@ -58,6 +58,37 @@ export class Filter {
   }
 
   /**
+   * Tells whether reading a path would disclose an excluded key.
+   *
+   * A path is excluded when it is an excluded key, a parent of one (the value
+   * would embed the excluded key) or a child of one (the value is part of the
+   * excluded key). Array positions are ignored, `purchases.0.number` is the
+   * same key as `purchases.number`.
+   */
+  isPathExcluded(
+    path: string,
+    options: { access: Access; modelName: string }
+  ) {
+    const normalize = (value: string) =>
+      value
+        .split(".")
+        .filter((key) => !/^\d+$/.test(key))
+        .join(".");
+
+    const normalizedPath = normalize(path);
+
+    return this.getExcluded(options).some((excluded) => {
+      const normalizedExcluded = normalize(excluded);
+
+      return (
+        normalizedPath === normalizedExcluded ||
+        normalizedPath.startsWith(`${normalizedExcluded}.`) ||
+        normalizedExcluded.startsWith(`${normalizedPath}.`)
+      );
+    });
+  }
+
+  /**
    * Removes excluded keys from a document.
    */
   private filterItem<

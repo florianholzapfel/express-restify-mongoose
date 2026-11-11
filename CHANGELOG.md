@@ -1,5 +1,23 @@
 # Changelog
 
+### 9.0.14
+
+- **security:** `distinct` no longer discloses private or protected fields through overlapping paths. The check only compared the requested path verbatim, so a `distinct` on a parent of an excluded field (`distinct=contact` with `contact.phone` excluded), on a child of one, or with an array position in the path (`purchases.0.number`) returned the excluded values. Such requests now return `[]` — CWE-200. [GHSA-mw97-rqg3-p236]
+- **security:** `distinct` is now ignored on `GET /Model/count` and `GET /Model/:id/shallow`. Both routes applied it without any check, which turned the query into a plain distinct and returned raw field values, private and protected ones included.
+- **fix:** `DELETE /Model?distinct=…` answered 204 without deleting anything; `distinct` is now ignored there as well.
+- **security:** upgrade `zod` to `^4.6.6`. Earlier versions can exhaust memory while validating oversized constrained collections, and zod validates the client-supplied query options. [GHSA-mrhx-c7xc-m3w5]
+- updated dev dependencies; the integration tests no longer use the unmaintained `request` package, and TypeScript is now `^5.9.3` (required by the zod 4 type declarations).
+
+### 9.0.13
+
+- **ci:** drop the restify integration tests and the `restify` devDependency. restify (through v11) depends on the abandoned `spdy` → `http-deceiver`, which calls `process.binding('http_parser')` — a binding Node removed in v12 — so it cannot load on any supported Node version and was blocking the release build gate. The Express suite already runs the same integration tests. Restify support code in `src/` is unchanged.
+- Note: `9.0.11` and `9.0.12` never reached npm because their release builds failed on the above issue; `9.0.13` is the first published release since `9.0.10` and carries the `9.0.11`/`9.0.12` security fixes below.
+
+### 9.0.12
+
+- **security:** bump `mongoose` to `^8.22.1` (lockfile relocked to 8.24.1), resolving three advisories in the runtime dependency — one critical and two high (prototype-pollution / search-injection fixes landed in 8.8.3, 8.9.5 and 8.22.1). Consumers on the previous `^8.2.1` range already resolved to a patched 8.x on fresh installs; this raises the floor and pins the committed lockfile.
+- **ci:** run the publish workflow on Node 24. The release build gate and publish step previously used EOL Node versions, causing the release workflow to fail.
+
 ### 9.0.11
 
 - **security:** block server-side JavaScript operators (`$where`, `$function`, `$accumulator`) in the user-supplied `query` parameter and in `populate.match`. Unfiltered query operators allowed an unauthenticated caller to execute JavaScript on the MongoDB server (denial of service via long-running predicates and boolean-based field exfiltration) — NoSQL injection, CWE-943/CWE-94. The check is recursive, so a `$function`/`$accumulator` nested inside `$expr` is rejected as well. [GHSA-5r4m-2pw8-7gvw]

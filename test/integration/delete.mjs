@@ -193,6 +193,28 @@ export default function (createFn, setup, dismantle) {
         dismantle(app, server, done);
       });
 
+      it("DELETE /Customer?distinct=name 204 - ignores distinct", (done) => {
+        request.del(
+          {
+            url: `${testUrl}/api/v1/Customer`,
+            qs: {
+              distinct: "name",
+            },
+          },
+          (err, res) => {
+            assert.ok(!err);
+            assert.equal(res.statusCode, 204);
+
+            db.models.Customer.countDocuments()
+              .then((count) => {
+                assert.equal(count, 0);
+                done();
+              })
+              .catch(done);
+          }
+        );
+      });
+
       it("DELETE /Customer 204 - no id", (done) => {
         request.del(
           {

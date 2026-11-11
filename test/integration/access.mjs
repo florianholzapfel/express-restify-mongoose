@@ -1396,6 +1396,110 @@ export default function (createFn, setup, dismantle) {
         );
       });
 
+      [
+        "favorites",
+        "favorites.purchase",
+        "purchases",
+        "purchases.0.number",
+      ].forEach((distinct) => {
+        it(`GET /Customer?distinct=${distinct} 200 - does not disclose nested excluded fields`, (done) => {
+          request.get(
+            {
+              url: `${testUrl}/api/v1/Customer`,
+              qs: {
+                distinct,
+              },
+              json: true,
+            },
+            (err, res, body) => {
+              assert.ok(!err);
+              assert.equal(res.statusCode, 200);
+              assert.deepEqual(body, []);
+              done();
+            }
+          );
+        });
+
+        it(`GET /Customer/:id?distinct=${distinct} 200 - does not disclose nested excluded fields`, (done) => {
+          request.get(
+            {
+              url: `${testUrl}/api/v1/Customer/${customer._id}`,
+              qs: {
+                distinct,
+              },
+              json: true,
+            },
+            (err, res, body) => {
+              assert.ok(!err);
+              assert.equal(res.statusCode, 200);
+              assert.deepEqual(body, []);
+              done();
+            }
+          );
+        });
+      });
+
+      ["age", "comment", "favorites", "name"].forEach((distinct) => {
+        it(`GET /Customer/count?distinct=${distinct} 200 - ignores distinct`, (done) => {
+          request.get(
+            {
+              url: `${testUrl}/api/v1/Customer/count`,
+              qs: {
+                distinct,
+              },
+              json: true,
+            },
+            (err, res, body) => {
+              assert.ok(!err);
+              assert.equal(res.statusCode, 200);
+              // Customer and RepeatCustomer share a collection
+              assert.deepEqual(body, { count: 2 });
+              done();
+            }
+          );
+        });
+
+        it(`GET /Customer/:id/shallow?distinct=${distinct} 200 - ignores distinct`, (done) => {
+          request.get(
+            {
+              url: `${testUrl}/api/v1/Customer/${customer._id}/shallow`,
+              qs: {
+                distinct,
+              },
+              json: true,
+            },
+            (err, res, body) => {
+              assert.ok(!err);
+              assert.equal(res.statusCode, 200);
+              assert.equal(Array.isArray(body), false);
+              assert.equal(body.name, "Bob");
+              assert.equal(body.age, undefined);
+              assert.equal(body.comment, undefined);
+              assert.equal(body.favorites, true);
+              done();
+            }
+          );
+        });
+      });
+
+      it("GET /Customer?distinct=favorites.purchase.item 200 - sibling of an excluded field", (done) => {
+        request.get(
+          {
+            url: `${testUrl}/api/v1/Customer`,
+            qs: {
+              distinct: "favorites.purchase.item",
+            },
+            json: true,
+          },
+          (err, res, body) => {
+            assert.ok(!err);
+            assert.equal(res.statusCode, 200);
+            assert.deepEqual(body, [product._id.toHexString()]);
+            done();
+          }
+        );
+      });
+
       it("GET /Customer?distinct=comment 200", (done) => {
         request.get(
           {
