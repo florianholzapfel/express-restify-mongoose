@@ -1,5 +1,11 @@
 # Changelog
 
+### 9.0.14
+
+- **security:** `distinct` no longer discloses private or protected fields through overlapping paths. The check only compared the requested path verbatim, so a `distinct` on a parent of an excluded field (`distinct=contact` with `contact.phone` excluded), on a child of one, or with an array position in the path (`purchases.0.number`) returned the excluded values. Such requests now return `[]` — CWE-200. [GHSA-mw97-rqg3-p236]
+- **security:** `distinct` is now ignored on `GET /Model/count` and `GET /Model/:id/shallow`. Both routes applied it without any check, which turned the query into a plain distinct and returned raw field values, private and protected ones included.
+- **fix:** `DELETE /Model?distinct=…` answered 204 without deleting anything; `distinct` is now ignored there as well.
+
 ### 9.0.11
 
 - **security:** block server-side JavaScript operators (`$where`, `$function`, `$accumulator`) in the user-supplied `query` parameter and in `populate.match`. Unfiltered query operators allowed an unauthenticated caller to execute JavaScript on the MongoDB server (denial of service via long-running predicates and boolean-based field exfiltration) — NoSQL injection, CWE-943/CWE-94. The check is recursive, so a `$function`/`$accumulator` nested inside `$expr` is rejected as well. [GHSA-5r4m-2pw8-7gvw]
