@@ -1,5 +1,10 @@
 # Changelog
 
+### 9.0.15
+
+- **security:** the default `onError` handler no longer sends `reason`, `cause` or nested stack traces to the client. It removed the outer `stack` and the `reason` of each validation error, but not a top-level `reason`, so the response relied on `serialize-error` not emitting the stack of that nested error. Releases before 8.0.0 returned `reason.stack` for every query cast error (a malformed `_id`, for example), disclosing server file paths; 8.0.0 and later did not, and the handler now strips these properties explicitly — CWE-209. [GHSA-458w-52fm-563f]
+- error responses for cast errors no longer contain the `reason` key, which was always empty on 9.x.
+
 ### 9.0.14
 
 - **security:** `distinct` no longer discloses private or protected fields through overlapping paths. The check only compared the requested path verbatim, so a `distinct` on a parent of an excluded field (`distinct=contact` with `contact.phone` excluded), on a child of one, or with an array position in the path (`purchases.0.number`) returned the excluded values. Such requests now return `[]` — CWE-200. [GHSA-mw97-rqg3-p236]
